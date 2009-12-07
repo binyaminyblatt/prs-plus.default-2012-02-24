@@ -1,3 +1,26 @@
+return;
+
+var getSoValue = Utils.getSoValue;
+var trace = Utils.trace;
+
+
+kbook.model.container.PAGE_GROUP.PAGE.doLeft = function() {
+//	this.bubble("doNext");
+	trace("starting dictionary");
+	kbook.autoRunRoot.path = addonRoot + "Sudoku/sudoku.xml";
+	try {
+		trace("kbook.autoRunRoot.path is " + kbook.autoRunRoot.path);
+		kbook.autoRunRoot.enterIf(kbook.model);
+		trace("success");
+	} catch (e) {
+		trace("error starting dictionary: " + e);
+	}
+	trace("exiting dictionary");
+}
+
+
+return;
+
 // Name: Dictionary
 // Description: will display DictioLaunchX based dictionary
 
@@ -16,10 +39,60 @@
 	};
 */
 
-var getSoValue = utils.getSoValue;
-var trace = utils.trace;
 
-this.trace = utils.trace;
+
+// leads to "invalid type"
+//trace("xs is " + getSoValue(this, "xs"));
+trace("PARSE_NO_ERROR is " + getSoValue(this, "PARSE_NO_ERROR"));
+trace("xs.PARSE_NO_ERROR is " + getSoValue(this, "xs.PARSE_NO_ERROR"));
+
+
+var path = "/Data/database/cache/media.xml";
+info = FileSystem.getFileInfo(path);
+if (info) {
+	stream = new Stream.File(path);
+	try {
+		trace("stream.parse is " + stream.parse);
+		result = stream.parse(info.size, getSoValue(this, "xs.PARSE_NO_ERROR") | getSoValue(this, "xs.PARSE_NO_WARNING"));
+		
+
+		/*
+		var obj = result;
+		for (var p in obj) {
+			trace(p + " => " + obj[p]);
+		}
+
+
+		obj = result.indexes;		
+		trace("dumping indexes");
+		for (var p in obj) {
+			trace(p + " => " + obj[p]);
+		}
+
+
+		obj = result.records[1];		
+		trace("dumping records[1]");
+		for (var p in obj) {
+			trace(p + " => " + obj[p]);
+		} */
+
+		var serialize = getSoValue(this, "xs.serialize");	
+		trace("serialize is " + serialize);
+		var serializedStr = serialize(result);		
+		trace("serializedstr is " + serializedStr);
+		var bla = {a: "value of a", b: "value of b"};
+		// fails
+		serializedStr = serialize(bla);
+		trace("serializedstr is " + serializedStr);
+
+		trace("successfully read cache")
+	} catch (e) {
+		trace("error parsing stream: " + e);
+	}
+
+}
+return;
+
 
 //kbookBigTitle 48 index 0
 //kbookVSmallName 24 index 3
@@ -52,8 +125,9 @@ var media = {
 	id: bla,
 	thumbnail: {jpeg: "/Data/bookbyfolderpreview.jpg"}
 }
-var bitmap = kbook.model.cache.getBitmap.call(kbook.model.cache, media);
-trace("bitmap is " + bitmap);
+//Crashes the device at some point
+//var bitmap = kbook.model.cache.getBitmap.call(kbook.model.cache, media);
+//trace("bitmap is " + bitmap);
 //trace("Bitmap is " + Bitmap);
 
 /*
@@ -99,7 +173,7 @@ function setSoValue(obj, propName, value) {
 	try {
 		setValue.call(dummy, propName, value);
 	} catch (e) {
-		utils.trace("failed to call set value: " + e);
+		Utils.trace("failed to call set value: " + e);
 	}
 }
 

@@ -1,43 +1,10 @@
-this.addonDir = "/Data/addons/";
+this.addonRoot = "/Data/addons/";
 this.beSilent = true;
-this.logFile = addonDir + "addons.log";
+this.logFile = addonRoot + "addons.log";
 
 var userScript = "/Data/user.js";
 
-var utils = {
-	// A bit weird way to clone an object. There might be a better function or FSK specific operator to do the same
-	// Arguments:
-	//      obj - object to clone
-	// Returns:
-	//      "copy" of an object (linked objects as well as functions aren't cloned)
-	cloneObj : function (obj) {
-		var temp = FskCache.playlistResult;
-		var dummy = {};
-		try {
-			FskCache.playlistResult = obj;
-			var result = FskCache.playlist.browse(dummy);
-			delete result.db;
-			delete result.playlist;
-			return result;
-		} catch (e) {
-			this.trace("error cloning: " + e);
-			return undefined;
-		} finally {
-			FskCache.playlistResult = temp;
-		}
-	}, 
-	
-	// Getting values of properties of objects created by .so bytecode isn't always possible for custom functions.
-	// However they are visible to .xb code
-	// Arguments:
-	//      obj - object to get value from
-	//      propName - property name, could also look like "prop1.prop2.prop3"
-	// Returns:
-	//      property value or undefined, if property is not defined
-	getSoValue : function (obj, propName) {
-		return FskCache.mediaMaster.getInstance.call(obj, propName);
-	},
-
+var Utils = {
 	trace : function (msg) {
 		if(beSilent) {
 			return;
@@ -51,28 +18,30 @@ var utils = {
 			} finally {
 			    stream.close();
 			}
-		} catch (ignore) {
+		} catch (ignore2) {
 		}
         }
 };
 
-var trace = utils.trace;
-function callScript(path) {
+var trace = Utils.trace;
+var callScript = function (path) {
 	try {		
 		trace("Calling script: " + path);
 		if(FileSystem.getFileInfo(path)) {
+			var result;
 			var f = new Stream.File(path);
 			try {
-				var fn = new Function("utils", f.toString(), path, 1);
-				fn(utils);
+				var fn = new Function("Utils", f.toString(), path, 1);
+				var result = fn(Utils);
 				delete fn;
+				return result;
 			} finally {
 				f.close();
 			}
 		} else {
 			trace(path + " not found ");
 		}
-		trace("finished");
+		return result;
 	} catch(e) {
 		trace("Error when calling script "  + path + ": " + e);
 	}
@@ -82,21 +51,51 @@ function callScript(path) {
 // Allows developers to override default paths, trace functions etc
 try {
 	if(FileSystem.getFileInfo(userScript)) {
-		utils.trace("calling user  script");
+		Utils.trace("calling user  script");
 		callScript(userScript);
 	}
 } catch (ignore) {
-	utils.trace("script failed: " + ignore);
+	Utils.trace("script failed: " + ignore);
 }
 
-
-var iterator = new FileSystem.Iterator(addonDir);
-var item;
-while(item = iterator.getNext()) {
-	if (item.type == "file") {
-		var path = item.path;
-		if(path.length > 2 && path.substring(0, 1) !== "_" && path.substring(path.length - 3) === ".js") {
-			callScript(addonDir + path);
+// Initializes addons & utils in an alphabetic order
+// Utils have "_" prefix and are initialized before addons
+var initialize = function () {
+	var iterator = new FileSystem.Iterator(addonRoot);
+	try {
+		var item;
+		var utils = [];
+		var addons = [];
+		while(item = iterator.getNext()) {
+			if (item.type == "file") {
+				var path = item.path;
+				if(path.length > 2 && path.substring(path.length - 3) === ".js") {
+					if(path.substring(0, 1) == "_") {
+						utils.push(path);
+					} else {
+						addons.push(path);
+					}
+				}
+			}
 		}
+		utils.sort();
+		addons.sort();
+		
+		var rootDir = addonRoot;
+		// Init utils
+		for(var i = 0, n = utils.length; i < n; i++) {
+			callScript(rootDir + utils[i]);
+		}
+		// Init addons
+		for(i = 0, n = addons.length; i < n; i++) {
+			var addon = callScript(rootDir + addons[i]);
+			if(typeof addon !== "undefined") {
+				Utils.createAddonNode(addon);
+			}
+		}
+	} finally {
+		iterator.close();
 	}
 }
+
+initialize();

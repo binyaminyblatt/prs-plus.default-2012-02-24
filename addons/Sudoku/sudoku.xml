@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1">
+
+<assets>
+
+<style font="Courier10 BT">
+<style id="sometext" size="16" style="" color="#000000"/>
+<style id="digits" size="22" style="bold" color="#000000"/>
+<style id="gameclock" size="22" style="bold" color="#FFFFFF"/>
+</style>
+
+
+<texture href="skins/labels.png">
+<cutout id="gCursor" x="0" y="80" width="44" height="44"/>
+<cutout id="fDigit" x="0" y="0" width="40" height="40"/>
+<cutout id="cDigit" x="0" y="40" width="40" height="40"/>
+<cutout id="mCursor" x="44" y="80" width="188" height="45"/>
+<cutout id="mMenu1" x="0" y="140" width="150" height="40"/>
+<cutout id="mMenu2" x="150" y="140" width="150" height="40"/>
+<cutout id="mMenu3" x="0" y="180" width="150" height="40"/>
+<cutout id="mSubMenu1" x="0" y="220" width="120" height="88"/>
+<cutout id="mSubMenu2" x="120" y="220" width="120" height="88"/>
+<cutout id="mSubMenu3" x="240" y="220" width="120" height="44"/>
+<cutout id="mSubCursor" x="250" y="80" width="22" height="22"/>
+<cutout id="bGround" x="390" y="80" width="100" height="100"/>
+
+<cutout id="cCon" x="0" y="320" width="250" height="70"/>
+
+
+</texture>
+
+
+
+<texture href="skins/skinMain.png">
+
+<cutout id="sudokuHeader-l" x="350" y="0" width="70" height="70"/>
+<cutout id="sudokuHeader-c" x="421" y="0" width="70" height="70"/>
+<cutout id="sudokuHeader-r" x="492" y="0" width="70" height="70"/>
+<cutout id="sudokuInfo-l" x="0" y="70" width="1" height="697"/>
+<cutout id="sudokuInfo-c" x="0" y="70" width="598" height="697"/>
+<cutout id="sudokuInfo-r" x="0" y="70" width="1" height="697"/>
+<cutout id="sudokuStatus-l" x="350" y="766" width="70" height="33"/>
+<cutout id="sudokuStatus-c" x="421" y="766" width="70" height="33"/>
+<cutout id="sudokuStatus-r" x="492" y="766" width="70" height="33"/>
+
+</texture>
+
+
+<skin id="gameclock" 
+	styles="gameclock"/>
+<skin id="sometext" 
+	styles="sometext"/>
+<skin id="digits" 
+	styles="digits"/>
+<skin id="gridCursor" 
+	cutouts="gCursor"/>
+<skin id="fixDigit" 
+	cutouts="fDigit"/>
+<skin id="custDigit" 
+	cutouts="cDigit"/>
+<skin id="menuCursor" 
+	cutouts="mCursor"/>
+<skin id="subMenuCursor" 
+	cutouts="mSubCursor"/>
+<skin id="menuMenu1" 
+	cutouts="mMenu1"/>
+<skin id="menuMenu3" 
+	cutouts="mMenu3"/>
+<skin id="menuMenu2" 
+	cutouts="mMenu2"/>
+<skin id="subMenul" 
+	cutouts="mSubMenu1"/>
+<skin id="subMenu2" 
+	cutouts="mSubMenu2"/>
+<skin id="subMenu3" 
+	cutouts="mSubMenu3"/>
+
+<skin id="subCursor" 
+	cutouts="mSubCursor"/>
+
+<skin id="bckGround" 
+	cutouts="bGround"/>
+
+<skin id="cCon" 
+	cutouts="cCon"/>
+
+
+
+<skin id="sudokuSkin" 
+	cutouts="sudokuHeader-l,sudokuHeader-c,sudokuHeader-r,sudokuInfo-l,sudokuInfo-c,sudokuInfo-r,sudokuStatus-l,sudokuStatus-c,sudokuStatus-r"/>
+
+
+</assets>
+
+
+
+
+<code>
+    
+
+    <function id="runJs" params="path,target">
+        try {
+            var f = new Stream.File(path);
+            var fn = new Function("target", f.toString(), path, 1);
+            fn(target);
+            delete fn;
+        }
+        catch(e)
+        {
+        }
+    </function>
+    <function id="loadScript">
+        if (!this.hasOwnProperty('_scriptLoaded'))
+            this._scriptLoaded = false;
+        if (!this._scriptLoaded)
+        {
+            var path = kbook.autoRunRoot.path;
+            var index = path.lastIndexOf('/');
+            if (index > 0)
+               path = path.substring(0, index + 1);
+            this.driveroot = path.substring(0,2);
+            var target = this.AUTORUN_GROUP.AUTORUN;
+            target.driveroot = this.driveroot;
+	    target.sudokuRoot = path;
+            this.runJs(path+"sudoku.js",target);
+        }
+        this._scriptLoaded = true;
+    </function>
+    <function id="modelChanged">
+        arguments.callee.grammar.call(this);
+        var state = this.getVariable("STATE");
+        
+        var target;
+        
+        
+
+        if (this.state != state) {
+            this.focus(true)
+            this.AUTORUN_GROUP.show(false)
+            switch(state) {
+            case "AUTORUN":
+                this.loadScript();
+                this.AUTORUN_GROUP.show(true);
+                target = this.AUTORUN_GROUP.AUTORUN;
+                break;
+            }
+            this.state = state;
+            target.init();
+             if (target.isEnabled())
+                {
+               
+                target.focus(true);
+                
+                };
+        }
+        
+    </function>
+</code>
+<group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
+<panel skin="sudokuSkin" left="0" right="0" top="0" bottom="0"/> 
+    <sprite skin="hard-reset" left="0" width="70" top="0" height="70" active="false"/>
+    <kbookLabel skin="title" left="70" right="0" top="0" height="70" align="left" text="Sudoku"/>
+    <group id="AUTORUN" width="600" top="70" bottom="30">
+    
+        <code>
+            <function id="doDigit" params="part"><![CDATA[
+               
+            
+            this['drawDigit'](part.key)
+
+
+            ]]>
+            </function>
+            <function id="doMenu">
+              this.doMenuF();
+            </function>
+
+            <function id="doCenter">
+             this.doCenterF();
+            </function>
+
+            <function id="doMark">
+            this.doCenterF();
+            </function>
+
+            <function id="doLeft">
+            this.moveCursor("left");
+            </function>
+
+	      <function id="doPrevious">
+            this.moveCursor("left");
+            </function>
+
+
+             <function id="doRight">
+            this.moveCursor("right");
+            </function>
+
+
+            <function id="doNext">
+            this.moveCursor("right");
+            </function>
+
+
+
+            <function id="doUp">
+            this.moveCursor("up");
+            </function>
+            <function id="doDown">
+            this.moveCursor("down");
+            </function>
+
+        </code>
+
+
+<sprite skin="gridCursor" id="gridCursor"  left="81" width="44" top="195" height="44" u="0" active="false" canFocus="true"/>
+
+
+<!--
+<sprite skin="custDigit" id="custDigit"  left="83" width="40" top="197" height="40" u="-1" active="false" canFocus="false"/>
+-->
+
+
+        <kbookLabel id="numRecords" skin="digits" left="10" right="0" top="90" height="60" align="center" text=""/>
+        <kbookLabel id="sometext" skin="sometext" left="10" right="0" top="106" height="60" align="center" text="total puzzles"/>
+
+        <kbookLabel id="numCurrent" skin="digits" left="100" right="0" top="90" height="60" align="left" text=""/>
+        <kbookLabel id="sometext1" skin="sometext" left="70" right="0" top="106" height="60" align="left" text="current puzzle"/>
+
+
+
+
+
+//**************************************
+<sprite skin="fixDigit" id="fixDigit00"  left="83" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit01"  left="133" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit02"  left="183" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit03"  left="233" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit04"  left="283" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit05"  left="333" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit06"  left="383" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit07"  left="433" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit08"  left="483" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit10"  left="83" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit11"  left="133" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit12"  left="183" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit13"  left="233" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit14"  left="283" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit15"  left="333" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit16"  left="383" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit17"  left="433" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit18"  left="483" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit20"  left="83" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit21"  left="133" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit22"  left="183" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit23"  left="233" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit24"  left="283" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit25"  left="333" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit26"  left="383" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit27"  left="433" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit28"  left="483" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit30"  left="83" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit31"  left="133" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit32"  left="183" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit33"  left="233" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit34"  left="283" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit35"  left="333" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit36"  left="383" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit37"  left="433" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit38"  left="483" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit40"  left="83" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit41"  left="133" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit42"  left="183" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit43"  left="233" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit44"  left="283" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit45"  left="333" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit46"  left="383" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit47"  left="433" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit48"  left="483" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit50"  left="83" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit51"  left="133" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit52"  left="183" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit53"  left="233" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit54"  left="283" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit55"  left="333" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit56"  left="383" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit57"  left="433" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit58"  left="483" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit60"  left="83" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit61"  left="133" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit62"  left="183" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit63"  left="233" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit64"  left="283" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit65"  left="333" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit66"  left="383" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit67"  left="433" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit68"  left="483" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit70"  left="83" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit71"  left="133" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit72"  left="183" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit73"  left="233" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit74"  left="283" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit75"  left="333" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit76"  left="383" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit77"  left="433" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit78"  left="483" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit80"  left="83" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit81"  left="133" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit82"  left="183" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit83"  left="233" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit84"  left="283" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit85"  left="333" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit86"  left="383" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit87"  left="433" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="fixDigit" id="fixDigit88"  left="483" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+
+//*****************************************************************
+
+
+
+//*******************custDigits************************
+
+<sprite skin="custDigit" id="custDigit00"  left="83" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+
+<sprite skin="custDigit" id="custDigit01"  left="133" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit02"  left="183" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit03"  left="233" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit04"  left="283" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit05"  left="333" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit06"  left="383" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit07"  left="433" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit08"  left="483" width="40" top="197" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit10"  left="83" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit11"  left="133" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit12"  left="183" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit13"  left="233" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit14"  left="283" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit15"  left="333" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit16"  left="383" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit17"  left="433" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit18"  left="483" width="40" top="247" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit20"  left="83" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit21"  left="133" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit22"  left="183" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit23"  left="233" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit24"  left="283" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit25"  left="333" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit26"  left="383" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit27"  left="433" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit28"  left="483" width="40" top="297" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit30"  left="83" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit31"  left="133" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit32"  left="183" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit33"  left="233" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit34"  left="283" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit35"  left="333" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit36"  left="383" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit37"  left="433" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit38"  left="483" width="40" top="347" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit40"  left="83" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit41"  left="133" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit42"  left="183" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit43"  left="233" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit44"  left="283" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit45"  left="333" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit46"  left="383" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit47"  left="433" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit48"  left="483" width="40" top="397" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit50"  left="83" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit51"  left="133" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit52"  left="183" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit53"  left="233" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit54"  left="283" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit55"  left="333" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit56"  left="383" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit57"  left="433" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit58"  left="483" width="40" top="447" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit60"  left="83" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit61"  left="133" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit62"  left="183" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit63"  left="233" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit64"  left="283" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit65"  left="333" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit66"  left="383" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit67"  left="433" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit68"  left="483" width="40" top="497" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit70"  left="83" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit71"  left="133" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit72"  left="183" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit73"  left="233" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit74"  left="283" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit75"  left="333" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit76"  left="383" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit77"  left="433" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit78"  left="483" width="40" top="547" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit80"  left="83" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit81"  left="133" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit82"  left="183" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit83"  left="233" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit84"  left="283" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit85"  left="333" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit86"  left="383" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit87"  left="433" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+<sprite skin="custDigit" id="custDigit88"  left="483" width="40" top="597" height="40" u="0" active="false" canFocus="false"/>
+
+
+//**********************end custDigits*****************************
+
+
+
+
+
+<sprite skin="menuMenu1" id="menuMenu0"  left="40" width="150" top="45" height="40" active="false" canFocus="false"/>
+
+<sprite skin="menuMenu3" id="menuMenu2"  left="420" width="150" top="45" height="40" active="false" canFocus="false"/>
+
+<sprite skin="menuMenu2" id="menuMenu1"  left="225" width="150" top="45" height="40" active="false" canFocus="false"/>
+
+
+
+<sprite skin="subMenul" id="subMenu0"  left="70" width="120" top="90" height="88" active="false" canFocus="false"/>
+
+
+<sprite skin="subMenu2" id="subMenu1"  left="255" width="120" top="90" height="88" active="false" canFocus="false"/>
+
+<sprite skin="subMenu3" id="subMenu2"  left="430" width="120" top="90" height="44" active="false" canFocus="false"/>
+
+<kbookLabel id="currentNum" skin="sometext" left="120" right="0" top="114" height="60" align="left" text=""/>
+
+<sprite skin="menuCursor" id="menuCursor"  left="206" width="188" top="45" height="45" active="false" canFocus="false"/>
+
+<sprite skin="subCursor" id="subCursor"  left="70" width="22" top="90" height="22" active="false" canFocus="false"/>
+
+
+
+
+<background skin="bckGround" id="bckGround" left="0" right="0" top="0" bottom="0"/>
+
+
+<sprite id="cCon" skin="cCon" width="250" height="70" active="false">
+
+
+			<animation id="cCon" duration="1" loop="true">
+				<frames>
+					<frame>
+						<setU u="0"/>
+					</frame>
+					<frame>
+						<setU u="1"/>
+					</frame>
+				</frames>
+			</animation>
+		</sprite>
+
+
+<kbookLabel id="clock1" skin="gameclock" width="100" right="4" height="30" bottom="-30" align="right" text=""/>
+    
+<kbookLabel id="clock2" skin="gameclock" width="300"  height="30" bottom="-30" align="center" text=""/>
+
+
+
+    </group>
+ 
+
+</group>
+</document>

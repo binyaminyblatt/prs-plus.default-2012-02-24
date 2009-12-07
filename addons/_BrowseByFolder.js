@@ -1,35 +1,13 @@
 // Name: Browse by Folder
-// Description: Adds "Browse by Folder" menu option, groups music&picture related menus, adds "Games" menu
+// Description: Adds "Browse by Folder" menu option, groups music&picture related menus, adds "Games & Utilities" menu
 //
 
-var cloneObj = utils.cloneObj;
-var getSoValue = utils.getSoValue;
-var trace = utils.trace;
+var cloneObj = Utils.cloneObj;
+var getSoValue = Utils.getSoValue;
+var trace = Utils.trace;
 
-var NodeKinds = {
-	BOOK: 2,
-	AUDIO: 3,
-	FILE: 2,
-	BACK: 26,
-	FOLDER: 37,
-	MS: 34,
-	SD: 35,
-	INTERNAL_MEM: 36
-};
-var SourceKinds = {
-	NONE: 0,
-	MS: 2, // memory stick
-	SD: 3 // SD card
-};
-
-// Book MIME types
-var BookMIMEs = {
-	"application/x-sony-bbeb": "BBeB Book",
-	"text/plain": "Plain Text",
-	"application/rtf": "Rich Text Format",
-	"application/pdf": "Adobe PDF",
-	"application/epub+zip": "EPUB Document"
-};
+var NodeKinds = Utils.NodeKinds;
+var BookMIMEs = Utils.BookMIMEs;
 
 // Skipping card scanning, if ".noscan" file is present in the root folder
 var originalHandler = FskCache.diskSupport.canHandleVolume;
@@ -107,59 +85,6 @@ kbook.tableData.getKind = function() {
 	return this.oldGetKind();
 };
 
-// Container node, displays subnodes, takes care of paging etc
-function ContainerNode() {
-	var oldEnter = this.enter;
-	var oldExit = this.exit;
-
-	this.enter = function() {
-		try {
-			// Call custom enter
-			if(typeof (this._myconstruct) == "function") {
-				var endHere = this._myconstruct.apply(this, arguments);
-				if(endHere === true) {
-					return;
-				}
-			}
-			
-			// Restore item selection
-			if(this.hasOwnProperty("selectionIndex") && this.hasOwnProperty("nodes")) {
-				var nodeToSelect = this.nodes[this.selectionIndex];
-				if(nodeToSelect) {
-					nodeToSelect.selected = true;
-				}
-			}
-		} catch (e) {
-			trace("error in ContainerNode.enter: " + e);
-		}
-		oldEnter.apply(this, arguments);
-	};
-
-	this.exit = function() {
-		try {
-			// Save parent's selection
-			var nodes = this.nodes;
-			this.selectionIndex = undefined;
-			if(nodes) {
-				for(var i = 0, n = nodes.length; i < n; i++) {
-					if(nodes[i].selected) {
-						this.selectionIndex = i;
-						break;
-					}
-				}
-			}
-			
-			if(this.hasOwnProperty("_myconstruct")) {
-				delete this.nodes;
-				this.nodes = [];
-			}
-		} catch (ignore) {
-		}
-		oldExit.apply(this, arguments);
-	};	
-}
-ContainerNode.prototype = cloneObj(kbook.root.children.settings); // settings node
-
 // Book path to index map. Allows to find existing book node corresponding to a given path.
 var pathToBook = null;
 function indexBooks() {
@@ -183,11 +108,21 @@ function pathToBookNode(path, parent) {
 	var book = pathToBook[path];
 	if(book) {
 		// Construct book node
+		var node = createBookNode(book, parent); 		
+		return node;
+	}
+	return null;
+}
+
+// Constructs a book node
+// Arguments:
+//	book - book media
+//	parent - parent node
+function createBookNode(book, parent) {
 		var node = cloneObj(kbook.root.children.books.prototype);
 		node.media = book;
 		node.cache = kbook.model.cache;
 		node.parent = parent;
-		node.depth = kbook.root.depth + 1;
 		node.children = kbook.children;
 		FskCache.tree.xdbNode.construct.call(node);
 		
@@ -202,8 +137,6 @@ function pathToBookNode(path, parent) {
 		node._myclass = "BookNode";
 		
 		return node;
-	}
-	return null;
 }
 
 
@@ -228,7 +161,7 @@ function FolderNode(root, path,  type,  name, kind) {
 		this.isFolder = false;
 	}
 }
-FolderNode.prototype = new ContainerNode();
+FolderNode.prototype = new Utils.ContainerNode();
 FolderNode.prototype.update = function() {
 	// Recreate nodes
 	this._myconstruct();
@@ -291,24 +224,25 @@ FolderNode.prototype._myconstruct = function() {
 		// If not internal memory
 		var isExternalMem = (fullPath.length > 5 && fullPath.substring(0, 5) === "/Data");
 		if(isExternalMem) {
-			this.nodes = [this.createOrphantBookNode(this, "Rescan internal memory", "", true, true)];
+			this.nodes = [this.createUnscannedBookNode(this, "Rescan internal memory", "", true, true)];
 		} else {
-			var copy = this.createOrphantBookNode(this, "Copy to internal memory", "Copies file to the internal memory root");
-			var copyAndReload = this.createOrphantBookNode(this, "Copy & Rescan internal memory", 
+			var copy = this.createUnscannedBookNode(this, "Copy to internal memory", "Copies file to the internal memory root");
+			var copyAndReload = this.createUnscannedBookNode(this, "Copy & Rescan internal memory", 
 							"Copies file to the internal memory root and rescans books", true);
 			this.nodes = [copy, copyAndReload];			
 		}
 	}
 };
 // Book that was not scanned 
-FolderNode.prototype.createOrphantBookNode = function(parent, title, comment, doSynchronize, dontCopy) {
-	var node = new ContainerNode();
-	node.parent = parent;
-	node.title = parent.path;
-	node.name = title;
-	node.kind = NodeKinds.BACK;
-	node._mycomment = comment;
-	node._mysourceKind = 1;
+FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, doSynchronize, dontCopy) {
+	var node = Utils.createContainerNode({
+		"parent": parent,
+		"title": parent.path,
+		"name": title,
+		"kind": NodeKinds.BACK,
+		"comment": comment
+	});
+	
 	var rootFolder = "/Data/database/media/books/";
 	var from = parent.root + parent.path;
 	var to = rootFolder + parent.path;
@@ -358,17 +292,16 @@ FolderNode.prototype.createOrphantBookNode = function(parent, title, comment, do
 	return node;
 };
 
+var nodes = kbook.root.nodes;
 
 // Audio & Pictures nodes, shows "Now Playing", "Audio", "Pictures" nodes
-var nodes = kbook.root.nodes;
-var audioAndPicturesNode = new ContainerNode();
-audioAndPicturesNode.parent = kbook.root;
-audioAndPicturesNode.kind = NodeKinds.AUDIO;
-audioAndPicturesNode.name = "Audio & Pictures";
-audioAndPicturesNode.title = "Audio & Pictures";
+var audioAndPicturesNode = Utils.createContainerNode({
+	parent: kbook.root,
+	title: "Audio & Pictures",
+	kind: NodeKinds.AUDIO
+});
 audioAndPicturesNode.nodes = [nodes[6],nodes[7],nodes[8]];
-audioAndPicturesNode.children = {};
-// TODO stop using prototypes, update ContainerNode
+
 // update from ContainerNode doesn't work for whatever reason, probably it is accessing the wrong "nodes"
 audioAndPicturesNode.update = function(model) {
 	for (var i = 0, n = this.nodes.length; i < n; i++) {
@@ -377,24 +310,26 @@ audioAndPicturesNode.update = function(model) {
 		}
 	}
 };
-
 nodes[6].parent = audioAndPicturesNode;
 nodes[7].parent = audioAndPicturesNode;
 nodes[8].parent = audioAndPicturesNode;
 
+// Global
+Utils.nodes.audioAndPictures = audioAndPicturesNode;
+
+
 // Books by Folder node
-var browseBooksNode = new ContainerNode();
-browseBooksNode.parent = kbook.root;
-browseBooksNode.title = "Books by Folder";
-browseBooksNode.name = "Books by Folder";
-browseBooksNode.kind = NodeKinds.FOLDER;
-browseBooksNode._mycomment = "Browse the file system";
-browseBooksNode._mysourceKind = 1;
-browseBooksNode._myseparator = 1;
-browseBooksNode.update = function() {
+var booksByFolderNode = Utils.createContainerNode({
+	parent: kbook.root,
+	title: "Books by Folder",
+	kind: NodeKinds.FOLDER,
+	comment: "Browse the file system",
+	separator: 1
+});
+booksByFolderNode.update = function() {
 	this._myconstruct(kbook.model, true);
 };
-browseBooksNode._myconstruct = function(model, fromChild) {	
+booksByFolderNode._myconstruct = function(model, fromChild) {	
 	try {
 		if(this.nodes !== null) {
 			delete this.nodes;
@@ -441,31 +376,38 @@ browseBooksNode._myconstruct = function(model, fromChild) {
 		}
 		
 	} catch (e) {
-		trace("error in browseBooksNode._myconstruct : " + e);
+		trace("error in booksByFolderNode._myconstruct : " + e);
 	}
 };
 
-var gamesNode = new ContainerNode();
-gamesNode.parent = kbook.root;
-gamesNode.title = "NOT IMPLEMENTED";
-gamesNode.name = "Games";
-gamesNode._myseparator = 0;
-gamesNode.kind = NodeKinds.FOLDER;
-gamesNode._mycomment = "coming soon...";
-gamesNode._mysourceKind = 1;
-gamesNode._myseparator = 1;
+// Global
+Utils.nodes.booksByFolder = booksByFolderNode;
+
+var gamesNode = Utils.createContainerNode({
+	parent: kbook.root,
+	title: "Games & Utilities",
+	comment: "coming soon...",
+	kind: NodeKinds.FOLDER,
+	separator: 1
+});
+
+// Global
+Utils.nodes.gamesAndUtils = gamesNode;
 
 // Add separator to collections and remove separator from bookmarks.
 nodes[4]._myseparator = 1;
 nodes[5]._myseparator = 0;
 nodes[5].separator = 0;
 
-
 // Rearranging root node, hiding Audio&Pictures related nodes, adding Books by Folder, swapping bookmarks and collections node
-kbook.root.nodes = [nodes[0], nodes[1], nodes[2], nodes[3], browseBooksNode, nodes[5], nodes[4], audioAndPicturesNode,  gamesNode, nodes[9]];
-
+kbook.root.nodes = [nodes[0], nodes[1], nodes[2], nodes[3], booksByFolderNode, nodes[5], nodes[4], audioAndPicturesNode,  gamesNode, nodes[9]];
 
 // Adding Rescan internal memory node"
 var settingsNode = nodes[9];
 var advancedSettingsNode = settingsNode.nodes[4];
-advancedSettingsNode.nodes.push(FolderNode.prototype.createOrphantBookNode(advancedSettingsNode, "Rescan internal memory", "", true, true));
+var rescanInternalMemoryNode = FolderNode.prototype.createUnscannedBookNode(advancedSettingsNode, "Rescan internal memory", "", true, true);
+advancedSettingsNode.nodes.push(rescanInternalMemoryNode);
+
+// Global
+Utils.nodes.advancedSettings = advancedSettingsNode;
+Utils.nodes.rescanInternalMemory = rescanInternalMemoryNode;

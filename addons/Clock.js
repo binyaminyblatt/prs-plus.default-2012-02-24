@@ -3,7 +3,7 @@
 //
 
 
-var trace = utils.trace;
+var trace = Utils.trace;
 
 var oldMenuPageChanged = kbook.model.container.MENU_GROUP.MENU.pageChanged;
 var oldPagePageChanged = kbook.model.container.PAGE_GROUP.PAGE.pageChanged;
