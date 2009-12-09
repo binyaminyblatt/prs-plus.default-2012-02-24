@@ -384,7 +384,7 @@ var gamesNode = Utils.createContainerNode({
 	parent: kbook.root,
 	title: "Games & Utilities",
 	comment: "",
-	kind: NodeKinds.FOLDER,
+	kind: NodeKinds.GAME,
 	separator: 1
 });
 

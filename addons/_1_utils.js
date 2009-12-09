@@ -49,6 +49,7 @@ Utils.NodeKinds = {
 	MS: 34,
 	SD: 35,
 	INTERNAL_MEM: 36,
+	GAME: 38,
 	DEFAULT: 37
 };
 // Small icons on the right side of books
@@ -175,7 +176,7 @@ Utils.createContainerNode = function (arg) {
 //	addon - addon variable
 Utils.createAddonNode = function(addon) {
 	if(addon && addon.activate) {
-		var kind = Utils.NodeKinds[addon.kind];
+		var kind = Utils.NodeKinds[addon.icon];
 		if(typeof kind === "undefined") {
 			kind = Utils.NodeKinds.DEFAULT;
 		}
