@@ -2,5 +2,5 @@
 // Description: Disables displaying short text using "big fonts" (menu items).
 //
 
-var styles = getSoValue(kbook.tableData, "table.skin.styles");
+var styles = Utils.getSoValue(kbook.tableData, "table.skin.styles");
 styles[2] = styles[3];
