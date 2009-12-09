@@ -1,4 +1,8 @@
-var trace = Utils.trace;
+var log = Utils.getLogger("utils");
+
+//--------------------------------------------------------------------------------------------------------------------
+// SYSTEM
+//--------------------------------------------------------------------------------------------------------------------
 // A bit weird way to clone an object. There might be a better function or FSK specific operator to do the same
 // Arguments:
 //      obj - object to clone
@@ -14,7 +18,7 @@ Utils.cloneObj = function (obj) {
 		delete result.playlist;
 		return result;
 	} catch (e) {
-		this.trace("error cloning: " + e);
+		log.error("error cloning: " + e);
 		return undefined;
 	} finally {
 		FskCache.playlistResult = temp;
@@ -32,6 +36,9 @@ Utils.getSoValue = function (obj, propName) {
 	return FskCache.mediaMaster.getInstance.call(obj, propName);
 };
 
+//--------------------------------------------------------------------------------------------------------------------
+// GUI
+//--------------------------------------------------------------------------------------------------------------------
 // Node icons
 Utils.NodeKinds = {
 	BOOK: 2,
@@ -98,7 +105,7 @@ Utils.ContainerNode = function(arg) {
 				}
 			}
 		} catch (e) {
-			trace("error in ContainerNode.enter: " + e);
+			log.error("error in ContainerNode.enter: " + e);
 		}
 		oldEnter.apply(this, arguments);
 	};

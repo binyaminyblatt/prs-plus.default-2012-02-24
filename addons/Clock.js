@@ -2,8 +2,7 @@
 // Description: Shows digital clock in the lower right corner in menu and page (reading book) views
 //
 
-
-var trace = Utils.trace;
+var log = Utils.getLogger("Clock");
 
 var oldMenuPageChanged = kbook.model.container.MENU_GROUP.MENU.pageChanged;
 var oldPagePageChanged = kbook.model.container.PAGE_GROUP.PAGE.pageChanged;
@@ -48,7 +47,7 @@ function updateDate() {
 		
 		this.setVariable("SHD_TIME", show);
 	} catch (e) {
-		trace("error in clock addon: " + e);
+		log.error("error in clock addon: " + e);
 	}
 }
 

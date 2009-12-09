@@ -4,7 +4,7 @@
 
 var cloneObj = Utils.cloneObj;
 var getSoValue = Utils.getSoValue;
-var trace = Utils.trace;
+var log = Utils.getLogger("BrowseByFolder");
 
 var NodeKinds = Utils.NodeKinds;
 var BookMIMEs = Utils.BookMIMEs;
@@ -17,7 +17,7 @@ FskCache.diskSupport.canHandleVolume = function(volume) {
 			return false;
 		}
 	} catch (ee) {
-		trace("error " + ee);
+		log.error("error " + ee);
 	}
 	return originalHandler(volume);
 };
@@ -41,7 +41,7 @@ kbook.model.doDeleteBook = function () {
 				FileSystem.deleteFile(bookPath);
 				kbook.root.update(kbook.model);
 			} catch (e) {
-				trace("Failed to delete my node: " + e);
+				log.error("Failed to delete my node: " + e);
 			}
 			
 			this.currentBook.gotoParent(kbook.model);
@@ -49,7 +49,7 @@ kbook.model.doDeleteBook = function () {
 			oldDeleteBook.apply(this, arguments);
 		}
 	} catch (ee) {
-		trace("Error in doDeleteBook: " + ee);
+		log.error("Error in doDeleteBook: " + ee);
 	}
 };
 
@@ -175,10 +175,7 @@ FolderNode.prototype.sortNodes = function() {
 			var result = (a.type == "directory" ? -1 : 1);
 			return result;
 		}
-		if(a.name === b.name) {
-			return 0;
-		}
-		return a.name > b.name ? 1 : -1;
+		return a.name.localeCompare(b.name);
 	}
 	);
 };
@@ -277,7 +274,7 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 					pathToBook = false;
 					delete tmp;
 				} catch (e) {
-					trace("error synchronizing: " + e);
+					log.error("error synchronizing: " + e);
 				}
 				// Show root
 				kbook.model.doRoot();
@@ -286,7 +283,7 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 				this.parent.parent.enter(kbook.model);
 			}
 		} catch (ee) {
-				trace("error in copy file from .enter" + ee);
+				log.error("error in copy file from .enter" + ee);
 		}				
 	};
 	return node;
@@ -376,7 +373,7 @@ booksByFolderNode._myconstruct = function(model, fromChild) {
 		}
 		
 	} catch (e) {
-		trace("error in booksByFolderNode._myconstruct : " + e);
+		log.error("error in booksByFolderNode._myconstruct : " + e);
 	}
 };
 
@@ -386,7 +383,7 @@ Utils.nodes.booksByFolder = booksByFolderNode;
 var gamesNode = Utils.createContainerNode({
 	parent: kbook.root,
 	title: "Games & Utilities",
-	comment: "coming soon...",
+	comment: "",
 	kind: NodeKinds.FOLDER,
 	separator: 1
 });

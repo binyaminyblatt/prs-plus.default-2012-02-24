@@ -1,121 +1,173 @@
 return;
 
 var getSoValue = Utils.getSoValue;
-var trace = Utils.trace;
+var log = Utils.getLogger("sandbox");
 
-
-kbook.model.container.PAGE_GROUP.PAGE.doLeft = function() {
-//	this.bubble("doNext");
-	trace("starting dictionary");
-	kbook.autoRunRoot.path = addonRoot + "Sudoku/sudoku.xml";
-	try {
-		trace("kbook.autoRunRoot.path is " + kbook.autoRunRoot.path);
-		kbook.autoRunRoot.enterIf(kbook.model);
-		trace("success");
-	} catch (e) {
-		trace("error starting dictionary: " + e);
+//--------------------------------------------------------------------------------------------------------------------
+// BEGIN messing with dictionary
+//--------------------------------------------------------------------------------------------------------------------
+this.trigger = false;
+kbook.model.container.MENU_GROUP.MENU.doLeft = function(bla, bla2, bla3) {
+	log.trace("bla is " + bla);
+	log.trace("bla2 is " + bla2);
+	log.trace("bla3 is " + bla3);
+	log.trace("bla.part so is " + getSoValue(bla, "part"));
+	log.trace("bla.key so is " + getSoValue(bla, "key"));
+	log.trace("bla.event so is " + getSoValue(bla, "event"));
+	for(var p in bla) {
+		try {
+			log.trace(p + " => " + bla[p]);
+		} catch (e) {
+			log.error("failed to dump property: " + p);
+		}
 	}
-	trace("exiting dictionary");
-}
 
+	trigger = !trigger;
+	if(trigger) {
+		kbook.model.container.getWindow().invalidate(0, 0, 300, 400);
+		return;
+	}
+	try {
+		var win = kbook.model.container.getWindow();
+		var mark = getSoValue(kbook.bookData, "mark");
+	        var get = getSoValue(kbook.bookData, "get");
+	        
+	        win.beginDrawing();
+	        try {
+		        // Read pages
+		        var page = get.call(kbook.bookData, 3);
+
+		        // Get text on the entire page
+			var m0 = mark.call(kbook.bookData, page, 0, 0, 0);
+			// TODO orientation, the height and with should be available elsewhere
+			var m1 = mark.call(kbook.bookData, page, 0, 600, 800);
+			var span = new Document.Viewer.Span(m0, m1);
+			var bounds = span.getBounds();
+			bounds.reverse();
+
+			var dx = 5;
+			var dy = 3;
+			// draw black underline
+			for(var i = 0, n = bounds.length; i < n; i++) {
+				var b = bounds[i];
+				var x = b.x + dx;
+				var y = b.y + b.height + dy;
+				var w = b.width - dx;
+				var h = 2;
+
+				//win.fillRectangle(b.x + dx, b.y + b.height + dy, b.width - dx, 2);
+				win.setPenColor(Color.black);
+				win.fillRectangle(x, y, w, h);
+
+
+				win.setTextStyle("bold");
+				win.setTextSize(20)
+
+				var tBounds = win.getTextBounds("" + i);
+				w = tBounds.width + 4;
+				h = tBounds.height;
+				// TODO must be the middle of the screen instead of 300 (orientation!)
+				x = 300 - Math.round(w/2);
+				y = y - h;
+				
+				win.fillRectangle(x, y, w, h);
+				win.setPenColor(Color.white);
+
+				win.drawText("" + i, x+2, y, w, h);				
+			}
+
+			
+			// draw white underline
+			/*
+			win.setPenColor(Color.white);
+			for(i = 0, n = bounds.length; i < n; i+=2) {
+				var b = bounds[i];
+				win.fillRectangle(b.x + dx, b.y + b.height + dy, b.width -dx, 3);
+				i++;
+			}*/
+			delete m0;
+			delete m1;
+			delete span;
+			delete bounds;
+		} catch (ee) {
+			log.error("error: " + ee);
+		}
+		
+		win.endDrawing();
+		
+		kbook.model.container.MENU_GROUP.MENU.setVariable("BOOK_INDEX_COUNT", "Finished");	
+	} catch (e) {
+		log.error("failed: " + e);
+	}
+
+}
+kbook.model.container.PAGE_GROUP.PAGE.doLeft=kbook.model.container.MENU_GROUP.MENU.doLeft;
+//--------------------------------------------------------------------------------------------------------------------
+// END messing with dictionary
+//--------------------------------------------------------------------------------------------------------------------
 
 return;
 
-// Name: Dictionary
-// Description: will display DictioLaunchX based dictionary
 
-/*
-	this.FskCache.addContainer = function (container) {
-		var containers;
-		containers = this.containers;
-		containers[containers.length] = container;
-	};
-
-*/
-/*
-	this.Fskin.treeData.setValue = function (node, name, value) {
-		node.sandbox[name] = value;
-		this.changed();
-	};
-*/
-
-
-
-// leads to "invalid type"
-//trace("xs is " + getSoValue(this, "xs"));
-trace("PARSE_NO_ERROR is " + getSoValue(this, "PARSE_NO_ERROR"));
-trace("xs.PARSE_NO_ERROR is " + getSoValue(this, "xs.PARSE_NO_ERROR"));
-
-
+//--------------------------------------------------------------------------------------------------------------------
+// BEGIN built in parse & serialize
+//--------------------------------------------------------------------------------------------------------------------
 var path = "/Data/database/cache/media.xml";
 info = FileSystem.getFileInfo(path);
 if (info) {
 	stream = new Stream.File(path);
 	try {
-		trace("stream.parse is " + stream.parse);
+		log.trace("stream.parse is " + stream.parse);
 		result = stream.parse(info.size, getSoValue(this, "xs.PARSE_NO_ERROR") | getSoValue(this, "xs.PARSE_NO_WARNING"));
 		
-
-		/*
-		var obj = result;
-		for (var p in obj) {
-			trace(p + " => " + obj[p]);
-		}
-
-
-		obj = result.indexes;		
-		trace("dumping indexes");
-		for (var p in obj) {
-			trace(p + " => " + obj[p]);
-		}
-
-
-		obj = result.records[1];		
-		trace("dumping records[1]");
-		for (var p in obj) {
-			trace(p + " => " + obj[p]);
-		} */
-
 		var serialize = getSoValue(this, "xs.serialize");	
-		trace("serialize is " + serialize);
+		log.trace("serialize is " + serialize);
 		var serializedStr = serialize(result);		
-		trace("serializedstr is " + serializedStr);
+		log.trace("serializedstr is " + serializedStr);
 		var bla = {a: "value of a", b: "value of b"};
 		// fails
 		serializedStr = serialize(bla);
-		trace("serializedstr is " + serializedStr);
+		log.trace("serializedstr is " + serializedStr);
 
-		trace("successfully read cache")
+		log.trace("successfully read cache")
 	} catch (e) {
-		trace("error parsing stream: " + e);
+		log.error("error parsing stream: " + e);
 	}
 
 }
 return;
+//--------------------------------------------------------------------------------------------------------------------
+// END built in parse & serialize
+//--------------------------------------------------------------------------------------------------------------------
+
+
+//--------------------------------------------------------------------------------------------------------------------
+// BEGIN styles, skins etc
+//--------------------------------------------------------------------------------------------------------------------
 
 
 //kbookBigTitle 48 index 0
 //kbookVSmallName 24 index 3
 
 /*
-trace("config is " + getSoValue(this, "config"));
-trace("config.platform is " + getSoValue(this, "config.platform"));
-trace("config.extension.load is " + getSoValue(this, "config.extension.load"));
-trace("System.loadExtension is " + getSoValue(this, "System.loadExtension"));
-trace("config.vm.root is " + getSoValue(this, "config.vm.root"));
-trace("config.root is " + getSoValue(this, "config.root"));
-trace("config.root.cutouts is " + getSoValue(this, "config.root.cutouts"));
-trace("config.root.styles is " + getSoValue(this, "config.root.styles"));
-trace("kbook.model.container.root is " + getSoValue(kbook, "model.container.root"));
-trace("kbook.model.container.root.cutouts is " + getSoValue(kbook, "model.container.root.cutouts"));
-trace("kbook.model.container.root.styles is " + getSoValue(kbook, "model.container.root.styles"));
-trace("kbook.model.container.root.skin is " + getSoValue(kbook, "model.container.root.skin"));
-trace("kbook.model.container.window is " + getSoValue(kbook, "model.container.window"));
-trace("kbook.model.container.window.root is " + getSoValue(kbook, "model.container.window.root"));
-//trace("sandbox is " + getSoValue(this, "sandbox"));
+log.trace("config is " + getSoValue(this, "config"));
+log.trace("config.platform is " + getSoValue(this, "config.platform"));
+log.trace("config.extension.load is " + getSoValue(this, "config.extension.load"));
+log.trace("System.loadExtension is " + getSoValue(this, "System.loadExtension"));
+log.trace("config.vm.root is " + getSoValue(this, "config.vm.root"));
+log.trace("config.root is " + getSoValue(this, "config.root"));
+log.trace("config.root.cutouts is " + getSoValue(this, "config.root.cutouts"));
+log.trace("config.root.styles is " + getSoValue(this, "config.root.styles"));
+log.trace("kbook.model.container.root is " + getSoValue(kbook, "model.container.root"));
+log.trace("kbook.model.container.root.cutouts is " + getSoValue(kbook, "model.container.root.cutouts"));
+log.trace("kbook.model.container.root.styles is " + getSoValue(kbook, "model.container.root.styles"));
+log.trace("kbook.model.container.root.skin is " + getSoValue(kbook, "model.container.root.skin"));
+log.trace("kbook.model.container.window is " + getSoValue(kbook, "model.container.window"));
+log.trace("kbook.model.container.window.root is " + getSoValue(kbook, "model.container.window.root"));
+//log.trace("sandbox is " + getSoValue(this, "sandbox"));
 */
 
-trace("kbook.model.cache.bitmapCache[1] is " + getSoValue(kbook.model, "cache.bitmapCache.1"));
+log.trace("kbook.model.cache.bitmapCache[1] is " + getSoValue(kbook.model, "cache.bitmapCache.1"));
 
 var cutouts = getSoValue(kbook, "model.container.root.cutouts");
 var styles = getSoValue(kbook, "model.container.root.styles");
@@ -127,13 +179,13 @@ var media = {
 }
 //Crashes the device at some point
 //var bitmap = kbook.model.cache.getBitmap.call(kbook.model.cache, media);
-//trace("bitmap is " + bitmap);
-//trace("Bitmap is " + Bitmap);
+//log.trace("bitmap is " + bitmap);
+//log.trace("Bitmap is " + Bitmap);
 
 /*
 
 kbook.model.container.MENU_GROUP.MENU.doRight = function() {	
-	trace("kbook.autoRunRoot.path is " + getSoValue(kbook, "autoRunRoot.path"));
+	log.trace("kbook.autoRunRoot.path is " + getSoValue(kbook, "autoRunRoot.path"));
 } */
 
 
@@ -141,23 +193,23 @@ dump(cutouts);
 dump(styles);
 function dump(obj) {
 	try {
-		trace("dumping: " + obj.length);
+		log.trace("dumping: " + obj.length);
 		for (var i = 0, n = obj.length; i < n; i++) {
-			trace(i + " => " + getSoValue(obj[i], "id"));
-			/*trace(i + getSoValue(obj[i], "texture.href"));
-			trace(i + getSoValue(obj[i], "texture.id"));
-			trace(i + getSoValue(obj[i], "texture.width"));
-			trace(i + getSoValue(obj[i], "texture.height"));*/
+			log.trace(i + " => " + getSoValue(obj[i], "id"));
+			/*log.trace(i + getSoValue(obj[i], "texture.href"));
+			log.trace(i + getSoValue(obj[i], "texture.id"));
+			log.trace(i + getSoValue(obj[i], "texture.width"));
+			log.trace(i + getSoValue(obj[i], "texture.height"));*/
 
-			/*trace(i);
+			/*log.trace(i);
 			var props = ["id", "x", "y", "height", "width", "texture"];
 			for (var j = 0, m = props.length; j < m; j++) {
-				trace(i + "\t" + props[j] + " => " + getSoValue(obj[i], props[j]));
+				log.trace(i + "\t" + props[j] + " => " + getSoValue(obj[i], props[j]));
 			}*/
 		}
-		trace("finished dumping");
+		log.trace("finished dumping");
 	} catch (e) {
-		trace("error when dumping: " + e);
+		log.trace("error when dumping: " + e);
 	}
 }
 
@@ -173,28 +225,28 @@ function setSoValue(obj, propName, value) {
 	try {
 		setValue.call(dummy, propName, value);
 	} catch (e) {
-		Utils.trace("failed to call set value: " + e);
+		Utils.log.trace("failed to call set value: " + e);
 	}
 }
 
 
 
-trace("setValue is " + setValue);
-trace("kbook.tableData.table.skin.styles[3].id is " + getSoValue(kbook.tableData, "table.skin.styles.3.id"));
-trace("kbook.tableData.table.skin.styles[3].size is " + getSoValue(kbook.tableData, "table.skin.styles.3.size"));
-trace("kbook.tableData.table.skin.styles[0].id is " + getSoValue(kbook.tableData, "table.skin.styles.3.id"));
-trace("kbook.tableData.table.skin.styles[0].size is " + getSoValue(kbook.tableData, "table.skin.styles.3.size"));
+log.trace("setValue is " + setValue);
+log.trace("kbook.tableData.table.skin.styles[3].id is " + getSoValue(kbook.tableData, "table.skin.styles.3.id"));
+log.trace("kbook.tableData.table.skin.styles[3].size is " + getSoValue(kbook.tableData, "table.skin.styles.3.size"));
+log.trace("kbook.tableData.table.skin.styles[0].id is " + getSoValue(kbook.tableData, "table.skin.styles.3.id"));
+log.trace("kbook.tableData.table.skin.styles[0].size is " + getSoValue(kbook.tableData, "table.skin.styles.3.size"));
 var style = getSoValue(kbook.tableData, "table.skin.styles.3");
-trace("size is " + style.size);
+log.trace("size is " + style.size);
 //style.size=12;
-//trace("2: size is " + style.size);
+//log.trace("2: size is " + style.size);
 setSoValue(style, "size", 13);
-trace("3: sosize is " + getSoValue(style, "size"));
+log.trace("3: sosize is " + getSoValue(style, "size"));
 return;
 
 var oldDoRight = kbook.model.container.MENU_GROUP.MENU.doRight;
 kbook.model.container.MENU_GROUP.MENU.doRight = function() {	
-	trace("kbook.autoRunRoot.path is " + getSoValue(kbook, "autoRunRoot.path"));
+	log.trace("kbook.autoRunRoot.path is " + getSoValue(kbook, "autoRunRoot.path"));
 }
 
 
@@ -204,60 +256,60 @@ kbook.model.container.MENU_GROUP.MENU.doRight = function() {
 try {
 
 /*
-trace("Fskin.tableData is " + getSoValue(this, "Fskin.tableData"));
-trace("kbook.tableData.table is " + getSoValue(kbook.tableData, "table"));
-trace("kbook.tableData.table.skin is " + getSoValue(kbook.tableData, "table.skin"));
-trace("kbook.tableData.table.skin.styles is " + getSoValue(kbook.tableData, "table.skin.styles"));
-trace("kbook.tableData.table.skin.skins is " + getSoValue(kbook.tableData, "table.skin.skins"));
-trace("kbook.tableData.table.skin.cutouts is " + getSoValue(kbook.tableData, "table.skin.cutouts"));
-trace("kbook.tableData.table.skin.cutouts[1] is " + getSoValue(kbook.tableData, "table.skin.cutouts.1"));
-trace("kbook.tableData.table.skin.cutouts[1].id is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.id"));
-trace("kbook.tableData.table.skin.cutouts[1].width is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.width"));
-trace("kbook.tableData.table.skin.cutouts[1].height is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.height"));
-trace("kbook.tableData.table.skin.cutouts[1].x is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.x"));
-trace("kbook.tableData.table.skin.cutouts[1].y is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.y"));
-trace("kbook.tableData.table.skin.cutouts[1].texture is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.texture"));
+log.trace("Fskin.tableData is " + getSoValue(this, "Fskin.tableData"));
+log.trace("kbook.tableData.table is " + getSoValue(kbook.tableData, "table"));
+log.trace("kbook.tableData.table.skin is " + getSoValue(kbook.tableData, "table.skin"));
+log.trace("kbook.tableData.table.skin.styles is " + getSoValue(kbook.tableData, "table.skin.styles"));
+log.trace("kbook.tableData.table.skin.skins is " + getSoValue(kbook.tableData, "table.skin.skins"));
+log.trace("kbook.tableData.table.skin.cutouts is " + getSoValue(kbook.tableData, "table.skin.cutouts"));
+log.trace("kbook.tableData.table.skin.cutouts[1] is " + getSoValue(kbook.tableData, "table.skin.cutouts.1"));
+log.trace("kbook.tableData.table.skin.cutouts[1].id is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.id"));
+log.trace("kbook.tableData.table.skin.cutouts[1].width is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.width"));
+log.trace("kbook.tableData.table.skin.cutouts[1].height is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.height"));
+log.trace("kbook.tableData.table.skin.cutouts[1].x is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.x"));
+log.trace("kbook.tableData.table.skin.cutouts[1].y is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.y"));
+log.trace("kbook.tableData.table.skin.cutouts[1].texture is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.texture"));
 */
-trace("kbook.tableData.table.skin.cutouts[1].texture.getURI is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.texture.getURI"));
-trace("kbook.tableData.table.skin.cutouts[1].texture.href is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.texture.href"));
-trace("kbook.root.cutouts is " + getSoValue(kbook.root, "cutouts"));
+log.trace("kbook.tableData.table.skin.cutouts[1].texture.getURI is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.texture.getURI"));
+log.trace("kbook.tableData.table.skin.cutouts[1].texture.href is " + getSoValue(kbook.tableData, "table.skin.cutouts.1.texture.href"));
+log.trace("kbook.root.cutouts is " + getSoValue(kbook.root, "cutouts"));
 
 var texture = getSoValue(kbook.tableData, "table.skin.cutouts.1.texture")
 texture.href=null;
-trace("set texture.href to null" + getSoValue(texture, "href"));
+log.trace("set texture.href to null" + getSoValue(texture, "href"));
  
 var skins = getSoValue(kbook.tableData, "table.skin.skins");
 var cutouts = getSoValue(kbook.tableData, "table.skin.cutouts");
-//trace("skins length is " + skins.length);
-trace("cutouts length is " + cutouts.length);
+//log.trace("skins length is " + skins.length);
+log.trace("cutouts length is " + cutouts.length);
 dump(cutouts);
 //cutouts.reverse();
-//trace("after reverse");
+//log.trace("after reverse");
 dump(cutouts);
 
 for(var p in skins) {
-	trace(p + " => " + skins[p]);
+	log.trace(p + " => " + skins[p]);
 }
 
 function dump(obj) {
 	try {
-		trace("dumping: " + obj.length);
+		log.trace("dumping: " + obj.length);
 		for (var i = 0, n = obj.length; i < n; i++) {
-			trace(i + getSoValue(obj[i], "id"));
-			/*trace(i + getSoValue(obj[i], "texture.href"));
-			trace(i + getSoValue(obj[i], "texture.id"));
-			trace(i + getSoValue(obj[i], "texture.width"));
-			trace(i + getSoValue(obj[i], "texture.height"));*/
+			log.trace(i + getSoValue(obj[i], "id"));
+			/*log.trace(i + getSoValue(obj[i], "texture.href"));
+			log.trace(i + getSoValue(obj[i], "texture.id"));
+			log.trace(i + getSoValue(obj[i], "texture.width"));
+			log.trace(i + getSoValue(obj[i], "texture.height"));*/
 
-			/*trace(i);
+			/*log.trace(i);
 			var props = ["id", "x", "y", "height", "width", "texture"];
 			for (var j = 0, m = props.length; j < m; j++) {
-				trace(i + "\t" + props[j] + " => " + getSoValue(obj[i], props[j]));
+				log.trace(i + "\t" + props[j] + " => " + getSoValue(obj[i], props[j]));
 			}*/
 		}
-		trace("finished dumping");
+		log.trace("finished dumping");
 	} catch (e) {
-		trace("error when dumping: " + e);
+		log.error("error when dumping: " + e);
 	}
 }
 
@@ -266,7 +318,10 @@ function dump(obj) {
 
 
 } catch (eee) {
-	trace("error in dictionary: " + eee);
+	log.error("error in dictionary: " + eee);
 }
 
-
+return;
+//--------------------------------------------------------------------------------------------------------------------
+// END styles, skins etc
+//--------------------------------------------------------------------------------------------------------------------

@@ -6,7 +6,10 @@ return {
 		kbook.autoRunRoot.path = addonRoot + "Sudoku/sudoku.xml";
 		kbook.autoRunRoot.enterIf(kbook.model);
 	},
-	actions: {
-		"Sudoku": this.activate
-	}
+	actions: [{
+		name: "Sudoku",
+		group: "Games",
+		icon: "GAME",
+		action: this.activate
+	}]
 }
