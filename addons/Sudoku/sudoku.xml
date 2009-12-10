@@ -158,18 +158,13 @@
 </code>
 <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
 <panel skin="sudokuSkin" left="0" right="0" top="0" bottom="0"/> 
-    <sprite skin="hard-reset" left="0" width="70" top="0" height="70" active="false"/>
-    <kbookLabel skin="title" left="70" right="0" top="0" height="70" align="left" text="Sudoku"/>
+   <!-- <sprite skin="hard-reset" left="0" width="70" top="0" height="70" active="false"/> -->
+    <kbookLabel skin="title" left="10" right="0" top="0" height="70" align="left" text="Sudoku"/>
     <group id="AUTORUN" width="600" top="70" bottom="30">
     
         <code>
-            <function id="doDigit" params="part"><![CDATA[
-               
-            
-            this['drawDigit'](part.key)
-
-
-            ]]>
+            <function id="doDigit" params="part">                           
+	            this.drawDigit(part.key)
             </function>
             <function id="doMenu">
               this.doMenuF();
