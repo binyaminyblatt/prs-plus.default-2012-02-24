@@ -1,3 +1,6 @@
+// Name: sudoku game
+// Description: adapted version of Sudoku by obelix
+//
 return {
 	name: "Sudoku",
 	description: "Sudoku Game",

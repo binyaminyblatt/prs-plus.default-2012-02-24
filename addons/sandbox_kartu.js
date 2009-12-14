@@ -1,9 +1,133 @@
-return;
-
 var getSoValue = Utils.getSoValue;
 var log = Utils.getLogger("sandbox");
+return;
+
+//--------------------------------------------------------------------------------------------------------------------
+// BEGIN setting UI values
+//--------------------------------------------------------------------------------------------------------------------
+try {
+	/*
+	log.trace("kbook.model.container is " + kbook.model.container);
+	log.trace("kbook.model.container.contents so is " + getSoValue(kbook.model.container, "contents"));
+	log.trace("kbook.model.container.root so is " + getSoValue(kbook.model.container, "root"));
+	var contents = getSoValue(kbook.model.container, "contents");
+	log.trace("contents[0].id so is " + getSoValue(contents, "0.id"));
+	log.trace("kbook.model.container.keys.length so is" + getSoValue(kbook.model.container, "keys.length"));
+	log.trace("kbook.model.container.menu so is" + (typeof getSoValue(kbook.model.container, "menu")));
+	log.trace("kbook.model.container.ABOUT_GROUP.contents so is " + getSoValue(kbook.model.container.ABOUT_GROUP, "contents"));
+	log.trace("kbook.model.container.ABOUT_GROUP.contents[0].id so is " + getSoValue(kbook.model.container.ABOUT_GROUP, "contents.0.id"));
+	log.trace("kbook.model.container.ABOUT_GROUP.contents[0].id so is " + getSoValue(kbook.model.container.ABOUT_GROUP, "contents.1.id"));
+	log.trace("kbook.model.container.ABOUT_GROUP.contents[0].id so is " + getSoValue(kbook.model.container.ABOUT_GROUP, "contents.2.id"));
+	log.trace("kbook.model.container.ABOUT_GROUP.contents[0].id so is " + getSoValue(kbook.model.container.ABOUT_GROUP, "contents.3.id"));
+	log.trace("kbook.model.container.ABOUT_GROUP.ABOUT.data so is " + getSoValue(kbook.model.container.ABOUT_GROUP.ABOUT, "data"));
+	log.trace("kbook.model.container.ABOUT_GROUP.ABOUT.data.records so is " + getSoValue(kbook.model.container.ABOUT_GROUP.ABOUT, "data.records"));
+	log.trace("kbook.model.container.ABOUT_GROUP.ABOUT.data.records[0].text so is " + getSoValue(kbook.model.container.ABOUT_GROUP.ABOUT, "data.records.0.text"));
+	log.trace("kbook.model.container.ABOUT_GROUP.ABOUT.data.records[1].sandbox.text so is " + getSoValue(kbook.model.container.ABOUT_GROUP.ABOUT, "data.records.1.sandbox.text"));
+	log.trace("kbook.model.container.ABOUT_GROUP.ABOUT.data.records[2].text so is " + getSoValue(kbook.model.container.ABOUT_GROUP.ABOUT, "data.records.2.text"));
+	log.trace("kbook.model.container.ABOUT_GROUP.ABOUT.data.records[3].text so is " + getSoValue(kbook.model.container.ABOUT_GROUP.ABOUT, "data.records.3.text"));
+	log.trace("kbook.model.container.ABOUT_GROUP.ABOUT.data.records[0].kind so is " + getSoValue(kbook.model.container.ABOUT_GROUP.ABOUT, "data.records.0.kind"));
+	log.trace("kbook.model.container.ABOUT_GROUP.ABOUT.data.records[1].sandbox.kind so is " + getSoValue(kbook.model.container.ABOUT_GROUP.ABOUT, "data.records.1.sandbox.kind"));
+	log.trace("kbook.model.container.ABOUT_GROUP.ABOUT.data.records[2].kind so is " + getSoValue(kbook.model.container.ABOUT_GROUP.ABOUT, "data.records.2.kind"));
+	log.trace("kbook.model.container.ABOUT_GROUP.ABOUT.data.records[3].kind so is " + getSoValue(kbook.model.container.ABOUT_GROUP.ABOUT, "data.records.3.kind"));
+	log.trace("kbook.model.container.ABOUT_GROUP.ABOUT.getRecord so is " + getSoValue(kbook.model.container.ABOUT_GROUP.ABOUT, "getRecord"));
+	*/
+	
+	//log.trace("kbook.model.setVariable is " + kbook.model.setVariable);
+	//log.trace("kbook.model.hasVariable is " + kbook.model.hasVariable);
+	
+	return;
+
+	/** var sandbox = getSoValue(record1, "sandbox");
+	try {
+		//log.trace("calling has variable " + kbook.model.hasVariable.call(sandbox, "text"));
+		log.trace("calling set variable on sandbox");
+		kbook.model.setVariable.call(sandbox, "text", "hey hahahaha");
+	} catch (e) {
+		log.trace("ignorable exception: " + e);
+	}
+	log.trace("record1.sandbox.text is " + getSoValue(record1, "sandbox.text"));*/
+
+	/** Does not work 
+	var bla = {
+		sandbox: {
+			text: "bugamuga"
+		}
+	};
+	var kbookAbout = getSoValue(this, "Fskin.kbookAbout");
+	kbook.model.setVariable.call(kbookAbout, "text3", "hihihi");
+	log.trace("bla.sandbox.text is " + bla.sandbox.text);
+	log.trace("bla.sandbox.text so is " + getSoValue(bla.sandbox, "text"));
+	log.trace("sandbox.text is " + sandbox.text);
+	log.trace("sandbox.text so is " + getSoValue(sandbox, "text"));
+	log.trace("kbookAbout.text3 so is " + getSoValue(kbookAbout, "text3"));
+	log.trace("kbookAbout.text3 is " + kbookAbout.text3);
+	log.trace("kbookAbout.text so is " + getSoValue(kbookAbout, "text"));
+	log.trace("kbookAbout.draw so is " + getSoValue(kbookAbout, "draw"));
+	*/
+} catch (e) {
+	log.error(e);
+}
+
+return;
 
 
+//--------------------------------------------------------------------------------------------------------------------
+// BEGIN messing with key bindings
+//--------------------------------------------------------------------------------------------------------------------
+
+/* No effect 
+var win = kbook.model.container.getWindow();
+var events = win.events;
+Utils.hookBefore(events, "onUpdate", function() {log.trace("onUpdate");});
+Utils.hookBefore(events, "onKeyDown", function() {log.trace("onKeyDown");});
+Utils.hookBefore(events, "onKeyUp", function() {log.trace("onKeyUp");});
+Utils.hookBefore(events, "onButton", function() {log.trace("onButton");});
+Utils.hookBefore(events, "onResume", function() {log.trace("onResume");});
+Utils.hookBefore(events, "onSleep", function() {log.trace("onSleep");});
+Utils.hookBefore(events, "onSuspend", function() {log.trace("onSuspend");});
+Utils.hookBefore(events, "onWakeup", function() {log.trace("onWakeup");});
+Utils.hookBefore(events, "onQuit", function() {log.trace("onQuit");});
+return;
+*/
+
+
+var model1 = kbook.model.container.MENU_GROUP.MENU;
+var model2 = kbook.model;
+var events = ["doResume","doSleep","doSuspend","doTestMode","doWakeup","doQuit",
+		"doMenu","doRoot","doCenter","doLeft","doRight","doUp","doDown",	
+		"doPrevious","doFirst","doNext","doLast","doSize","doRotate","doMark","doMarkMenu",
+		"doDigit",
+		"doHold1","doHold2","doHold3","doHold4","doHold5","doHold6","doHold7","doHold8","doHold9","doHold0",			
+		"doQuiet","doMute","doLoud","doMute"];
+for(var i = 0, n = events.length; i < n; i++) {
+	log.trace("hooking " + events[i]);
+	myHook(model1, events[i]);
+	myHook(model2, events[i]);
+}
+function myHook(m, str) {
+	Utils.hookBefore(m, str, function() {log.trace(str);});
+}
+
+var bla = {
+	test: function() { log.trace("this is bla.test");}
+};
+
+Utils.hookBefore(bla, "test", function() {log.trace("before");});
+Utils.hookAfter(bla, "test", function() {log.trace("after");});
+bla.test();
+
+
+log.trace("win.events is " + win.events);
+log.trace("win.events.onUpdate is " + win.events.onUpdate);
+log.trace("win.events.onKeyDown is " + win.events.onKeyDown);
+log.trace("win.events.onKeyUp is " + win.events.onKeyUp);
+log.trace("win.events.onButton is " + win.events.onButton);
+log.trace("win.events.onMenuCommand is " + win.events.onMenuCommand);
+return;
+
+//--------------------------------------------------------------------------------------------------------------------
+// END messing with key bindings
+//--------------------------------------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------------------------------------
 // BEGIN messing with dictionary

@@ -37,6 +37,47 @@ Utils.getSoValue = function (obj, propName) {
 };
 
 //--------------------------------------------------------------------------------------------------------------------
+// SYSTEM - Hooks
+//--------------------------------------------------------------------------------------------------------------------
+
+function doHook(where, what, oldFunc, newFunc, hookType, tag) {
+	if(!where.hasOwnProperty(what)  ||  (typeof where[what] !== "function")) {
+		log.error("cannot hook non-existing function: " + what);
+		return;
+	}
+	switch(hookType) {
+	case "before":
+		where[what] = function() {
+			newFunc.call(this, arguments, oldFunc, tag);
+			oldFunc.apply(this, arguments);
+		};
+		break;
+	case "after":
+		where[what] = function() {
+			oldFunc.apply(this, arguments);
+			newFunc.call(this, arguments, oldFunc, tag);
+		};
+		break;
+	case "instead":
+		where[what] = function() {
+			newFunc.call(this, arguments, oldFunc, tag);
+		};
+		break;
+	default:
+		log.error("unknown hook type: " + hookType);
+	}
+	
+}
+Utils.hook = function(where, what, newFunction, tag) {
+	doHook(where, what, where[what], newFunction, "instead", tag);
+};
+Utils.hookBefore = function(where, what, newFunction, tag) {
+	doHook(where, what, where[what], newFunction, "before", tag);
+};
+Utils.hookAfter = function(where, what, newFunction) {
+	doHook(where, what, where[what], newFunction, "after", tag);
+};
+//--------------------------------------------------------------------------------------------------------------------
 // GUI
 //--------------------------------------------------------------------------------------------------------------------
 // Node icons
@@ -193,3 +234,19 @@ Utils.createAddonNode = function(addon) {
 		Utils.nodes.gamesAndUtils.nodes.push(node);
 	}
 }
+
+
+// About
+var getSoValue = Utils.getSoValue;
+var about = kbook.model.container.ABOUT_GROUP.ABOUT;
+var data = getSoValue(about, "data");
+var records = getSoValue(data, "records");
+var duplicate = getSoValue(this, "Fskin.tableData.duplicate");
+var record = duplicate.call(this, records[1]);
+var store = getSoValue(this, "Fskin.tableField.store");
+store.call(this, record, "text", "Enhancements by kartu (kartu3@gmail.com) using work of: " + 
+	"igorsk, boroda, obelix, llasram and others.\n" +
+	"© GNU Lesser General Public License.");
+store.call(this, record, "kind", 4);
+records.splice(0, 0, record);
+about.dataChanged();

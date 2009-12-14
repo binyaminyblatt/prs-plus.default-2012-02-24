@@ -1,34 +1,143 @@
 // Name: Key Bindings
-// Description: Allows users to assign actions to keys
+// Description: Allows users to bind actions to keys
 //
 
-return;
 var log = Utils.getLogger("KeyBindings");
+var getSoValue = Utils.getSoValue;
 
-kbook.model.container.MENU_GROUP.MENU.doCenter = function(event) {
-	try {
-		this.setVariable("MENU_INDEX_COUNT", "key is " + Utils.getSoValue(event, "key"));
-	} catch (e) {
-		this.setVariable("MENU_INDEX_COUNT", "error: " + e);
-	}
+
+var doInit = function() {
+	
+}
+
+return {
+	name: "Key Bindings",
+	description: "Allows to bind actions to keys",
+	icon: "SETTINGS",
+	activate: function() {
+		// TODO
+	},
+	init: function() {
+		doInit();
+	},
+	// TODO should export built-in actions like "next in history" etc
+	actions: [{}]
+}
+
+
+return;
+
+
+
+
+
+
+
+
+
+
+
+var hookFunc = function(args, oldFunc, tag) {
+	var event = args[0];
+	var value = tag + " - key is " + Utils.getSoValue(event, "key");
+	log.trace(value);
 };
 
-kbook.model.container.MENU_GROUP.MENU.doDigit = function(event) {
-        try {
-		this.setVariable("MENU_INDEX_COUNT", "key is " + Utils.getSoValue(event, "key"));	
-	} catch (e) {
-		this.setVariable("MENU_INDEX_COUNT", "error: " + e);
-	}
-};
 
-kbook.model.container.MENU_GROUP.MENU.doLeft = function(event) {
-	try {
-		this.setVariable("MENU_INDEX_COUNT", "key is " + Utils.getSoValue(event, "key"));	
-	} catch (e) {
-		this.setVariable("MENU_INDEX_COUNT", "error: " + e);
-	}
-};
 
+/*
+var myBubble = function (id, param0, param1, param2, param3) {
+	var data;
+	if (id in this.sandbox) {
+	       return this.sandbox[id].call(this, param0, param1, param2, param3);
+	}
+	data = this.getData();
+	if (data) {
+	       if (data.propertyIsScriptable(id)) {
+		       return data[id].call(data, param0, param1, param2, param3);
+	       }
+	       if (id in data.sandbox) {
+		       return data.sandbox[id].call(data, param0, param1, param2, param3);
+	       }
+	}
+	if (this.chainable()) {
+	       return this.container.bubble(id, param0, param1, param2, param3);
+	}
+	return this.window.bubble(id, param0, param1, param2, param3);
+};*/
+var rootThis = this;
+
+function getBubbleFunc(key) {
+	return function(event) {
+		var value = "Bubbling: " + key + " - key is " + getSoValue(event, "key");
+		log.trace(value);
+		try {
+			// TODO doRotate must go to ebook.doRotate
+			
+			var kbookMenu = getSoValue(rootThis, "Fskin.kbookMenu");
+			var func = getSoValue(kbookMenu, key);
+			if(typeof func === "function") {
+				log.trace("calling kbookMenu." + key);
+				func.apply(this, arguments);
+				return;
+			}
+			
+			func = kbook.model[key];
+			if(typeof func === "function") {
+				log.trace("calling model." + key);
+				func.apply(kbook.model, arguments);
+				return;
+			}
+		} catch (e) {
+			log.error("error calling kbookMenu's " + key + ": " + e);
+		}
+	}
+}
+
+function getPageBubbleFunc(key) {
+	return function(event) {
+		var value = "Bubbling: " + key + " - key is " + getSoValue(event, "key");
+		log.trace(value);
+		try {
+			// TODO doRotate must go to ebook.doRotate
+			
+			var kbookPage = getSoValue(rootThis, "Fskin.kbookPage");
+			var func = getSoValue(kbookMenu, key);
+			if(typeof func === "function") {
+				log.trace("calling kbookPage." + key);
+				func.apply(this, arguments);
+				return;
+			}
+			
+			func = kbook.model[key];
+			if(typeof func === "function") {
+				log.trace("calling model." + key);
+				func.apply(kbook.model, arguments);
+				return;
+			}
+		} catch (e) {
+			log.error("error calling kbookPage's " + key + ": " + e);
+		}
+	}
+}
+
+var events = ["doMenu","doRoot","doCenter","doLeft","doRight","doUp","doDown",	
+		"doPrevious","doFirst","doNext","doLast","doSize","doRotate","doMark","doMarkMenu",
+		"doDigit",
+		"doHold1","doHold2","doHold3","doHold4","doHold5","doHold6","doHold7","doHold8","doHold9","doHold0",			
+		"doQuiet","doMute","doLoud","doMute"];
+		
+var menu = kbook.model.container.MENU_GROUP.MENU;
+for(var i = 0, n = events.length; i < n; i++) {
+	var key = events[i];
+	if(typeof menu[key] === "funciton") {
+		Utils.hookBefore(menu, key, hookFunc, key);		
+	} else {
+		menu[key] = getBubbleFunc(key);
+	}
+}
+
+return;
 
 
 /*

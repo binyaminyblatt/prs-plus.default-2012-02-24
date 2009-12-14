@@ -44,7 +44,7 @@ var Utils = {
 				stream.seek(stream.bytesAvailable);
 				var d = new Date();
 				var dateStr = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " +  d.getHours() + ":" + d.getMinutes();
-				stream.writeLine(dateStr + " " + this.name + level + "\t" + msg);
+				stream.writeLine(dateStr + level + " " + this.name  + "\t" + msg);
 			} catch(ignore) {
 			} finally {
 			    stream.close();

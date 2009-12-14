@@ -87,7 +87,7 @@ kbook.tableData.getKind = function() {
 
 // Book path to index map. Allows to find existing book node corresponding to a given path.
 var pathToBook = null;
-function indexBooks() {
+var indexBooks = function() {
 	if(!pathToBook) {
 		pathToBook = {};
 		var records = kbook.model.cache.textMasters;
@@ -100,10 +100,12 @@ function indexBooks() {
 	}	
 }
 
+var createBookNode;
+
 //
 // Returns:
 //	returns new BookNode given a path, or null, if media cannot be found
-function pathToBookNode(path, parent) {
+var pathToBookNode = function(path, parent) {
 	indexBooks();
 	var book = pathToBook[path];
 	if(book) {
@@ -118,7 +120,7 @@ function pathToBookNode(path, parent) {
 // Arguments:
 //	book - book media
 //	parent - parent node
-function createBookNode(book, parent) {
+createBookNode = function(book, parent) {
 		var node = cloneObj(kbook.root.children.books.prototype);
 		node.media = book;
 		node.cache = kbook.model.cache;
@@ -141,7 +143,7 @@ function createBookNode(book, parent) {
 
 
 // Node that shows folder content
-function FolderNode(root, path,  type,  name, kind) {
+FolderNode = function(root, path,  type,  name, kind) {
 	this.root = root;
 	this.path = path;
 	this.type = type;
