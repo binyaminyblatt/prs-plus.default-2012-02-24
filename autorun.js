@@ -165,6 +165,4 @@ var initialize = function () {
 };
 
 initialize();
-delete callScript;
-delete callMethod;
 delete initialize;
