@@ -13,7 +13,8 @@ var doInit;
 
 // This addon
 var BrowseFolders = {
-	name: "Browse Folders Settings",
+	name: "BrowseFolders",
+	title: "Browse Folders",
 	icon: "FOLDER",
 	optionDefs: [
 		{

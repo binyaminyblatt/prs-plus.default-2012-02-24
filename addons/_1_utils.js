@@ -343,9 +343,10 @@ about.dataChanged();
 var createAddonNodes = function(addon) {
 	if(addon && addon.activate) {
 		var kind = Utils.NodeKinds.getIcon(addon.icon);
+		var title = addon.hasOwnProperty("title") ? addon.title : addon.name;
 		var node = Utils.createContainerNode({
 				parent: Utils.nodes.gamesAndUtils,
-				title: addon.name,
+				title: title,
 				kind: kind,
 				comment: addon.comment ? addon.comment : ""
 		});
@@ -416,9 +417,10 @@ var createAddonSettings = function(addon) {
 			var settingsNode = Utils.nodes.addonSettingsNode;
 	
 			// Settings node for this addon
+			var title = addon.hasOwnProperty("title") ? addon.title : addon.name;
 			var thisSettingsNode = Utils.createContainerNode({
 					parent: settingsNode,
-					title: addon.name,
+					title: title,
 					kind: Utils.NodeKinds.getIcon(addon.icon),
 					comment: addon.comment ? addon.comment : ""
 			});
