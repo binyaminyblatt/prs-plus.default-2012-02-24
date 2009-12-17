@@ -3,6 +3,98 @@ var log = Utils.getLogger("sandbox");
 return;
 
 //--------------------------------------------------------------------------------------------------------------------
+// BEGIN fonts
+//--------------------------------------------------------------------------------------------------------------------
+
+log.trace("hey ho");
+log.trace("config is " + config);
+log.trace("config.priv.ui.load so is " + getSoValue(this, "config.priv.ui.load"));
+
+// Works with text viewer
+Utils.hookAfter(kbook.bookData, "setData", function(args) {
+	var data = args[0];
+	FskUI.Fonts.add("/Data/impact3.ttf");
+	FskUI.Fonts.add("/Data/impact.ttf");
+	log.trace("set data, data is " + data);
+	log.trace("data.set is " + data.set);
+	log.trace("data get returns " + data.get(14));
+	var fontName = "Impact";
+	data.set(14, fontName);
+	log.trace("data get returns " + data.get(14));
+	log.trace("successvfully set font to " + fontName);
+	log.trace("this.book.id so is " + getSoValue(this, "book.id"));
+	log.trace("this.book.skin.id so is " + getSoValue(this, "book.skin.id"));
+	log.trace("this.book.skin.styles[0].font so is " + getSoValue(this, "book.skin.styles.0.font"));	
+	log.trace("this.book.skin.styles[0].font.family so is " + getSoValue(this, "book.skin.styles.0.font.family"));
+	log.trace("typeof this.book.skin.styles[0].font so is " + (typeof getSoValue(this, "book.skin.styles.0.font")));
+	
+});
+
+var bla = {hey: "ho"};
+log.trace("JSON is " + JSON);
+return;
+
+var rootThis = this;
+kbook.model.container.PAGE_GROUP.PAGE.doLeft = function() {
+	var get = getSoValue(kbook.bookData, "get");
+	var set = getSoValue(kbook.bookData, "set");
+
+	log.trace("kbook.model.currentBook.media is " + (typeof kbook.model.currentBook.media));
+	
+	var pages = get.call(kbook.bookData, 2);
+	var page = get.call(kbook.bookData, 3);
+	var textScale = get.call(kbook.bookData, 4);
+	var font = get.call(kbook.bookData, 14);
+	var textEngine = get.call(kbook.bookData, 16);	
+	var pageMap = get.call(kbook.bookData, 20);
+	var pageOffset = get.call(kbook.bookData, 21);
+	log.trace("pages is " + pages);
+	log.trace("page is " + page);
+	log.trace("textScale is " + textScale);
+	log.trace("font is " + font);
+	log.trace("textEngine is " + textEngine);
+	log.trace("pageMap is " + pageMap);
+	log.trace("pageOffset is " + pageOffset);
+	log.trace("setting font to 'Impact'");
+	var font = (FskUI.Fonts.getList())[2];
+	set.call(kbook.bookData, 14, font);
+	log.trace("setting font - success");
+	/*
+	NOTE:
+	1) textScale cannot be set higher, than the viewer wants it.
+	2) resizing using bookdata.set does not use pagination cache 
+	
+	set.call(kbook.bookData, 4, 1);
+	log.trace("textScale after setting it to 3 is " + get.call(kbook.bookData, 4));
+	var kbookPage = getSoValue(rootThis, "Fskin.kbookPage")
+	log.trace("kbookPage is " + (typeof kbookPage));
+	var dataChanged = getSoValue(kbookPage, "dataChanged");
+	trace("calling dataChanged, kbookPage is " + (typeof kbookPage) + " and dataChanged is " + (typeof dataChanged)); 
+	dataChanged.call(kbookPage);*/
+	log.trace("finished call to doLeft");
+};
+
+try {
+	log.trace("FskUI is " + FskUI);
+	log.trace("FskUI.Fonts is " + FskUI.Fonts);
+	log.trace("FskUI.Fonts.getList is " + FskUI.Fonts.getList);
+	log.trace("FskUI.Fonts.getList() is " + FskUI.Fonts.getList());
+	log.trace("typeof FskUI.Fonts.getList() is " + (typeof FskUI.Fonts.getList()));
+	
+	var font = FskUI.Fonts.add("/Data/impact3.ttf");
+	log.trace("FskUI.Fonts.getList() is " + FskUI.Fonts.getList());
+	log.trace("font is " + font);
+	Utils.debug.dump(font, log);
+	
+	var fonts = FskUI.Fonts.getList();
+	Utils.debug.dump(fonts[0], log);
+	
+	log.trace("finished");
+} catch (e) {
+	log.error(e);
+}
+return;
+//--------------------------------------------------------------------------------------------------------------------
 // BEGIN setting UI values
 //--------------------------------------------------------------------------------------------------------------------
 try {

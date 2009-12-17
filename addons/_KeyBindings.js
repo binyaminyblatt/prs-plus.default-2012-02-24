@@ -14,7 +14,7 @@ return {
 	name: "Key Bindings",
 	description: "Allows to bind actions to keys",
 	icon: "SETTINGS",
-	activate: function() {
+	activate: function() {a
 		// TODO
 	},
 	init: function() {

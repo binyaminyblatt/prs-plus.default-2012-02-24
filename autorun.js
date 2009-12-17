@@ -1,6 +1,7 @@
 this.addonRoot = "/Data/addons/";
 this.defaultLogLevel = "none";
 this.logFile = addonRoot + "addons.log";
+this.settingsPath = "/Data/addon-settings/";
 
 // Typically would be used to override path to addons and logging settings.
 var userScript = "/Data/user.js";
@@ -72,8 +73,8 @@ var Utils = {
         dummy: function() {}
 };
 
-
-var callScript = function (path) {
+var log = false;
+Utils.callScript = function (path) {
 	try {		
 		if(FileSystem.getFileInfo(path)) {
 			var f = new Stream.File(path);
@@ -86,9 +87,13 @@ var callScript = function (path) {
 				f.close();
 			}
 		}
-	} catch(ignore) {
+	} catch(e) {
+		if(log) {
+			log.error("Error calling " + path + ": " + e);
+		}
 	}
 };
+var callScript = Utils.callScript;
 
 // Allows developers to override default paths, trace functions etc
 try {
@@ -98,19 +103,7 @@ try {
 } catch (ignore) {
 }
 
-// Calls given method for all array objects, passing arg as argument
-var callMethod = function(objArray, methodName, arg) {
-	if(!objArray) return;
-	for (var i = 0, n = objArray.length; i < n; i++) {
-		var func = objArray[i][methodName];
-		if(typeof func === "function") {
-			try {
-				func(arg);
-			} catch (ignore) {
-			}
-		}
-	}
-};
+var log = Utils.getLogger("autorun");
 
 // Adds all addons actions to the Utils.actions array
 var addActions = function(addon) {
@@ -147,7 +140,7 @@ var initialize = function () {
 		var rootDir = addonRoot;
 		
 		// Load utils
-		for(var i = 0, n = utils.length; i < n; i++) {
+		for (var i = 0, n = utils.length; i < n; i++) {
 			var util = callScript(rootDir + utils[i]);
 			if(typeof util !== "undefined") {
 				Utils.utils.push(util);
@@ -156,18 +149,16 @@ var initialize = function () {
 		}
 		
 		// Load addons
-		for(i = 0, n = addons.length; i < n; i++) {
+		for (i = 0, n = addons.length; i < n; i++) {
 			var addon = callScript(rootDir + addons[i]);
 			if(typeof addon !== "undefined") {
 				Utils.addons.push(addon);
 				addActions(addon);
-				Utils.createAddonNode(addon);
 			}
 		}
 		
-		// Everything was loaded, call init on addons that expose that function
-		callMethod(Utils.utils, "init");
-		callMethod(Utils.addons, "init");
+		// Will load options and initialize addons, create menu nodes etc
+		Utils.initialize(settingsPath);		
 	} finally {
 		iterator.close();
 	}
