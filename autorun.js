@@ -1,10 +1,11 @@
-this.addonRoot = "/Data/addons/";
+var root = "/Data/database/system/";
+this.addonRoot = root + "addons/";
 this.defaultLogLevel = "none";
 this.logFile = addonRoot + "addons.log";
-this.settingsPath = "/Data/addon-settings/";
+this.settingsPath = root + "addon-settings/";
 
 // Typically would be used to override path to addons and logging settings.
-var userScript = "/Data/user.js";
+var userScript = root + "user.js";
 
 var Utils = {
 	utils: [],
