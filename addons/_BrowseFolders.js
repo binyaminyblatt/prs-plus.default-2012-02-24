@@ -1,13 +1,48 @@
-// Name: Browse by Folder
-// Description: Adds "Browse by Folder" menu option, groups music&picture related menus, adds "Games & Utilities" menu
+// Name: Browse Folders
+// Description: Adds "Browse Folders" menu option, groups music&picture related menus, adds "Games & Utilities" menu
 //
 
 var cloneObj = Utils.cloneObj;
 var getSoValue = Utils.getSoValue;
-var log = Utils.getLogger("BrowseByFolder");
+var log = Utils.getLogger("BrowseFolders");
 
 var NodeKinds = Utils.NodeKinds;
 var BookMIMEs = Utils.BookMIMEs;
+
+var doInit;
+
+// This addon
+var BrowseFolders = {
+	name: "Browse Folders Settings",
+	icon: "FOLDER",
+	optionDefs: [
+		{
+			name: "sortMode",
+			title: "Sorting mode",
+			icon: "LIST",
+			defaultValue: "author",
+			values: ["title", "author", "authorSwapName"],
+			valueTitles: {
+				title: "By title",
+				author: "By author then title",
+				authorSwapName: "By author swapping name and surname"
+			}
+		},
+		{
+			name:	"imRoot",
+			title:	"Internal memory root folder",
+			icon:	"FOLDER",
+			defaultValue: "",
+			values: ["/database/media/books", "/database/media", "/media", "/books", ""],
+			valueTitles: {
+				"": "/" // yeah! :)
+			}
+		}
+	],
+	onInit: function() {
+		doInit();
+	}
+};
 
 // Skipping card scanning, if ".noscan" file is present in the root folder
 var originalHandler = FskCache.diskSupport.canHandleVolume;
@@ -97,8 +132,8 @@ var indexBooks = function() {
 			var bookPath = book.source.path + book.path;
 			pathToBook[bookPath] = book;
 		}
-	}	
-}
+	}
+};
 
 var createBookNode;
 
@@ -110,11 +145,11 @@ var pathToBookNode = function(path, parent) {
 	var book = pathToBook[path];
 	if(book) {
 		// Construct book node
-		var node = createBookNode(book, parent); 		
+		var node = createBookNode(book, parent);
 		return node;
 	}
 	return null;
-}
+};
 
 // Constructs a book node
 // Arguments:
@@ -138,12 +173,14 @@ createBookNode = function(book, parent) {
 		node._mycomment = book.author;
 		node._myclass = "BookNode";
 		
+		node.type = "book";
+		
 		return node;
-}
+};
 
 
 // Node that shows folder content
-FolderNode = function(root, path,  type,  name, kind) {
+var FolderNode = function(root, path,  type,  name, kind) {
 	this.root = root;
 	this.path = path;
 	this.type = type;
@@ -162,25 +199,93 @@ FolderNode = function(root, path,  type,  name, kind) {
 		this.kind = NodeKinds.FILE;
 		this.isFolder = false;
 	}
-}
+};
 FolderNode.prototype = new Utils.ContainerNode();
 FolderNode.prototype.update = function() {
 	// Recreate nodes
 	this._myconstruct();
 };
-FolderNode.prototype.sortNodes = function() {
-	this.nodes.sort(
-	// Well, sort by name, any dir > any file
-	function (a, b) {
-		if(a.type !== b.type) {
-			// directories first
-			var result = (a.type == "directory" ? -1 : 1);
-			return result;
-		}
-		return a.name.localeCompare(b.name);
-	}
-	);
+
+
+//------------------------------------------------------------------------------
+// Sorting
+//------------------------------------------------------------------------------
+var compareStrings = Utils.compareStrings;
+
+var TYPE_SORT_WEIGHTS = {
+	directory: -100,
+	book: -50,
+	picture: -25,
+	audio: -10,
+	file: 0
 };
+
+var swapNameAndSurname = function(str) {
+	var idx = str.lastIndexOf(" ");
+	if(idx < 0) {
+		return str;
+	}
+	var name = str.substring(0, idx);
+	var surname = str.substring(idx + 1);
+	return surname + " " + name;
+};
+
+var sortByTitle = function (a, b) {
+	try {
+		if (a.type !== b.type) {
+			// directories first, etc
+			return TYPE_SORT_WEIGHTS[a.type] - TYPE_SORT_WEIGHTS[b.type];
+		}
+		return compareStrings(a.name, b.name);
+	} catch (e) {
+		log.error("in sortByTitle : " + e);
+	}		
+};
+
+var sortByAuthor = function (a, b, swap) {
+	try {
+		if(a.type !== b.type) {
+			// directories first, etc
+			return TYPE_SORT_WEIGHTS[a.type] - TYPE_SORT_WEIGHTS[b.type];
+		}
+		if(a.type !== "book") {
+			return compareStrings(a.name, b.name);
+		}
+		// comparing books
+		var aAuthor = a.media.author;
+		var bAuthor = b.media.author;
+		if(aAuthor === bAuthor) {
+			return compareStrings(a.media.title, b.media.title);
+		} else {
+			if(swap) {
+				aAuthor = swapNameAndSurname(aAuthor);
+				bAuthor = swapNameAndSurname(bAuthor);
+			}
+			return compareStrings(aAuthor, bAuthor);
+		}
+	} catch (e) {
+		log.error("in sortByAuthor : " + e);
+	}
+};
+
+var sortByAuthorSwappingName = function(a, b) {
+	return sortByAuthor(a, b, true);
+};
+
+FolderNode.prototype.sortNodes = function() {
+	switch(BrowseFolders.options.sortMode) {
+		case "author":
+			this.nodes.sort(sortByAuthor);
+			break;
+		case "authorSwapName":
+			this.nodes.sort(sortByAuthorSwappingName);
+			break;			
+		default:
+			this.nodes.sort(sortByTitle);
+	}
+};
+//------------------------------------------------------------------------------
+
 FolderNode.prototype._myconstruct = function() {
 	indexBooks();
 	var fullPath = this.root + this.path + "/";
@@ -242,13 +347,12 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 		"comment": comment
 	});
 	
-	var rootFolder = "/Data/database/media/books/";
+	var rootFolder = "/Data" + BrowseFolders.options.imRoot;
 	var from = parent.root + parent.path;
 	var to = rootFolder + parent.path;
 	node.enter = function() {
 		try {
 			if(!dontCopy) {
-
 				FileSystem.ensureDirectory(rootFolder);
 			
 				// check if the file target exists
@@ -286,127 +390,129 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 			}
 		} catch (ee) {
 				log.error("error in copy file from .enter" + ee);
-		}				
+		}
 	};
 	return node;
 };
 
-var nodes = kbook.root.nodes;
-
-// Audio & Pictures nodes, shows "Now Playing", "Audio", "Pictures" nodes
-var audioAndPicturesNode = Utils.createContainerNode({
-	parent: kbook.root,
-	title: "Audio & Pictures",
-	kind: NodeKinds.AUDIO
-});
-audioAndPicturesNode.nodes = [nodes[6],nodes[7],nodes[8]];
-
-// update from ContainerNode doesn't work for whatever reason, probably it is accessing the wrong "nodes"
-audioAndPicturesNode.update = function(model) {
-	for (var i = 0, n = this.nodes.length; i < n; i++) {
-		if(this.nodes[i].update) {
-			this.nodes[i].update.call(this.nodes[i], model);
-		}
-	}
-};
-nodes[6].parent = audioAndPicturesNode;
-nodes[7].parent = audioAndPicturesNode;
-nodes[8].parent = audioAndPicturesNode;
-
-// Global
-Utils.nodes.audioAndPictures = audioAndPicturesNode;
-
-
-// Books by Folder node
-var booksByFolderNode = Utils.createContainerNode({
-	parent: kbook.root,
-	title: "Books by Folder",
-	kind: NodeKinds.FOLDER,
-	comment: "Browse the file system",
-	separator: 1
-});
-booksByFolderNode.update = function() {
-	this._myconstruct(kbook.model, true);
-};
-booksByFolderNode._myconstruct = function(model, fromChild) {	
-	try {
-		if(this.nodes !== null) {
-			delete this.nodes;
-		}
-		this.nodes = [];
-		var nodes = this.nodes;
-		var node = new FolderNode("/Data/database/media/books", "", "directory", "Internal Memory", NodeKinds.INTERNAL_MEM);
-		node.parent = this;
-		this.nodes.push(node);
-		if(FileSystem.getFileInfo("a:/")) {
-			node = new FolderNode("a:", "", "directory", "Memory Stick", NodeKinds.MS);
-			node.parent = this;
-			nodes.push(node);
-		}
-		if(FileSystem.getFileInfo("b:/")) {
-			node = new FolderNode("b:", "", "directory", "SD Card", NodeKinds.SD);
-			node.parent = this;
-			nodes.push(node);
-		}
-
-		// Since there is no direct way to determine in "enter" whether we are going from child to parent or not
-		// this little hack is needed, forceEnter is true if 
-		var myGotoParent = function() {
-			this.exit(kbook.model);
-			this.parent.enter(kbook.model, true);
-		};
-		for(var i = 0, n = nodes.length; i < n; i++) {
-			nodes[i].gotoParent = myGotoParent;
-		}
-		
-		
-		if(nodes.length == 1) {
-			// If there is only one subnode, don't show it
-			if(fromChild) {
-				// going from child to parent
-				this.gotoParent(kbook.model);
-			} else {
-				// going from parent to child
-				node = nodes[0];
-				
-				this.gotoNode(node, kbook.model);
+doInit = function() {
+	var nodes = kbook.root.nodes;
+	
+	// Audio & Pictures nodes, shows "Now Playing", "Audio", "Pictures" nodes
+	var audioAndPicturesNode = Utils.createContainerNode({
+		parent: kbook.root,
+		title: "Audio & Pictures",
+		kind: NodeKinds.AUDIO
+	});
+	audioAndPicturesNode.nodes = [nodes[6],nodes[7],nodes[8]];
+	
+	// update from ContainerNode doesn't work for whatever reason, probably it is accessing the wrong "nodes"
+	audioAndPicturesNode.update = function(model) {
+		for (var i = 0, n = this.nodes.length; i < n; i++) {
+			if(this.nodes[i].update) {
+				this.nodes[i].update.call(this.nodes[i], model);
 			}
-			return true;
 		}
-		
-	} catch (e) {
-		log.error("error in booksByFolderNode._myconstruct : " + e);
-	}
+	};
+	nodes[6].parent = audioAndPicturesNode;
+	nodes[7].parent = audioAndPicturesNode;
+	nodes[8].parent = audioAndPicturesNode;
+	
+	// Global
+	Utils.nodes.audioAndPictures = audioAndPicturesNode;
+	
+	
+	// Browse Folders node
+	var booksByFolderNode = Utils.createContainerNode({
+		parent: kbook.root,
+		title: "Browse Folders",
+		kind: NodeKinds.FOLDER,
+		comment: "Browse the file system",
+		separator: 1
+	});
+	booksByFolderNode.update = function() {
+		this._myconstruct(kbook.model, true);
+	};
+	booksByFolderNode._myconstruct = function(model, fromChild) {	
+		try {
+			if(this.nodes !== null) {
+				delete this.nodes;
+			}
+			this.nodes = [];
+			var nodes = this.nodes;
+			var node = new FolderNode("/Data" + BrowseFolders.options.imRoot, "", "directory", "Internal Memory", NodeKinds.INTERNAL_MEM);
+			node.parent = this;
+			this.nodes.push(node);
+			if(FileSystem.getFileInfo("a:/")) {
+				node = new FolderNode("a:", "", "directory", "Memory Stick", NodeKinds.MS);
+				node.parent = this;
+				nodes.push(node);
+			}
+			if(FileSystem.getFileInfo("b:/")) {
+				node = new FolderNode("b:", "", "directory", "SD Card", NodeKinds.SD);
+				node.parent = this;
+				nodes.push(node);
+			}
+	
+			// Since there is no direct way to determine in "enter" whether we are going from child to parent or not
+			// this little hack is needed, forceEnter is true if 
+			var myGotoParent = function() {
+				this.exit(kbook.model);
+				this.parent.enter(kbook.model, true);
+			};
+			for(var i = 0, n = nodes.length; i < n; i++) {
+				nodes[i].gotoParent = myGotoParent;
+			}
+			
+			
+			if(nodes.length == 1) {
+				// If there is only one subnode, don't show it
+				if(fromChild) {
+					// going from child to parent
+					this.gotoParent(kbook.model);
+				} else {
+					// going from parent to child
+					node = nodes[0];
+					
+					this.gotoNode(node, kbook.model);
+				}
+				return true;
+			}
+			
+		} catch (e) {
+			log.error("error in booksByFolderNode._myconstruct : " + e);
+		}
+	};
+	
+	// Global
+	Utils.nodes.booksByFolder = booksByFolderNode;
+	
+	var gamesNode = Utils.createContainerNode({
+		parent: kbook.root,
+		title: "Games & Utilities",
+		comment: "",
+		kind: NodeKinds.GAME,
+		separator: 1
+	});
+	
+	// Global
+	Utils.nodes.gamesAndUtils = gamesNode;
+	
+	// Add separator to collections and remove separator from bookmarks.
+	nodes[4]._myseparator = 1;
+	nodes[5]._myseparator = 0;
+	nodes[5].separator = 0;
+	
+	// Rearranging root node, hiding Audio&Pictures related nodes, adding Browse Folders, swapping bookmarks and collections node
+	kbook.root.nodes = [nodes[0], nodes[1], nodes[2], nodes[3], booksByFolderNode, nodes[5], nodes[4], audioAndPicturesNode,  gamesNode, nodes[9]];
+	
+	// Adding Rescan internal memory node"
+	var advancedSettingsNode = Utils.nodes.advancedSettings;
+	var rescanInternalMemoryNode = FolderNode.prototype.createUnscannedBookNode(advancedSettingsNode, "Rescan internal memory", "", true, true);
+	advancedSettingsNode.nodes.push(rescanInternalMemoryNode);
+	
+	// Global
+	Utils.nodes.rescanInternalMemory = rescanInternalMemoryNode;
 };
 
-// Global
-Utils.nodes.booksByFolder = booksByFolderNode;
-
-var gamesNode = Utils.createContainerNode({
-	parent: kbook.root,
-	title: "Games & Utilities",
-	comment: "",
-	kind: NodeKinds.GAME,
-	separator: 1
-});
-
-// Global
-Utils.nodes.gamesAndUtils = gamesNode;
-
-// Add separator to collections and remove separator from bookmarks.
-nodes[4]._myseparator = 1;
-nodes[5]._myseparator = 0;
-nodes[5].separator = 0;
-
-// Rearranging root node, hiding Audio&Pictures related nodes, adding Books by Folder, swapping bookmarks and collections node
-kbook.root.nodes = [nodes[0], nodes[1], nodes[2], nodes[3], booksByFolderNode, nodes[5], nodes[4], audioAndPicturesNode,  gamesNode, nodes[9]];
-
-// Adding Rescan internal memory node"
-var settingsNode = nodes[9];
-var advancedSettingsNode = settingsNode.nodes[4];
-var rescanInternalMemoryNode = FolderNode.prototype.createUnscannedBookNode(advancedSettingsNode, "Rescan internal memory", "", true, true);
-advancedSettingsNode.nodes.push(rescanInternalMemoryNode);
-
-// Global
-Utils.nodes.advancedSettings = advancedSettingsNode;
-Utils.nodes.rescanInternalMemory = rescanInternalMemoryNode;
+return BrowseFolders;

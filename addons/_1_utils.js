@@ -65,6 +65,10 @@ Utils.callMethodForAll = function(objArray, methodName, arg) {
 	}
 };
 
+// TODO UTC #10 sorting?
+Utils.compareStrings = function(a, b) {
+	return a.localeCompare(b);
+};
 
 Utils.debug = {};
 // Dumps properties of an object
@@ -191,7 +195,8 @@ Utils.nodes = {
 	nowPlaying: nodes[6],
 	music: nodes[7],
 	pictures: nodes[8],
-	settings: nodes[9]
+	settings: nodes[9],
+	advancedSettings: nodes[9].nodes[4]
 };
 
 // Container node, displays subnodes, takes care of paging etc
@@ -284,13 +289,12 @@ Utils.createContainerNode = function (arg) {
 };
 
 
-// TODO descriptio
 // Creates "value" node (used in settings).
 // Arguments:
-// 	arg, in addition to fields from createContainerNode, can have the following fields
+//	arg, in addition to fields from createContainerNode, can have the following fields
 //		optionDef - option definition
 //		value - option value
-//		object - target object, to set option to
+//		object - target object, to set option to (typically addon.options)
 //		addon - addon object
 //
 Utils.createValueNode = function(arg) {
@@ -298,17 +302,15 @@ Utils.createValueNode = function(arg) {
 	node.enter = function() {
 		var propertyName = arg.optionDef.name;
 		arg.object[propertyName] = arg.value;
-		var valueTitles = arg.optionDef.valueTitles;
-		// TODO do this in enter() instead
-		if(valueTitles) {
-			arg.parent._mycomment = valueTitles[arg.value];
-		} else {
-			arg.parent._mycomment = arg.value;
-		}
-		// TODO utils.save? 
+
 		if(arg.addon && arg.addon.onSettingsChanged) {
 			arg.addon.onSettingsChanged(propertyName);
 		}
+		
+		// Save changes
+		Utils.saveOptions(arg.addon);
+		
+		// Goto parent node
 		this.parent.parent.enter(kbook.model);
 	};
 	return node;
@@ -368,13 +370,9 @@ Utils.nodes.settings.nodes.splice(0, 0, Utils.nodes.addonSettingsNode);
 // Returns option title for given addon/option definition
 //
 var getOptionTitle = function(optionDef, value) {
-	log.trace("getOpooinTitle with value " + value);
-	if(optionDef.hasOwnProperty("valueTitles")) {
-		value = optionDef.valueTitles[value];
-		log.trace("returning converted value " + value);
-		return value;
+	if(optionDef.hasOwnProperty("valueTitles") && optionDef.valueTitles.hasOwnProperty(value)) {
+		return optionDef.valueTitles[value];
 	}
-	log.trace("returning value " + value);
 	return value;
 };
 
@@ -394,7 +392,6 @@ var createValueNodes = function(parent, optionDef, addon) {
 			kind: Utils.NodeKinds.CROSSED_BOX,
 			comment: ""
 		});
-		// TODO selected node
 		if(v === optionDef.defaultValue) {
 			node.selected = true;
 		}
@@ -402,12 +399,16 @@ var createValueNodes = function(parent, optionDef, addon) {
 	}
 };
 
+var getOptionsTitleGetter = function(addon, optionDef) {
+	return function() {
+		return getOptionTitle(optionDef, addon.options[optionDef.name]);
+	};
+};
+
 // Creates entry under "Settings => Addon Settings" corresponding to the addon.
 // Arguments:
 //	addon - addon variable
 var createAddonSettings = function(addon) {
-	// TODO show current value as comment
-	log.trace("creating addon settings: " + addon.name);
 	try {
 		// Addon
 		if(addon && addon.optionDefs && addon.optionDefs.length > 0) {
@@ -423,21 +424,20 @@ var createAddonSettings = function(addon) {
 			});
 			settingsNode.nodes.push(thisSettingsNode);
 	
-			// TODO
+			// Create value nodes for each option definition
 			for (var i = 0, n = optionDefs.length; i < n; i++) {
 				var optionDef = optionDefs[i];
-				var value = addon.options[optionDef.name];
 				
-				// If there is only one option, show values, else, first select the option
+				// If there is only one option, show values, else create container node for each option
 				if(n == 1) {
-					thisSettingsNode._mycomment = getOptionTitle(optionDef, value);
+					thisSettingsNode._mycomment = getOptionsTitleGetter(addon, optionDef);
 					createValueNodes(thisSettingsNode, optionDef, addon);
 				} else {
 					var node = Utils.createContainerNode({
 							parent: thisSettingsNode,
 							title: optionDef.title,
 							kind: Utils.NodeKinds.getIcon(optionDef.icon),
-							comment: getOptionTitle(optionDef, value)
+							comment: getOptionsTitleGetter(addon, optionDef)
 					});
 					thisSettingsNode.nodes.push(node);
 					createValueNodes(node, optionDef, addon);
@@ -451,7 +451,7 @@ var createAddonSettings = function(addon) {
 
 // TODO
 Utils.saveOptions = function(addon) {
-}
+};
 
 // Loads addon's options, using default option values, if settings file or value is not present.
 //
@@ -472,15 +472,10 @@ Utils.loadOptions = function(addon) {
 	}
 };
 
-// TODO
-Utils.saveOptions = function(addon) {
-};
-
 // Initialize function, called by autorun.js
 //
 Utils.initialize = function(settingsPath) {
 	try {
-		log.trace("Entered initialize");
 		var utils = this.utils;
 		var addons = this.addons;
 		var all = utils.concat(addons);
@@ -503,8 +498,6 @@ Utils.initialize = function(settingsPath) {
 			createAddonSettings(all[i]);
 		}
 		
-		// TODO sort addon & settings nodes ?
-		log.info("Finished initialize");
 	} catch (e) {
 		log.error(e);
 	}
