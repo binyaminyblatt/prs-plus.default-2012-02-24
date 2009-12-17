@@ -45,8 +45,8 @@ var Clock = {
 			} else {
 				this.options.mode = "all";
 			}
+			Utils.saveOptions(this);
 			this.updateDate();
-			// TODO save settings
 		}
 	}]
 };

@@ -1,4 +1,6 @@
-// TODO description
+// Name: Utils
+// Description: Provides all kinds of utility methods (getLogger, hook, cloneObj etc), initializes addons (store/load settings etc)
+//
 
 var log = Utils.getLogger("utils");
 
@@ -119,6 +121,7 @@ Utils.hookBefore = function(where, what, newFunction, tag) {
 Utils.hookAfter = function(where, what, newFunction, tag) {
 	doHook(where, what, where[what], newFunction, "after", tag);
 };
+
 //--------------------------------------------------------------------------------------------------------------------
 // GUI
 //--------------------------------------------------------------------------------------------------------------------
@@ -190,7 +193,6 @@ Utils.nodes = {
 	pictures: nodes[8],
 	settings: nodes[9]
 };
-
 
 // Container node, displays subnodes, takes care of paging etc
 Utils.ContainerNode = function(arg) {	
@@ -282,7 +284,15 @@ Utils.createContainerNode = function (arg) {
 };
 
 
-// TODO description
+// TODO descriptio
+// Creates "value" node (used in settings).
+// Arguments:
+// 	arg, in addition to fields from createContainerNode, can have the following fields
+//		optionDef - option definition
+//		value - option value
+//		object - target object, to set option to
+//		addon - addon object
+//
 Utils.createValueNode = function(arg) {
 	var node = Utils.createContainerNode(arg);
 	node.enter = function() {
@@ -315,7 +325,7 @@ var records = getSoValue(data, "records");
 var duplicate = getSoValue(this, "Fskin.tableData.duplicate");
 var record = duplicate.call(this, records[1]);
 var store = getSoValue(this, "Fskin.tableField.store");
-store.call(this, record, "text", "Enhancements by kartu (msukhiashvili@gmail.com) using work of: " + 
+store.call(this, record, "text", "PRS-Plus by Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + 
 	"igorsk, boroda, obelix, llasram and others.\n" +
 	"© GNU Lesser General Public License.");
 store.call(this, record, "kind", 4);
@@ -337,7 +347,9 @@ var createAddonNodes = function(addon) {
 				kind: kind,
 				comment: addon.comment ? addon.comment : ""
 		});
-		node.enter = addon.activate;
+		node.enter = function() {
+			addon.activate();
+		};
 		if(!Utils.nodes.gamesAndUtils.hasOwnProperty("nodes")) {
 			Utils.nodes.gamesAndUtils.nodes = [];
 		}
@@ -437,7 +449,11 @@ var createAddonSettings = function(addon) {
 	}
 };
 
-// Initializes addon's options
+// TODO
+Utils.saveOptions = function(addon) {
+}
+
+// Loads addon's options, using default option values, if settings file or value is not present.
 //
 Utils.loadOptions = function(addon) {
 	if(addon.optionDefs) {

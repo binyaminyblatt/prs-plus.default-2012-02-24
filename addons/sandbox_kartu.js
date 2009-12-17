@@ -1,5 +1,17 @@
 var getSoValue = Utils.getSoValue;
 var log = Utils.getLogger("sandbox");
+
+
+var bla = {
+	hey: "hey ho",
+	say: function() {
+		log.trace(this.hey);
+	}
+};
+var bu = bla.say;
+bu();
+
+log.trace("finished");
 return;
 
 //--------------------------------------------------------------------------------------------------------------------
