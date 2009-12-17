@@ -6,7 +6,7 @@ return {
 	description: "Five Balls Game",
 	icon: "GAME",
 	activate: function() {
-		kbook.autoRunRoot.path = addonRoot + "FiveBalls/fiveballs.xml";
+		kbook.autoRunRoot.path = Utils.config.addonRoot + "FiveBalls/fiveballs.xml";
 		kbook.autoRunRoot.enterIf(kbook.model);
 	},
 	actions: [{

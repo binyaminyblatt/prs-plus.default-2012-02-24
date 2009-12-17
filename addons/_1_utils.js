@@ -392,7 +392,7 @@ var createValueNodes = function(parent, optionDef, addon) {
 			kind: Utils.NodeKinds.CROSSED_BOX,
 			comment: ""
 		});
-		if(v === optionDef.defaultValue) {
+		if(v === addon.options[optionDef.name]) {
 			node.selected = true;
 		}
 		parent.nodes.push(node);
@@ -449,16 +449,70 @@ var createAddonSettings = function(addon) {
 	}
 };
 
-// TODO
+// Saves addon's non-default options as JSON object.
+// WARNING: no escaping is done!
+// Arguments:
+//	addon - addon who's settings must be saved
+//
 Utils.saveOptions = function(addon) {
+	FileSystem.ensureDirectory(this.config.settingsRoot);
+	
+	// Find out which options need to be saved (do not save devault values)
+	var options = addon.options;
+	var optionDefs = addon.optionDefs;
+	var optionsToSave = [];
+	for (var i = 0, n = optionDefs.length; i < n; i++) {
+		var od = optionDefs[i];
+		var name = od.name;
+		var defValue = od.defaultValue;
+		if(options.hasOwnProperty(name)) {
+			var value = options[name];
+			if(value !== defValue) {
+				optionsToSave.push(name);
+			}
+		}
+	}
+	
+	// If there is anything to save - save, if not, delete settings file
+	var settingsFile = this.config.settingsRoot + addon.name + ".config";
+	if(optionsToSave.length > 0) {
+		var stream = new Stream.File(settingsFile, 1, 0);
+		try {
+			stream.writeLine("return {");
+			for (i = 0, n = optionsToSave.length; i < n; i++) {
+				var name = optionsToSave[i];
+				var str = "\"" + name + "\":\"" + options[name] + "\"";
+				if(i < n - 1) {
+					stream.writeLine(str + ",");
+				} else {
+					stream.writeLine(str);
+				}
+			}
+			stream.writeLine("}");
+		} finally {
+			stream.close();
+		}
+	} else {
+		// Remove settings file, since all settings have default values
+		FileSystem.deleteFile(settingsFile);
+	}
 };
 
 // Loads addon's options, using default option values, if settings file or value is not present.
 //
 Utils.loadOptions = function(addon) {
 	if(addon.optionDefs) {
-		// TODO load settings from file
-		var options = {};
+		// load settings from settings file
+		var options;
+		try {
+			var settingsFile = this.config.settingsRoot + addon.name + ".config";
+			options = this.callScript(settingsFile, log);
+		} catch (e) {
+			log.warn("When loading settings for addon " + addon.name + ": " + e);
+		}
+		if(!options) {
+			options = {};
+		}
 		
 		var optionDefs = addon.optionDefs;
 		for (var i = 0, n = optionDefs.length; i < n; i++) {
@@ -474,7 +528,7 @@ Utils.loadOptions = function(addon) {
 
 // Initialize function, called by autorun.js
 //
-Utils.initialize = function(settingsPath) {
+Utils.initialize = function() {
 	try {
 		var utils = this.utils;
 		var addons = this.addons;
@@ -484,9 +538,8 @@ Utils.initialize = function(settingsPath) {
 		this.callMethodForAll(all, "onPreInit");
 		
 		// Load options 
-		var loadOptions = this.loadOptions;
 		for (var i = 0, n = all.length; i < n; i++) {
-			loadOptions(all[i], settingsPath);
+			this.loadOptions(all[i]);
 		}
 		
 		// Addons and options are loaded, call init

@@ -1,13 +1,16 @@
 var root = "/Data/database/system/";
-this.addonRoot = root + "addons/";
-this.defaultLogLevel = "none";
-this.logFile = addonRoot + "addons.log";
-this.settingsPath = root + "addon-settings/";
+var config = {
+	addonRoot: root + "addons/",
+	defaultLogLevel: "none",
+	logFile: this.addonRoot + "addons.log",
+	settingsRoot: root + "addon-settings/"
+};
 
 // Typically would be used to override path to addons and logging settings.
 var userScript = root + "user.js";
 
 var Utils = {
+	config: config,
 	utils: [],
 	actions: [],
 	addons: [],
@@ -15,7 +18,7 @@ var Utils = {
 	loggers: {},
 	createLogger: function(cls, level) {
 		if(typeof level === "undefined") {
-			level = defaultLogLevel;
+			level = config.defaultLogLevel;
 		}
 		var result = {};
 		result.name = cls;
@@ -41,7 +44,7 @@ var Utils = {
 			} else {
 				level = " " + level;
 			}
-			var stream = new Stream.File(logFile, 1, 0);
+			var stream = new Stream.File(config.logFile, 1, 0);
 		        try {
 				stream.seek(stream.bytesAvailable);
 				var d = new Date();
@@ -74,8 +77,7 @@ var Utils = {
         dummy: function() {}
 };
 
-var log = false;
-Utils.callScript = function (path) {
+Utils.callScript = function (path, log) {
 	try {		
 		if(FileSystem.getFileInfo(path)) {
 			var f = new Stream.File(path);
@@ -118,7 +120,7 @@ var addActions = function(addon) {
 // Initializes addons & utils in an alphabetic order
 // Utils have "_" prefix and are initialized before addons
 var initialize = function () {
-	var iterator = new FileSystem.Iterator(addonRoot);
+	var iterator = new FileSystem.Iterator(config.addonRoot);
 	try {
 		var item;
 		var utils = [];
@@ -138,11 +140,11 @@ var initialize = function () {
 		utils.sort();
 		addons.sort();
 		
-		var rootDir = addonRoot;
+		var rootDir = config.addonRoot;
 		
 		// Load utils
 		for (var i = 0, n = utils.length; i < n; i++) {
-			var util = callScript(rootDir + utils[i]);
+			var util = callScript(rootDir + utils[i], log);
 			if(typeof util !== "undefined") {
 				Utils.utils.push(util);
 				addActions(util);
@@ -151,7 +153,7 @@ var initialize = function () {
 		
 		// Load addons
 		for (i = 0, n = addons.length; i < n; i++) {
-			var addon = callScript(rootDir + addons[i]);
+			var addon = callScript(rootDir + addons[i], log);
 			if(typeof addon !== "undefined") {
 				Utils.addons.push(addon);
 				addActions(addon);
@@ -159,7 +161,7 @@ var initialize = function () {
 		}
 		
 		// Will load options and initialize addons, create menu nodes etc
-		Utils.initialize(settingsPath);		
+		Utils.initialize();		
 	} finally {
 		iterator.close();
 	}

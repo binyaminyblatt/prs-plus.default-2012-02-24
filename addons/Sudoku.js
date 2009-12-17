@@ -6,7 +6,7 @@ return {
 	description: "Sudoku Game",
 	icon: "GAME",
 	activate: function() {
-		kbook.autoRunRoot.path = addonRoot + "Sudoku/sudoku.xml";
+		kbook.autoRunRoot.path = Utils.config.addonRoot + "Sudoku/sudoku.xml";
 		kbook.autoRunRoot.enterIf(kbook.model);
 	},
 	actions: [{
