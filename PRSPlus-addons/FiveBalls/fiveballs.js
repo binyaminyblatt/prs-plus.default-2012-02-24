@@ -17,6 +17,7 @@ target.init = function () {
 	this.CloseGame2.show(this.anAus);
 	this.help = 1;
 	this.showHelp();
+	// TODO should store this as "options" instead
 	var datPath = this.fiveballsRoot + 'fiveballs.dat';
 	try {
 		if (FileSystem.getFileInfo(datPath)) {
@@ -46,6 +47,7 @@ target.init = function () {
 target.removeB = function () {
 	if (this.anAus == 1) {
 		if (this.summe > this.cNum) {
+			// TODO should store this as "options" instead
 			datPath = this.fiveballsRoot + 'fiveballs.dat';
 			try {
 				if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
