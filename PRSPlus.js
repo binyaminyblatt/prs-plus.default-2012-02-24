@@ -1,13 +1,13 @@
 var root = "/Data/database/system/";
 var config = {
-	addonRoot: root + "addons/",
+	addonRoot: root + "PRSPlus-addons/",
 	defaultLogLevel: "none",
-	logFile: this.addonRoot + "addons.log",
-	settingsRoot: root + "addon-settings/"
+	logFile: this.addonRoot + "PRSPlus.log",
+	settingsRoot: root + "PRSPlus-settings/"
 };
 
 // Typically would be used to override path to addons and logging settings.
-var userScript = root + "user.js";
+var userScript = root + "PRSPlus-user.config";
 
 var Utils = {
 	config: config,
