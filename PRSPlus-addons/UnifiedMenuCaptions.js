@@ -1,5 +1,6 @@
 // Name: Unified Menu Captions
 // Description: Allows to choose caption style in menus
+// Author: kartu
 //
 return {
 	name: "Menu Captions",

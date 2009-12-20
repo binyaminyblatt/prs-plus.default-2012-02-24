@@ -1,42 +1,156 @@
 // Name: Key Bindings
 // Description: Allows users to bind actions to keys
+// Author: kartu
 //
 
 var log = Utils.getLogger("KeyBindings");
 var getSoValue = Utils.getSoValue;
 
-
-var doInit = function() {
-	
-}
-
-return {
-	name: "Key Bindings",
-	description: "Allows to bind actions to keys",
-	icon: "SETTINGS",
-	activate: function() {a
-		// TODO
-	},
-	init: function() {
-		doInit();
-	},
-	// TODO should export built-in actions like "next in history" etc
-	actions: [{}]
-}
-
-
 return;
 
 
+// TODO localize
+var str = {
+	NAME: "Key Bindings",
+	DESCRIPTION: "Allows to bind actions to keys",
+	
+	// Contexts
+	GLOBAL:  "Global",
+	IN_MENU: "When in menu",
+	IN_BOOK:  "When reading book",
+
+	// Button groups
+	NUM_BUTTONS: "Numeric Buttons",
+	JP_BUTTONS: "Joypad Buttons",
+	OTHER_BUTTONS: "Other Buttons",
+	
+	// Buttons
+	BN_SIZE: "Size button",
+	BN_BOOKMARK: "Bookmark button",
+	BN_BL_NEXT: "Bottom left 'next'",
+	BN_BL_PREVIOUS: "Bottom left 'previous'",
+	BN_SB_NEXT: "Sidebar 'next'",
+	BN_SB_PREVIOUS:  "Sidebar 'previous'",
+	BN_MENU: "Menu button",
+	BN_JP_LEFT: "Joypad left",
+	BN_JP_RIGHT: "Joypad right",
+	BN_JP_UP: "Joypad up",
+	BN_JP_DOWN: "Joypad down",
+	BN_JP_CENTER: "Joypad center",
+	BN_H_SIZE: "Holding size button",
+	BN_H_BOOKMARK: "Holding bookmark button",
+	BN_H_BL_NEXT: "Holding bottom left 'next page'",
+	BN_H_BL_PREVIOUS: "Holding bottom left 'previous page'",
+	BN_H_MENU: "Holding menu button",
+	BN_H_SB_NEXT: "Holding sidebar 'next page'",
+	BN_H_SB_PREVIOUS: "Holding sidebar 'previous page'",
+	BN_H_JP_CENTER: "Holding joypad center button",
+	BN_H_1: "Hold 1",
+	BN_H_2: "Hold 2",
+	BN_H_3: "Hold 3",
+	BN_H_4: "Hold 4",
+	BN_H_5: "Hold 5",
+	BN_H_6: "Hold 6",
+	BN_H_7: "Hold 7",
+	BN_H_8: "Hold 8",
+	BN_H_9: "Hold 9",
+	BN_H_0: "Hold 0"
+};
+
+var KeyBindings = {
+	name: str.NAME,
+	description: str.DESCRIPTION,
+	icon: "SETTINGS",
+	onInit: function() {
+		// TODO
+	},
+	onPreInit: function() {
+		var contexts = [str.GLOBAL, str.IN_MENU, str.IN_BOOK];
+		var contextPrefixes = ["", "menu-", "book-"];
+		// TODO actions
+		var values = ["hey", "hoho"];
+		
+		this.optionDefs = [];
+		
+		// TODO define option defs
+		for (var i = 0, n = contexts.length; i < n; i++) {
+			var context = contexts[i];
+			var prefix = contextPrefixes[i];
+
+			var numberGroup = {
+				groupTitle: str.NUM_BUTTONS,
+				groupIcon: "FOLDER"
+			};
+			var joypadGroup = {
+				groupTitle: str.JP_BUTTONS,
+				groupIcon: "FOLDER"
+			};
+			var otherGroup = {
+				groupTitle: str.OTHER_BUTTONS,
+				groupIcon: "FOLDER"
+			};
+			var rootOptionGroup = {
+				groupTitle: context,
+				groupIcon: "FOLDER",
+				optionDefs: [numberGroup, joypadGroup, otherGroup]
+			};
+			
+			var rootOptionDefs = rootOptionGroup.optionDefs;
+			this.optionDefs.push(rootOptionDefs);
+
+			// Numbers
+			numberGroup.optionDefs = [
+				{namePrefix: prefix, name:  "kHold1", title: str.BN_H_1, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kHold2", title: str.BN_H_2, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kHold3", title: str.BN_H_3, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kHold4", title: str.BN_H_4, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kHold5", title: str.BN_H_5, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kHold6", title: str.BN_H_6, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kHold7", title: str.BN_H_7, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kHold8", title: str.BN_H_8, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kHold9", title: str.BN_H_9, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kHold0", title: str.BN_H_0, defaultValue: false, values: values}
+			];
+			
+			
+			// Joypad
+			joypadGroup.optionDefs = [
+				{namePrefix: prefix, name:  "kLeft", title: str.BN_JP_LEFT, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kRight", title: str.BN_JP_RIGHT, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kUp", title: str.BN_JP_UP, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kDown", title: str.BN_JP_DOWN, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "0x27", title: str.BN_JP_CENTER, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "0x27-hold", title: str.BN_H_JP_CENTER, defaultValue: false, values: values}
+			];
+
+			// Other buttons
+			otherGroup.optionDefs = [
+				{namePrefix: prefix, name:  "0x42", title: str.BN_SIZE, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "0x32", title: str.BN_BOOKMARK, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "0x30", title: str.BN_BL_NEXT, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "0x31", title: str.BN_BL_PREVIOUS, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kNext", title:str.BN_SB_NEXT, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kPrevious", title: str.BN_SB_PREVIOUS, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "0x21", title: str.BN_MENU, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "0x42-hold", title: str.BN_H_SIZE, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "0x32-hold", title: str.BN_H_BOOKMARK, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "0x30-hold", title: str.BN_H_BL_NEXT, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "0x31-hold", title: str.BN_H_BL_PREVIOUS, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "0x21-hold", title: str.BN_H_MENU, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kLast", title: str.BN_H_SB_NEXT, defaultValue: false, values: values},
+				{namePrefix: prefix, name:  "kFirst", title: str.BN_H_SB_PREVIOUS, defaultValue: false, values: values}
+			];
+		}
+		
+	},
+	// TODO should export built-in actions like "next in history" etc
+	actions: [{}]
+};
+
+return KeyBindings;
 
 
-
-
-
-
-
-
-
+/*
 var hookFunc = function(args, oldFunc, tag) {
 	var event = args[0];
 	var value = tag + " - key is " + Utils.getSoValue(event, "key");
@@ -44,32 +158,11 @@ var hookFunc = function(args, oldFunc, tag) {
 };
 
 
-
-/*
-var myBubble = function (id, param0, param1, param2, param3) {
-	var data;
-	if (id in this.sandbox) {
-	       return this.sandbox[id].call(this, param0, param1, param2, param3);
-	}
-	data = this.getData();
-	if (data) {
-	       if (data.propertyIsScriptable(id)) {
-		       return data[id].call(data, param0, param1, param2, param3);
-	       }
-	       if (id in data.sandbox) {
-		       return data.sandbox[id].call(data, param0, param1, param2, param3);
-	       }
-	}
-	if (this.chainable()) {
-	       return this.container.bubble(id, param0, param1, param2, param3);
-	}
-	return this.window.bubble(id, param0, param1, param2, param3);
-};*/
 var rootThis = this;
 
 function getBubbleFunc(key) {
 	return function(event) {
-		var value = "Bubbling: " + key + " - key is " + getSoValue(event, "key");
+		var value = "Bubbling:  " + key + " - key is " + getSoValue(event, "key");
 		log.trace(value);
 		try {
 			// TODO doRotate must go to ebook.doRotate
@@ -89,14 +182,14 @@ function getBubbleFunc(key) {
 				return;
 			}
 		} catch (e) {
-			log.error("error calling kbookMenu's " + key + ": " + e);
+			log.error("error calling kbookMenu's " + key + ":  " + e);
 		}
 	}
 }
 
 function getPageBubbleFunc(key) {
 	return function(event) {
-		var value = "Bubbling: " + key + " - key is " + getSoValue(event, "key");
+		var value = "Bubbling:  " + key + " - key is " + getSoValue(event, "key");
 		log.trace(value);
 		try {
 			// TODO doRotate must go to ebook.doRotate
@@ -116,7 +209,7 @@ function getPageBubbleFunc(key) {
 				return;
 			}
 		} catch (e) {
-			log.error("error calling kbookPage's " + key + ": " + e);
+			log.error("error calling kbookPage's " + key + ":  " + e);
 		}
 	}
 }
@@ -138,56 +231,10 @@ for(var i = 0, n = events.length; i < n; i++) {
 }
 
 return;
-
-
-/*
----- hangs the device
-var objNames = [
-"Fskin.container.keyDown",
-"Fskin.container.keyUp",
-"Fskin.window.events.onKeyUp",
-"Fskin.window.events.onKeyDown"
-"Fskin.device.keys",
-"Fskin.container.keys",
-"Fskin.device.handleEvent"
-];
-for(var i = 0; n = objNames.length; i < n; i++) {
-	var key = objNames[i];
-	log.trace(key + " so is " + Utils.getSoValue(this, key));
-}
 */
 
-// TODO 
-return;
-
-var getKey = function(context, name, key, defHandler, defHandlerDescription) {
-	return {		
-		"context": context,
-		"name": name,
-		"key": key,
-		"defHandler": defaultHandler,
-		"defHandlerDescription": defaultHandlerDescription
-	};
-};
-var doInit = function() {
-	var joypadKeys = [
-		getKey("menu", "Joypad Up", "doUp"),
-		getKey("menu", "Joypad Down", "doDown"),
-		getKey("menu", "Joypad Left", "doLeft"),
-		getKey("menu", "Joypad Right", "doRight"),
-		getKey("menu", "Joypad Center", "doCenter")
-	];
-};
-
-return {
-	name: "Key Bindings",
-	init: function() {
-		doInit();
-	}
-};
-
 /*
-Key bindings:
+Key bindings: 
 
 			<boolean key="kResume" do="doResume"/>
 			<boolean key="kSleep" do="doSleep"/>

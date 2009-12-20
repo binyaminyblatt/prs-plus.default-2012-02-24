@@ -1,5 +1,6 @@
 // Name: Clock
 // Description: Shows digital clock in the lower right corner in menu and page (reading book) views
+// Author: kartu
 //
 
 var log = Utils.getLogger("Clock");

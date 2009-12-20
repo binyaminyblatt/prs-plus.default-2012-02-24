@@ -1,5 +1,6 @@
 // Name: Browse Folders
 // Description: Adds "Browse Folders" menu option, groups music&picture related menus, adds "Games & Utilities" menu
+// Author: kartu
 //
 
 var cloneObj = Utils.cloneObj;
@@ -348,7 +349,7 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 		"comment": comment
 	});
 	
-	var rootFolder = "/Data" + BrowseFolders.options.imRoot;
+	var rootFolder = "/Data" + BrowseFolders.options.imRoot + "/";
 	var from = parent.root + parent.path;
 	var to = rootFolder + parent.path;
 	node.enter = function() {
@@ -390,7 +391,7 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 				this.parent.parent.enter(kbook.model);
 			}
 		} catch (ee) {
-				log.error("error in copy file from .enter" + ee);
+				log.error("error in copy file from .enter from " + from + " to " + to + ee);
 		}
 	};
 	return node;

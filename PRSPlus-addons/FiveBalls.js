@@ -1,5 +1,6 @@
 // Name: Five Balls game
-// Description: adapted version of Five Balls by Clemenseken
+// Description: adapted version of Five Balls
+// Author: Clemenseken
 //
 return {
 	name: "Five Balls",

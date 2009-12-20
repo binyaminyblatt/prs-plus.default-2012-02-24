@@ -1,5 +1,6 @@
 // Name: sudoku game
-// Description: adapted version of Sudoku by obelix
+// Description: adapted version of Sudoku
+// Author: obelix
 //
 return {
 	name: "Sudoku",
