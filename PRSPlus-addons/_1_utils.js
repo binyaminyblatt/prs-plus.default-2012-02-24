@@ -596,6 +596,7 @@ var createAddonSettings = function(addon) {
 //
 Utils.saveOptions = function(addon) {
 	try {
+		log.trace("saving options for " + addon.name);
 		FileSystem.ensureDirectory(this.config.settingsRoot);
 		var od;
 		var name;
@@ -603,7 +604,8 @@ Utils.saveOptions = function(addon) {
 		// Find out which options need to be saved (do not save devault values)
 		var options = addon.options;
 		var optionDefs = addon.optionDefs;
-		var optionDefsToSave = []; // option defs 
+		var optionDefsToSave = []; // option defs
+		var gotSomethingToSave = false;
 		for (var i = 0; i < optionDefs.length; i++) {
 			od = optionDefs[i];
 			
@@ -626,24 +628,18 @@ Utils.saveOptions = function(addon) {
 							optionDefs: []
 						};
 					}
+					gotSomethingToSave = true;
 					optionDefsToSave[target].optionDefs.push(od);
 				}
 			} else if(options.hasOwnProperty(name) && options[name] !== defValue) {
+				gotSomethingToSave = true;
 				optionDefsToSave.push(od);
 			}
 		}
 		
-		optionDefsToSave.sort(
-			function(a, b) {
-				var aTarget = a.target ? a.target : "";
-				var bTarget = b.target ? b.target : "";
-				return aTarget.localeCompare(bTarget);
-			}
-		);
-
 		// If there is anything to save - save, if not, delete settings file
 		var settingsFile = this.config.settingsRoot + addon.name + ".config";
-		if (optionDefsToSave.length > 0) {
+		if (gotSomethingToSave) {
 			var stream = new Stream.File(settingsFile, 1, 0);
 			try {
 				var globalStr = "";
@@ -653,22 +649,22 @@ Utils.saveOptions = function(addon) {
 					
 					var str = null;
 					if (od.isGroup) {
-						str = "\"" + od.target + "\": {\n"; 
+						str = "\t\"" + od.target + "\": {\n"; 
 						for (var j = 0, m = od.optionDefs.length; j < m; j++) {
 							var od2 = od.optionDefs[j];
-							str = str +  "\"" + od2.name + "\":\"" + options[od2.target][od2.name] + "\",\n";
+							str = str +  "\t\t\"" + od2.name + "\":\"" + options[od2.target][od2.name] + "\",\n";
 						}
 						// remove trailing ,\n
 						str = str.substring(0, str.length -2);
-						str = str + "}\n";
+						str = str + "\n\t}";
 					} else if (od.hasOwnProperty("name")) {
-						str = "\"" + name + "\":\"" + options[name] + "\"\n";
+						str = "\t\"" + name + "\":\"" + options[name] + "\"";
 					}
 					globalStr = globalStr + str + ",\n";
 				}
 				// remove trailing ,\n
 				globalStr = globalStr.substring(0, globalStr.length - 2);
-				stream.writeLine("return {\n" + globalStr + "}");
+				stream.writeLine("return {\n" + globalStr + "\n}");
 			} finally {
 				stream.close();
 			}
@@ -676,8 +672,9 @@ Utils.saveOptions = function(addon) {
 			// Remove settings file, since all settings have default values
 			FileSystem.deleteFile(settingsFile);
 		}
+		log.trace("finished saving options for " + addon.name);
 	} catch (e) {
-		log.trace("saving options for addon: " + addon.name);
+		log.error("saving options for addon: " + addon.name);
 	}
 };
 

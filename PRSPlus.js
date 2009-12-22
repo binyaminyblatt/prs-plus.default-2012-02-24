@@ -1,3 +1,6 @@
+// Started at, in milliseconds
+var startedAt = (new Date()).getTime();
+
 var root = "/Data/database/system/";
 var config = {
 	addonRoot: root + "PRSPlus-addons/",
@@ -48,7 +51,8 @@ var Utils = {
 		        try {
 				stream.seek(stream.bytesAvailable);
 				var d = new Date();
-				var dateStr = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " +  d.getHours() + ":" + d.getMinutes();
+				var dateStr = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " +  d.getHours()
+				+ ":" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds();
 				stream.writeLine(dateStr + level + " " + this.name  + "\t" + msg);
 			} catch(ignore) {
 			} finally {
@@ -169,3 +173,7 @@ var initialize = function () {
 
 initialize();
 delete initialize;
+
+// Finished at, in milliseconds
+var finishedAt = (new Date()).getTime()
+log.info("PRSPlus initialization took " + (finishedAt - startedAt)/1000 + " seconds");
