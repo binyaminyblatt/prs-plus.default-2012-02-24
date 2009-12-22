@@ -96,7 +96,7 @@ updateDate = function(args, oldFunc, tag) {
 		
 		this.setVariable("SHD_TIME", show);
 	} catch (e) {
-		log.error("error in clock addon: " + e);
+		log.error("in updateDate: " + e);
 	}
 };
 

@@ -79,10 +79,76 @@ Utils.debug.dump = function(obj, log) {
 		log.trace(p + " => " + obj);
 	}
 };
+
+Utils.debug.dumpToString = function (o, prefix, depth) {
+	var typeofo = typeof o;
+	if(typeofo == "string" || typeofo == "boolean" || typeofo == "number") {
+		return "'" + o + "'(" + typeofo + ")";
+	}
+	// Default depth is 1
+	if (typeof depth == "undefined") {
+		depth = 1;
+	}
+	// we show prefix if depth is 
+	if (typeofo == "undefined") {
+		return "undefined";
+	}
+	if (o === null) {
+		return "null";
+	}
+	if (typeofo == "function") {
+		return "a function";
+	}
+	if(o.constructor == Array) {
+		var s = "Array(" + o.length + ")";
+		if(depth > 0) {
+			s += " dumping\n";
+			for(var i = 0, n = o.length; i < n; i++) {
+				s += prefix + "[" + i + "] => " + this.dumpToString(o[i], prefix + "\t", depth-1) +"\n";
+			}
+		}
+		// remove trailing "\n"
+		if(s.charAt(s.length-1) == "\n") {
+			s = s.substring(0, s.length-1);
+		}
+		return s;
+	}
+	if(typeofo != "object") {
+		return "unknown entitiy of type (" + (typeof o) + ")";
+	}
+	
+	// if depth is less than 1, return just "an object" string
+	if(depth < 1) {
+		return "an object";
+	}
+	if(typeof prefix == "undefined") {
+		prefix = "";
+	}
+
+	// at this point, o is not null, and is an object
+	var str = "dumping\n";
+	var hasProps = false;
+	for (var prop in o) {
+		hasProps = true;
+		var oprop = o[prop];
+		try {
+			str += prefix + prop + " => " + this.dumpToString(oprop, prefix + "\t", depth -1) + "\n";
+		} catch(ee) {
+			str += prefix + prop + " => " + "failed to tostring: " + ee + "\n";
+		}
+	}
+	if (!hasProps) {
+		return "an object with no properties";
+	}
+	// remove trailing "\n"
+	if(str.charAt(str.length-1) == "\n") {
+		str = str.substring(0, str.length-1);
+	}
+	return str;
+};
 //--------------------------------------------------------------------------------------------------------------------
 // Misc helper funcitons
 //--------------------------------------------------------------------------------------------------------------------
-
 Utils.string = {};
 Utils.string.startsWith = function(str, prefix) {
 	return str.indexOf(prefix) === 0;
@@ -90,11 +156,7 @@ Utils.string.startsWith = function(str, prefix) {
 Utils.string.endsWith = function(str, postfix) {
 	return str.indexOf(postfix) === str.length - postfix.length;
 };
-// TODO delete
-log.trace(Utils.string.endsWith("blabo", "bo"));
-log.trace(Utils.string.startsWith("blabo", "bla"));
-log.trace(Utils.string.endsWith("blo", "bo"));
-log.trace(Utils.string.startsWith("", "bla"));
+
 //--------------------------------------------------------------------------------------------------------------------
 // SYSTEM - Hooks
 //--------------------------------------------------------------------------------------------------------------------
@@ -305,34 +367,6 @@ Utils.createContainerNode = function (arg) {
 	return obj;
 };
 
-
-// Creates "value" node (used in settings).
-// Arguments:
-//	arg, in addition to fields from createContainerNode, can have the following fields
-//		optionDef - option definition
-//		value - option value
-//		object - target object, to set option to (typically addon.options)
-//		addon - addon object
-//
-Utils.createValueNode = function(arg) {
-	var node = Utils.createContainerNode(arg);
-	node.enter = function() {
-		var propertyName = arg.optionDef.name;
-		arg.object[propertyName] = arg.value;
-
-		if(arg.addon && arg.addon.onSettingsChanged) {
-			arg.addon.onSettingsChanged(propertyName);
-		}
-		
-		// Save changes
-		Utils.saveOptions(arg.addon);
-		
-		// Goto parent node
-		this.parent.parent.enter(kbook.model);
-	};
-	return node;
-};
-
 //--------------------------------------------------------------------------------------------------------------------
 // About
 //--------------------------------------------------------------------------------------------------------------------
@@ -404,45 +438,125 @@ var getValueTranslator = function(options, optionDef) {
 	};
 };
 
+// Creates "value" node (used in settings).
+// Arguments:
+//	arg, in addition to fields from createContainerNode, can have the following fields
+//		optionDef - option definition
+//		value - option value
+//		object - target object, to set option to (typically addon.options)
+//		addon - addon object
+//
+var createValueNode = function(arg) {
+	var node = Utils.createContainerNode(arg);
+	node.enter = function() {
+		try {
+			var optionDef = arg.optionDef;
+			var propertyName = optionDef.name;
+	
+			arg.object[propertyName] = arg.value;
+			
+			if(arg.addon && arg.addon.onSettingsChanged) {
+				arg.addon.onSettingsChanged(propertyName);
+			}
+	
+			// Save changes
+			Utils.saveOptions(arg.addon);
+			
+			// Goto parent node
+			this.parent.parent.enter(kbook.model);
+		} catch (e) {
+			log.error("in valuenode.enter for option " + arg.optionDef.name + ": " + e);
+		}
+	};
+	return node;
+};
+
 // Creates value nodes (used in addon settings) for given option definition and addon.
 //  
 var createValueNodes = function(parent, optionDef, addon, options) {
-	var values = optionDef.values;
-	for (var i = 0, n = values.length; i < n; i++) {
-		var v = values[i];
-		var node = Utils.createValueNode({
-			parent: parent,
-			title: translateValue(optionDef, v),
-			optionDef: optionDef,
-			value: v,
-			object: options,
-			addon: addon,
-			kind: Utils.NodeKinds.CROSSED_BOX,
-			comment: ""
-		});
-		if(v === options[optionDef.name]) {
-			node.selected = true;
+	try {
+		var values = optionDef.values;
+		for (var i = 0, n = values.length; i < n; i++) {
+			var v = values[i];
+			var node = createValueNode({
+				parent: parent,
+				title: translateValue(optionDef, v),
+				optionDef: optionDef,
+				value: v,
+				object: options,
+				addon: addon,
+				kind: Utils.NodeKinds.CROSSED_BOX,
+				comment: ""
+			});
+			if(v === options[optionDef.name]) {
+				node.selected = true;
+			}
+			parent.nodes.push(node);
 		}
-		parent.nodes.push(node);
+	} catch (e) {
+		log.error("in createValueNodes for addon " + addon.name + " option " + optionDef.name + ": " + e);
 	}
 };
 
-// Recursively creates option definitions.
-var createSettings = function(parent, optionDef, addon, skipContainer) {
-	if(
-	// todo
-	if(skipContainer) {
-		parent._mycomment = getValueTranslator(options, optionDef);
-		createValueNodes(parent, optionDef, addon, options);
-	} else {
-		var node = Utils.createContainerNode({
+
+var doCreateAddonSettings;
+var lazyCreateSettings = function(parent, optionDefs, addon) {
+	Utils.hookBefore(parent, "enter", function(args, oldFunc) {
+		if(!this.hasOwnProperty("prspInitialized")) {
+			this.prspInitialized = true;
+			doCreateAddonSettings(parent, optionDefs, addon, true);
+		}
+	});
+};
+
+var doCreateSingleSetting;
+doCreateAddonSettings = function(parent, optionDefs, addon, ignoreLazy) {
+	if(ignoreLazy !== true) {
+		lazyCreateSettings(parent, optionDefs, addon);
+		return;
+	}
+
+	var skipContainer = optionDefs.length === 1;
+	for (var i = 0, n = optionDefs.length; i < n; i++) {
+		doCreateSingleSetting(parent, optionDefs[i], addon, skipContainer);
+	}
+};
+
+// Recursively creates setting nodes
+//
+doCreateSingleSetting = function(parent, optionDef, addon, skipContainer) {
+	var node;
+	if(optionDef.hasOwnProperty("groupTitle")) {
+		// Group
+		node = Utils.createContainerNode({
 				parent: parent,
-				title: optionDef.title,
-				kind: Utils.NodeKinds.getIcon(optionDef.icon),
-				comment: getValueTranslator(addon.options, optionDef)
+				title: optionDef.groupTitle,
+				comment: optionDef.groupComment ? optionDef.groupComment : "",
+				kind: Utils.NodeKinds.getIcon(optionDef.groupIcon)
 		});
 		parent.nodes.push(node);
-		createValueNodes(node, optionDef, addon, addon.options);
+
+		doCreateAddonSettings(node, optionDef.optionDefs, addon);
+	} else {
+		// If target is defined, use it, else create "options"
+		var options;
+		if(optionDef.hasOwnProperty("target")) {
+			options = addon.options[optionDef.target];
+		} else {
+			options = addon.options;
+		}
+
+		if(!skipContainer) {
+			node = Utils.createContainerNode({
+					parent: parent,
+					title: optionDef.title,
+					kind: Utils.NodeKinds.getIcon(optionDef.icon)
+			});
+			parent.nodes.push(node);
+			parent = node;
+		}
+		parent._mycomment = getValueTranslator(options, optionDef);
+		createValueNodes(parent, optionDef, addon, options);
 	}
 };
 
@@ -466,17 +580,7 @@ var createAddonSettings = function(addon) {
 			});
 			settingsNode.nodes.push(thisSettingsNode);
 
-			// If there is only one option and optionDef is not a group def, 
-			// show values, else create container node for each option
-			var skipContainer = (n === 1);
-
-			// Create value nodes for each option definition
-			for (var i = 0, n = optionDefs.length; i < n; i++) {
-				var optionDef = optionDefs[i];
-				var options = addon.options;
-				
-				createSettings(thisSettingsNode, optionDef, addon, skipContainer);
-			}
+			doCreateAddonSettings(thisSettingsNode, optionDefs, addon);			
 		}
 	} catch (e) {
 		log.error("failed to create addon settings: " + addon.name + " " + e);
@@ -491,74 +595,136 @@ var createAddonSettings = function(addon) {
 //	addon - addon who's settings must be saved
 //
 Utils.saveOptions = function(addon) {
-	FileSystem.ensureDirectory(this.config.settingsRoot);
-	
-	// Find out which options need to be saved (do not save devault values)
-	var options = addon.options;
-	var optionDefs = addon.optionDefs;
-	var optionsToSave = [];
-	for (var i = 0, n = optionDefs.length; i < n; i++) {
-		var od = optionDefs[i];
-		var name = od.name;
-		var defValue = od.defaultValue;
-		if(options.hasOwnProperty(name)) {
-			var value = options[name];
-			if(value !== defValue) {
-				optionsToSave.push(name);
+	try {
+		FileSystem.ensureDirectory(this.config.settingsRoot);
+		var od;
+		var name;
+		
+		// Find out which options need to be saved (do not save devault values)
+		var options = addon.options;
+		var optionDefs = addon.optionDefs;
+		var optionDefsToSave = []; // option defs 
+		for (var i = 0; i < optionDefs.length; i++) {
+			od = optionDefs[i];
+			
+			// Add group suboptions
+			if(od.hasOwnProperty("groupTitle")) {
+				optionDefs = optionDefs.concat(od.optionDefs);
+				continue;
 			}
-		}
-	}
-	
-	// If there is anything to save - save, if not, delete settings file
-	var settingsFile = this.config.settingsRoot + addon.name + ".config";
-	if(optionsToSave.length > 0) {
-		var stream = new Stream.File(settingsFile, 1, 0);
-		try {
-			stream.writeLine("return {");
-			for (i = 0, n = optionsToSave.length; i < n; i++) {
-				var name = optionsToSave[i];
-				var str = "\"" + name + "\":\"" + options[name] + "\"";
-				if(i < n - 1) {
-					stream.writeLine(str + ",");
-				} else {
-					stream.writeLine(str);
+
+			name = od.name;
+			var defValue = od.defaultValue;
+			var target = od.hasOwnProperty("target") ? od.target : false;
+
+			if(target) {
+				if(options.hasOwnProperty(target) && options[target].hasOwnProperty(name) && options[target][name] !== defValue) {
+					if (!optionDefsToSave.hasOwnProperty(target)) {
+						optionDefsToSave[target] = {
+							isGroup: true,
+							target: target,
+							optionDefs: []
+						};
+					}
+					optionDefsToSave[target].optionDefs.push(od);
 				}
+			} else if(options.hasOwnProperty(name) && options[name] !== defValue) {
+				optionDefsToSave.push(od);
 			}
-			stream.writeLine("}");
-		} finally {
-			stream.close();
 		}
-	} else {
-		// Remove settings file, since all settings have default values
-		FileSystem.deleteFile(settingsFile);
+		
+		optionDefsToSave.sort(
+			function(a, b) {
+				var aTarget = a.target ? a.target : "";
+				var bTarget = b.target ? b.target : "";
+				return aTarget.localeCompare(bTarget);
+			}
+		);
+
+		// If there is anything to save - save, if not, delete settings file
+		var settingsFile = this.config.settingsRoot + addon.name + ".config";
+		if (optionDefsToSave.length > 0) {
+			var stream = new Stream.File(settingsFile, 1, 0);
+			try {
+				var globalStr = "";
+				for (var ii in optionDefsToSave) {
+					od = optionDefsToSave[ii];
+					name = od.name;
+					
+					var str = null;
+					if (od.isGroup) {
+						str = "\"" + od.target + "\": {\n"; 
+						for (var j = 0, m = od.optionDefs.length; j < m; j++) {
+							var od2 = od.optionDefs[j];
+							str = str +  "\"" + od2.name + "\":\"" + options[od2.target][od2.name] + "\",\n";
+						}
+						// remove trailing ,\n
+						str = str.substring(0, str.length -2);
+						str = str + "}\n";
+					} else if (od.hasOwnProperty("name")) {
+						str = "\"" + name + "\":\"" + options[name] + "\"\n";
+					}
+					globalStr = globalStr + str + ",\n";
+				}
+				// remove trailing ,\n
+				globalStr = globalStr.substring(0, globalStr.length - 2);
+				stream.writeLine("return {\n" + globalStr + "}");
+			} finally {
+				stream.close();
+			}
+		} else {
+			// Remove settings file, since all settings have default values
+			FileSystem.deleteFile(settingsFile);
+		}
+	} catch (e) {
+		log.trace("saving options for addon: " + addon.name);
 	}
 };
 
 // Loads addon's options, using default option values, if settings file or value is not present.
 //
 Utils.loadOptions = function(addon) {
-	if(addon.optionDefs) {
-		// load settings from settings file
-		var options;
-		try {
-			var settingsFile = this.config.settingsRoot + addon.name + ".config";
-			options = this.callScript(settingsFile, log);
-		} catch (e) {
-			log.warn("When loading settings for addon " + addon.name + ": " + e);
-		}
-		if(!options) {
-			options = {};
-		}
-		
-		var optionDefs = addon.optionDefs;
-		for (var i = 0, n = optionDefs.length; i < n; i++) {
-			var optionDef = optionDefs[i];
-			if(!options.hasOwnProperty(optionDef.name)) {
-				options[optionDef.name] = optionDef.defaultValue;
+	try {
+		if(addon.optionDefs) {
+			// load settings from settings file
+			var options;
+			try {
+				var settingsFile = this.config.settingsRoot + addon.name + ".config";
+				options = this.callScript(settingsFile, log);
+			} catch (e0) {
+				log.warn("Failed loading settings file for addon " + addon.name + ": " + e0);
 			}
+			if(!options) {
+				options = {};
+			}
+			
+			var optionDefs = addon.optionDefs;
+			for (var i = 0; i < optionDefs.length; i++) {
+				var od = optionDefs[i];
+				if(od.hasOwnProperty("groupTitle")) {
+					// TODO actually must load suboptions
+					optionDefs = optionDefs.concat(od.optionDefs);
+				} else {
+					if(od.hasOwnProperty("target")) {
+						if(!options.hasOwnProperty(od.target)) {
+							options[od.target] = {};
+						}
+						
+						if(!options[od.target].hasOwnProperty(od.name)) {
+							options[od.target][od.name] = od.defaultValue;
+						}
+					} else {
+						if(!options.hasOwnProperty(od.name)) {
+							options[od.name] = od.defaultValue;
+						}
+					}
+				}
+			}
+			
+			addon.options = options;
 		}
-		
-		addon.options = options;
+	} catch (e) {
+		log.error("Loading settings of " + addon.name);
 	}
 };
 
@@ -575,7 +741,11 @@ Utils.initialize = function() {
 		
 		// Load options 
 		for (var i = 0, n = all.length; i < n; i++) {
-			this.loadOptions(all[i]);
+			try {
+				this.loadOptions(all[i]);
+			} catch (e0) {
+				log.warn("error loading settings for addon " + all[i].name + ": " + e0);
+			}
 		}
 		
 		// Addons and options are loaded, call init

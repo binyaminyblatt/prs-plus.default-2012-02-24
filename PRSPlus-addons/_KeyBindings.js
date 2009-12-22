@@ -6,9 +6,6 @@
 var log = Utils.getLogger("KeyBindings");
 var getSoValue = Utils.getSoValue;
 
-return;
-
-
 // TODO localize
 var str = {
 	NAME: "Key Bindings",
@@ -66,7 +63,7 @@ var KeyBindings = {
 	},
 	onPreInit: function() {
 		var contexts = [str.GLOBAL, str.IN_MENU, str.IN_BOOK];
-		var contextPrefixes = ["", "menu-", "book-"];
+		var contextTargets = ["global", "menu", "book"];
 		// TODO actions
 		var values = ["hey", "hoho"];
 		
@@ -75,7 +72,7 @@ var KeyBindings = {
 		// TODO define option defs
 		for (var i = 0, n = contexts.length; i < n; i++) {
 			var context = contexts[i];
-			var prefix = contextPrefixes[i];
+			var target = contextTargets[i];
 
 			var numberGroup = {
 				groupTitle: str.NUM_BUTTONS,
@@ -95,50 +92,49 @@ var KeyBindings = {
 				optionDefs: [numberGroup, joypadGroup, otherGroup]
 			};
 			
-			var rootOptionDefs = rootOptionGroup.optionDefs;
-			this.optionDefs.push(rootOptionDefs);
+			this.optionDefs.push(rootOptionGroup);
 
 			// Numbers
 			numberGroup.optionDefs = [
-				{namePrefix: prefix, name:  "kHold1", title: str.BN_H_1, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kHold2", title: str.BN_H_2, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kHold3", title: str.BN_H_3, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kHold4", title: str.BN_H_4, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kHold5", title: str.BN_H_5, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kHold6", title: str.BN_H_6, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kHold7", title: str.BN_H_7, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kHold8", title: str.BN_H_8, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kHold9", title: str.BN_H_9, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kHold0", title: str.BN_H_0, defaultValue: false, values: values}
+				{target: target, name: "kHold1", title: str.BN_H_1, defaultValue: false, values: values},
+				{target: target, name: "kHold2", title: str.BN_H_2, defaultValue: false, values: values},
+				{target: target, name: "kHold3", title: str.BN_H_3, defaultValue: false, values: values},
+				{target: target, name: "kHold4", title: str.BN_H_4, defaultValue: false, values: values},
+				{target: target, name: "kHold5", title: str.BN_H_5, defaultValue: false, values: values},
+				{target: target, name: "kHold6", title: str.BN_H_6, defaultValue: false, values: values},
+				{target: target, name: "kHold7", title: str.BN_H_7, defaultValue: false, values: values},
+				{target: target, name: "kHold8", title: str.BN_H_8, defaultValue: false, values: values},
+				{target: target, name: "kHold9", title: str.BN_H_9, defaultValue: false, values: values},
+				{target: target, name: "kHold0", title: str.BN_H_0, defaultValue: false, values: values}
 			];
 			
 			
 			// Joypad
 			joypadGroup.optionDefs = [
-				{namePrefix: prefix, name:  "kLeft", title: str.BN_JP_LEFT, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kRight", title: str.BN_JP_RIGHT, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kUp", title: str.BN_JP_UP, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kDown", title: str.BN_JP_DOWN, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "0x27", title: str.BN_JP_CENTER, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "0x27-hold", title: str.BN_H_JP_CENTER, defaultValue: false, values: values}
+				{target: target, name: "kLeft", title: str.BN_JP_LEFT, defaultValue: false, values: values},
+				{target: target, name: "kRight", title: str.BN_JP_RIGHT, defaultValue: false, values: values},
+				{target: target, name: "kUp", title: str.BN_JP_UP, defaultValue: false, values: values},
+				{target: target, name: "kDown", title: str.BN_JP_DOWN, defaultValue: false, values: values},
+				{target: target, name: "0x27", title: str.BN_JP_CENTER, defaultValue: false, values: values},
+				{target: target, name: "0x27-hold", title: str.BN_H_JP_CENTER, defaultValue: false, values: values}
 			];
 
 			// Other buttons
 			otherGroup.optionDefs = [
-				{namePrefix: prefix, name:  "0x42", title: str.BN_SIZE, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "0x32", title: str.BN_BOOKMARK, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "0x30", title: str.BN_BL_NEXT, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "0x31", title: str.BN_BL_PREVIOUS, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kNext", title:str.BN_SB_NEXT, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kPrevious", title: str.BN_SB_PREVIOUS, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "0x21", title: str.BN_MENU, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "0x42-hold", title: str.BN_H_SIZE, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "0x32-hold", title: str.BN_H_BOOKMARK, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "0x30-hold", title: str.BN_H_BL_NEXT, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "0x31-hold", title: str.BN_H_BL_PREVIOUS, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "0x21-hold", title: str.BN_H_MENU, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kLast", title: str.BN_H_SB_NEXT, defaultValue: false, values: values},
-				{namePrefix: prefix, name:  "kFirst", title: str.BN_H_SB_PREVIOUS, defaultValue: false, values: values}
+				{target: target, name: "0x42", title: str.BN_SIZE, defaultValue: false, values: values},
+				{target: target, name: "0x32", title: str.BN_BOOKMARK, defaultValue: false, values: values},
+				{target: target, name: "0x30", title: str.BN_BL_NEXT, defaultValue: false, values: values},
+				{target: target, name: "0x31", title: str.BN_BL_PREVIOUS, defaultValue: false, values: values},
+				{target: target, name: "kNext", title:str.BN_SB_NEXT, defaultValue: false, values: values},
+				{target: target, name: "kPrevious", title: str.BN_SB_PREVIOUS, defaultValue: false, values: values},
+				{target: target, name: "0x21", title: str.BN_MENU, defaultValue: false, values: values},
+				{target: target, name: "0x42-hold", title: str.BN_H_SIZE, defaultValue: false, values: values},
+				{target: target, name: "0x32-hold", title: str.BN_H_BOOKMARK, defaultValue: false, values: values},
+				{target: target, name: "0x30-hold", title: str.BN_H_BL_NEXT, defaultValue: false, values: values},
+				{target: target, name: "0x31-hold", title: str.BN_H_BL_PREVIOUS, defaultValue: false, values: values},
+				{target: target, name: "0x21-hold", title: str.BN_H_MENU, defaultValue: false, values: values},
+				{target: target, name: "kLast", title: str.BN_H_SB_NEXT, defaultValue: false, values: values},
+				{target: target, name: "kFirst", title: str.BN_H_SB_PREVIOUS, defaultValue: false, values: values}
 			];
 		}
 		

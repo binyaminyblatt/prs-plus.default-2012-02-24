@@ -1,8 +1,6 @@
 var getSoValue = Utils.getSoValue;
 var log = Utils.getLogger("sandbox");
 
-log.trace("createAddonSettings is " + createAddonSettings);
-
 return;
 
 //--------------------------------------------------------------------------------------------------------------------

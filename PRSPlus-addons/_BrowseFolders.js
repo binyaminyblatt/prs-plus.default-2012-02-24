@@ -158,26 +158,26 @@ var pathToBookNode = function(path, parent) {
 //	book - book media
 //	parent - parent node
 createBookNode = function(book, parent) {
-		var node = cloneObj(kbook.root.children.books.prototype);
-		node.media = book;
-		node.cache = kbook.model.cache;
-		node.parent = parent;
-		node.children = kbook.children;
-		FskCache.tree.xdbNode.construct.call(node);
-		
-		// set misc props
-		node.onEnter = "onEnterBook";
-		node.onSelect = "onSelectDefault";
-		node.kind = 2;
-		node._mykind = 2;
-		node._mytitle = book.title;
-		node._myname = book.title;
-		node._mycomment = book.author;
-		node._myclass = "BookNode";
-		
-		node.type = "book";
-		
-		return node;
+	var node = cloneObj(kbook.root.children.books.prototype);
+	node.media = book;
+	node.cache = kbook.model.cache;
+	node.parent = parent;
+	node.children = kbook.children;
+	FskCache.tree.xdbNode.construct.call(node);
+	
+	// set misc props
+	node.onEnter = "onEnterBook";
+	node.onSelect = "onSelectDefault";
+	node.kind = 2;
+	node._mykind = 2;
+	node._mytitle = book.title;
+	node._myname = book.title;
+	node._mycomment = book.author;
+	node._myclass = "BookNode";
+	
+	node.type = "book";
+	
+	return node;
 };
 
 
