@@ -596,7 +596,6 @@ var createAddonSettings = function(addon) {
 //
 Utils.saveOptions = function(addon) {
 	try {
-		log.trace("saving options for " + addon.name);
 		FileSystem.ensureDirectory(this.config.settingsRoot);
 		var od;
 		var name;
@@ -672,7 +671,6 @@ Utils.saveOptions = function(addon) {
 			// Remove settings file, since all settings have default values
 			FileSystem.deleteFile(settingsFile);
 		}
-		log.trace("finished saving options for " + addon.name);
 	} catch (e) {
 		log.error("saving options for addon: " + addon.name);
 	}
