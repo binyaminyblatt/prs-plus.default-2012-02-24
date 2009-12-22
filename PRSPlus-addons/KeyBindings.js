@@ -6,7 +6,6 @@
 var log = Utils.getLogger("KeyBindings");
 var getSoValue = Utils.getSoValue;
 
-// TODO localize
 var str = {
 	NAME: "Key Bindings",
 	DESCRIPTION: "Allows to bind actions to keys",

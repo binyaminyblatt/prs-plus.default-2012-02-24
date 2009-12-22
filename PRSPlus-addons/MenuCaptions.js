@@ -3,7 +3,8 @@
 // Author: kartu
 //
 return {
-	name: "Menu Captions",
+	name: "MenuCaptions",
+	title: "Menu Captions",
 	description: "Allows to choose menu caption style",
 	icon: "LIST",
 	onInit: function() {
