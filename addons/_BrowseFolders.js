@@ -299,28 +299,34 @@ FolderNode.prototype._myconstruct = function() {
 				delete this.nodes;
 			}
 			this.nodes = [];
-			
-			while (item = iterator.getNext()) {
-				var node;
-				if (item.type == "directory") {
-					node = new FolderNode(fullPath, item.path, item.type);
-				} else if (item.type == "file") {
-					var mime = FileSystem.getMIMEType(item.path);
-					if(!mime || !BookMIMEs[mime]) {
-						// not a book
-						continue;
-					}
-					
-					// Find existing node
-					node = pathToBookNode(fullPath + item.path, this);
-					if(!node) {
+			try {
+				while (item = iterator.getNext()) {
+					var node;
+					if (item.type == "directory") {
 						node = new FolderNode(fullPath, item.path, item.type);
+					} else if (item.type == "file") {
+						var mime = FileSystem.getMIMEType(item.path);
+						if(!mime || !BookMIMEs[mime]) {
+							// not a book
+							continue;
+						}
+						
+						// Find existing node
+						node = pathToBookNode(fullPath + item.path, this);
+						if(!node) {
+							node = new FolderNode(fullPath, item.path, item.type);
+						}
+					} else {
+						continue; // wtf, neither folder nor file?
 					}
-				} else {
-					continue; // wtf, neither folder nor file?
+					node.parent = this;
+					this.nodes.push(node);
 				}
-				node.parent = this;
-				this.nodes.push(node);
+			} catch (e) {
+				log.error("Error iterating over " + fullPath + ": " + e);
+				if(item) {
+					log.error("Last item was: " + item.path);
+				}
 			}
 			this.sortNodes();
 		} finally {

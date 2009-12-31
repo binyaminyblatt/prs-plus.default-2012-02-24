@@ -1,8 +1,8 @@
 // Name: Five Balls game
 // Description: adapted version of Five Balls
-// Author: Clemenseken
+// Author: Clemenseken, kartu
 //
-return {
+var FiveBalls = {
 	name: "Five Balls",
 	description: "Five Balls Game",
 	icon: "GAME",
@@ -14,6 +14,10 @@ return {
 		name: "Five Balls",
 		group: "Games",
 		icon: "GAME",
-		action: this.activate
+		action: function() {
+			FiveBalls.activate();
+		}
 	}]
-}
+};
+
+return FiveBalls;

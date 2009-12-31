@@ -36,21 +36,7 @@ var Index = {
 			}
 		}
 		
-	],
-	actions: [{
-		name: "Toggle Index",
-		group: "Utils",
-		icon: "LIST",
-		action: function() {
-			if(this.options.mode === "always") {
-				this.options.mode = "never";
-			} else {
-				this.options.mode = "always";
-			}
-			Utils.saveOptions(this);
-			this.updateIndex();
-		}
-	}]
+	]
 };
 
 updateIndex = function(args, oldFunc, tag) {
@@ -78,7 +64,7 @@ updateIndex = function(args, oldFunc, tag) {
 			case "XofYper":
 				// get percentage
 				var per = ((i/c)*100);
-				show = i + " of " + c + " ( " + per.toFixed(0) + "% ) ";
+				show = i + " of " + c + " (" + per.toFixed(0) + "%) ";
 				break;
 			case "XdivY":
 				show = i + " / " + c;
@@ -86,7 +72,7 @@ updateIndex = function(args, oldFunc, tag) {
 			case "XdivYper":
 				// get percentage
 				var per = ((i/c)*100);
-				show = i + " / " + c + " ( " + per.toFixed(0) + "% ) ";
+				show = i + " / " + c + " (" + per.toFixed(0) + "%) ";
 				break;
 			default:
 				show = i + " of " + c;

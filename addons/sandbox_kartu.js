@@ -1,7 +1,9 @@
+FskUI.Fonts.add("/Data/impact.ttf");
+return;
+
 var getSoValue = Utils.getSoValue;
 var log = Utils.getLogger("sandbox");
 
-return;
 
 //--------------------------------------------------------------------------------------------------------------------
 // BEGIN fonts
@@ -51,8 +53,7 @@ kbook.model.container.PAGE_GROUP.PAGE.doLeft = function() {
 	var pageOffset = get.call(kbook.bookData, 21);
 	log.trace("pages is " + pages);
 	log.trace("page is " + page);
-	log.trace("textScale is " + textScale);
-	log.trace("font is " + font);
+	log.trace("textScale is " + textScale);	log.trace("font is " + font);
 	log.trace("textEngine is " + textEngine);
 	log.trace("pageMap is " + pageMap);
 	log.trace("pageOffset is " + pageOffset);

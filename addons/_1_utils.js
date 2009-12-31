@@ -60,7 +60,12 @@ Utils.callMethodForAll = function(objArray, methodName, arg) {
 		if(typeof func === "function") {
 			try {
 				func.call(obj, arg);
-			} catch (ignore) {
+			} catch (e) {
+				// todo report error
+				try {
+					log.trace("error when calling method " + methodName + " on object [" + i + "]: " + e);
+				} catch (ignore) {
+				}
 			}
 		}
 	}
@@ -162,8 +167,8 @@ Utils.string.endsWith = function(str, postfix) {
 //--------------------------------------------------------------------------------------------------------------------
 
 var doHook = function (where, what, oldFunc, newFunc, hookType, tag) {
-	if(!where.hasOwnProperty(what)  ||  (typeof where[what] !== "function")) {
-		log.error("cannot hook non-existing function: " + what);
+	if(typeof where[what] !== "function" && hookType !== "instead") {
+		log.error("cannot hook before/after non-existing function: " + what);
 		return;
 	}
 	switch(hookType) {
@@ -391,7 +396,7 @@ about.dataChanged();
 // Root settings node, located "Settings" => "Addon Settings"
 Utils.nodes.addonSettingsNode = Utils.createContainerNode({
 	parent: Utils.nodes.settings,
-	title: "Addon Settings",
+	title: "PRS+ Settings",
 	kind: Utils.NodeKinds.SETTINGS,
 	comment: ""
 });
@@ -452,11 +457,12 @@ var createValueNode = function(arg) {
 		try {
 			var optionDef = arg.optionDef;
 			var propertyName = optionDef.name;
-	
+
+			var oldValue = arg.object[propertyName];
 			arg.object[propertyName] = arg.value;
 			
 			if(arg.addon && arg.addon.onSettingsChanged) {
-				arg.addon.onSettingsChanged(propertyName);
+				arg.addon.onSettingsChanged(propertyName, oldValue, arg.value, arg.object);
 			}
 	
 			// Save changes
@@ -516,15 +522,14 @@ doCreateAddonSettings = function(parent, optionDefs, addon, ignoreLazy) {
 		return;
 	}
 
-	var skipContainer = optionDefs.length === 1;
 	for (var i = 0, n = optionDefs.length; i < n; i++) {
-		doCreateSingleSetting(parent, optionDefs[i], addon, skipContainer);
+		doCreateSingleSetting(parent, optionDefs[i], addon);
 	}
 };
 
 // Recursively creates setting nodes
 //
-doCreateSingleSetting = function(parent, optionDef, addon, skipContainer) {
+doCreateSingleSetting = function(parent, optionDef, addon) {
 	var node;
 	if(optionDef.hasOwnProperty("groupTitle")) {
 		// Group
@@ -546,15 +551,15 @@ doCreateSingleSetting = function(parent, optionDef, addon, skipContainer) {
 			options = addon.options;
 		}
 
-		if(!skipContainer) {
-			node = Utils.createContainerNode({
-					parent: parent,
-					title: optionDef.title,
-					kind: Utils.NodeKinds.getIcon(optionDef.icon)
-			});
-			parent.nodes.push(node);
-			parent = node;
-		}
+		// Create parent node
+		node = Utils.createContainerNode({
+				parent: parent,
+				title: optionDef.title,
+				kind: Utils.NodeKinds.getIcon(optionDef.icon)
+		});
+		parent.nodes.push(node);
+		parent = node;
+
 		parent._mycomment = getValueTranslator(options, optionDef);
 		createValueNodes(parent, optionDef, addon, options);
 	}

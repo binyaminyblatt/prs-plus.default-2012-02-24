@@ -1,16 +1,16 @@
 // Started at, in milliseconds
 var startedAt = (new Date()).getTime();
 
-var root = "/Data/database/system/";
+var root = "/Data/database/system/PRSPlus/";
 var config = {
-	addonRoot: root + "PRSPlus-addons/",
+	addonRoot: root + "addons/",
 	defaultLogLevel: "none",
 	logFile: this.addonRoot + "PRSPlus.log",
-	settingsRoot: root + "PRSPlus-settings/"
+	settingsRoot: root + "settings/"
 };
 
 // Typically would be used to override path to addons and logging settings.
-var userScript = root + "PRSPlus-user.config";
+var userScript = root + "user.config";
 
 var Utils = {
 	config: config,
@@ -116,6 +116,7 @@ var log = Utils.getLogger("autorun");
 var addActions = function(addon) {
 	if(addon && addon.actions) {
 		for(var i = 0, n = addon.actions.length; i < n; i++) {
+			addon.actions[i].addon = addon;
 			Utils.actions.push(addon.actions[i]);
 		}
 	}

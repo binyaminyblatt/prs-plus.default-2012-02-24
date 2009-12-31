@@ -5,6 +5,10 @@
 
 var log = Utils.getLogger("Clock");
 
+// not to type this gazillion times
+var MENU = kbook.model.container.MENU_GROUP.MENU;
+var PAGE = kbook.model.container.PAGE_GROUP.PAGE;
+
 var updateDate; 
 var Clock = {
 	name: "Clock",
@@ -37,17 +41,25 @@ var Clock = {
 		
 	],
 	actions: [{
-		name: "Toggle Clock",
+		name: "toggleClock",
+		title: "Toggle Clock",
 		group: "Utils",
 		icon: "CLOCK",
-		action: function() {
+		action: function(ignore, context, ignore) {
+			// Quick & dirty...
 			if(this.options.mode === "all") {
 				this.options.mode = "off";
 			} else {
 				this.options.mode = "all";
 			}
+			var target;
+			if(context === "book") {
+				target = PAGE;
+			} else {
+				target = MENU;
+			}
 			Utils.saveOptions(this);
-			this.updateDate();
+			updateDate.call(target);
 		}
 	}]
 };
@@ -101,10 +113,10 @@ updateDate = function(args, oldFunc, tag) {
 };
 
 Clock.onInit = function() {
-	Utils.hookAfter(kbook.model.container.MENU_GROUP.MENU, "pageChanged", updateDate, "menu");
-	Utils.hookAfter(kbook.model.container.PAGE_GROUP.PAGE, "pageChanged", updateDate, "book");
+	Utils.hookAfter(MENU, "pageChanged", updateDate, "menu");
+	Utils.hookAfter(PAGE, "pageChanged", updateDate, "book");
 	// Initial value
-	updateDate.call(kbook.model.container.MENU_GROUP.MENU);
+	updateDate.call(MENU);
 };
 
 return Clock;

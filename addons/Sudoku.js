@@ -2,8 +2,9 @@
 // Description: adapted version of Sudoku
 // Author: obelix
 //
-return {
+var Sudoku = {
 	name: "Sudoku",
+	title: "Sudoku",
 	description: "Sudoku Game",
 	icon: "GAME",
 	activate: function() {
@@ -14,6 +15,10 @@ return {
 		name: "Sudoku",
 		group: "Games",
 		icon: "GAME",
-		action: this.activate
+		action: function() {
+			Sudoku.activate();
+		}
 	}]
-}
+};
+
+return Sudoku;
