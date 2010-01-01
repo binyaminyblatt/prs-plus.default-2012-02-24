@@ -32,14 +32,21 @@ var BrowseFolders = {
 			}
 		},
 		{
-			name:	"imRoot",
-			title:	"Internal memory root folder",
-			icon:	"FOLDER",
+			name: "imRoot",
+			title: "Internal memory root folder",
+			icon: "FOLDER",
 			defaultValue: "",
 			values: ["/database/media/books", "/database/media", "/media", "/books", ""],
 			valueTitles: {
 				"": "/" // yeah! :)
 			}
+		},
+		{
+			name: "cardScan",
+			title: "SD/MS card scan",
+			icon: "DB",
+			defaultValue: "enabled",
+			values: ["enabled", "disabled"]
 		}
 	],
 	onInit: function() {
@@ -51,7 +58,7 @@ var BrowseFolders = {
 var originalHandler = FskCache.diskSupport.canHandleVolume;
 FskCache.diskSupport.canHandleVolume = function(volume) {
 	try {
-		if(FileSystem.getFileInfo(volume.path + ".noscan")) {
+		if(BrowseFolders.options.cardScan === "disabled" || FileSystem.getFileInfo(volume.path + ".noscan")) {
 			return false;
 		}
 	} catch (ee) {
