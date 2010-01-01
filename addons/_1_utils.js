@@ -61,9 +61,8 @@ Utils.callMethodForAll = function(objArray, methodName, arg) {
 			try {
 				func.call(obj, arg);
 			} catch (e) {
-				// todo report error
 				try {
-					log.trace("error when calling method " + methodName + " on object [" + i + "]: " + e);
+					log.error("error when calling method " + methodName + " on object [" + i + "]: " + e);
 				} catch (ignore) {
 				}
 			}
@@ -71,7 +70,6 @@ Utils.callMethodForAll = function(objArray, methodName, arg) {
 	}
 };
 
-// TODO UTC #10 sorting?
 Utils.compareStrings = function(a, b) {
 	return a.localeCompare(b);
 };
@@ -702,7 +700,6 @@ Utils.loadOptions = function(addon) {
 			for (var i = 0; i < optionDefs.length; i++) {
 				var od = optionDefs[i];
 				if(od.hasOwnProperty("groupTitle")) {
-					// TODO actually must load suboptions
 					optionDefs = optionDefs.concat(od.optionDefs);
 				} else {
 					if(od.hasOwnProperty("target")) {

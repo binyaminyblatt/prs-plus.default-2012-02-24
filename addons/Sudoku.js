@@ -1,6 +1,6 @@
 // Name: sudoku game
 // Description: adapted version of Sudoku
-// Author: obelix
+// Author: obelix, kartu
 //
 var Sudoku = {
 	name: "Sudoku",

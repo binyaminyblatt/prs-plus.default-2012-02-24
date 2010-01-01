@@ -1,6 +1,6 @@
 // Name: Screenshot
 // Description: Allows to save screenshots as jpeg files
-// Author: Kartu
+// Author: kartu
 //
 
 var log = Utils.getLogger("Screenshot");
@@ -9,6 +9,7 @@ var str = {
 	TITLE: "Screenshot",
 	ACTION_TITLE: "Take a Screenshot",
 	SAVING_TO: "Saving to ",
+	FAILED_TO_SAVE: "Failed to save",
 	OPT_SAVETO: "Save to",
 	OPT_FEEDBACK: "Show save progress",
 	MEMORY_STICK: "Memory Stick",
@@ -60,11 +61,11 @@ var Screenshot = {
 			name: "showSaveProgress",
 			title: str.OPT_FEEDBACK,
 			icon: "PICTURE",
-			defaultValue: true,
-			values: [true, false],
+			defaultValue: "on",
+			values: ["on", "off"],
 			valueTitles: {
-				"true": str.FEEDBACK_ON,
-				"false": str.FEEDBACK_OFF
+				"on": str.FEEDBACK_ON,
+				"off": str.FEEDBACK_OFF
 			}
 		}
 	],
@@ -75,33 +76,36 @@ var Screenshot = {
 		icon: "PICTURE",
 		action: function() {
 			try {
-				log.trace("hey ya, screen	shot");
-												
 				var root = Screenshot.options.saveTo;
 				var saveFilename = getSavePath(root);
 				var savePath = root + saveFilename;
 				
-				// TODO check if saving is possible
-				
-				log.trace("saving to: " + savePath);
-		
 				var win = kbook.model.container.getWindow();
 				var bitmap = win.getBitmap();
 				var x,y,w,h;
-				
-				var stream = new Stream.File(savePath, 1);
-				bitmap.writeJPEG(stream);
-				stream.close();
+								
+				var stream;
+				var msg1, msg2;
+				try {
+					stream = new Stream.File(savePath, 1);
+					bitmap.writeJPEG(stream);
+					stream.close();
+				} catch (ee) {
+					msg1 = str.SAVING_TO + Screenshot.optionDefs[0].valueTitles[root];					
+					msg2 = str.FAILED_TO_SAVE;
+				}
 				
 				var showSaveProgress = Screenshot.options.showSaveProgress;
-				if (showSaveProgress) {
+				if (showSaveProgress === "on") {
 					var bounds = win.getBounds();
 					var width = bounds.width;
 					var height = bounds.height;
 
-					// TODO ugly
-					var msg1 = str.SAVING_TO + Screenshot.optionDefs[0].valueTitles[root];
-					var msg2 = saveFilename;
+					if(typeof msg1 === "undefined") {
+						// FIXME ugly
+						msg1 = str.SAVING_TO + Screenshot.optionDefs[0].valueTitles[root];
+						msg2 = saveFilename;
+					}
 
 					win.setTextStyle("bold");
 					win.setTextSize(24);

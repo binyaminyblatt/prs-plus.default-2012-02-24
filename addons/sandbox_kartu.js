@@ -1,4 +1,3 @@
-FskUI.Fonts.add("/Data/impact.ttf");
 return;
 
 var getSoValue = Utils.getSoValue;
