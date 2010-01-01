@@ -3,8 +3,14 @@
 // Author: kartu
 //
 
-var log = Utils.getLogger("KeyBindings");
 var getSoValue = Utils.getSoValue;
+var log = Utils.getLogger("KeyBindings");
+
+var book = kbook.model.container.PAGE_GROUP.PAGE;
+var bookDoNext = book.doNext;
+var bookDoPrevious = book.doPrevious;
+var bookDoLeft = book.doLeft;
+var bookDoRight = book.doRight;
 
 var str = {
 	TITLE: "Key Bindings",
@@ -57,7 +63,15 @@ var str = {
 	BN_VOLUME_DOWN: "Volume-",
 	BN_H_VOLUME_DOWN: "Hold Volume-",
 	BN_VOLUME_UP: "Volume+",
-	BN_H_VOLUME_UP: "Hold Volume+"
+	BN_H_VOLUME_UP: "Hold Volume+",
+	
+	// Actions
+	ACTION_SHUTDOWN: "Shutdown",
+	ACTION_NEXT_PAGE: "Next Page",
+	ACTION_PREVIOUS_PAGE: "Previous Page",
+	ACTION_NEXT_IN_HISTORY: "Next in History",
+	ACTION_PREVIOUS_IN_HISTORY: "Previous in History"
+	
 };
 
 var contexts = ["global", "menu", "book"];
@@ -196,7 +210,7 @@ KeyBindings = {
 			var valueTitles = {};
 			values.push(defVal);
 			valueTitles[defVal] = str.DEFAULT_VALUE;
-			// TODO context specific actions
+
 			for (var i = 0, n = actions.length; i < n; i++) {
 				var action = actions[i];
 				if(action && action.hasOwnProperty("name")) {
@@ -331,15 +345,53 @@ KeyBindings = {
 			contextObj[eventMethod] = oldFunc;
 		}
 	},
-	// TODO should export built-in actions like "next in history" etc
-	/*
-		shutdown
-		next page
-		previous page
-		next in history
-		previous in history
-	*/
-	actions: []
+	actions: [
+		{
+			name: "Shutdown",
+			title: str.ACTION_SHUTDOWN,
+			group: "Utils",
+			icon: "SHUTDOWN",
+			action: function() {
+				kbook.model.doDeviceShutdown();				
+			}
+		},
+		{
+			name: "NextPage",
+			title: str.ACTION_NEXT_PAGE,
+			group: "Utils",
+			icon: "NEXT_PAGE",
+			action: function() {
+				bookDoNext.call(book);
+			}
+		},
+		{
+			name: "PreviousPage",
+			title: str.ACTION_PREVIOUS_PAGE,
+			group: "Utils",
+			icon: "PREVIOUS_PAGE",
+			action: function() {
+				bookDoPrevious.call(book);
+			}
+		},
+		{
+			name: "NextInHistory",
+			title: str.ACTION_NEXT_IN_HISTORY,
+			group: "Utils",
+			icon: "NEXT_PAGE",
+			action: function() {
+				bookDoRight.call(book);
+			}
+		},
+		{
+			name: "PreviousInHistory",
+			title: str.ACTION_PREVIOUS_IN_HISTORY,
+			group: "Utils",
+			icon: "PREVIOUS_PAGE",
+			action: function() {
+				bookDoLeft.call(book);
+			}
+		}
+	]
 };
 
 return KeyBindings;
