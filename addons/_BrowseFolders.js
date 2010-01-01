@@ -23,11 +23,12 @@ var BrowseFolders = {
 			title: "Sorting mode",
 			icon: "LIST",
 			defaultValue: "author",
-			values: ["title", "author", "authorSwapName"],
+			values: ["title", "author", "authorSwapName", "filename"],
 			valueTitles: {
 				title: "By title",
 				author: "By author then title",
-				authorSwapName: "By author swapping name and surname"
+				authorSwapName: "By author swapping name/surname",
+				filename: "By filename"
 			}
 		},
 		{
@@ -274,6 +275,24 @@ var sortByAuthorSwappingName = function(a, b) {
 	return sortByAuthor(a, b, true);
 };
 
+var sortByFilename = function(a, b) {
+	try {
+		if(a.type !== b.type) {
+			// directories first, etc
+			return TYPE_SORT_WEIGHTS[a.type] - TYPE_SORT_WEIGHTS[b.type];
+		}
+		if(a.type !== "book") {
+			return compareStrings(a.name, b.name);
+		}
+		
+		var aPath = a.media.path;
+		var bPath = b.media.path;
+		return compareStrings(aPath, bPath);
+	} catch (e) {
+		log.error("In sortByFilename: " + e);
+	}
+};
+
 FolderNode.prototype.sortNodes = function() {
 	switch(BrowseFolders.options.sortMode) {
 		case "author":
@@ -281,7 +300,10 @@ FolderNode.prototype.sortNodes = function() {
 			break;
 		case "authorSwapName":
 			this.nodes.sort(sortByAuthorSwappingName);
-			break;			
+			break;
+		case "filename":
+			this.nodes.sort(sortByFilename);
+			break;
 		default:
 			this.nodes.sort(sortByTitle);
 	}
@@ -376,8 +398,7 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 				FileSystem.copyFile(from, to);	
 			}
 
-
-	                if(doSynchronize) {
+			if(doSynchronize) {
 				// get source by ID would be more appropriate
 				var target = kbook.model.cache.sources[1];
 				try {
