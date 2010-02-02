@@ -6,11 +6,27 @@
 var getSoValue = Utils.getSoValue;
 var log = Utils.getLogger("KeyBindings");
 
-var book = kbook.model.container.PAGE_GROUP.PAGE;
+// --------------------------------------
+// Saving original functions
+var model = kbook.model;
+var modelDoMute = model.doMute;
+
+var menu = model.container.MENU_GROUP.MENU;
+var menuDoNext = menu.doNext;
+var menuDoPrevious = menu.doPrevious
+var menuDoCenter = menu.doCenter;
+var menuDoFirst = menu.doFirst;
+var menuDoLast = menu.doLast;
+
+var book = model.container.PAGE_GROUP.PAGE;
 var bookDoNext = book.doNext;
 var bookDoPrevious = book.doPrevious;
 var bookDoLeft = book.doLeft;
 var bookDoRight = book.doRight;
+var bookDoCenter = book.doCenter;
+var bookDoFirst = book.doFirst;
+var bookDoLast = book.doLast;
+//--------------------------------------
 
 var str = {
 	TITLE: "Key Bindings",
@@ -71,14 +87,13 @@ var str = {
 	ACTION_PREVIOUS_PAGE: "Previous Page",
 	ACTION_NEXT_IN_HISTORY: "Next in History",
 	ACTION_PREVIOUS_IN_HISTORY: "Previous in History"
-	
 };
 
 var contexts = ["global", "menu", "book"];
 var contextObjects = {
-		"global": kbook.model, 
-		"menu": kbook.model.container.MENU_GROUP.MENU, 
-		"book": kbook.model.container.PAGE_GROUP.PAGE
+		"global": model, 
+		"menu": model.container.MENU_GROUP.MENU, 
+		"book": model.container.PAGE_GROUP.PAGE
 	};
 
 // Key events
@@ -143,6 +158,60 @@ var doHook = function(contextObj, eventMethod, context) {
 	Utils.hook(contextObj, eventMethod, hookFunction, context);	
 };
 
+// Calls default handlers. 
+// This function Is needed because some functions are called for more than one key
+//
+var callDefaultHandler = function(context, key) {
+	switch (key) {
+		case "0x27": // fallthrough
+		case "0x27-hold":
+			if(context == "book") {
+				bookDoCenter.call(book);
+			} else {
+				menuDoCenter.call(menu);
+			}
+			break;
+		case "0x31-hold": // falltrhough
+		case "kFirst": 
+			if(context == "book") {
+				bookDoFirst.call(book);
+			} else {
+				menuDoFirst.call(menu);
+			}
+			break;
+		case "0x30-hold": // falltrhough
+		case "kLast":
+			if(context == "book") {
+				bookDoLast.call(book);
+			} else {
+				menuDoLast.call(menu);
+			}
+			break;
+		case "0x41-hold": // falltrhough
+		case "0x40-hold":
+			modelDoMute.call(model);
+			break;
+		case "0x30": // fallthrough
+		case "kNext":
+			if(context == "book") {
+				bookDoNext.call(book);
+			} else {
+				menuDoNext.call(menu);
+			}
+			break;
+		case "0x31": // falltrhough
+		case "kPrevious":
+			if(context == "book") {
+				bookDoPrevious.call(book);
+			} else {
+				menuDoPrevious.call(menu);
+			}
+			break;
+		default:
+			model.doBlink();
+	}
+};
+
 hookFunction = function(args, oldFunc, tag) {
 	try {
 		var event = args[0];
@@ -168,7 +237,7 @@ hookFunction = function(args, oldFunc, tag) {
 				log.warn("undefined action name, event: " + event + " key: " + key);
 			}
 		} else {
-			log.error("Function is hooked to key " + tag + "." + key + " that has default action assigned");
+			callDefaultHandler(tag, key);
 		}
 	} catch (e) {
 		log.error("in hookFunction: " + e);
@@ -352,7 +421,7 @@ KeyBindings = {
 			group: "Utils",
 			icon: "SHUTDOWN",
 			action: function() {
-				kbook.model.doDeviceShutdown();				
+				model.doDeviceShutdown();
 			}
 		},
 		{
