@@ -69,6 +69,13 @@ var Screenshot = {
 			}
 		}
 	],
+	getTimer: function() {
+		if(typeof this.timer == "undefined") {
+			this.timer = new Timer();
+			this.timer.target = this;
+		}
+		return this.timer;
+	},
 	actions: [{
 		name: "takeScreenshoot",
 		title: str.ACTION_TITLE,
@@ -122,21 +129,19 @@ var Screenshot = {
 					
 					win.beginDrawing();
 					win.setPenColor(Color.white);
-					win.fillRectangle(x, y, w, h);										
+					win.fillRectangle(x, y, w, h);
 					win.setPenColor(Color.black);
 					win.frameRectangle(x, y, w, h);
 					win.frameRectangle(x+1, y+1, w-2, h-2);
 					win.drawText(msg1, x + gap, y + gap, bounds1.width, bounds1.height);
 					win.drawText(msg2, x + gap, y + gap*2 + bounds1.height, bounds2.width, bounds2.height);
 					win.endDrawing();
-					
-					var timer = new Timer();
-					timer.onCallback = function() {
+
+					var timer = Screenshot.getTimer();
+					timer.onCallback = function(delta) {
 						win.invalidate(x, y, w, h);
-						timer.close();
-						timer = null;
-					}
-					timer.schedule(2000);
+					};
+					timer.schedule(1000);
 				}
 				
 			} catch (e) {
