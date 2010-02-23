@@ -53,7 +53,8 @@ updateIndex = function(args, oldFunc, tag) {
 		this.setVariable("BOOK_SIZE", this.getScale());
 		this.setVariable("BOOK_HALF_PAGE", this.getHalfPage());
 		var c = this.countPages();
-		var i = this.getPage() + 1;
+		var i = this.componentPages();
+		//var i = this.getPage() + 1;
 		if (!c) c++;
 		var show = "";
 		

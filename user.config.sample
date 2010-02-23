@@ -11,11 +11,11 @@ var config = Utils.config;
 
 // Where to look for addons
 //
-config.addonRoot = "/Data/database/system/PRSPlus-addons/";
+config.addonRoot = "/Data/database/system/PRSPlus/addons/";
 
 // Where to look for addon settings
 //
-config.settingsRoot = "/Data/database/system/PRSPlus-settings/";
+config.settingsRoot = "/Data/database/system/PRSPlus/settings/";
 
 // Log level, available settings are: trace, info, warn, error, none
 //
@@ -23,4 +23,4 @@ config.defaultLogLevel = "none";
 
 // Log file location
 //
-config.logFile = "/Data/database/system/PRSPlus.log";
+config.logFile = "/Data/PRSPlus.log";
