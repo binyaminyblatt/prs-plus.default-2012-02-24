@@ -459,7 +459,25 @@ KeyBindings = {
 			action: function() {
 				bookDoLeft.call(book);
 			}
-		}
+		},
+		{
+			name: "NextSong",
+			title: str.ACTION_NEXT_SONG,
+			group: "Utils",
+			icon: "NEXT_PAGE",
+			action: function() {
+				model.doGotoNextSong();
+			}
+		},
+		{
+			name: "PreviousSong",
+			title: str.ACTION_PREVIOUS_SONG,
+			group: "Utils",
+			icon: "PREVIOUS_PAGE",
+			action: function() {
+				model.doGotoPreviousSong();
+			}
+		}		
 	]
 };
 
