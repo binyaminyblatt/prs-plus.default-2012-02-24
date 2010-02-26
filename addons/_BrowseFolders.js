@@ -222,6 +222,13 @@ FolderNode.prototype.update = function() {
 //------------------------------------------------------------------------------
 var compareStrings = Utils.compareStrings;
 
+var compareTitles = function(a, b) {
+    var atitle = a.media.titleSorter ? a.media.titleSorter : a.media.title;
+    var btitle = b.media.titleSorter ? b.media.titleSorter : b.media.title;
+
+    return compareStrings(atitle, btitle);
+};
+
 var TYPE_SORT_WEIGHTS = {
 	directory: -100,
 	book: -50,
@@ -246,7 +253,7 @@ var sortByTitle = function (a, b) {
 			// directories first, etc
 			return TYPE_SORT_WEIGHTS[a.type] - TYPE_SORT_WEIGHTS[b.type];
 		}
-		return compareStrings(a.name, b.name);
+		return compareTitles(a, b);
 	} catch (e) {
 		log.error("in sortByTitle : " + e);
 	}		
@@ -265,7 +272,7 @@ var sortByAuthor = function (a, b, swap) {
 		var aAuthor = a.media.author;
 		var bAuthor = b.media.author;
 		if(aAuthor === bAuthor) {
-			return compareStrings(a.media.title, b.media.title);
+			return compareTitles(a, b);
 		} else {
 			if(swap) {
 				aAuthor = swapNameAndSurname(aAuthor);
