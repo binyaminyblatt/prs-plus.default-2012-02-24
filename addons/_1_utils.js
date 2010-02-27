@@ -160,6 +160,26 @@ Utils.string.endsWith = function(str, postfix) {
 	return str.indexOf(postfix) === str.length - postfix.length;
 };
 
+
+// Returns content of the file <path> as a string.
+// If any kind of error happens (file doesn't exist, or is not readable etc) returns <defVal>
+//
+Utils.getFileContent = function (path, defVal) {
+	var stream;
+	try {
+		stream = new Stream.File(path);
+		return stream.toString();
+	} catch (whatever) {
+	} finally {
+		try {
+			stream.close();
+		} catch (ignore) {
+		}
+	}
+	return defVal;
+};
+
+
 //--------------------------------------------------------------------------------------------------------------------
 // SYSTEM - Hooks
 //--------------------------------------------------------------------------------------------------------------------
@@ -382,13 +402,19 @@ var about = kbook.model.container.ABOUT_GROUP.ABOUT;
 var data = getSoValue(about, "data");
 var records = getSoValue(data, "records");
 var duplicate = getSoValue(this, "Fskin.tableData.duplicate");
-var record = duplicate.call(this, records[1]);
 var store = getSoValue(this, "Fskin.tableField.store");
-store.call(this, record, "text", "PRS+ by Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + 
-	"igorsk, boroda, obelix, llasram and others.\n" +
+
+var record = duplicate.call(this, records[1]);
+var prspScriptVersion = Utils.getFileContent("/Data/database/system/PRSPlus/prsp.ver", "n/a");
+var prspFirmwareVersion = Utils.getFileContent("/opt/prspfw.ver", "n/a");
+store.call(this, record, "text", "PRS+ Script: " + prspScriptVersion +
+	"\nPRS+ Firmware: " + prspFirmwareVersion +
+	"\nAuthor: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + 
+	"igorsk, boroda, obelix, pepak, llasram and others.\n" +
 	"© GNU Lesser General Public License.");
 store.call(this, record, "kind", 4);
 records.splice(0, 0, record);
+
 about.dataChanged();
 
 //--------------------------------------------------------------------------------------------------------------------
