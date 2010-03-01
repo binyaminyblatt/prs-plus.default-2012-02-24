@@ -32,6 +32,13 @@ var BrowseFolders = {
 			}
 		},
 		{
+			name: "useTitleSorter",
+			title: "Use titleSorter field, when sorting",
+			icon: "LIST",
+			defaultValue: "enabled",
+			values: ["enabled", "disabled"]
+		},
+		{
 			name: "imRoot",
 			title: "Internal memory root folder",
 			icon: "FOLDER",
@@ -223,9 +230,18 @@ FolderNode.prototype.update = function() {
 var compareStrings = Utils.compareStrings;
 
 var compareTitles = function(a, b) {
-    var atitle = a.media.titleSorter ? a.media.titleSorter : a.media.title;
-    var btitle = b.media.titleSorter ? b.media.titleSorter : b.media.title;
+    var atitle;
+    var btitle;
 
+    if (BrowseFolders.options.useTitleSorter === "disabled") {
+	    // ignore title sorter field
+	    atitle = a.media.title;
+	    btitle = b.media.title;
+    } else {
+	    atitle = a.media.titleSorter ? a.media.titleSorter : a.media.title;
+	    btitle = b.media.titleSorter ? b.media.titleSorter : b.media.title;
+    }
+    
     return compareStrings(atitle, btitle);
 };
 
