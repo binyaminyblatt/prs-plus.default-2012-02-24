@@ -5,7 +5,7 @@
 // History:
 //	2010-03-01 kartu - Fixed NaN problem in epubs
 //	2010-03-01 kartu - #Refactored code to use L localize function
-//	2010-03-01 kartu - Added surquizu's "menu index" feature
+//	2010-03-01 kartu - Added VICTORGSJG's "menu index" feature
 
 var log = Utils.getLogger("Index");
 
