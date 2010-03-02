@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+# This is a sample shell script, to use it rename it to prsp.sh
+#
+
+# Code for Russian users, to enable win1251 text/rtf viewing
+export LD_PRELOAD=/opt/sony/ebook/application/Latin1toUTF8.so

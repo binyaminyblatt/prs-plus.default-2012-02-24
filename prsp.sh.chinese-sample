@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# This is a sample shell script that enables to store fonts in chinese/FONT folder in internal memory.
+# NOTE: When modifying font files it's recommended to comment out the code, reboot, change font files, then uncomment it. Otherwise you 
+# risk damaging file system. At the moment, when this file is called, /Data partition is already mounted.
+#
+# To use it rename it to prsp.sh
+#
+
+if [ -d /Data/chinese/FONT ]
+then
+	mount --bind /Data/chinese/FONT /opt/sony/ebook/FONT
+fi
+
