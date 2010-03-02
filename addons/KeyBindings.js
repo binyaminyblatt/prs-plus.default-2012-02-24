@@ -2,6 +2,9 @@
 // Description: Allows users to bind actions to keys
 // Author: kartu
 //
+// History:
+//	2010-03-01 kartu - Fixed missing string problem for next/previous song actions.
+//	2010-03-01 kartu - #Refactored localization code to use L function
 
 var getSoValue = Utils.getSoValue;
 var log = Utils.getLogger("KeyBindings");
@@ -13,7 +16,7 @@ var modelDoMute = model.doMute;
 
 var menu = model.container.MENU_GROUP.MENU;
 var menuDoNext = menu.doNext;
-var menuDoPrevious = menu.doPrevious
+var menuDoPrevious = menu.doPrevious;
 var menuDoCenter = menu.doCenter;
 var menuDoFirst = menu.doFirst;
 var menuDoLast = menu.doLast;
@@ -86,7 +89,17 @@ var str = {
 	ACTION_NEXT_PAGE: "Next Page",
 	ACTION_PREVIOUS_PAGE: "Previous Page",
 	ACTION_NEXT_IN_HISTORY: "Next in History",
-	ACTION_PREVIOUS_IN_HISTORY: "Previous in History"
+	ACTION_PREVIOUS_IN_HISTORY: "Previous in History",
+	ACTION_PREVIOUS_SONG: "Previous Song",
+	ACTION_NEXT_SONG: "Next Song"
+};
+// Localize
+var L = function(key) {
+	if (str.hasOwnProperty(key)) {
+		return str[key];
+	} else {
+		return "KeyBindings." + key;
+	}
 };
 
 var contexts = ["global", "menu", "book"];
@@ -246,8 +259,8 @@ hookFunction = function(args, oldFunc, tag) {
 
 KeyBindings = {
 	name: "KeyBindings",
-	title: str.TITLE,
-	description: str.DESCRIPTION,
+	title: L("TITLE"),
+	description: L("DESCRIPTION"),
 	icon: "SETTINGS",
 	onInit: function() {
 		try {
@@ -272,13 +285,13 @@ KeyBindings = {
 	},
 	onPreInit: function() {
 		try {
-			var contextLabels = [str.GLOBAL, str.IN_MENU, str.IN_BOOK];
+			var contextLabels = [L("GLOBAL"), L("IN_MENU"), L("IN_BOOK")];
 
 			var actions = Utils.actions;	
 			var values = [];
 			var valueTitles = {};
 			values.push(defVal);
-			valueTitles[defVal] = str.DEFAULT_VALUE;
+			valueTitles[defVal] = L("DEFAULT_VALUE");
 
 			for (var i = 0, n = actions.length; i < n; i++) {
 				var action = actions[i];
@@ -307,74 +320,74 @@ KeyBindings = {
 	
 				// Numbers
 				var numberGroup = {
-					groupTitle: str.NUM_BUTTONS,
+					groupTitle: L("NUM_BUTTONS"),
 					groupIcon: "FOLDER"
 				};
 				rootGroup.optionDefs.push(numberGroup);
 				numberGroup.optionDefs = [
-					{target: target, name: "kHold1", title: str.BN_H_1, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "kHold2", title: str.BN_H_2, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "kHold3", title: str.BN_H_3, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "kHold4", title: str.BN_H_4, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "kHold5", title: str.BN_H_5, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "kHold6", title: str.BN_H_6, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "kHold7", title: str.BN_H_7, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "kHold8", title: str.BN_H_8, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "kHold9", title: str.BN_H_9, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "kHold0", title: str.BN_H_0, defaultValue: defVal, values: values, valueTitles: valueTitles}
+					{target: target, name: "kHold1", title: L("BN_H_1"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "kHold2", title: L("BN_H_2"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "kHold3", title: L("BN_H_3"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "kHold4", title: L("BN_H_4"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "kHold5", title: L("BN_H_5"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "kHold6", title: L("BN_H_6"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "kHold7", title: L("BN_H_7"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "kHold8", title: L("BN_H_8"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "kHold9", title: L("BN_H_9"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "kHold0", title: L("BN_H_0"), defaultValue: defVal, values: values, valueTitles: valueTitles}
 				];
 							
 				// Volume buttons
 				var volumeGroup = {
-					groupTitle: str.VOLUME_BUTTONS,
+					groupTitle: L("VOLUME_BUTTONS"),
 					groupIcon: "FOLDER"
 				};
 				rootGroup.optionDefs.push(volumeGroup);
 				volumeGroup.optionDefs = [
-					{target: target, name: "0x41", title: str.BN_VOLUME_DOWN, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "0x41-hold", title: str.BN_H_VOLUME_DOWN, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "0x40", title: str.BN_VOLUME_UP, defaultValue: defVal, values: values, valueTitles: valueTitles},
-					{target: target, name: "0x40-hold", title: str.BN_H_VOLUME_UP, defaultValue: defVal, values: values, valueTitles: valueTitles}
+					{target: target, name: "0x41", title: L("BN_VOLUME_DOWN"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "0x41-hold", title: L("BN_H_VOLUME_DOWN"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "0x40", title: L("BN_VOLUME_UP"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+					{target: target, name: "0x40-hold", title: L("BN_H_VOLUME_UP"), defaultValue: defVal, values: values, valueTitles: valueTitles}
 				];
 				
 				// Joypad & Other buttons are for menu/book contexts only
 				if(i > 0) {
 					// Joypad
 					var joypadGroup = {
-						groupTitle: str.JP_BUTTONS,
+						groupTitle: L("JP_BUTTONS"),
 						groupIcon: "FOLDER"
 					};
 					rootGroup.optionDefs.push(joypadGroup);
 					joypadGroup.optionDefs = [
-						{target: target, name: "kLeft", title: str.BN_JP_LEFT, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "kRight", title: str.BN_JP_RIGHT, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "kUp", title: str.BN_JP_UP, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "kDown", title: str.BN_JP_DOWN, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "0x27", title: str.BN_JP_CENTER, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "0x27-hold", title: str.BN_H_JP_CENTER, defaultValue: defVal, values: values, valueTitles: valueTitles}
+						{target: target, name: "kLeft", title: L("BN_JP_LEFT"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "kRight", title: L("BN_JP_RIGHT"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "kUp", title: L("BN_JP_UP"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "kDown", title: L("BN_JP_DOWN"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "0x27", title: L("BN_JP_CENTER"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "0x27-hold", title: L("BN_H_JP_CENTER"), defaultValue: defVal, values: values, valueTitles: valueTitles}
 					];
 						
 					// Other buttons
 					var otherGroup = {
-						groupTitle: str.OTHER_BUTTONS,
+						groupTitle: L("OTHER_BUTTONS"),
 						groupIcon: "FOLDER"
 					};
 					rootGroup.optionDefs.push(otherGroup);
 					otherGroup.optionDefs = [
-						{target: target, name: "0x42", title: str.BN_SIZE, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "0x32", title: str.BN_BOOKMARK, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "0x30", title: str.BN_BL_NEXT, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "0x31", title: str.BN_BL_PREVIOUS, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "kNext", title:str.BN_SB_NEXT, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "kPrevious", title: str.BN_SB_PREVIOUS, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "0x21", title: str.BN_MENU, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "0x42-hold", title: str.BN_H_SIZE, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "0x32-hold", title: str.BN_H_BOOKMARK, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "0x30-hold", title: str.BN_H_BL_NEXT, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "0x31-hold", title: str.BN_H_BL_PREVIOUS, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "0x21-hold", title: str.BN_H_MENU, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "kLast", title: str.BN_H_SB_NEXT, defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "kFirst", title: str.BN_H_SB_PREVIOUS, defaultValue: defVal, values: values, valueTitles: valueTitles}
+						{target: target, name: "0x42", title: L("BN_SIZE"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "0x32", title: L("BN_BOOKMARK"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "0x30", title: L("BN_BL_NEXT"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "0x31", title: L("BN_BL_PREVIOUS"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "kNext", title:L("BN_SB_NEXT"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "kPrevious", title: L("BN_SB_PREVIOUS"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "0x21", title: L("BN_MENU"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "0x42-hold", title: L("BN_H_SIZE"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "0x32-hold", title: L("BN_H_BOOKMARK"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "0x30-hold", title: L("BN_H_BL_NEXT"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "0x31-hold", title: L("BN_H_BL_PREVIOUS"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "0x21-hold", title: L("BN_H_MENU"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "kLast", title: L("BN_H_SB_NEXT"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "kFirst", title: L("BN_H_SB_PREVIOUS"), defaultValue: defVal, values: values, valueTitles: valueTitles}
 					];
 				}
 			}
@@ -417,7 +430,7 @@ KeyBindings = {
 	actions: [
 		{
 			name: "Shutdown",
-			title: str.ACTION_SHUTDOWN,
+			title: L("ACTION_SHUTDOWN"),
 			group: "Utils",
 			icon: "SHUTDOWN",
 			action: function() {
@@ -426,7 +439,7 @@ KeyBindings = {
 		},
 		{
 			name: "NextPage",
-			title: str.ACTION_NEXT_PAGE,
+			title: L("ACTION_NEXT_PAGE"),
 			group: "Utils",
 			icon: "NEXT_PAGE",
 			action: function() {
@@ -435,7 +448,7 @@ KeyBindings = {
 		},
 		{
 			name: "PreviousPage",
-			title: str.ACTION_PREVIOUS_PAGE,
+			title: L("ACTION_PREVIOUS_PAGE"),
 			group: "Utils",
 			icon: "PREVIOUS_PAGE",
 			action: function() {
@@ -444,7 +457,7 @@ KeyBindings = {
 		},
 		{
 			name: "NextInHistory",
-			title: str.ACTION_NEXT_IN_HISTORY,
+			title: L("ACTION_NEXT_IN_HISTORY"),
 			group: "Utils",
 			icon: "NEXT_PAGE",
 			action: function() {
@@ -453,7 +466,7 @@ KeyBindings = {
 		},
 		{
 			name: "PreviousInHistory",
-			title: str.ACTION_PREVIOUS_IN_HISTORY,
+			title: L("ACTION_PREVIOUS_IN_HISTORY"),
 			group: "Utils",
 			icon: "PREVIOUS_PAGE",
 			action: function() {
@@ -462,7 +475,7 @@ KeyBindings = {
 		},
 		{
 			name: "NextSong",
-			title: str.ACTION_NEXT_SONG,
+			title: L("ACTION_NEXT_SONG"),
 			group: "Utils",
 			icon: "NEXT_PAGE",
 			action: function() {
@@ -471,7 +484,7 @@ KeyBindings = {
 		},
 		{
 			name: "PreviousSong",
-			title: str.ACTION_PREVIOUS_SONG,
+			title: L("ACTION_PREVIOUS_SONG"),
 			group: "Utils",
 			icon: "PREVIOUS_PAGE",
 			action: function() {

@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# This is a sample shell script, to use it rename it to prsp.sh and uncomment code that you need.
+#
+
+# Code for Russian users, to enable win1251 text/rtf viewing (uncomment the next line to enable it)
+#export LD_PRELOAD=/opt/sony/ebook/application/Latin1toUTF8.so
+
+# Code for Chinese users to replace reader fonts (uncomment the next line to enable it)
+#mount --bind /Data/chinese/FONT /opt/sony/ebook/FONT
+
