@@ -72,6 +72,50 @@ Utils.callMethodForAll = function(objArray, methodName, arg) {
 	}
 };
 
+
+// Copies file from <from> to <to>, deleting the target file first
+//
+// Arguments:
+//	from - source file
+//	to - target file
+//
+// Throws exceptions on errors. 
+Utils.copyFile = function (from, to) {
+	if (FileSystem.getFileInfo(to)) {
+		FileSystem.deleteFile(to);
+	}
+	//FileSystem.copyFile(from, to);
+	// Copy/paste from FileSystem.copyFile, slightly modified (removed progress)
+	var s, d, c, t, len, totalLen, copied;
+	try {
+		s = new Stream.File(from, 2);
+		d = new Stream.File(to, 3);
+		len = 128 * 1024;
+		copied = 0;
+		totalLen = s.bytesAvailable;
+		c = new Chunk(len);
+		while (s.readChunk(len, c)) {
+			copied += c.length;
+			d.writeChunk(c);
+		}
+		if (copied !== totalLen) {
+			throw "Error copying " + from + " to " + to;
+		}
+	} finally {
+		if (c) {
+			c.free();
+		}
+		if (s) {
+			s.close();
+		}
+		if (d) {
+			d.close();
+		}
+	}
+};
+
+
+
 Utils.compareStrings = function(a, b) {
 	return a.localeCompare(b);
 };
