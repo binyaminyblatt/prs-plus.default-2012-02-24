@@ -1,6 +1,6 @@
 // Name: PageIndex
 // Description: Shows the book index in different formats
-// Author: Duglum, surquizu,kartu
+// Author: Duglum, VICTORGSJG, kartu
 //
 // History:
 //	2010-03-01 kartu - Fixed NaN problem in epubs

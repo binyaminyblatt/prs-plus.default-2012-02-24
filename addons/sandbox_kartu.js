@@ -1,7 +1,110 @@
-return;
-
 var getSoValue = Utils.getSoValue;
 var log = Utils.getLogger("sandbox");
+
+
+this.trigger = false;
+kbook.model.container.MENU_GROUP.MENU.doLeft = function(bla, bla2, bla3) {
+	for(var p in bla) {
+		try {
+			log.trace(p + " => " + bla[p]);
+		} catch (e) {
+			log.error("failed to dump property: " + p);
+		}
+	}
+
+	trigger = !trigger;
+	if(trigger) {
+		kbook.model.container.getWindow().invalidate(0, 0, 300, 400);
+		return;
+	}
+	try {
+		var win = kbook.model.container.getWindow();
+		var mark = getSoValue(kbook.bookData, "mark");
+	        var get = getSoValue(kbook.bookData, "get");
+	        
+	        win.beginDrawing();
+	        try {
+		        // Read pages
+		        var page = get.call(kbook.bookData, 3);
+
+		        // Get text on the entire page
+			var m0 = mark.call(kbook.bookData, page, 0, 0, 0);
+			// TODO orientation, the height and with should be available elsewhere
+			var m1 = mark.call(kbook.bookData, page, 3, 600, 800);
+			var span = new Document.Viewer.Span(m0, m1);
+			var bounds = span.getBounds();
+			bounds.reverse();
+
+			var dx = 5;
+			var dy = 3;
+			// draw black underline
+			for(var i = 0, n = bounds.length; i < n; i++) {
+				var b = bounds[i];
+				var x = b.x + dx;
+				var y = b.y + b.height + dy;
+				var w = b.width - dx;
+				var h = 2;
+
+				//win.fillRectangle(b.x + dx, b.y + b.height + dy, b.width - dx, 2);
+				win.setPenColor(Color.black);
+				win.fillRectangle(x, y, w, h);
+
+
+				win.setTextStyle("bold");
+				win.setTextSize(20)
+
+				var tBounds = win.getTextBounds("" + i);
+				w = tBounds.width + 4;
+				h = tBounds.height;
+				// TODO must be the middle of the screen instead of 300 (orientation!)
+				x = 300 - Math.round(w/2);
+				y = y - h;
+				
+				win.fillRectangle(x, y, w, h);
+				win.setPenColor(Color.white);
+
+				win.drawText("" + i, x+2, y, w, h);				
+			}
+
+			
+			// draw white underline
+			/*
+			win.setPenColor(Color.white);
+			for(i = 0, n = bounds.length; i < n; i+=2) {
+				var b = bounds[i];
+				win.fillRectangle(b.x + dx, b.y + b.height + dy, b.width -dx, 3);
+				i++;
+			}*/
+			delete m0;
+			delete m1;
+			delete span;
+			delete bounds;
+		} catch (ee) {
+			log.error("error: " + ee);
+		}
+		
+		win.endDrawing();
+		
+		kbook.model.container.MENU_GROUP.MENU.setVariable("BOOK_INDEX_COUNT", "Finished");	
+	} catch (e) {
+		log.error("failed: " + e);
+	}
+	log.trace("bla was called");
+
+}
+kbook.model.container.PAGE_GROUP.PAGE.doLeft=kbook.model.container.MENU_GROUP.MENU.doLeft;
+
+
+
+return;
+
+
+
+log.trace("ebook.getBattery() is " + ebook.getBattery());
+log.trace("System.Hardware.Battery.getLevel so is " + getSoValue(this, "System.Hardware.Battery.getLevel"));
+log.trace("System.Hardware.Battery.getLevel is " + System.Hardware.Battery.getLevel);
+log.trace("System.Hardware.Battery.getLevel() is " + System.Hardware.Battery.getLevel());
+
 
 
 //--------------------------------------------------------------------------------------------------------------------
