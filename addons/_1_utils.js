@@ -2,6 +2,8 @@
 // Description: Provides all kinds of utility methods (getLogger, hook, cloneObj etc), initializes addons (store/load settings etc)
 // Author: kartu
 //
+// History:
+//	2010-03-05 kartu - #Fixed bug in endsWith
 
 var log = Utils.getLogger("utils");
 
@@ -157,7 +159,7 @@ Utils.string.startsWith = function(str, prefix) {
 	return str.indexOf(prefix) === 0;
 };
 Utils.string.endsWith = function(str, postfix) {
-	return str.indexOf(postfix) === str.length - postfix.length;
+	return str.lastIndexOf(postfix) === str.length - postfix.length;
 };
 
 
