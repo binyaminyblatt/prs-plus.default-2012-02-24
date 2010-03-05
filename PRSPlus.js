@@ -3,6 +3,7 @@ var startedAt = (new Date()).getTime();
 
 var root = "/Data/database/system/PRSPlus/";
 var config = {
+	root: root,
 	addonRoot: root + "addons/",
 	defaultLogLevel: "none",
 	logFile: this.addonRoot + "PRSPlus.log",
