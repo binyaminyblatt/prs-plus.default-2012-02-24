@@ -6,13 +6,14 @@
 //	2010-03-05 kartu - #Fixed bug in endsWith
 //	2010-03-06 kartu - #Added exec,mount,umount,setFileContent methods, path related constants
 //	2010-03-06 kartu - #Replaced shortname=winnt switch with shortname=mixed
+//	2010-03-06 kartu - #Renamed /opt/mount folder to /opt/mnt due to some weird security problems in Vista
 
 var log = Utils.getLogger("utils");
 
 //--------------------------------------------------------------------------------------------------------------------
 // CONSTANTS
 //--------------------------------------------------------------------------------------------------------------------
-var MOUNT_PATH = "/opt/mount";
+var MOUNT_PATH = "/opt/mnt";
 var MS_MOUNT_PATH = MOUNT_PATH + "/ms_card";
 var SD_MOUNT_PATH = MOUNT_PATH + "/sd_card";
 Utils.MOUNT_PATH = MOUNT_PATH;
