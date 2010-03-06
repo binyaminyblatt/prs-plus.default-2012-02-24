@@ -5,6 +5,7 @@
 // History:
 //	2010-03-05 kartu - #Fixed bug in endsWith
 //	2010-03-06 kartu - #Added exec,mount,umount,setFileContent methods, path related constants
+//	2010-03-06 kartu - #Replaced shortname=winnt switch with shortname=mixed
 
 var log = Utils.getLogger("utils");
 
@@ -17,8 +18,8 @@ var SD_MOUNT_PATH = MOUNT_PATH + "/sd_card";
 Utils.MOUNT_PATH = MOUNT_PATH;
 Utils.MS_MOUNT_PATH = MS_MOUNT_PATH;
 Utils.SD_MOUNT_PATH = SD_MOUNT_PATH;
-var CMD_MOUNT_SD = "mount -t vfat -o utf8 -o shortname=winnt /dev/sdmscard/r5c807a1 " + SD_MOUNT_PATH;
-var CMD_MOUNT_MS = "mount -t vfat -o utf8 -o shortname=winnt /dev/sdmscard/r5c807b1 " + MS_MOUNT_PATH;
+var CMD_MOUNT_SD = "mount -t vfat -o utf8 -o shortname=mixed /dev/sdmscard/r5c807a1 " + SD_MOUNT_PATH;
+var CMD_MOUNT_MS = "mount -t vfat -o utf8 -o shortname=mixed /dev/sdmscard/r5c807b1 " + MS_MOUNT_PATH;
 var CMD_UMOUNT_SD = "umount " + SD_MOUNT_PATH;
 var CMD_UMOUNT_MS = "umount " + MS_MOUNT_PATH;
 var SCRIPT_HEADER = "#!/bin/sh\n"+
