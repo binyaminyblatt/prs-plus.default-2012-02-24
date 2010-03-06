@@ -2,11 +2,14 @@
 // Description: Adds "Browse Folders" menu option, groups music&picture related menus, adds "Games & Utilities" menu
 // Author: kartu
 //
+// History:
+//	2010-03-06 kartu - Added mount/umount feature
 
+// Shortcuts
+var log = Utils.getLogger("BrowseFolders");
 var cloneObj = Utils.cloneObj;
 var getSoValue = Utils.getSoValue;
-var log = Utils.getLogger("BrowseFolders");
-
+var startsWith = Utils.string.startsWith;
 var NodeKinds = Utils.NodeKinds;
 var BookMIMEs = Utils.BookMIMEs;
 
@@ -53,6 +56,13 @@ var BrowseFolders = {
 			title: "SD/MS card scan",
 			icon: "DB",
 			defaultValue: "enabled",
+			values: ["enabled", "disabled"]
+		},
+		{
+			name: "useMount",
+			title: "Use mount with SD/MS (experimental)",
+			icon: "DB",
+			defaultValue: "disabled",
 			values: ["enabled", "disabled"]
 		}
 	],
@@ -340,10 +350,48 @@ FolderNode.prototype.sortNodes = function() {
 };
 //------------------------------------------------------------------------------
 
+// Mounts SD/MS card if mounting is enabled and path starts with Utils.MOUNT_PATH
+//
+var needMount = function (path) {
+	var mountHandle = null;
+	if (BrowseFolders.options.useMount) {
+		if (startsWith(path, Utils.SD_MOUNT_PATH)) {
+			mountHandle = "SD";
+		} else if (startsWith(path, Utils.MS_MOUNT_PATH)) {
+			mountHandle = "MS";
+		}
+		if (mountHandle !== null) {
+			try {
+				Utils.mount(mountHandle);
+			} catch (mountError) {
+				log.error("Failed to mount " + mountHandle + ": " + mountError);
+				log.trace("Utils.mount is " + Utils.mount);
+			}
+		}
+	}
+	return mountHandle;	
+};
+
+// Umounts card previously mounted by needMount
+//
+var releaseMount = function (mountHandle) {
+	if (mountHandle !== null) {
+		try {
+			Utils.umount(mountHandle);
+		} catch (umountError) {
+			log.warn("Failed to umount " + mountHandle + ": " + umountError);
+		}
+	}
+};
+
 FolderNode.prototype._myconstruct = function() {
 	indexBooks();
 	var fullPath = this.root + this.path + "/";
+	var mountHandle;
 	if (this.isFolder) {
+		// if mount/remount is enabled, and we are accessing SD/MS cards, mount
+		mountHandle = needMount(fullPath);
+		
 		var iterator = new FileSystem.Iterator(fullPath);
 		try {
 			var item;
@@ -382,6 +430,9 @@ FolderNode.prototype._myconstruct = function() {
 			}
 			this.sortNodes();
 		} finally {
+			// if Umount whatever was mounted above
+			releaseMount(mountHandle);
+			// release file iterator
 			iterator.close();
 		}
 	} else {
@@ -413,6 +464,9 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 	node.enter = function() {
 		try {
 			if(!dontCopy) {
+				// Mount if needed
+				var mountHandle = needMount(from);
+				
 				FileSystem.ensureDirectory(rootFolder);
 			
 				// check if the file target exists
@@ -425,7 +479,10 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 				}
 
 				// copy the file			
-				FileSystem.copyFile(from, to);	
+				FileSystem.copyFile(from, to);
+				
+				// Umount if needed
+				releaseMount(mountHandle);
 			}
 
 			if(doSynchronize) {
@@ -482,17 +539,17 @@ doInit = function() {
 	
 	
 	// Browse Folders node
-	var booksByFolderNode = Utils.createContainerNode({
+	var browseFoldersNode = Utils.createContainerNode({
 		parent: kbook.root,
 		title: "Browse Folders",
 		kind: NodeKinds.FOLDER,
 		comment: "Browse the file system",
 		separator: 1
 	});
-	booksByFolderNode.update = function() {
+	browseFoldersNode.update = function() {
 		this._myconstruct(kbook.model, true);
 	};
-	booksByFolderNode._myconstruct = function(model, fromChild) {	
+	browseFoldersNode._myconstruct = function(model, fromChild) {	
 		try {
 			if(this.nodes !== null) {
 				delete this.nodes;
@@ -502,15 +559,27 @@ doInit = function() {
 			var node = new FolderNode("/Data" + BrowseFolders.options.imRoot, "", "directory", "Internal Memory", NodeKinds.INTERNAL_MEM);
 			node.parent = this;
 			this.nodes.push(node);
-			if(FileSystem.getFileInfo("a:/")) {
+			if (FileSystem.getFileInfo("a:/")) {
 				node = new FolderNode("a:", "", "directory", "Memory Stick", NodeKinds.MS);
 				node.parent = this;
 				nodes.push(node);
+				
+				if (BrowseFolders.options.useMount && BrowseFolders.options.cardScan === "disabled") {
+					node = new FolderNode(Utils.MS_MOUNT_PATH, "", "directory", "Memory Stick via mount", NodeKinds.MS);
+					node.parent = this;
+					nodes.push(node);
+				}
 			}
-			if(FileSystem.getFileInfo("b:/")) {
+			if (FileSystem.getFileInfo("b:/")) {
 				node = new FolderNode("b:", "", "directory", "SD Card", NodeKinds.SD);
 				node.parent = this;
 				nodes.push(node);
+
+				if (BrowseFolders.options.useMount  && BrowseFolders.options.cardScan  === "disabled") {
+					node = new FolderNode(Utils.SD_MOUNT_PATH, "", "directory", "SD Card via mount", NodeKinds.SD);
+					node.parent = this;
+					nodes.push(node);
+				}
 			}
 	
 			// Since there is no direct way to determine in "enter" whether we are going from child to parent or not
@@ -539,12 +608,12 @@ doInit = function() {
 			}
 			
 		} catch (e) {
-			log.error("error in booksByFolderNode._myconstruct : " + e);
+			log.error("error in browseFoldersNode._myconstruct : " + e);
 		}
 	};
 	
 	// Global
-	Utils.nodes.booksByFolder = booksByFolderNode;
+	Utils.nodes.browseFolders = browseFoldersNode;
 	
 	var gamesNode = Utils.createContainerNode({
 		parent: kbook.root,
@@ -563,7 +632,7 @@ doInit = function() {
 	nodes[5].separator = 0;
 	
 	// Rearranging root node, hiding Audio&Pictures related nodes, adding Browse Folders, swapping bookmarks and collections node
-	kbook.root.nodes = [nodes[0], nodes[1], nodes[2], nodes[3], booksByFolderNode, nodes[5], nodes[4], audioAndPicturesNode,  gamesNode, nodes[9]];
+	kbook.root.nodes = [nodes[0], nodes[1], nodes[2], nodes[3], browseFoldersNode, nodes[5], nodes[4], audioAndPicturesNode,  gamesNode, nodes[9]];
 	
 	// Adding Rescan internal memory node"
 	var advancedSettingsNode = Utils.nodes.advancedSettings;

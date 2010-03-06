@@ -4,8 +4,28 @@
 //
 // History:
 //	2010-03-05 kartu - #Fixed bug in endsWith
+//	2010-03-06 kartu - #Added exec,mount,umount,setFileContent methods, path related constants
 
 var log = Utils.getLogger("utils");
+
+//--------------------------------------------------------------------------------------------------------------------
+// CONSTANTS
+//--------------------------------------------------------------------------------------------------------------------
+var MOUNT_PATH = "/opt/mount";
+var MS_MOUNT_PATH = MOUNT_PATH + "/ms_card";
+var SD_MOUNT_PATH = MOUNT_PATH + "/sd_card";
+Utils.MOUNT_PATH = MOUNT_PATH;
+Utils.MS_MOUNT_PATH = MS_MOUNT_PATH;
+Utils.SD_MOUNT_PATH = SD_MOUNT_PATH;
+var CMD_MOUNT_SD = "mount -t vfat -o utf8 -o shortname=winnt /dev/sdmscard/r5c807a1 " + SD_MOUNT_PATH;
+var CMD_MOUNT_MS = "mount -t vfat -o utf8 -o shortname=winnt /dev/sdmscard/r5c807b1 " + MS_MOUNT_PATH;
+var CMD_UMOUNT_SD = "umount " + SD_MOUNT_PATH;
+var CMD_UMOUNT_MS = "umount " + MS_MOUNT_PATH;
+var SCRIPT_HEADER = "#!/bin/sh\n"+
+	"PATH=\"/usr/local/bin:/usr/bin:/sbin:/bin:/usr/bin/X11:/usr/games:/usr/local/sony/bin:/usr/sbin\"\n" +
+	"LD_LIBRARY_PATH=\"/opt/sony/ebook/application:/lib:/usr/lib:/usr/local/sony/lib:/opt/sony/ebook/lib\"\n" +
+	"export PATH LD_LIBRARY_PATH\n";
+var RESULT_FILE = "/tmp/__result__";
 
 //--------------------------------------------------------------------------------------------------------------------
 // SYSTEM
@@ -86,7 +106,7 @@ Utils.copyFile = function (from, to) {
 	}
 	//FileSystem.copyFile(from, to);
 	// Copy/paste from FileSystem.copyFile, slightly modified (removed progress)
-	var s, d, c, t, len, totalLen, copied;
+	var s, d, c, len, totalLen, copied;
 	try {
 		s = new Stream.File(from, 2);
 		d = new Stream.File(to, 3);
@@ -114,7 +134,54 @@ Utils.copyFile = function (from, to) {
 	}
 };
 
+// Executes shell command
+// Arguments:
+//	cmd - linux command to execute
+// Throws exception, if command results with result other than zero
+Utils.exec = function (cmd) {
+	try {
+		FileSystem.deleteFile(RESULT_FILE);
+	} catch (ignore) {
+	}
 
+	// Create script file
+	this.setFileContent("/tmp/script.sh", SCRIPT_HEADER + cmd + "\necho -n $?>" + RESULT_FILE);
+
+	// Call script
+	var myvm = FskInclude.load("/opt/sony/ebook/application/prspVM.xml");
+	try {
+		myvm.load();
+	} catch(e) {
+		throw "vm load error: " + e;
+	}
+
+	var result = Utils.getFileContent(RESULT_FILE, "222");
+	if(result !== "0") {
+		throw "Failed to execute " + cmd + "\n" + result;
+	}
+};
+
+// Mounts SD or MS card
+// Arguments:
+//	card - "MS" or "SD"
+Utils.mount = function (card) {
+	if (card === "MS") {
+		this.exec(CMD_MOUNT_MS);
+	} else if (card === "SD") {
+		this.exec(CMD_MOUNT_SD);
+	}
+};
+
+// Mounts SD or MS card
+// Arguments:
+//	card - "MS" or "SD"
+Utils.umount = function (card) {
+	if (card === "MS") {
+		this.exec(CMD_UMOUNT_MS);
+	} else {
+		this.exec(CMD_UMOUNT_SD);
+	}
+};
 
 Utils.compareStrings = function(a, b) {
 	return a.localeCompare(b);
@@ -223,6 +290,27 @@ Utils.getFileContent = function (path, defVal) {
 		}
 	}
 	return defVal;
+};
+
+// Sets content of the file <path> to <content>. If file exists it will be overwritten.
+//
+Utils.setFileContent = function (path, content) {
+	var stream;
+	try {
+		if (FileSystem.getFileInfo(path)) {
+			FileSystem.deleteFile(path);
+		}
+		stream = new Stream.File(path, 1);
+		stream.writeString(content);
+		stream.flush();
+	} catch (e) {
+		throw "in setFileContent: " + e;
+	} finally {
+		try {
+			stream.close();
+		} catch (ignore) {
+		}
+	}
 };
 
 
