@@ -7,6 +7,7 @@
 //	2010-03-06 kartu - #Added exec,mount,umount,setFileContent methods, path related constants
 //	2010-03-06 kartu - #Replaced shortname=winnt switch with shortname=mixed
 //	2010-03-06 kartu - #Renamed /opt/mount folder to /opt/mnt due to some weird security problems in Vista
+//	2010-03-06 kartu - #Renamed sd_card/ms_card folders to sd/ms
 
 var log = Utils.getLogger("utils");
 
@@ -14,8 +15,8 @@ var log = Utils.getLogger("utils");
 // CONSTANTS
 //--------------------------------------------------------------------------------------------------------------------
 var MOUNT_PATH = "/opt/mnt";
-var MS_MOUNT_PATH = MOUNT_PATH + "/ms_card";
-var SD_MOUNT_PATH = MOUNT_PATH + "/sd_card";
+var MS_MOUNT_PATH = MOUNT_PATH + "/ms";
+var SD_MOUNT_PATH = MOUNT_PATH + "/sd";
 Utils.MOUNT_PATH = MOUNT_PATH;
 Utils.MS_MOUNT_PATH = MS_MOUNT_PATH;
 Utils.SD_MOUNT_PATH = SD_MOUNT_PATH;
