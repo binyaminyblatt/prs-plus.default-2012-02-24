@@ -2,6 +2,8 @@
 // Description: Allows to save screenshots as jpeg files
 // Author: kartu
 //
+// History:
+//	2010-03-07 kartu - #Prepared for localization (refactored to use L function)
 
 var log = Utils.getLogger("Screenshot");
 
@@ -18,6 +20,14 @@ var str = {
 	SD_CARD: "SD Card",
 	INTERNAL_MEMORY: "Internal Memory"
 };
+var L = function (key) {
+	if (str.hasOwnProperty(key)) {
+		return str[key];
+	} else {
+		return "Clock." + key;
+	}
+};
+
 
 var extension = ".jpg";
 var getSavePath = function(root) {
@@ -42,30 +52,30 @@ var getSavePath = function(root) {
 
 var Screenshot = {
 	name: "PageIndex",
-	title: str.TITLE,
+	title: L("TITLE"),
 	icon: "PICTURE",
 	optionDefs: [
 		{
 			name: "saveTo",
-			title: str.OPT_SAVETO,
+			title: L("OPT_SAVETO"),
 			icon: "DB",
 			defaultValue: "b:\\",
 			values: ["a:\\", "b:\\", "/Data/"],
 			valueTitles: {
-				"a:\\": str.MEMORY_STICK,
-				"b:\\": str.SD_CARD,
-				"/Data/": str.INTERNAL_MEMORY
+				"a:\\": L("MEMORY_STICK"),
+				"b:\\": L("SD_CARD"),
+				"/Data/": L("INTERNAL_MEMORY")
 			}
 		},
 		{
 			name: "showSaveProgress",
-			title: str.OPT_FEEDBACK,
+			title: L("OPT_FEEDBACK"),
 			icon: "PICTURE",
 			defaultValue: "on",
 			values: ["on", "off"],
 			valueTitles: {
-				"on": str.FEEDBACK_ON,
-				"off": str.FEEDBACK_OFF
+				"on": L("FEEDBACK_ON"),
+				"off": L("FEEDBACK_OFF")
 			}
 		}
 	],
@@ -78,7 +88,7 @@ var Screenshot = {
 	},
 	actions: [{
 		name: "takeScreenshoot",
-		title: str.ACTION_TITLE,
+		title: L("ACTION_TITLE"),
 		group: "Utils",
 		icon: "PICTURE",
 		action: function() {
@@ -98,8 +108,8 @@ var Screenshot = {
 					bitmap.writeJPEG(stream);
 					stream.close();
 				} catch (ee) {
-					msg1 = str.SAVING_TO + Screenshot.optionDefs[0].valueTitles[root];					
-					msg2 = str.FAILED_TO_SAVE;
+					msg1 = L("SAVING_TO") + Screenshot.optionDefs[0].valueTitles[root];					
+					msg2 = L("FAILED_TO_SAVE");
 				}
 				
 				var showSaveProgress = Screenshot.options.showSaveProgress;
@@ -110,7 +120,7 @@ var Screenshot = {
 
 					if(typeof msg1 === "undefined") {
 						// FIXME ugly
-						msg1 = str.SAVING_TO + Screenshot.optionDefs[0].valueTitles[root];
+						msg1 = L("SAVING_TO") + Screenshot.optionDefs[0].valueTitles[root];
 						msg2 = saveFilename;
 					}
 

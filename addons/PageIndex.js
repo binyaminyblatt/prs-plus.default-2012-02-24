@@ -6,6 +6,7 @@
 //	2010-03-01 kartu - Fixed NaN problem in epubs
 //	2010-03-01 kartu - #Refactored code to use L localize function
 //	2010-03-01 kartu - Added VICTORGSJG's "menu index" feature
+//	2010-03-06 kartu - #Renamed Not_SHOWN_IF_SINGLE_PAGE to NOT_SHOWN_IF_SINGLE_PAGE
 
 var log = Utils.getLogger("Index");
 
@@ -18,7 +19,7 @@ var str = {
 	OF: "of",
 	ALWAYS_SHOWN: "Always shown",
 	NEVER_SHOWN: "Never shown",
-	Not_SHOWN_IF_SINGLE_PAGE: "Not shown on single pages"
+	NOT_SHOWN_IF_SINGLE_PAGE: "Not shown on single pages"
 };
 
 // Localize
@@ -78,7 +79,7 @@ var Index = {
 			values: ["always", "not_if_only_one_page", "never"],
 			valueTitles: {
 				always: L("ALWAYS_SHOWN"),
-				not_if_only_one_page: L("Not_SHOWN_IF_SINGLE_PAGE"),
+				not_if_only_one_page: L("NOT_SHOWN_IF_SINGLE_PAGE"),
 				never: L("NEVER_SHOWN")
 			}
 		}

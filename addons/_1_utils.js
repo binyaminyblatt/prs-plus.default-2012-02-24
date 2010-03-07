@@ -8,8 +8,23 @@
 //	2010-03-06 kartu - #Replaced shortname=winnt switch with shortname=mixed
 //	2010-03-06 kartu - #Renamed /opt/mount folder to /opt/mnt due to some weird security problems in Vista
 //	2010-03-06 kartu - #Renamed sd_card/ms_card folders to sd/ms
+//	2010-03-07 kartu - #Prepared for localization
 
 var log = Utils.getLogger("utils");
+
+// Localize
+var str = {
+	NODE_PRSP_SETTINGS: "PRS+ Settings"
+};
+
+var L = function (key) {
+	if (str.hasOwnProperty(key)) {
+		return str[key];
+	} else {
+		return "Utils." + key;
+	}
+};
+
 
 //--------------------------------------------------------------------------------------------------------------------
 // CONSTANTS
@@ -560,7 +575,7 @@ about.dataChanged();
 // Root settings node, located "Settings" => "Addon Settings"
 Utils.nodes.addonSettingsNode = Utils.createContainerNode({
 	parent: Utils.nodes.settings,
-	title: "PRS+ Settings",
+	title: L("NODE_PRSP_SETTINGS"),
 	kind: Utils.NodeKinds.SETTINGS,
 	comment: ""
 });
