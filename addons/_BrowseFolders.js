@@ -4,6 +4,7 @@
 //
 // History:
 //	2010-03-06 kartu - Added mount/umount feature
+//	2010-03-07 kartu - #Prepared for localization
 
 // Shortcuts
 var log = Utils.getLogger("BrowseFolders");
@@ -15,35 +16,78 @@ var BookMIMEs = Utils.BookMIMEs;
 
 var doInit;
 
+// Localize
+var str = {
+	TITLE:  "Browse Folders",
+	OPTION_SORTING_MODE: "Sorting mode",
+	VALUE_BY_TITLE: "By title",
+	VALUE_BY_AUTHOR_THEN_TITLE: "By author then title",
+	VALUE_BY_AUTHOR_SWAPPING: "By author swapping name/surname",
+	VALUE_BY_FILENAME: "By filename",
+	OPTION_TITLE_SORTER: "Use titleSorter field, when sorting",
+	ENABLED: "enabled",
+	DISABLED: "disabled",
+	OPTION_IM_ROOT: "Internal memory root folder",
+	OPTION_CARD_SCAN: "SD/MS card scan",
+	OPTION_MOUNT: "Use mount with SD/MS (experimental)",
+	NODE_RESCAN_INTERNAL_MEMORY: "Rescan internal memory",
+	NODE_COPY_TO_INTERNAL_MEMORY: "Copy to internal memory",
+	NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copies file to the internal memory root",
+	NODE_COPY_AND_RESCAN: "Copy & Rescan internal memory",
+	NODE_COPY_AND_RESCAN_COMMENT: "Copies file to the internal memory root and rescans books",
+	ERROR_TARGET_EXISTS: "Error, target file exists",
+	NODE_AUDIO_AND_PICTURES: "Audio & Pictures",
+	NODE_BROWSE_FOLDERS: "Browse Folders",
+	NODE_BROWSE_FOLDERS_COMMENT: "Browse the file system",
+	NODE_INTERNAL_MEMORY: "Internal Memory",
+	NODE_MEMORY_STICK: "Memory Stick",
+	NODE_MEMORY_STICK_MOUNT: "Memory Stick via mount",
+	NODE_SD_CARD: "SD Card",
+	NODE_SD_CARD_MOUNT: "SD Card via mount",
+	NODE_GAMES_AND_UTILITIES: "Games & Utilities"
+};
+
+var L = function (key) {
+	if (str.hasOwnProperty(key)) {
+		return str[key];
+	} else {
+		return "BrowseFolders." + key;
+	}
+};
+
 // This addon
 var BrowseFolders = {
 	name: "BrowseFolders",
-	title: "Browse Folders",
+	title: L("TITLE"),
 	icon: "FOLDER",
 	optionDefs: [
 		{
 			name: "sortMode",
-			title: "Sorting mode",
+			title: L("OPTION_SORTING_MODE"),
 			icon: "LIST",
 			defaultValue: "author",
 			values: ["title", "author", "authorSwapName", "filename"],
 			valueTitles: {
-				title: "By title",
-				author: "By author then title",
-				authorSwapName: "By author swapping name/surname",
-				filename: "By filename"
+				title: L("VALUE_BY_TITLE"),
+				author: L("VALUE_BY_AUTHOR_THEN_TITLE"),
+				authorSwapName: L("VALUE_BY_AUTHOR_SWAPPING"),
+				filename: L("VALUE_BY_FILENAME")
 			}
 		},
 		{
 			name: "useTitleSorter",
-			title: "Use titleSorter field, when sorting",
+			title: L("OPTION_TITLE_SORTER"),
 			icon: "LIST",
 			defaultValue: "enabled",
-			values: ["enabled", "disabled"]
+			values: ["enabled", "disabled"],
+			valueTitles: {
+				enabled: L("ENABLED"),
+				disabled: L("DISABLED")
+			}
 		},
 		{
 			name: "imRoot",
-			title: "Internal memory root folder",
+			title: L("OPTION_IM_ROOT"),
 			icon: "FOLDER",
 			defaultValue: "",
 			values: ["/database/media/books", "/database/media", "/media", "/books", ""],
@@ -53,17 +97,26 @@ var BrowseFolders = {
 		},
 		{
 			name: "cardScan",
-			title: "SD/MS card scan",
+			title: L("OPTION_CARD_SCAN"),
 			icon: "DB",
 			defaultValue: "enabled",
-			values: ["enabled", "disabled"]
+			values: ["enabled", "disabled"],
+			valueTitles: {
+				enabled: L("ENABLED"),
+				disabled: L("DISABLED")
+			}
+			
 		},
 		{
 			name: "useMount",
-			title: "Use mount with SD/MS (experimental)",
+			title: L("OPTION_MOUNT"),
 			icon: "DB",
 			defaultValue: "disabled",
-			values: ["enabled", "disabled"]
+			values: ["enabled", "disabled"],
+			valueTitles: {
+				enabled: L("ENABLED"),
+				disabled: L("DISABLED")
+			}			
 		}
 	],
 	onInit: function() {
@@ -439,11 +492,11 @@ FolderNode.prototype._myconstruct = function() {
 		// If not internal memory
 		var isExternalMem = (fullPath.length > 5 && fullPath.substring(0, 5) === "/Data");
 		if(isExternalMem) {
-			this.nodes = [this.createUnscannedBookNode(this, "Rescan internal memory", "", true, true)];
+			this.nodes = [this.createUnscannedBookNode(this, L("NODE_RESCAN_INTERNAL_MEMORY"), "", true, true)];
 		} else {
-			var copy = this.createUnscannedBookNode(this, "Copy to internal memory", "Copies file to the internal memory root");
-			var copyAndReload = this.createUnscannedBookNode(this, "Copy & Rescan internal memory", 
-							"Copies file to the internal memory root and rescans books", true);
+			var copy = this.createUnscannedBookNode(this, L("NODE_COPY_TO_INTERNAL_MEMORY"), L("NODE_COPY_TO_INTERNAL_MEMORY_COMMENT"));
+			var copyAndReload = this.createUnscannedBookNode(this, L("NODE_COPY_AND_RESCAN"), 
+							L("NODE_COPY_AND_RESCAN_COMMENT"), true);
 			this.nodes = [copy, copyAndReload];			
 		}
 	}
@@ -473,8 +526,8 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 				if(FileSystem.getFileInfo(to)) {
 					this.parent.enter(kbook.model);
 					// warn and exit
-					kbook.model.container.MENU_GROUP.MENU.setVariable("MENU_INDEX_COUNT", "Error, target file exists");
-					parent._mycomment = "Error, target file exists";
+					kbook.model.container.MENU_GROUP.MENU.setVariable("MENU_INDEX_COUNT", L("ERROR_TARGET_EXISTS"));
+					parent._mycomment = L("ERROR_TARGET_EXISTS");
 					return;			
 				}
 
@@ -517,7 +570,7 @@ doInit = function() {
 	// Audio & Pictures nodes, shows "Now Playing", "Audio", "Pictures" nodes
 	var audioAndPicturesNode = Utils.createContainerNode({
 		parent: kbook.root,
-		title: "Audio & Pictures",
+		title: L("NODE_AUDIO_AND_PICTURES"),
 		kind: NodeKinds.AUDIO
 	});
 	audioAndPicturesNode.nodes = [nodes[6],nodes[7],nodes[8]];
@@ -541,9 +594,9 @@ doInit = function() {
 	// Browse Folders node
 	var browseFoldersNode = Utils.createContainerNode({
 		parent: kbook.root,
-		title: "Browse Folders",
+		title: L("NODE_BROWSE_FOLDERS"),
 		kind: NodeKinds.FOLDER,
-		comment: "Browse the file system",
+		comment: L("NODE_BROWSE_FOLDERS_COMMENT"),
 		separator: 1
 	});
 	browseFoldersNode.update = function() {
@@ -556,27 +609,27 @@ doInit = function() {
 			}
 			this.nodes = [];
 			var nodes = this.nodes;
-			var node = new FolderNode("/Data" + BrowseFolders.options.imRoot, "", "directory", "Internal Memory", NodeKinds.INTERNAL_MEM);
+			var node = new FolderNode("/Data" + BrowseFolders.options.imRoot, "", "directory", L("NODE_INTERNAL_MEMORY"), NodeKinds.INTERNAL_MEM);
 			node.parent = this;
 			this.nodes.push(node);
 			if (FileSystem.getFileInfo("a:/")) {
-				node = new FolderNode("a:", "", "directory", "Memory Stick", NodeKinds.MS);
+				node = new FolderNode("a:", "", "directory", L("NODE_MEMORY_STICK"), NodeKinds.MS);
 				node.parent = this;
 				nodes.push(node);
 				
 				if (BrowseFolders.options.useMount && BrowseFolders.options.cardScan === "disabled") {
-					node = new FolderNode(Utils.MS_MOUNT_PATH, "", "directory", "Memory Stick via mount", NodeKinds.MS);
+					node = new FolderNode(Utils.MS_MOUNT_PATH, "", "directory", L("NODE_MEMORY_STICK_MOUNT"), NodeKinds.MS);
 					node.parent = this;
 					nodes.push(node);
 				}
 			}
 			if (FileSystem.getFileInfo("b:/")) {
-				node = new FolderNode("b:", "", "directory", "SD Card", NodeKinds.SD);
+				node = new FolderNode("b:", "", "directory", L("NODE_SD_CARD"), NodeKinds.SD);
 				node.parent = this;
 				nodes.push(node);
 
 				if (BrowseFolders.options.useMount  && BrowseFolders.options.cardScan  === "disabled") {
-					node = new FolderNode(Utils.SD_MOUNT_PATH, "", "directory", "SD Card via mount", NodeKinds.SD);
+					node = new FolderNode(Utils.SD_MOUNT_PATH, "", "directory", L("NODE_SD_CARD_MOUNT"), NodeKinds.SD);
 					node.parent = this;
 					nodes.push(node);
 				}
@@ -617,7 +670,7 @@ doInit = function() {
 	
 	var gamesNode = Utils.createContainerNode({
 		parent: kbook.root,
-		title: "Games & Utilities",
+		title: L("NODE_GAMES_AND_UTILITIES"),
 		comment: "",
 		kind: NodeKinds.GAME,
 		separator: 1
@@ -636,7 +689,7 @@ doInit = function() {
 	
 	// Adding Rescan internal memory node"
 	var advancedSettingsNode = Utils.nodes.advancedSettings;
-	var rescanInternalMemoryNode = FolderNode.prototype.createUnscannedBookNode(advancedSettingsNode, "Rescan internal memory", "", true, true);
+	var rescanInternalMemoryNode = FolderNode.prototype.createUnscannedBookNode(advancedSettingsNode, L("NODE_RESCAN_INTERNAL_MEMORY"), "", true, true);
 	advancedSettingsNode.nodes.push(rescanInternalMemoryNode);
 	
 	// Global
