@@ -4,7 +4,7 @@
 //
 // History:
 //	2010-03-05 kartu - Initial version
-//
+//	2010-03-11 kartu - #Fixed minot bug (iterating over non existing folder)
 
 var log = Utils.getLogger("EpubUserStyle");
 
@@ -52,6 +52,10 @@ var EpubUserStyle = {
 	root: Utils.config.root + "epub/",
 	onPreInit : function() {
 		// Init epubCssFile values
+		if (!FileSystem.getFileInfo(this.root)) {
+			// epub folder doesn't exist, nothing to do
+			return;
+		}
 		var iterator = new FileSystem.Iterator(this.root);
 		try {
 			var item, path;
