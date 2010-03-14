@@ -36,7 +36,7 @@ var log = function (msg) {
 				var d = new Date();
 				var dateStr = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " +  d.getHours() +
 					":" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds();
-				stream.writeLine(dateStr + " " + this.name  + "\t" + msg);
+				stream.writeLine(dateStr + level + " " + this.name  + "\t" + msg);
 			} catch(ignore) {
 			} finally {
 			    stream.close();
