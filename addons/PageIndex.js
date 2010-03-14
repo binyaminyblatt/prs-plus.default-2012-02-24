@@ -7,8 +7,9 @@
 //	2010-03-01 kartu - #Refactored code to use L localize function
 //	2010-03-01 kartu - Added VICTORGSJG's "menu index" feature
 //	2010-03-06 kartu - #Renamed Not_SHOWN_IF_SINGLE_PAGE to NOT_SHOWN_IF_SINGLE_PAGE
+//	2010-03-14 kartu - #Refactored Utils -> Core
 
-var log = Utils.getLogger("Index");
+var log = Core.log.getLogger("Index");
 
 var str = {
 	TITLE: "Page Index",
@@ -181,8 +182,8 @@ var updateIndexMenu = function (args, oldFunc, tag) {
 };
 
 Index.onInit = function () {
-	Utils.hookAfter(kbook.model.container.PAGE_GROUP.PAGE, "pageChanged", updateIndexBook, "book");
-	Utils.hookAfter(kbook.model.container.MENU_GROUP.MENU, "pageChanged", updateIndexMenu, "menu");
+	Core.hook.hookAfter(kbook.model.container.PAGE_GROUP.PAGE, "pageChanged", updateIndexBook, "book");
+	Core.hook.hookAfter(kbook.model.container.MENU_GROUP.MENU, "pageChanged", updateIndexMenu, "menu");
 };
 
 return Index;

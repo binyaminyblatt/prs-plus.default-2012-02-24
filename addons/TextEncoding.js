@@ -4,7 +4,7 @@
 //
 // History:
 //	2010-03-04 kartu - Initial version
-//
+//	2010-03-14 kartu - #Refactored Utils -> Core
 
 var str = {
 	TITLE: "Default Text Encoding",
@@ -24,8 +24,6 @@ var L = function (key) {
 	}
 };
 
-
-
 return {
 	name: "TextEncoding",
 	title: L("TITLE"),
@@ -38,10 +36,10 @@ return {
 			title: L("OPTION_TITLE"),
 			icon: "BOOK",
 			defaultValue: "___latin___",
-			values:      ["___latin___", "___win1251___"],
+			values:	["___latin___", "___win1251___"],
 			valueTitles: {
-					___latin___: L("LATIN"), 
-					___win1251___: L("RUSSIAN") 
+				___latin___: L("LATIN"), 
+				___win1251___: L("RUSSIAN") 
 			}
 		}
 	]

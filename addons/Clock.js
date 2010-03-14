@@ -4,8 +4,9 @@
 //
 // History:
 //	2010-03-07 kartu - #Prepared for localization
+//	2010-03-14 kartu - #Refactored Utils -> Core
 
-var log = Utils.getLogger("Clock");
+var log = Core.log.getLogger("Clock");
 
 // Localize
 var str = {
@@ -72,32 +73,32 @@ var Clock = {
 		icon: "CLOCK",
 		action: function (ignore, context, ignore2) {
 			// Quick & dirty...
-			if(this.options.mode === "all") {
+			if (this.options.mode === "all") {
 				this.options.mode = "off";
 			} else {
 				this.options.mode = "all";
 			}
 			var target;
-			if(context === "book") {
+			if (context === "book") {
 				target = PAGE;
 			} else {
 				target = MENU;
 			}
-			Utils.saveOptions(this);
+			Core.settings.saveOptions(this);
 			updateDate.call(target);
 		}
 	}]
 };
 
-updateDate = function(args, oldFunc, tag) {
+updateDate = function (args, oldFunc, tag) {
 	try {
 		var mode = Clock.options.mode; 
-		switch(mode) {
+		switch (mode) {
 			case "all":
 				break;
 			case "menu": // fallthrough
 			case "book":
-				if(tag !== mode) {
+				if (tag !== mode) {
 					this.setVariable("SHD_TIME", "");
 					return;
 				}
@@ -109,7 +110,7 @@ updateDate = function(args, oldFunc, tag) {
 		
 		var time = new Date();
 		var show = "";
-		switch(Clock.options.style) {
+		switch (Clock.options.style) {
 			case "h12":
 				var hours = time.getHours();
 				var minutes = time.getMinutes();
@@ -137,9 +138,9 @@ updateDate = function(args, oldFunc, tag) {
 	}
 };
 
-Clock.onInit = function() {
-	Utils.hookAfter(MENU, "pageChanged", updateDate, "menu");
-	Utils.hookAfter(PAGE, "pageChanged", updateDate, "book");
+Clock.onInit = function () {
+	Core.hook.hookAfter(MENU, "pageChanged", updateDate, "menu");
+	Core.hook.hookAfter(PAGE, "pageChanged", updateDate, "book");
 	// Initial value
 	updateDate.call(MENU);
 };

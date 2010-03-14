@@ -5,6 +5,8 @@ var root = "/Data/database/system/PRSPlus/";
 var config = {
 	root: root,
 	addonRoot: root + "addons/",
+	coreRoot: root + "core/",
+	coreFile: root + "core.js",
 	defaultLogLevel: "none",
 	logFile: this.addonRoot + "PRSPlus.log",
 	settingsRoot: root + "settings/"
@@ -52,8 +54,8 @@ var Utils = {
 		        try {
 				stream.seek(stream.bytesAvailable);
 				var d = new Date();
-				var dateStr = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " +  d.getHours()
-				+ ":" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds();
+				var dateStr = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " +  d.getHours() +
+					":" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds();
 				stream.writeLine(dateStr + level + " " + this.name  + "\t" + msg);
 			} catch(ignore) {
 			} finally {
@@ -123,43 +125,83 @@ var addActions = function(addon) {
 	}
 };
 
+// Returns content of the file <path> as a string.
+// If any kind of error happens (file doesn't exist, or is not readable etc) returns <defVal>
+//
+Utils.getFileContent = function (path, defVal) {
+	var stream;
+	try {
+		stream = new Stream.File(path);
+		return stream.toString();
+	} catch (whatever) {
+	} finally {
+		try {
+			stream.close();
+		} catch (ignore) {
+		}
+	}
+	return defVal;
+};
+
+var endsWith = function(str, postfix) {
+	return str.lastIndexOf(postfix) === str.length - postfix.length;
+};
+
+// Initializes core, starting it either as a single file, or concatenating smaller files
+var initializeCore = function(corePath, coreFile) {
+	if( FileSystem.getFileInfo(coreFile)) {
+		callScript(coreFile);
+	} else {
+		var iterator = new FileSystem.Iterator(corePath);
+		try {
+			var item, utils = [];
+			while (item = iterator.getNext()) {
+				if (item.type == "file") {
+					var path = item.path;
+					if(endsWith(path, ".js")) {
+						utils.push(path);
+					}
+				}
+			}
+			utils.sort();
+			
+			// Load utils
+			var content = "";
+			for (var i = 0, n = utils.length; i < n; i++) {
+				content += Utils.getFileContent(corePath + utils[i], "") + "\n";	
+			}
+			
+			var fn = new Function("Utils", content, corePath, 1);
+			fn(Utils);
+			delete fn;			
+		} catch (e) {
+			log.error("in initializeCore: " + e);
+		} finally {
+			iterator.close();
+		}
+	}
+};
+
 // Initializes addons & utils in an alphabetic order
 // Utils have "_" prefix and are initialized before addons
-var initialize = function () {
-	var iterator = new FileSystem.Iterator(config.addonRoot);
+var initialize = function (addonPath) {
+	var iterator = new FileSystem.Iterator(addonPath);
 	try {
 		var item;
-		var utils = [];
 		var addons = [];
 		while(item = iterator.getNext()) {
 			if (item.type == "file") {
 				var path = item.path;
-				if(path.length > 2 && path.substring(path.length - 3) === ".js") {
-					if(path.substring(0, 1) == "_") {
-						utils.push(path);
-					} else {
-						addons.push(path);
-					}
+				if(endsWith(path, ".js")) {
+					addons.push(path);
 				}
 			}
 		}
-		utils.sort();
 		addons.sort();
 		
-		var rootDir = config.addonRoot;
-		
-		// Load utils
-		for (var i = 0, n = utils.length; i < n; i++) {
-			var util = callScript(rootDir + utils[i], log);
-			if(typeof util !== "undefined") {
-				Utils.utils.push(util);
-				addActions(util);
-			}
-		}
-		
 		// Load addons
-		for (i = 0, n = addons.length; i < n; i++) {
-			var addon = callScript(rootDir + addons[i], log);
+		for (var i = 0, n = addons.length; i < n; i++) {
+			var addon = callScript(addonPath + addons[i], log);
 			if(typeof addon !== "undefined") {
 				Utils.addons.push(addon);
 				addActions(addon);
@@ -168,14 +210,18 @@ var initialize = function () {
 		
 		// Will load options and initialize addons, create menu nodes etc
 		Utils.initialize();		
+	} catch (e) {
+		log.error("in initialize: " + e);
 	} finally {
 		iterator.close();
 	}
 };
 
-initialize();
+initializeCore(config.coreRoot, config.coreFile);
+initialize(config.addonRoot);
 delete initialize;
+delete initializeCore;
 
 // Finished at, in milliseconds
-var finishedAt = (new Date()).getTime()
+var finishedAt = (new Date()).getTime();
 log.info("PRSPlus initialization took " + (finishedAt - startedAt)/1000 + " seconds");

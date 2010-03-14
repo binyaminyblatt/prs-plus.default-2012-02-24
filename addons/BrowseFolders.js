@@ -5,14 +5,15 @@
 // History:
 //	2010-03-06 kartu - Added mount/umount feature
 //	2010-03-07 kartu - #Prepared for localization
+//	2010-03-14 kartu - #Refactored Utils -> Core
 
 // Shortcuts
-var log = Utils.getLogger("BrowseFolders");
-var cloneObj = Utils.cloneObj;
-var getSoValue = Utils.getSoValue;
-var startsWith = Utils.string.startsWith;
-var NodeKinds = Utils.NodeKinds;
-var BookMIMEs = Utils.BookMIMEs;
+var log = Core.log.getLogger("BrowseFolders");
+var cloneObj = Core.system.cloneObj;
+var getSoValue = Core.system.getSoValue;
+var startsWith = Core.string.startsWith;
+var NodeKinds = Core.ui.NodeKinds;
+var BookMIMEs = Core.ui.BookMIMEs;
 
 var doInit;
 
@@ -119,16 +120,16 @@ var BrowseFolders = {
 			}			
 		}
 	],
-	onInit: function() {
+	onInit: function () {
 		doInit();
 	}
 };
 
 // Skipping card scanning, if ".noscan" file is present in the root folder
 var originalHandler = FskCache.diskSupport.canHandleVolume;
-FskCache.diskSupport.canHandleVolume = function(volume) {
+FskCache.diskSupport.canHandleVolume = function (volume) {
 	try {
-		if(BrowseFolders.options.cardScan === "disabled" || FileSystem.getFileInfo(volume.path + ".noscan")) {
+		if (BrowseFolders.options.cardScan === "disabled" || FileSystem.getFileInfo(volume.path + ".noscan")) {
 			return false;
 		}
 	} catch (ee) {
@@ -171,9 +172,9 @@ kbook.model.doDeleteBook = function () {
 
 // Little hack to allow easy changing of node title, comment, kind etc
 kbook.tableData.oldGetValue = kbook.tableData.getValue;
-kbook.tableData.getValue = function(node, field) {
+kbook.tableData.getValue = function (node, field) {
 	try {
-		var myVal = node["_my"+field];
+		var myVal = node["_my" + field];
 		if (typeof myVal != "undefined") {
 			if (typeof myVal == "function") {
 				return myVal.call(node, arguments);
@@ -186,7 +187,7 @@ kbook.tableData.getValue = function(node, field) {
 };
 
 kbook.tableData.oldGetKind = kbook.tableData.getKind;
-kbook.tableData.getKind = function() {
+kbook.tableData.getKind = function () {
 	try {
 		var myVal = this.node._mykind;
 		if (typeof myVal != "undefined") {
@@ -202,8 +203,8 @@ kbook.tableData.getKind = function() {
 
 // Book path to index map. Allows to find existing book node corresponding to a given path.
 var pathToBook = null;
-var indexBooks = function() {
-	if(!pathToBook) {
+var indexBooks = function () {
+	if (!pathToBook) {
 		pathToBook = {};
 		var records = kbook.model.cache.textMasters;
 
@@ -220,10 +221,10 @@ var createBookNode;
 //
 // Returns:
 //	returns new BookNode given a path, or null, if media cannot be found
-var pathToBookNode = function(path, parent) {
+var pathToBookNode = function (path, parent) {
 	indexBooks();
 	var book = pathToBook[path];
-	if(book) {
+	if (book) {
 		// Construct book node
 		var node = createBookNode(book, parent);
 		return node;
@@ -235,7 +236,7 @@ var pathToBookNode = function(path, parent) {
 // Arguments:
 //	book - book media
 //	parent - parent node
-createBookNode = function(book, parent) {
+createBookNode = function (book, parent) {
 	var node = cloneObj(kbook.root.children.books.prototype);
 	node.media = book;
 	node.cache = kbook.model.cache;
@@ -260,7 +261,7 @@ createBookNode = function(book, parent) {
 
 
 // Node that shows folder content
-var FolderNode = function(root, path,  type,  name, kind) {
+var FolderNode = function (root, path,  type,  name, kind) {
 	this.root = root;
 	this.path = path;
 	this.type = type;
@@ -269,7 +270,7 @@ var FolderNode = function(root, path,  type,  name, kind) {
 	this._mycomment = " ";
 	this.locked = 0;
 
-	if(typeof kind != "undefined") {
+	if (typeof kind != "undefined") {
 		this.kind = kind;
 		this.isFolder = true;
 	} else if (type == "directory") {
@@ -280,8 +281,8 @@ var FolderNode = function(root, path,  type,  name, kind) {
 		this.isFolder = false;
 	}
 };
-FolderNode.prototype = new Utils.ContainerNode();
-FolderNode.prototype.update = function() {
+FolderNode.prototype = new Core.ui.ContainerNode();
+FolderNode.prototype.update = function () {
 	// Recreate nodes
 	this._myconstruct();
 };
@@ -290,9 +291,9 @@ FolderNode.prototype.update = function() {
 //------------------------------------------------------------------------------
 // Sorting
 //------------------------------------------------------------------------------
-var compareStrings = Utils.compareStrings;
+var compareStrings = Core.string.compareStrings;
 
-var compareTitles = function(a, b) {
+var compareTitles = function (a, b) {
     var atitle;
     var btitle;
 
@@ -316,9 +317,9 @@ var TYPE_SORT_WEIGHTS = {
 	file: 0
 };
 
-var swapNameAndSurname = function(str) {
+var swapNameAndSurname = function (str) {
 	var idx = str.lastIndexOf(" ");
-	if(idx < 0) {
+	if (idx < 0) {
 		return str;
 	}
 	var name = str.substring(0, idx);
@@ -340,20 +341,20 @@ var sortByTitle = function (a, b) {
 
 var sortByAuthor = function (a, b, swap) {
 	try {
-		if(a.type !== b.type) {
+		if (a.type !== b.type) {
 			// directories first, etc
 			return TYPE_SORT_WEIGHTS[a.type] - TYPE_SORT_WEIGHTS[b.type];
 		}
-		if(a.type !== "book") {
+		if (a.type !== "book") {
 			return compareStrings(a.name, b.name);
 		}
 		// comparing books
 		var aAuthor = a.media.author;
 		var bAuthor = b.media.author;
-		if(aAuthor === bAuthor) {
+		if (aAuthor === bAuthor) {
 			return compareTitles(a, b);
 		} else {
-			if(swap) {
+			if (swap) {
 				aAuthor = swapNameAndSurname(aAuthor);
 				bAuthor = swapNameAndSurname(bAuthor);
 			}
@@ -364,17 +365,17 @@ var sortByAuthor = function (a, b, swap) {
 	}
 };
 
-var sortByAuthorSwappingName = function(a, b) {
+var sortByAuthorSwappingName = function (a, b) {
 	return sortByAuthor(a, b, true);
 };
 
-var sortByFilename = function(a, b) {
+var sortByFilename = function (a, b) {
 	try {
-		if(a.type !== b.type) {
+		if (a.type !== b.type) {
 			// directories first, etc
 			return TYPE_SORT_WEIGHTS[a.type] - TYPE_SORT_WEIGHTS[b.type];
 		}
-		if(a.type !== "book") {
+		if (a.type !== "book") {
 			return compareStrings(a.name, b.name);
 		}
 		
@@ -386,8 +387,8 @@ var sortByFilename = function(a, b) {
 	}
 };
 
-FolderNode.prototype.sortNodes = function() {
-	switch(BrowseFolders.options.sortMode) {
+FolderNode.prototype.sortNodes = function () {
+	switch (BrowseFolders.options.sortMode) {
 		case "author":
 			this.nodes.sort(sortByAuthor);
 			break;
@@ -403,22 +404,21 @@ FolderNode.prototype.sortNodes = function() {
 };
 //------------------------------------------------------------------------------
 
-// Mounts SD/MS card if mounting is enabled and path starts with Utils.MOUNT_PATH
+// Mounts SD/MS card if mounting is enabled and path starts with MOUNT_PATH
 //
 var needMount = function (path) {
 	var mountHandle = null;
 	if (BrowseFolders.options.useMount) {
-		if (startsWith(path, Utils.SD_MOUNT_PATH)) {
-			mountHandle = "SD";
-		} else if (startsWith(path, Utils.MS_MOUNT_PATH)) {
-			mountHandle = "MS";
+		if (startsWith(path, Core.shell.SD_MOUNT_PATH)) {
+			mountHandle = Core.shell.SD;
+		} else if (startsWith(path, Core.shell.MS_MOUNT_PATH)) {
+			mountHandle = Core.shell.MS;
 		}
 		if (mountHandle !== null) {
 			try {
-				Utils.mount(mountHandle);
+				Core.shell.mount(mountHandle);
 			} catch (mountError) {
 				log.error("Failed to mount " + mountHandle + ": " + mountError);
-				log.trace("Utils.mount is " + Utils.mount);
 			}
 		}
 	}
@@ -430,7 +430,7 @@ var needMount = function (path) {
 var releaseMount = function (mountHandle) {
 	if (mountHandle !== null) {
 		try {
-			Utils.umount(mountHandle);
+			Core.shell.umount(mountHandle);
 		} catch (umountError) {
 			log.warn("Failed to umount " + mountHandle + ": " + umountError);
 		}
@@ -448,7 +448,7 @@ FolderNode.prototype._myconstruct = function() {
 		var iterator = new FileSystem.Iterator(fullPath);
 		try {
 			var item;
-			if(this.nodes !== null && this.nodes.length > 0) {
+			if (this.nodes !== null && this.nodes.length > 0) {
 				delete this.nodes;
 			}
 			this.nodes = [];
@@ -459,14 +459,14 @@ FolderNode.prototype._myconstruct = function() {
 						node = new FolderNode(fullPath, item.path, item.type);
 					} else if (item.type == "file") {
 						var mime = FileSystem.getMIMEType(item.path);
-						if(!mime || !BookMIMEs[mime]) {
+						if (!mime || !BookMIMEs[mime]) {
 							// not a book
 							continue;
 						}
 						
 						// Find existing node
 						node = pathToBookNode(fullPath + item.path, this);
-						if(!node) {
+						if (!node) {
 							node = new FolderNode(fullPath, item.path, item.type);
 						}
 					} else {
@@ -477,7 +477,7 @@ FolderNode.prototype._myconstruct = function() {
 				}
 			} catch (e) {
 				log.error("Error iterating over " + fullPath + ": " + e);
-				if(item) {
+				if (item) {
 					log.error("Last item was: " + item.path);
 				}
 			}
@@ -491,7 +491,7 @@ FolderNode.prototype._myconstruct = function() {
 	} else {
 		// If not internal memory
 		var isExternalMem = (fullPath.length > 5 && fullPath.substring(0, 5) === "/Data");
-		if(isExternalMem) {
+		if (isExternalMem) {
 			this.nodes = [this.createUnscannedBookNode(this, L("NODE_RESCAN_INTERNAL_MEMORY"), "", true, true)];
 		} else {
 			var copy = this.createUnscannedBookNode(this, L("NODE_COPY_TO_INTERNAL_MEMORY"), L("NODE_COPY_TO_INTERNAL_MEMORY_COMMENT"));
@@ -502,8 +502,8 @@ FolderNode.prototype._myconstruct = function() {
 	}
 };
 // Book that was not scanned 
-FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, doSynchronize, dontCopy) {
-	var node = Utils.createContainerNode({
+FolderNode.prototype.createUnscannedBookNode = function (parent, title, comment, doSynchronize, dontCopy) {
+	var node = Core.ui.createContainerNode({
 		"parent": parent,
 		"title": parent.path,
 		"name": title,
@@ -514,16 +514,16 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 	var rootFolder = "/Data" + BrowseFolders.options.imRoot + "/";
 	var from = parent.root + parent.path;
 	var to = rootFolder + parent.path;
-	node.enter = function() {
+	node.enter = function () {
 		try {
-			if(!dontCopy) {
+			if (!dontCopy) {
 				// Mount if needed
 				var mountHandle = needMount(from);
 				
 				FileSystem.ensureDirectory(rootFolder);
 			
 				// check if the file target exists
-				if(FileSystem.getFileInfo(to)) {
+				if (FileSystem.getFileInfo(to)) {
 					this.parent.enter(kbook.model);
 					// warn and exit
 					kbook.model.container.MENU_GROUP.MENU.setVariable("MENU_INDEX_COUNT", L("ERROR_TARGET_EXISTS"));
@@ -538,7 +538,7 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 				releaseMount(mountHandle);
 			}
 
-			if(doSynchronize) {
+			if (doSynchronize) {
 				// get source by ID would be more appropriate
 				var target = kbook.model.cache.sources[1];
 				try {
@@ -558,27 +558,28 @@ FolderNode.prototype.createUnscannedBookNode = function(parent, title, comment, 
 				this.parent.parent.enter(kbook.model);
 			}
 		} catch (ee) {
-				log.error("error in copy file from .enter from " + from + " to " + to + ee);
+			log.error("error in copy file from .enter from " + from + " to " + to + ee);
 		}
 	};
 	return node;
 };
 
-doInit = function() {
+doInit = function () {
 	var nodes = kbook.root.nodes;
 	
 	// Audio & Pictures nodes, shows "Now Playing", "Audio", "Pictures" nodes
-	var audioAndPicturesNode = Utils.createContainerNode({
+	var audioAndPicturesNode = Core.ui.createContainerNode({
 		parent: kbook.root,
 		title: L("NODE_AUDIO_AND_PICTURES"),
 		kind: NodeKinds.AUDIO
 	});
-	audioAndPicturesNode.nodes = [nodes[6],nodes[7],nodes[8]];
+	// TODO must reference by name
+	audioAndPicturesNode.nodes = [nodes[6], nodes[7], nodes[8]];
 	
 	// update from ContainerNode doesn't work for whatever reason, probably it is accessing the wrong "nodes"
-	audioAndPicturesNode.update = function(model) {
+	audioAndPicturesNode.update = function (model) {
 		for (var i = 0, n = this.nodes.length; i < n; i++) {
-			if(this.nodes[i].update) {
+			if (this.nodes[i].update) {
 				this.nodes[i].update.call(this.nodes[i], model);
 			}
 		}
@@ -588,23 +589,23 @@ doInit = function() {
 	nodes[8].parent = audioAndPicturesNode;
 	
 	// Global
-	Utils.nodes.audioAndPictures = audioAndPicturesNode;
+	Core.ui.nodes.audioAndPictures = audioAndPicturesNode;
 	
 	
 	// Browse Folders node
-	var browseFoldersNode = Utils.createContainerNode({
+	var browseFoldersNode = Core.ui.createContainerNode({
 		parent: kbook.root,
 		title: L("NODE_BROWSE_FOLDERS"),
 		kind: NodeKinds.FOLDER,
 		comment: L("NODE_BROWSE_FOLDERS_COMMENT"),
 		separator: 1
 	});
-	browseFoldersNode.update = function() {
+	browseFoldersNode.update = function () {
 		this._myconstruct(kbook.model, true);
 	};
-	browseFoldersNode._myconstruct = function(model, fromChild) {	
+	browseFoldersNode._myconstruct = function (model, fromChild) {	
 		try {
-			if(this.nodes !== null) {
+			if (this.nodes !== null) {
 				delete this.nodes;
 			}
 			this.nodes = [];
@@ -618,7 +619,7 @@ doInit = function() {
 				nodes.push(node);
 				
 				if (BrowseFolders.options.useMount && BrowseFolders.options.cardScan === "disabled") {
-					node = new FolderNode(Utils.MS_MOUNT_PATH, "", "directory", L("NODE_MEMORY_STICK_MOUNT"), NodeKinds.MS);
+					node = new FolderNode(Core.shell.MS_MOUNT_PATH, "", "directory", L("NODE_MEMORY_STICK_MOUNT"), NodeKinds.MS);
 					node.parent = this;
 					nodes.push(node);
 				}
@@ -629,7 +630,7 @@ doInit = function() {
 				nodes.push(node);
 
 				if (BrowseFolders.options.useMount  && BrowseFolders.options.cardScan  === "disabled") {
-					node = new FolderNode(Utils.SD_MOUNT_PATH, "", "directory", L("NODE_SD_CARD_MOUNT"), NodeKinds.SD);
+					node = new FolderNode(Core.shell.SD_MOUNT_PATH, "", "directory", L("NODE_SD_CARD_MOUNT"), NodeKinds.SD);
 					node.parent = this;
 					nodes.push(node);
 				}
@@ -637,18 +638,18 @@ doInit = function() {
 	
 			// Since there is no direct way to determine in "enter" whether we are going from child to parent or not
 			// this little hack is needed, forceEnter is true if 
-			var myGotoParent = function() {
+			var myGotoParent = function () {
 				this.exit(kbook.model);
 				this.parent.enter(kbook.model, true);
 			};
-			for(var i = 0, n = nodes.length; i < n; i++) {
+			for (var i = 0, n = nodes.length; i < n; i++) {
 				nodes[i].gotoParent = myGotoParent;
 			}
 			
 			
-			if(nodes.length == 1) {
+			if (nodes.length == 1) {
 				// If there is only one subnode, don't show it
-				if(fromChild) {
+				if (fromChild) {
 					// going from child to parent
 					this.gotoParent(kbook.model);
 				} else {
@@ -666,9 +667,9 @@ doInit = function() {
 	};
 	
 	// Global
-	Utils.nodes.browseFolders = browseFoldersNode;
+	Core.ui.nodes.browseFolders = browseFoldersNode;
 	
-	var gamesNode = Utils.createContainerNode({
+	var gamesNode = Core.ui.createContainerNode({
 		parent: kbook.root,
 		title: L("NODE_GAMES_AND_UTILITIES"),
 		comment: "",
@@ -677,7 +678,7 @@ doInit = function() {
 	});
 	
 	// Global
-	Utils.nodes.gamesAndUtils = gamesNode;
+	Core.ui.nodes.gamesAndUtils = gamesNode;
 	
 	// Add separator to collections and remove separator from bookmarks.
 	nodes[4]._myseparator = 1;
@@ -688,12 +689,12 @@ doInit = function() {
 	kbook.root.nodes = [nodes[0], nodes[1], nodes[2], nodes[3], browseFoldersNode, nodes[5], nodes[4], audioAndPicturesNode,  gamesNode, nodes[9]];
 	
 	// Adding Rescan internal memory node"
-	var advancedSettingsNode = Utils.nodes.advancedSettings;
+	var advancedSettingsNode = Core.ui.nodes.advancedSettings;
 	var rescanInternalMemoryNode = FolderNode.prototype.createUnscannedBookNode(advancedSettingsNode, L("NODE_RESCAN_INTERNAL_MEMORY"), "", true, true);
 	advancedSettingsNode.nodes.push(rescanInternalMemoryNode);
 	
 	// Global
-	Utils.nodes.rescanInternalMemory = rescanInternalMemoryNode;
+	Core.ui.nodes.rescanInternalMemory = rescanInternalMemoryNode;
 };
 
 return BrowseFolders;
