@@ -1,0 +1,32 @@
+// This file allows you to move addon's directory anywhere you want.
+// Edit the settings and rename it to PRSPlus-user.config
+// Note:
+//	/Data - is a root of 
+//	a: - is a root of MS card
+//	b: - is a root of SD card
+// 
+// Note:
+//	Folder path MUST end with slash!
+var config = Core.config;
+
+// Where to look for addons & core
+//
+config.addonRoot = "/Data/database/system/PRSPlus/addons/";
+config.coreRoot = "/Data/database/system/PRSPlus/core/";
+
+// Where to look for addon settings
+//
+config.settingsRoot = "/Data/database/system/PRSPlus/settings/";
+
+// Log level, available settings are: trace, info, warn, error, none
+//
+config.defaultLogLevel = "none";
+
+// Log file location
+//
+config.logFile = "/Data/PRSPlus.log";
+
+// Core folder location and core file location. 
+// If file cannot be found, core folder is used.
+config.coreRoot = "b:/VCS/code/core/";
+config.coreFile = "b:/VCS/code/core/core_all.js";
