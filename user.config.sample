@@ -7,11 +7,12 @@
 // 
 // Note:
 //	Folder path MUST end with slash!
-var config = Utils.config;
+var config = Core.config;
 
-// Where to look for addons
+// Where to look for addons & core
 //
 config.addonRoot = "/Data/database/system/PRSPlus/addons/";
+config.coreRoot = "/Data/database/system/PRSPlus/core/";
 
 // Where to look for addon settings
 //
@@ -24,3 +25,8 @@ config.defaultLogLevel = "none";
 // Log file location
 //
 config.logFile = "/Data/PRSPlus.log";
+
+// Core folder location and core file location. 
+// If file cannot be found, core folder is used.
+config.coreRoot = "b:/VCS/code/core/";
+config.coreFile = "b:/VCS/code/core/core_all.js";

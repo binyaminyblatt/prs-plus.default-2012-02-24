@@ -4,8 +4,9 @@
 //
 // History:
 //	2010-03-07 kartu - #Prepared for localization (refactored to use L function)
+//	2010-03-14 kartu - #Refactored Utils -> Core
 
-var log = Utils.getLogger("Screenshot");
+var log = Core.log.getLogger("Screenshot");
 
 var str = {
 	TITLE: "Screenshot",
@@ -30,20 +31,20 @@ var L = function (key) {
 
 
 var extension = ".jpg";
-var getSavePath = function(root) {
-	if(!FileSystem.getFileInfo(root)) {
+var getSavePath = function (root) {
+	if (!FileSystem.getFileInfo(root)) {
 		return false;
 	}
 
 	var d = new Date();
-	var name = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+	var name = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 					
-	if(!FileSystem.getFileInfo(root + name + extension)) {
+	if (!FileSystem.getFileInfo(root + name + extension)) {
 		return name + extension;
 	}
 	
 	var n = 0;
-	while(FileSystem.getFileInfo(root + name + "_" + n + extension)) {
+	while (FileSystem.getFileInfo(root + name + "_" + n + extension)) {
 		n++;
 	}
 	
@@ -79,8 +80,8 @@ var Screenshot = {
 			}
 		}
 	],
-	getTimer: function() {
-		if(typeof this.timer == "undefined") {
+	getTimer: function () {
+		if (typeof this.timer == "undefined") {
 			this.timer = new Timer();
 			this.timer.target = this;
 		}
@@ -91,7 +92,7 @@ var Screenshot = {
 		title: L("ACTION_TITLE"),
 		group: "Utils",
 		icon: "PICTURE",
-		action: function() {
+		action: function () {
 			try {
 				var root = Screenshot.options.saveTo;
 				var saveFilename = getSavePath(root);
@@ -99,7 +100,7 @@ var Screenshot = {
 				
 				var win = kbook.model.container.getWindow();
 				var bitmap = win.getBitmap();
-				var x,y,w,h;
+				var x, y, w, h;
 								
 				var stream;
 				var msg1, msg2;
@@ -118,7 +119,7 @@ var Screenshot = {
 					var width = bounds.width;
 					var height = bounds.height;
 
-					if(typeof msg1 === "undefined") {
+					if (typeof msg1 === "undefined") {
 						// FIXME ugly
 						msg1 = L("SAVING_TO") + Screenshot.optionDefs[0].valueTitles[root];
 						msg2 = saveFilename;
@@ -131,24 +132,24 @@ var Screenshot = {
 					var bounds2 = win.getTextBounds(msg2);
 					
 					var gap = 20;
-					w = Math.max(bounds1.width, bounds2.width) + gap*2; 
-					h = bounds1.height + bounds2.height + gap*3;
+					w = Math.max(bounds1.width, bounds2.width) + gap * 2; 
+					h = bounds1.height + bounds2.height + gap * 3;
 
-					x = Math.max(0, (width - w)/2);
-					y = Math.max(0, (height - h)/2);
+					x = Math.max(0, (width - w) / 2);
+					y = Math.max(0, (height - h) / 2);
 					
 					win.beginDrawing();
 					win.setPenColor(Color.white);
 					win.fillRectangle(x, y, w, h);
 					win.setPenColor(Color.black);
 					win.frameRectangle(x, y, w, h);
-					win.frameRectangle(x+1, y+1, w-2, h-2);
+					win.frameRectangle(x + 1, y + 1, w - 2, h - 2);
 					win.drawText(msg1, x + gap, y + gap, bounds1.width, bounds1.height);
-					win.drawText(msg2, x + gap, y + gap*2 + bounds1.height, bounds2.width, bounds2.height);
+					win.drawText(msg2, x + gap, y + gap * 2 + bounds1.height, bounds2.width, bounds2.height);
 					win.endDrawing();
 
 					var timer = Screenshot.getTimer();
-					timer.onCallback = function(delta) {
+					timer.onCallback = function (delta) {
 						win.invalidate(x, y, w, h);
 					};
 					timer.schedule(1000);

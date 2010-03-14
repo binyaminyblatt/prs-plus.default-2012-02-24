@@ -1,3 +1,5 @@
+return;
+
 var getSoValue = Utils.getSoValue;
 var log = Utils.getLogger("sandbox");
 
@@ -116,7 +118,7 @@ log.trace("config is " + config);
 log.trace("config.priv.ui.load so is " + getSoValue(this, "config.priv.ui.load"));
 
 // Works with text viewer
-Utils.hookAfter(kbook.bookData, "setData", function(args) {
+Core.hook.hookAfter(kbook.bookData, "setData", function(args) {
 	var data = args[0];
 	FskUI.Fonts.add("/Data/impact3.ttf");
 	FskUI.Fonts.add("/Data/impact.ttf");
@@ -188,10 +190,10 @@ try {
 	var font = FskUI.Fonts.add("/Data/impact3.ttf");
 	log.trace("FskUI.Fonts.getList() is " + FskUI.Fonts.getList());
 	log.trace("font is " + font);
-	Utils.debug.dump(font, log);
+	Core.debug.dump(font, log);
 	
 	var fonts = FskUI.Fonts.getList();
-	Utils.debug.dump(fonts[0], log);
+	Core.debug.dump(fonts[0], log);
 	
 	log.trace("finished");
 } catch (e) {
@@ -274,15 +276,15 @@ return;
 /* No effect 
 var win = kbook.model.container.getWindow();
 var events = win.events;
-Utils.hookBefore(events, "onUpdate", function() {log.trace("onUpdate");});
-Utils.hookBefore(events, "onKeyDown", function() {log.trace("onKeyDown");});
-Utils.hookBefore(events, "onKeyUp", function() {log.trace("onKeyUp");});
-Utils.hookBefore(events, "onButton", function() {log.trace("onButton");});
-Utils.hookBefore(events, "onResume", function() {log.trace("onResume");});
-Utils.hookBefore(events, "onSleep", function() {log.trace("onSleep");});
-Utils.hookBefore(events, "onSuspend", function() {log.trace("onSuspend");});
-Utils.hookBefore(events, "onWakeup", function() {log.trace("onWakeup");});
-Utils.hookBefore(events, "onQuit", function() {log.trace("onQuit");});
+Core.hook.hookBefore(events, "onUpdate", function() {log.trace("onUpdate");});
+Core.hook.hookBefore(events, "onKeyDown", function() {log.trace("onKeyDown");});
+Core.hook.hookBefore(events, "onKeyUp", function() {log.trace("onKeyUp");});
+Core.hook.hookBefore(events, "onButton", function() {log.trace("onButton");});
+Core.hook.hookBefore(events, "onResume", function() {log.trace("onResume");});
+Core.hook.hookBefore(events, "onSleep", function() {log.trace("onSleep");});
+Core.hook.hookBefore(events, "onSuspend", function() {log.trace("onSuspend");});
+Core.hook.hookBefore(events, "onWakeup", function() {log.trace("onWakeup");});
+Core.hook.hookBefore(events, "onQuit", function() {log.trace("onQuit");});
 return;
 */
 
@@ -301,15 +303,15 @@ for(var i = 0, n = events.length; i < n; i++) {
 	myHook(model2, events[i]);
 }
 function myHook(m, str) {
-	Utils.hookBefore(m, str, function() {log.trace(str);});
+	Core.hook.hookBefore(m, str, function() {log.trace(str);});
 }
 
 var bla = {
 	test: function() { log.trace("this is bla.test");}
 };
 
-Utils.hookBefore(bla, "test", function() {log.trace("before");});
-Utils.hookAfter(bla, "test", function() {log.trace("after");});
+Core.hook.hookBefore(bla, "test", function() {log.trace("before");});
+Core.hook.hookAfter(bla, "test", function() {log.trace("after");});
 bla.test();
 
 

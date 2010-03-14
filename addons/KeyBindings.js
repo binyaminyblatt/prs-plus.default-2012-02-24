@@ -5,9 +5,10 @@
 // History:
 //	2010-03-01 kartu - Fixed missing string problem for next/previous song actions.
 //	2010-03-01 kartu - #Refactored localization code to use L function
+//	2010-03-14 kartu - #Refactored Utils -> Core
 
-var getSoValue = Utils.getSoValue;
-var log = Utils.getLogger("KeyBindings");
+var getSoValue = Core.system.getSoValue;
+var log = Core.log.getLogger("KeyBindings");
 
 // --------------------------------------
 // Saving original functions
@@ -94,7 +95,7 @@ var str = {
 	ACTION_NEXT_SONG: "Next Song"
 };
 // Localize
-var L = function(key) {
+var L = function (key) {
 	if (str.hasOwnProperty(key)) {
 		return str[key];
 	} else {
@@ -110,11 +111,11 @@ var contextObjects = {
 	};
 
 // Key events
-var events = ["kHold1","kHold2","kHold3","kHold4","kHold5","kHold6","kHold7","kHold8","kHold9","kHold0",
-		"kLeft","kRight","kUp","kDown",
-		"0x27","0x27-hold","0x42","0x32","0x30","0x31","kNext","kPrevious",
-		"0x21","0x42-hold","0x32-hold","0x30-hold","0x31-hold","0x21-hold","kLast","kFirst",
-		"0x41","0x41-hold","0x40","0x40-hold"];
+var events = ["kHold1", "kHold2", "kHold3", "kHold4", "kHold5", "kHold6", "kHold7", "kHold8", "kHold9", "kHold0",
+		"kLeft", "kRight", "kUp", "kDown",
+		"0x27", "0x27-hold", "0x42", "0x32", "0x30", "0x31", "kNext", "kPrevious",
+		"0x21", "0x42-hold", "0x32-hold", "0x30-hold", "0x31-hold", "0x21-hold", "kLast", "kFirst",
+		"0x41", "0x41-hold", "0x40", "0x40-hold"];
 		
 // Key to method mappings
 var eventMethods = {
@@ -159,26 +160,26 @@ var actionName2action = {};
 var savedHooks = {};
 var hookFunction;
 
-var doHook = function(contextObj, eventMethod, context) {
+var doHook = function (contextObj, eventMethod, context) {
 	var oldFunc = contextObj[eventMethod];
-	if(oldFunc === hookFunction) {
+	if (oldFunc === hookFunction) {
 		log.warn("Attempt to doublehook " + context + "." + eventMethod);
 		return;
 	}
 	// save old hook
 	savedHooks[context + eventMethod] = oldFunc;
 	// hook
-	Utils.hook(contextObj, eventMethod, hookFunction, context);	
+	Core.hook.hook(contextObj, eventMethod, hookFunction, context);	
 };
 
 // Calls default handlers. 
 // This function Is needed because some functions are called for more than one key
 //
-var callDefaultHandler = function(context, key) {
+var callDefaultHandler = function (context, key) {
 	switch (key) {
 		case "0x27": // fallthrough
 		case "0x27-hold":
-			if(context == "book") {
+			if (context == "book") {
 				bookDoCenter.call(book);
 			} else {
 				menuDoCenter.call(menu);
@@ -186,7 +187,7 @@ var callDefaultHandler = function(context, key) {
 			break;
 		case "0x31-hold": // falltrhough
 		case "kFirst": 
-			if(context == "book") {
+			if (context == "book") {
 				bookDoFirst.call(book);
 			} else {
 				menuDoFirst.call(menu);
@@ -194,7 +195,7 @@ var callDefaultHandler = function(context, key) {
 			break;
 		case "0x30-hold": // falltrhough
 		case "kLast":
-			if(context == "book") {
+			if (context == "book") {
 				bookDoLast.call(book);
 			} else {
 				menuDoLast.call(menu);
@@ -206,7 +207,7 @@ var callDefaultHandler = function(context, key) {
 			break;
 		case "0x30": // fallthrough
 		case "kNext":
-			if(context == "book") {
+			if (context == "book") {
 				bookDoNext.call(book);
 			} else {
 				menuDoNext.call(menu);
@@ -214,7 +215,7 @@ var callDefaultHandler = function(context, key) {
 			break;
 		case "0x31": // falltrhough
 		case "kPrevious":
-			if(context == "book") {
+			if (context == "book") {
 				bookDoPrevious.call(book);
 			} else {
 				menuDoPrevious.call(menu);
@@ -225,7 +226,7 @@ var callDefaultHandler = function(context, key) {
 	}
 };
 
-hookFunction = function(args, oldFunc, tag) {
+hookFunction = function (args, oldFunc, tag) {
 	try {
 		var event = args[0];
 		var key = getSoValue(event, "key");
@@ -262,7 +263,7 @@ KeyBindings = {
 	title: L("TITLE"),
 	description: L("DESCRIPTION"),
 	icon: "SETTINGS",
-	onInit: function() {
+	onInit: function () {
 		try {
 			var options = this.options;
 			
@@ -283,11 +284,11 @@ KeyBindings = {
 			log.error("in onInit: " + e);
 		}
 	},
-	onPreInit: function() {
+	onPreInit: function () {
 		try {
 			var contextLabels = [L("GLOBAL"), L("IN_MENU"), L("IN_BOOK")];
 
-			var actions = Utils.actions;	
+			var actions = Core.actions;	
 			var values = [];
 			var valueTitles = {};
 			values.push(defVal);
@@ -295,10 +296,10 @@ KeyBindings = {
 
 			for (var i = 0, n = actions.length; i < n; i++) {
 				var action = actions[i];
-				if(action && action.hasOwnProperty("name")) {
+				if (action && action.hasOwnProperty("name")) {
 					values.push(action.name);
 					actionName2action[action.name] = action;
-					if(action.hasOwnProperty("title")) {
+					if (action.hasOwnProperty("title")) {
 						valueTitles[action.name] = action.title;
 					}
 				}				
@@ -351,7 +352,7 @@ KeyBindings = {
 				];
 				
 				// Joypad & Other buttons are for menu/book contexts only
-				if(i > 0) {
+				if (i > 0) {
 					// Joypad
 					var joypadGroup = {
 						groupTitle: L("JP_BUTTONS"),
@@ -378,7 +379,7 @@ KeyBindings = {
 						{target: target, name: "0x32", title: L("BN_BOOKMARK"), defaultValue: defVal, values: values, valueTitles: valueTitles},
 						{target: target, name: "0x30", title: L("BN_BL_NEXT"), defaultValue: defVal, values: values, valueTitles: valueTitles},
 						{target: target, name: "0x31", title: L("BN_BL_PREVIOUS"), defaultValue: defVal, values: values, valueTitles: valueTitles},
-						{target: target, name: "kNext", title:L("BN_SB_NEXT"), defaultValue: defVal, values: values, valueTitles: valueTitles},
+						{target: target, name: "kNext", title: L("BN_SB_NEXT"), defaultValue: defVal, values: values, valueTitles: valueTitles},
 						{target: target, name: "kPrevious", title: L("BN_SB_PREVIOUS"), defaultValue: defVal, values: values, valueTitles: valueTitles},
 						{target: target, name: "0x21", title: L("BN_MENU"), defaultValue: defVal, values: values, valueTitles: valueTitles},
 						{target: target, name: "0x42-hold", title: L("BN_H_SIZE"), defaultValue: defVal, values: values, valueTitles: valueTitles},
@@ -395,24 +396,24 @@ KeyBindings = {
 			log.error("in onPreInit: " + e);
 		}
 	},
-	onSettingsChanged: function(propertyName, oldValue, newValue, object) {
-		if(oldValue === newValue) {
+	onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+		if (oldValue === newValue) {
 			// nothing has changed
 			return;
 		}
 		var eventMethod = eventMethods[propertyName];
-		if(typeof eventMethod === "undefined") {
+		if (typeof eventMethod === "undefined") {
 			// nothing to do, since property is not a key
 			return;
 		}
 	
 		// Determine target object
 		var context, contextObj;
-		if(object === this.options.global) {
+		if (object === this.options.global) {
 			context = "global";
-		} else if(object === this.options.menu) {
+		} else if (object === this.options.menu) {
 			context = "menu";
-		} else if(object === this.options.book) {
+		} else if (object === this.options.book) {
 			context = "book";
 		}
 		contextObj = contextObjects[context];		
@@ -433,7 +434,7 @@ KeyBindings = {
 			title: L("ACTION_SHUTDOWN"),
 			group: "Utils",
 			icon: "SHUTDOWN",
-			action: function() {
+			action: function () {
 				model.doDeviceShutdown();
 			}
 		},
@@ -442,7 +443,7 @@ KeyBindings = {
 			title: L("ACTION_NEXT_PAGE"),
 			group: "Utils",
 			icon: "NEXT_PAGE",
-			action: function() {
+			action: function () {
 				bookDoNext.call(book);
 			}
 		},
@@ -451,7 +452,7 @@ KeyBindings = {
 			title: L("ACTION_PREVIOUS_PAGE"),
 			group: "Utils",
 			icon: "PREVIOUS_PAGE",
-			action: function() {
+			action: function () {
 				bookDoPrevious.call(book);
 			}
 		},
@@ -460,7 +461,7 @@ KeyBindings = {
 			title: L("ACTION_NEXT_IN_HISTORY"),
 			group: "Utils",
 			icon: "NEXT_PAGE",
-			action: function() {
+			action: function () {
 				bookDoRight.call(book);
 			}
 		},
@@ -469,7 +470,7 @@ KeyBindings = {
 			title: L("ACTION_PREVIOUS_IN_HISTORY"),
 			group: "Utils",
 			icon: "PREVIOUS_PAGE",
-			action: function() {
+			action: function () {
 				bookDoLeft.call(book);
 			}
 		},
@@ -478,7 +479,7 @@ KeyBindings = {
 			title: L("ACTION_NEXT_SONG"),
 			group: "Utils",
 			icon: "NEXT_PAGE",
-			action: function() {
+			action: function () {
 				model.doGotoNextSong();
 			}
 		},
@@ -487,7 +488,7 @@ KeyBindings = {
 			title: L("ACTION_PREVIOUS_SONG"),
 			group: "Utils",
 			icon: "PREVIOUS_PAGE",
-			action: function() {
+			action: function () {
 				model.doGotoPreviousSong();
 			}
 		}		

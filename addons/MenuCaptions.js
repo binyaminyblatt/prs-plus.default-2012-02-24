@@ -4,6 +4,7 @@
 //
 // History:
 //	2010-03-07 kartu - #Prepared for localization
+//	2010-03-14 kartu - #Refactored Utils -> Core
 
 var str = {
 	TITLE: "Menu Captions",
@@ -28,15 +29,15 @@ return {
 	title: L("TITLE"),
 	description: L("TITLE_COMMENT"),
 	icon: "LIST",
-	onInit: function() {
-		var styles = Utils.getSoValue(kbook.tableData, "table.skin.styles");
+	onInit: function () {
+		var styles = Core.system.getSoValue(kbook.tableData, "table.skin.styles");
 		this.big = styles[2];
 		this.small = styles[3];
 		this.onSettingsChanged();
 	},
-	onSettingsChanged: function() {
-		var styles = Utils.getSoValue(kbook.tableData, "table.skin.styles");
-		switch(this.options.style) {
+	onSettingsChanged: function () {
+		var styles = Core.system.getSoValue(kbook.tableData, "table.skin.styles");
+		switch (this.options.style) {
 			case "def":
 				styles[2] = this.big;
 				styles[3] = this.small;
@@ -58,11 +59,11 @@ return {
 			title: L("OPTION_STYLE"),
 			icon: "LIST",
 			defaultValue: "small",
-			values:      ["def", "small" , "big"],
+			values:	["def", "small" , "big"],
 			valueTitles: {
-					def: L("VALUE_SONY_DEFAULT"), 
-					small: L("VALUE_ALWAYS_SMALL"), 
-					big: L("VALUE_ALWAYS_BIG")
+				def: L("VALUE_SONY_DEFAULT"), 
+				small: L("VALUE_ALWAYS_SMALL"), 
+				big: L("VALUE_ALWAYS_BIG")
 			}
 		}
 	]
