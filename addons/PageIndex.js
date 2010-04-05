@@ -8,20 +8,10 @@
 //	2010-03-01 kartu - Added VICTORGSJG's "menu index" feature
 //	2010-03-06 kartu - #Renamed Not_SHOWN_IF_SINGLE_PAGE to NOT_SHOWN_IF_SINGLE_PAGE
 //	2010-03-14 kartu - #Refactored Utils -> Core
+//	2010-03-14 kartu - Localized
 
 var log = Core.log.getLogger("Index");
-
-var str = {
-	TITLE: "Page Index",
-	INDEX_STYLE_BOOK: "Index style in books",
-	INDEX_MODE_BOOK: "Index mode in books",
-	INDEX_MODE_MENU: "Index mode in menu",
-	INDEX_STYLE_MENU: "Index style in menu",
-	OF: "of",
-	ALWAYS_SHOWN: "Always shown",
-	NEVER_SHOWN: "Never shown",
-	NOT_SHOWN_IF_SINGLE_PAGE: "Not shown on single pages"
-};
+var str = Core.lang.getStrings("PageIndex");
 
 // Localize
 var L = function (key) {

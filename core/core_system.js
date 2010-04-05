@@ -4,6 +4,10 @@
 //
 // History:
 //	2010-03-14 kartu - Initial version, refactored from Utils
+//	2010-03-27 kartu - Added setSoValue, rootObj
+//	2010-03-27 kartu - Modified getSoValue to support single parameter call
+//	2010-04-03 kartu - Addec "compile" function
+//	2010-04-04 kartu - Added "getFastSoValue" function stub
 
 Core.system = {};
 
@@ -62,11 +66,52 @@ Core.system.cloneObj = function (obj) {
 // Getting values of properties of objects created by .so bytecode isn't always possible for custom functions.
 // However they are visible to .xb code
 // Arguments:
-//      obj - object to get value from
+//      obj - object to get value from or full object path (propName should be undefined in this case)
 //      propName - property name, could also look like "prop1.prop2.prop3"
 // Returns:
 //      property value or undefined, if property is not defined
 //
+// Note: 
+//	Supports 2 ways of calling:
+//		getSoValue(obj, "someProperty.somOtherProperty...");
+//		getSoValue("SomeObject.someProperty.someOtherProperty...");
 Core.system.getSoValue = function (obj, propName) {
-	return FskCache.mediaMaster.getInstance.call(obj, propName);
+	if (propName === undefined) {
+		return FskCache.mediaMaster.getInstance.call(Core.system.rootObj, obj);
+	} else {
+		return FskCache.mediaMaster.getInstance.call(obj, propName);
+	}
 };
+
+// Similiar as getSoValue but could be used to set settings
+// Arguments:
+//	obj - object to set value
+//	field - field name
+//	value - new value
+try {
+	Core.system.setSoValue = Core.system.getSoValue(this, "prsp.setSoValue");
+} catch (e) {
+	log.warn("failed to init setSoValue");
+}
+
+// Same as setSoValue but slightly faster, doesn't support nested properties
+//
+Core.system.getFastSoValue = function (obj, propName) {
+	// TODO replace with custom code from prsp.xsb
+	return Core.system.getSoValue(obj, propName);
+}
+
+// Compiles code in the scope of FskCache.
+// Arguments:
+//	args - comma delimited list of arguments
+//	code - function code
+try {
+	Core.system.compile = Core.system.getSoValue(this, "prsp.compile");
+} catch (e) {
+	log.warn("failed to init setSoValue");
+}
+
+
+// Reference to the root object
+//
+Core.system.rootObj = this;

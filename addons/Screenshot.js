@@ -5,22 +5,11 @@
 // History:
 //	2010-03-07 kartu - #Prepared for localization (refactored to use L function)
 //	2010-03-14 kartu - #Refactored Utils -> Core
+//	2010-03-14 kartu - Localized
 
+var str = Core.lang.getStrings("Screenshot");
 var log = Core.log.getLogger("Screenshot");
 
-var str = {
-	TITLE: "Screenshot",
-	ACTION_TITLE: "Take a Screenshot",
-	SAVING_TO: "Saving to ",
-	FAILED_TO_SAVE: "Failed to save",
-	OPT_SAVETO: "Save to",
-	OPT_FEEDBACK: "Show save progress",
-	MEMORY_STICK: "Memory Stick",
-	FEEDBACK_ON: "on",
-	FEEDBACK_OFF: "off",
-	SD_CARD: "SD Card",
-	INTERNAL_MEMORY: "Internal Memory"
-};
 var L = function (key) {
 	if (str.hasOwnProperty(key)) {
 		return str[key];

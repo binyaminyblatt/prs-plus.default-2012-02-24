@@ -6,16 +6,10 @@
 //	2010-03-05 kartu - Initial version
 //	2010-03-11 kartu - #Fixed minot bug (iterating over non existing folder)
 //	2010-03-14 kartu - #Refactored Utils -> Core
+//	2010-03-14 kartu - Localized
 
+var str = Core.lang.getStrings("EpubUserStyle");
 var log = Core.log.getLogger("EpubUserStyle");
-
-var str = {
-	TITLE: "EPUB User Style",
-	COMMENT: "Experimental, affects only books opened afterwards",
-	
-	OPTION_EPUB_CSS_FILE: "User EPUB css file",
-	VALUE_DISABLED: "disabled"
-};
 
 // Localize
 var L = function (key) {

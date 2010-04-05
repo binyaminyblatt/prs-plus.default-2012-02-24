@@ -3,7 +3,8 @@
 // Author: kartu
 //
 // History:
-//	2010-03-14 kartu - Refactored to use Core instead of Utils
+//	2010-03-14 kartu - #Refactored to use Core instead of Utils
+//	2010-03-17 kartu - #Fixed date format to always have the same length
 
 // Started at, in milliseconds
 var startedAt = (new Date()).getTime();
@@ -17,6 +18,7 @@ var config = {
 	logFile: this.addonRoot + "PRSPlus.log",
 	settingsRoot: root + "settings/"
 };
+
 // Typically would be used to override path to addons and logging settings.
 var userScript = root + "user.config";
 var Core = {
@@ -32,11 +34,28 @@ var log = function (msg) {
 		try {
 			var stream = new Stream.File(config.logFile, 1, 0);
 		        try {
+				// double digit
+				var dd = function (n) {
+					if (n < 10) {
+						return "0" + n;
+					} else {
+						return n;
+					}
+		                };
+
+
 				stream.seek(stream.bytesAvailable);
 				var d = new Date();
-				var dateStr = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " +  d.getHours() +
-					":" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds();
-				stream.writeLine(dateStr + level + " " + this.name  + "\t" + msg);
+				var year, month, day, hour, minute, sec;
+				year = dd(d.getFullYear());
+				month = dd(d.getMonth() + 1);
+				day = dd(d.getDate());
+				hour = dd(d.getHours());
+				minute = dd(d.getMinutes());
+				sec = dd(d.getSeconds());
+				var dateStr =  year + "-" + month + "-" + day + " " +  hour +
+					":" + minute + ":" + sec + "." + d.getMilliseconds();
+				stream.writeLine(dateStr + "\t" + msg);
 			} catch(ignore) {
 			} finally {
 			    stream.close();
@@ -79,15 +98,6 @@ try {
 } catch (ignore) {
 }
 
-// Adds all addons actions to the Core.actions array
-var addActions = function(addon) {
-	if(addon && addon.actions) {
-		for(var i = 0, n = addon.actions.length; i < n; i++) {
-			addon.actions[i].addon = addon;
-			Core.actions.push(addon.actions[i]);
-		}
-	}
-};
 
 // Returns content of the file <path> as a string.
 // If any kind of error happens (file doesn't exist, or is not readable etc) returns <defVal>
@@ -127,7 +137,6 @@ var initializeCore = function(corePath, coreFile) {
 					}
 				}
 			}
-			logTiming("Listing files took ");
 			utils.sort();
 			
 			// Load utils
@@ -135,13 +144,12 @@ var initializeCore = function(corePath, coreFile) {
 			for (var i = 0, n = utils.length; i < n; i++) {
 				content += getFileContent(corePath + utils[i], "") + "\n";	
 			}
-			logTiming("Combining files took ");
 			
 			var fn = new Function("Core", content, corePath, 1);
-			logTiming("Compiling core took ");
 			fn(Core);
-			logTiming("Calling core took ");
-			delete fn;			
+			delete fn;		
+			
+			Core.init();
 		} catch (e) {
 			log("Error in initializeCore: " + e);
 		} finally {
@@ -150,45 +158,7 @@ var initializeCore = function(corePath, coreFile) {
 	}
 };
 
-// Initializes addons & utils in an alphabetic order
-// Utils have "_" prefix and are initialized before addons
-var initialize = function (addonPath) {
-	var iterator = new FileSystem.Iterator(addonPath);
-	try {
-		var item;
-		var addons = [];
-		while (item = iterator.getNext()) {
-			if (item.type == "file") {
-				var path = item.path;
-				if(endsWith(path, ".js")) {
-					addons.push(path);
-				}
-			}
-		}
-		addons.sort();
-		
-		// Load addons
-		for (var i = 0, n = addons.length; i < n; i++) {
-			var addon = callScript(addonPath + addons[i]);
-			if(typeof addon !== "undefined") {
-				Core.addons.push(addon);
-				addActions(addon);
-			}
-		}
-		
-		// Will load options and initialize addons, create menu nodes etc
-		Core.initialize();		
-	} catch (e) {
-		log("Error in initialize: " + e);
-	} finally {
-		iterator.close();
-	}
-};
-
-logTiming("PRSPlus preparation took ");
 initializeCore(config.coreRoot, config.coreFile);
-initialize(config.addonRoot);
-delete initialize;
 delete initializeCore;
 
 // Finished at, in milliseconds

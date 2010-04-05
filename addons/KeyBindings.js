@@ -6,7 +6,9 @@
 //	2010-03-01 kartu - Fixed missing string problem for next/previous song actions.
 //	2010-03-01 kartu - #Refactored localization code to use L function
 //	2010-03-14 kartu - #Refactored Utils -> Core
+//	2010-03-14 kartu - Localized
 
+var str = Core.lang.getStrings("KeyBindings");
 var getSoValue = Core.system.getSoValue;
 var log = Core.log.getLogger("KeyBindings");
 
@@ -32,68 +34,6 @@ var bookDoFirst = book.doFirst;
 var bookDoLast = book.doLast;
 //--------------------------------------
 
-var str = {
-	TITLE: "Key Bindings",
-	DESCRIPTION: "Allows to bind actions to keys",
-	
-	DEFAULT_VALUE: "default",
-	
-	// Contexts
-	GLOBAL:  "Global",
-	IN_MENU: "When in menu",
-	IN_BOOK:  "When reading book",
-
-	// Button groups
-	NUM_BUTTONS: "Numeric Buttons",
-	JP_BUTTONS: "Joypad Buttons",
-	OTHER_BUTTONS: "Other Buttons",
-	VOLUME_BUTTONS: "Volume Buttons",
-	
-	// Buttons
-	BN_SIZE: "Size button",
-	BN_BOOKMARK: "Bookmark button",
-	BN_BL_NEXT: "Bottom left 'next'",
-	BN_BL_PREVIOUS: "Bottom left 'previous'",
-	BN_SB_NEXT: "Sidebar 'next'",
-	BN_SB_PREVIOUS:  "Sidebar 'previous'",
-	BN_MENU: "Menu button",
-	BN_JP_LEFT: "Joypad left",
-	BN_JP_RIGHT: "Joypad right",
-	BN_JP_UP: "Joypad up",
-	BN_JP_DOWN: "Joypad down",
-	BN_JP_CENTER: "Joypad center",
-	BN_H_SIZE: "Holding size button",
-	BN_H_BOOKMARK: "Holding bookmark button",
-	BN_H_BL_NEXT: "Holding bottom left 'next page'",
-	BN_H_BL_PREVIOUS: "Holding bottom left 'previous page'",
-	BN_H_MENU: "Holding menu button",
-	BN_H_SB_NEXT: "Holding sidebar 'next page'",
-	BN_H_SB_PREVIOUS: "Holding sidebar 'previous page'",
-	BN_H_JP_CENTER: "Holding joypad center button",
-	BN_H_1: "Hold 1",
-	BN_H_2: "Hold 2",
-	BN_H_3: "Hold 3",
-	BN_H_4: "Hold 4",
-	BN_H_5: "Hold 5",
-	BN_H_6: "Hold 6",
-	BN_H_7: "Hold 7",
-	BN_H_8: "Hold 8",
-	BN_H_9: "Hold 9",
-	BN_H_0: "Hold 0",
-	BN_VOLUME_DOWN: "Volume-",
-	BN_H_VOLUME_DOWN: "Hold Volume-",
-	BN_VOLUME_UP: "Volume+",
-	BN_H_VOLUME_UP: "Hold Volume+",
-	
-	// Actions
-	ACTION_SHUTDOWN: "Shutdown",
-	ACTION_NEXT_PAGE: "Next Page",
-	ACTION_PREVIOUS_PAGE: "Previous Page",
-	ACTION_NEXT_IN_HISTORY: "Next in History",
-	ACTION_PREVIOUS_IN_HISTORY: "Previous in History",
-	ACTION_PREVIOUS_SONG: "Previous Song",
-	ACTION_NEXT_SONG: "Next Song"
-};
 // Localize
 var L = function (key) {
 	if (str.hasOwnProperty(key)) {

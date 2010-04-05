@@ -50,16 +50,62 @@ var core_callMethodForAll = function (objArray, methodName, arg) {
 	}
 };
 
-//--------------------------------------------------------------------------------------------------------------------
-// SYSTEM - Addon nodes & settings
-//--------------------------------------------------------------------------------------------------------------------
+// Adds all addons actions to the Core.actions array
+var core_addActions = function(addon) {
+	if(addon && addon.actions) {
+		for(var i = 0, n = addon.actions.length; i < n; i++) {
+			addon.actions[i].addon = addon;
+			Core.actions.push(addon.actions[i]);
+		}
+	}
+};
+
+
+// Initializes addons & utils in an alphabetic order
+// Utils have "_" prefix and are initialized before addons
+var core_initializeAddons = function (addonPath) {
+	var iterator = new FileSystem.Iterator(addonPath);
+	try {
+		var item;
+		var addons = [];
+		while (item = iterator.getNext()) {
+			if (item.type == "file") {
+				var path = item.path;
+				if (Core.string.endsWith(path, ".js")) {
+					addons.push(path);
+				}
+			}
+		}
+		addons.sort();
+		
+		// Load addons
+		for (var i = 0, n = addons.length; i < n; i++) {
+			try {
+				var addon = Core.system.callScript(addonPath + addons[i]);
+				if (typeof addon !== "undefined") {
+					Core.addons.push(addon);
+					core_addActions(addon);
+				}
+			} catch (e0) {
+				log.error("Failed to initialize addon" + addons[i] + ": " + e0);
+			}
+		}
+	} catch (e) {
+		log.error("Error in initialize: " + e);
+	} finally {
+		iterator.close();
+	}
+};
+
 
 // Initialize function, called by autorun.js
 //
-Core.initialize = function () {
+Core.init = function () {
 	try {
-		log = Core.log.getLogger("core");
-
+		// Initialize localization engine
+		Core.lang.init();
+		core_initializeAddons(Core.config.addonRoot);
+		
 		// Root settings node, located "Settings" => "Addon Settings"
 		Core.ui.nodes.addonSettingsNode = Core.ui.createContainerNode({
 			parent: Core.ui.nodes.settings,
@@ -85,7 +131,7 @@ Core.initialize = function () {
 				log.warn("error loading settings for addon " + all[i].name + ": " + e0);
 			}
 		}
-		
+
 		// Addons and options are loaded, call init
 		core_callMethodForAll(all, "onInit");
 		
@@ -94,7 +140,6 @@ Core.initialize = function () {
 			Core.settings.createAddonNodes(all[i]);
 			Core.settings.createAddonSettings(all[i]);
 		}
-		
 	} catch (e) {
 		log.error(e);
 	}

@@ -3,7 +3,8 @@
 // Author: kartu
 //
 // History:
-//	2010-03-14 kartu - Initial version, refactored from Utils
+//	2010-03-14 kartu - #Initial version, refactored from Utils
+//	2010-03-17 kartu - #Fixed date format to always have the same length
 
 Core.log = {
 	loggers: {},
@@ -35,12 +36,28 @@ Core.log = {
 			} else {
 				level = " " + level;
 			}
-			var stream = new Stream.File(config.logFile, 1, 0);
+			var stream = new Stream.File(Core.config.logFile, 1, 0);
 			try {
+				// double digit
+				var dd = function (n) {
+					if (n < 10) {
+						return "0" + n;
+					} else {
+						return n;
+					}
+		                };			
+				
 				stream.seek(stream.bytesAvailable);
 				var d = new Date();
-				var dateStr = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " +  d.getHours() +
-					":" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds();
+				var year, month, day, hour, minute, sec;
+				year = dd(d.getFullYear());
+				month = dd(d.getMonth() + 1);
+				day = dd(d.getDate());
+				hour = dd(d.getHours());
+				minute = dd(d.getMinutes());
+				sec = dd(d.getSeconds());				
+				var dateStr = year + "-" + month + "-" + day + " " +  hour +
+					":" + minute + ":" + sec + "." + d.getMilliseconds();
 				stream.writeLine(dateStr + level + " " + this.name  + "\t" + msg);
 			} catch (ignore) {
 			} finally {
@@ -69,3 +86,4 @@ Core.log = {
 	dummy: function () {}
 };
 
+log = Core.log.getLogger("core");
