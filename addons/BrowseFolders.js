@@ -6,6 +6,7 @@
 //	2010-03-06 kartu - Added mount/umount feature
 //	2010-03-07 kartu - #Prepared for localization
 //	2010-03-14 kartu - #Refactored Utils -> Core
+//	2010-03-14 kartu - Localized
 
 // Shortcuts
 var log = Core.log.getLogger("BrowseFolders");
@@ -18,35 +19,7 @@ var BookMIMEs = Core.ui.BookMIMEs;
 var doInit;
 
 // Localize
-var str = {
-	TITLE:  "Browse Folders",
-	OPTION_SORTING_MODE: "Sorting mode",
-	VALUE_BY_TITLE: "By title",
-	VALUE_BY_AUTHOR_THEN_TITLE: "By author then title",
-	VALUE_BY_AUTHOR_SWAPPING: "By author swapping name/surname",
-	VALUE_BY_FILENAME: "By filename",
-	OPTION_TITLE_SORTER: "Use titleSorter field, when sorting",
-	ENABLED: "enabled",
-	DISABLED: "disabled",
-	OPTION_IM_ROOT: "Internal memory root folder",
-	OPTION_CARD_SCAN: "SD/MS card scan",
-	OPTION_MOUNT: "Use mount with SD/MS (experimental)",
-	NODE_RESCAN_INTERNAL_MEMORY: "Rescan internal memory",
-	NODE_COPY_TO_INTERNAL_MEMORY: "Copy to internal memory",
-	NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copies file to the internal memory root",
-	NODE_COPY_AND_RESCAN: "Copy & Rescan internal memory",
-	NODE_COPY_AND_RESCAN_COMMENT: "Copies file to the internal memory root and rescans books",
-	ERROR_TARGET_EXISTS: "Error, target file exists",
-	NODE_AUDIO_AND_PICTURES: "Audio & Pictures",
-	NODE_BROWSE_FOLDERS: "Browse Folders",
-	NODE_BROWSE_FOLDERS_COMMENT: "Browse the file system",
-	NODE_INTERNAL_MEMORY: "Internal Memory",
-	NODE_MEMORY_STICK: "Memory Stick",
-	NODE_MEMORY_STICK_MOUNT: "Memory Stick via mount",
-	NODE_SD_CARD: "SD Card",
-	NODE_SD_CARD_MOUNT: "SD Card via mount",
-	NODE_GAMES_AND_UTILITIES: "Games & Utilities"
-};
+var str = Core.lang.getStrings("BrowseFolders");
 
 var L = function (key) {
 	if (str.hasOwnProperty(key)) {
@@ -167,38 +140,6 @@ kbook.model.doDeleteBook = function () {
 	} catch (ee) {
 		log.error("Error in doDeleteBook: " + ee);
 	}
-};
-
-
-// Little hack to allow easy changing of node title, comment, kind etc
-kbook.tableData.oldGetValue = kbook.tableData.getValue;
-kbook.tableData.getValue = function (node, field) {
-	try {
-		var myVal = node["_my" + field];
-		if (typeof myVal != "undefined") {
-			if (typeof myVal == "function") {
-				return myVal.call(node, arguments);
-			}
-			return myVal;
-		}
-	} catch (e) {
-	}
-	return this.oldGetValue.apply(this, arguments);
-};
-
-kbook.tableData.oldGetKind = kbook.tableData.getKind;
-kbook.tableData.getKind = function () {
-	try {
-		var myVal = this.node._mykind;
-		if (typeof myVal != "undefined") {
-			if (typeof myVal == "function") {
-				return myVal.call(this, arguments);
-			}
-			return myVal;
-		}
-	} catch (e) {
-	}
-	return this.oldGetKind();
 };
 
 // Book path to index map. Allows to find existing book node corresponding to a given path.

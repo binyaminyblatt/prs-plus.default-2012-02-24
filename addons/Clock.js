@@ -5,23 +5,12 @@
 // History:
 //	2010-03-07 kartu - #Prepared for localization
 //	2010-03-14 kartu - #Refactored Utils -> Core
+//	2010-03-14 kartu - Localized
 
+var str = Core.lang.getStrings("Clock");
 var log = Core.log.getLogger("Clock");
 
 // Localize
-var str = {
-	OPTION_STYLE: "Clock Style",
-	VALUE_24H: "24 hours",
-	VALUE_12H: "12 hours",
-	OPTION_MODE: "Clock Mode",
-	VALUE_ALWAYS_SHOWN: "Always shown",
-	VALUE_SHOWN_ONLY_IN_MENU: "Shown only in menu",
-	VALUE_SHOWN_WHEN_READING: "Shown only when reading",
-	VALUE_OFF: "OFF",
-	ACTION_TOGGLE_CLOCK: "Toggle Clock",
-	AM: "am",
-	PM: "pm"
-};
 var L = function (key) {
 	if (str.hasOwnProperty(key)) {
 		return str[key];

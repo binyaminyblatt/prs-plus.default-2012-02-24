@@ -4,6 +4,7 @@
 //
 // History:
 //	2010-03-14 kartu - Initial version, refactored from Utils
+//	2010-04-05 kartu - Added Core.version object.
 
 // About
 var getSoValue = Core.system.getSoValue;
@@ -25,5 +26,7 @@ store.call(this, record, "kind", 4);
 records.splice(0, 0, record);
 
 about.dataChanged();
-
-// FIXME 1 of 1 is displayed instead of 1 of 2
+Core.version = {
+	script: prspScriptVersion,
+	firmware: prspFirmwareVersion
+};

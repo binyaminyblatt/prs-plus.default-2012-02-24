@@ -1,5 +1,183 @@
 return;
 
+var log = Core.log.getLogger("sandbox");
+var getSoValue = Core.system.getSoValue;
+var setSoValue = Core.system.setSoValue;
+
+var mylog = function (msg) {
+	log.trace(msg);
+}
+
+var f = getSoValue("prsp.compile");
+try {
+	var s = Core.io.getFileContent("b:/test.js", "log2('error loading file');")
+	log.trace("test.js content is: " + s);
+	var f2 = f("ccc,log2", s);
+	f2(Core, mylog);
+} catch (e) {
+	log.trace("failed to call prsp.compile function: " + e);
+}
+
+return;
+
+var f = new Function("log.trace('Hello ' + hello + ' Fskin is ' + Fskin)");
+f("world");
+
+
+var about = getSoValue(Core.system.rootObj, "Fskin.kbookAbout");
+var oldDraw = getSoValue(about, "draw");
+var myDraw = function() {
+	oldDraw.apply(this, arguments);	
+	var win = this.getWindow();
+	win.setPenColor(Color.black);
+	win.drawText("Hello World!", 100, 100, 300, 300);
+};
+setSoValue(about, "draw", myDraw);
+return;
+
+log.trace("prsp so is " + typeof getSoValue(this, "prsp"));
+log.trace("prsp is " + typeof prsp);
+
+var prsp = getSoValue(this, "prsp"); 
+log.trace("prsp.setSoValue is " + typeof prsp.setSoValue);
+
+var setSoValue = getSoValue(this, "prsp.setSoValue");
+var obj = {};
+//var result = setSoValue.call({}, obj, "hey", "ho");
+var result = setSoValue(obj, "hey", "ho");
+log.trace("successfully called setSoValue(), result is " + result);
+log.trace("ob.hey is " + obj.hey);
+
+setSoValue.call(prsp, prsp, "hey", "ho");
+log.trace("prsp hey so is " + getSoValue(this, "prsp.hey"));
+
+var nodes = Core.ui.nodes.booksByTitle.nodes;
+var obj = nodes[0];
+var obj1 = nodes[1];
+setSoValue(obj, "criterion", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+setSoValue(obj1, "criterion", "АБВГДЕЁЖЗИЙКЛМНОПРСТУФЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфцчшщъыьэюя");
+setSoValue(obj, "name", "n0-xyz");
+setSoValue(obj1, "name", "nА-юя");
+setSoValue(obj, "title", "0-xyz");
+setSoValue(obj1, "title", "А-юя");
+
+var children = Core.ui.nodes.booksByTitle.children;
+obj = children._1;
+obj1 = children._2;
+setSoValue(obj, "criterion", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+setSoValue(obj1, "criterion", "АБВГДЕЁЖЗИЙКЛМНОПРСТУФЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфцчшщъыьэюя");
+setSoValue(obj, "name", "n0-xyz");
+setSoValue(obj1, "name", "nА-юя");
+setSoValue(obj, "title", "0-xyz");
+setSoValue(obj1, "title", "А-юя");
+
+
+/*log.trace("obj.criterion so is " + getSoValue(obj, "criterion"));
+log.trace("obj1.criterion so is " + getSoValue(obj1, "criterion"));
+log.trace("obj.name so is " + getSoValue(obj, "name"));
+log.trace("obj1.name so is " + getSoValue(obj1, "name"));
+log.trace("obj.title so is " + getSoValue(obj, "title"));
+log.trace("obj1.title so is " + getSoValue(obj1, "title"));
+*/
+
+setSoValue(getSoValue(kbook, "strings"), "infoTitles", "Cover,Ti33tle,Aut12hor,Publis44her,Cat444egory,eB44ook ID,Kin44d,Da44te,Size,Location,File,Digital Rights,Expires");
+var myMimeFormat = function() { return "hello world"; };
+setSoValue(getSoValue(FskCache, "tree.infoListNode.prototypes.mime"), "format", myMimeFormat);
+
+return;
+
+kbook.model.oldOnEnterInfo = kbook.model.onEnterInfo;
+kbook.model.onEnterInfo = function(node) {
+	/*log.trace("kbook.children.info.nodes is " + kbook.children.info.nodes);
+	log.trace("node.nodes is " + node.nodes);
+	log.trace("node.nodes[0].name is " + node.nodes[0].name);
+	log.trace("node.nodes[1].name is " + node.nodes[1].name);
+	log.trace("node.nodes[2].name is " + node.nodes[2].name);
+	log.trace("node.nodes[3].name is " + node.nodes[3].name);
+	log.trace("node.nodes[4].name is " + node.nodes[4].name);
+	log.trace("node.nodes[5].name is " + node.nodes[5].name);*/
+	node.nodes[0].name = "TITLE";
+	node.nodes[1].name = "KIND";
+	node.nodes[2].name = "DATE";
+	node.nodes[3].name = "SIZE";
+	node.nodes[4].name = "LOCATION";
+	node.nodes[5].name = "FILE";
+	this.oldOnEnterInfo(node);
+}
+
+log.trace("kbook.model.onEnterInfo is " + kbook.model.onEnterInfo);
+//log.trace("kbook.children.info.nodes is " + kbook.children.info.nodes);
+log.trace("kbook.strings.infoFormats so is " + getSoValue(kbook.strings, "infoTitles"));
+log.trace("kbook.strings.infoTitles is " + kbook.strings.infoTitles);
+
+return;
+var children = kbook.root.children.settings.children.setdate_clock.children;
+children.ok.min = "MUhaha";
+children.ok.max = "HA";
+children.code_yy.title = "YAAR";
+children.code_yy.name = "YAAR";
+children.code_yy.name2 = "YAAR";
+children.code_yy._mytitle = "myAR";
+children.code_mm.title="MUNTH";
+children.code_dd.title="DOY";
+
+log.trace("Core.ui.nodes.settings.nodes[2].title is " + Core.ui.nodes.settings.nodes[1].title);
+var setDateNode = Core.ui.nodes.settings.nodes[1];
+setDateNode.name="it's ma name";
+var nodes = setDateNode.nodes;
+nodes[0].name = "ma_year"; //year
+nodes[1].name = "ma_month"; // month
+nodes[2].name = "ma_date"; // day
+nodes[3].name = "ma_hour"; // hour
+nodes[4].name = "ma_minute"; // minute
+nodes[5].min = "min"; // ok button
+
+kbook.root
+
+/*
+kbook.settingData.oldGetTitle = kbook.settingData.getTitle;
+kbook.settingData.getTitle = function(arg) {
+	var nodes = this.node.nodes;
+	log.trace("got " + nodes.length + " sub nodes");
+	for (var i = 0, n = nodes.length; i < n; i++) {
+		log.trace("Fskin is " + Fskin);
+		log.trace("nodes[" + i + "].title => " + nodes[i].title);
+		log.trace("nodes[" + i + "].name => " + nodes[i].name);
+	}
+	return "yeeha";
+};*/
+
+var setting = kbook.model.container.SETTING_GROUP.SETTING;
+log.trace("setting.data so is " + (typeof getSoValue(setting, "data")));
+log.trace("setting.data.records.length so is " + (getSoValue(setting, "data.records.length")));
+log.trace("setting.data.fields so is " + (typeof getSoValue(setting, "data.fields")));
+var getRecord = getSoValue(setting, "data.getRecord");
+var data = getSoValue(setting, "data");
+var result = getRecord.call(data, 0);
+log.trace("result is " + (typeof result));
+
+return;
+kbook.model.container.MENU_GROUP.MENU.doLeft = function(args) {
+	log.trace("hehaha");
+	log.trace(Core.system.getSoValue(kbook.root.children, "booksByAuthor.children._6"));
+	log.trace(Core.system.getSoValue(kbook.root.children, "booksByAuthor.children._6.criterion"));
+	log.trace("kbook.root.children.booksByAuthor.children._6 is " + kbook.root.children.booksByAuthor.children._6);
+	log.trace("kbook.root.children.booksByAuthor.children._6.title is " + kbook.root.children.booksByAuthor.children._6.title);
+	log.trace("kbook.root.children.booksByAuthor.children._6.index is " + kbook.root.children.booksByAuthor.children._6.index);
+	kbook.root.children.booksByAuthor.children._6.index = 2;
+	log.trace("kbook.root.children.booksByAuthor.offsets is " + kbook.root.children.booksByAuthor.offsets);
+	log.trace("kbook.root.children.booksByAuthor.offsets so is" + getSoValue(kbook.root.children.booksByAuthor, "offsets"));
+	log.trace("kbook.root.children.booksByAuthor.children._6.index is " + kbook.root.children.booksByAuthor.children._6.index);
+	log.trace("kbook.root.children.booksByAuthor.children._6.criterion is " + kbook.root.children.booksByAuthor.children._6.criterion);
+	
+	log.trace("kbook.root.children.booksByAuthor.reorder is " + kbook.root.children.booksByAuthor.reorder);
+	log.trace("kbook.root.children.booksByAuthor.reorder so is " + getSoValue(kbook.root.children.booksByAuthor, "reorder"));
+};
+		
+log.trace("hey");
+
+return;
+
 var getSoValue = Utils.getSoValue;
 var log = Utils.getLogger("sandbox");
 

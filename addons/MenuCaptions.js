@@ -5,15 +5,9 @@
 // History:
 //	2010-03-07 kartu - #Prepared for localization
 //	2010-03-14 kartu - #Refactored Utils -> Core
+//	2010-03-14 kartu - Localized
 
-var str = {
-	TITLE: "Menu Captions",
-	TITLE_COMMENT: "Allows to choose menu caption style",
-	OPTION_STYLE: "Menu Captions Style",
-	VALUE_SONY_DEFAULT: "Sony default",
-	VALUE_ALWAYS_SMALL: "Always small",
-	VALUE_ALWAYS_BIG: "Always big"
-};
+var str = Core.lang.getStrings("MenuCaptions");
 
 var L = function (key) {
 	if (str.hasOwnProperty(key)) {
@@ -22,7 +16,6 @@ var L = function (key) {
 		return "MenuCaption." + key;
 	}
 };
-
 
 return {
 	name: "MenuCaptions",

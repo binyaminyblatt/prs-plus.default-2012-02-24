@@ -5,15 +5,9 @@
 // History:
 //	2010-03-04 kartu - Initial version
 //	2010-03-14 kartu - #Refactored Utils -> Core
+//	2010-03-14 kartu - Localized
 
-var str = {
-	TITLE: "Default Text Encoding",
-	COMMENT: "Affects books in TXT,RTF format, requires restart",
-	OPTION_TITLE: "Encoding",
-	DESCRIPTION: "Allows to choose menu caption style",
-	LATIN: "Latin",
-	RUSSIAN:  "Russian (win1251)"
-};
+var str = Core.lang.getStrings("TextEncoding")
 
 // Localize
 var L = function (key) {

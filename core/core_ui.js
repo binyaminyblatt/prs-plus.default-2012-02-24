@@ -169,3 +169,46 @@ Core.ui.nodes = {
 	advancedSettings: core_ui_nodes[9].nodes[4]
 };
 
+// Little hack to allow easy changing of node title, comment, kind etc
+
+
+kbook.tableData.oldGetValue = kbook.tableData.getValue;
+kbook.tableData.getValue = function (node, field) {
+	try {
+		// TODO remove
+		if (field === "comment") {
+			//log.trace("comment field was asked for node: " + node.name);
+		}
+		
+		var myVal = node["_my" + field];
+		if (typeof myVal != "undefined") {
+			if (typeof myVal == "function") {
+				return myVal.call(node, arguments);
+			}
+			return myVal;
+		}
+	} catch (e) {
+	}
+	try {
+		return this.oldGetValue.apply(this, arguments);
+	} catch (e2) {
+		// TODO ?
+		return "error: " + e2;
+	}
+};
+
+kbook.tableData.oldGetKind = kbook.tableData.getKind;
+kbook.tableData.getKind = function () {
+	try {
+		var myVal = this.node._mykind;
+		if (typeof myVal != "undefined") {
+			if (typeof myVal == "function") {
+				return myVal.call(this, arguments);
+			}
+			return myVal;
+		}
+	} catch (e) {
+	}
+	return this.oldGetKind();
+};
+
