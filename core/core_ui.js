@@ -4,6 +4,7 @@
 //
 // History:
 //	2010-03-14 kartu - Initial version, refactored from Utils
+//	2010-04-05 kartu - Removed stale code, added logging to getValue
 
 Core.ui = {};
 
@@ -175,11 +176,6 @@ Core.ui.nodes = {
 kbook.tableData.oldGetValue = kbook.tableData.getValue;
 kbook.tableData.getValue = function (node, field) {
 	try {
-		// TODO remove
-		if (field === "comment") {
-			//log.trace("comment field was asked for node: " + node.name);
-		}
-		
 		var myVal = node["_my" + field];
 		if (typeof myVal != "undefined") {
 			if (typeof myVal == "function") {
@@ -188,11 +184,12 @@ kbook.tableData.getValue = function (node, field) {
 			return myVal;
 		}
 	} catch (e) {
+		log.error("in _my getValue: " + e);
 	}
 	try {
 		return this.oldGetValue.apply(this, arguments);
 	} catch (e2) {
-		// TODO ?
+		log.error("in getValue: " + e2);
 		return "error: " + e2;
 	}
 };
