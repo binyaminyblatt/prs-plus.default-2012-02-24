@@ -1,9 +1,10 @@
 // Name: sudoku game
 // Description: adapted version of Sudoku
-// Author: Clemenseken, kartu
+// Author: Clemenseken
 //
 // History:
 //	2010-03-14 kartu - #Refactored Utils -> Core
+//	2010-04-10 kartu - Prepared for merging into single js
 
 var Mahjong = {
 	name: "Mahjong",
@@ -24,4 +25,4 @@ var Mahjong = {
 	}]
 };
 
-return Mahjong;
+Core.addAddon(Mahjong);

@@ -3,48 +3,170 @@
 //
 // History:
 //	2010-03-17 kartu - Initial version
-//	2010-04-05 kartu - Finished localization 
-Core.lang = {
-	name: "Localization",
-	title: "Localization",
-	optionDefs: [{
-		name: "lang",
-		title: "Language",
-		icon: "LIST",
-		defaultValue: "English.js",
-		values:	["English.js"],
-		valueTitles: ["English"]
-	}],
+//	2010-04-05 kartu - Finished localization
+//	2010-04-10 kartu - Fixed collections localization (reported by kravitz)
+//	2010-04-21 kartu - Localized. Fixed invisible "continue" comment bug.
+//	2010-04-22 kartu - Added date customization
 
-	init: function () {
-		try {
-			Core.settings.loadOptions(this);
-			this._strings = Core.system.callScript(Core.config.coreRoot + "lang/" + this.options.lang, log);
+var tmp = function() {
+	var _strings; // whatever is loaded from lang/<language>.js file
+	var langL;
+	var localizeDefaultUI;
+	var getDateFunc = function(format, separator) {
+		var toDoubleDigit = function (num) {
+					if (num < 10) {
+						return "0" + num;
+					} else {
+						return num;
+					}
+		};		
+		// "ddMMYY", "MMddYY", "YYMMdd", "ddMMMYY", "ddMONTHYY", "ddMMYYYY", "MMddYYYY", "YYYYMMdd", "ddMMMYYYY", "ddMONTHYYYY"
+		return function() {
+			var where = 0;
+			try {
+				var date = this;
+				where = 1;
+				var day, month, nMonth, year, shortYear;
+				day = toDoubleDigit(date.getDate());
+				nMonth = date.getMonth() + 1;
+				month = toDoubleDigit(nMonth); 
+				year = date.getFullYear();
+				where = 2;
+				shortYear = toDoubleDigit(year - Math.floor(year/100) * 100);
+				where = 3;
+				switch (format) {
+					case "ddMMYY":
+						return day + separator + month + separator + shortYear;
+					case "MMddYY":
+						return month + separator + day + separator + shortYear;
+					case "YYMMdd":
+						return shortYear + separator + month + separator + day;
+					case "ddMMMYY":
+						return day + separator + langL("MONTH_SHORT_" + nMonth) + separator + shortYear;
+					case "ddMONTHYY":
+						return day + separator + langL("MONTH_" + nMonth) + separator + shortYear;
+					case "ddMMYYYY":
+						return day + separator + month + separator + year;
+					case "MMddYYYY":
+						return month + separator + day + separator + year;
+					case "YYYYMMdd":
+						return year + separator + month + separator + day;
+					case "ddMMMYYYY":
+						return day + separator + langL("MONTH_SHORT_" + nMonth) + separator + year;
+					case "ddMONTHYYYY":
+						return day + separator + langL("MONTH_" + nMonth) + separator + year;
+					default:
+						return day + separator + month + separator + shortYear;
+				}
+			} catch (e) {
+				return "error in date func: " + where;
+			}
 
-			// If locale is English, there is nothing to localize
-			if ("English.js" !== this.options.lang) {
-				this._localizeDefaultUI();
+		};
+	};
+	Core.lang = {
+		// "fake" options, used only for loading stuff saved by other addon
+		name: "Localization",
+		optionDefs: [
+			{
+				name: "lang",
+				defaultValue: "English.js"
+			},
+			{
+				name: "dateFormat",
+				defaultValue: "default"
+			},
+			{
+				name: "dateSeparator",
+				defaultValue: "/"
 			}
-		} catch (e) {
-			log.error("in Core.lang.init: " + e);
-		}
-	},
+		],
 	
-	getStrings: function (category) {
-		try {
-			if (this._strings !== undefined && this._strings[category] !== undefined) {
-				return this._strings[category];
-			} else {
-				log.warn("Cannot find strings for category: " + category);
-				return {};
+		init: function () {
+			try {
+				Core.settings.loadOptions(this);
+				
+				try {
+					_strings = Core.system.callScript(Core.config.coreRoot + "lang/" + this.options.lang, log);
+				} catch (e0) {
+					log.error("Failed to load strings: ", e0);
+				}
+	
+				// If locale is English, there is nothing to localize
+				if ("English.js" !== this.options.lang) {
+					try {
+						localizeDefaultUI();
+					} catch (e1) {
+						log.error("Failed to localize default UI", e1);
+					}
+				}
+				
+				// Date
+				if ("default" !== this.options.dateFormat) {
+					var separator = "/";
+					switch (this.options.dateSeparator) {
+						case "minus":
+							separator = "-";
+							break;
+						case "dot":
+							separator = ".";
+							break;
+						case "space":
+							separator = " ";
+							break;
+						case "none":
+							separator = "";
+							break;
+					}
+					Date.prototype.toLocaleDateString = getDateFunc(this.options.dateFormat, separator);
+				}
+				
+				coreL = this.getLocalizer("Core"); // defined in core
+				langL = this.getLocalizer("CoreLang");
+			} catch (e) {
+				log.error("in Core.lang.init: " + e);
 			}
-		} catch (e) {
-			log.error("in getStrings: " + e);
-		}
-	},
+		},
+		
+		getStrings: function (category) {
+			try {
+				if (_strings !== undefined && _strings[category] !== undefined) {
+					return _strings[category];
+				} else {
+					log.warn("Cannot find strings for category: " + category);
+					return {};
+				}
+			} catch (e) {
+				log.error("in getStrings: " + e);
+			}
+		},
+		
+		getLocalizer: function (category) {
+			var createLocalizer = function(str, prefix) {
+				var f = function(key) {
+					if (str.hasOwnProperty(key)) {
+						return str[key];
+					} else {
+						return prefix + key;
+					}
+				};
+				return f;
+			};
+			return createLocalizer(this.getStrings(category), category + ".");
+		}		
+	};
 	
-	_localizeDefaultUI_localizeDate: function() {
-		var sony = this._strings.Sony;
+	//--------------------------------------------------------------------------------------
+	// utility functions
+	//--------------------------------------------------------------------------------------
+	var L, LF, setStr, getPageChangedFunc, settingsComment;
+
+	//--------------------------------------------------------------------------------------
+	// "Localizing" functions
+	//--------------------------------------------------------------------------------------
+	
+	var localizeDate = function() {
+		var sony = _strings.Sony;
 		// Set date related stuff
 		//
 		// FIXME side effects!!!
@@ -53,7 +175,7 @@ Core.lang = {
 				return sony.FUNC_GET_DATE(this);
 			};
 		}
-		// Need to fix this, since original version of the funciton made assumptions about date/time format 
+		// Need to fix this, since original version of the function made assumptions about date/time format 
 		kbook.model.getDateAndClock = function () {
 			this.getDateTimeStr();
 			var date = new Date();
@@ -65,12 +187,16 @@ Core.lang = {
 			this.clockS = 0;
 		};
 		
-	},
+	};
 	
-	_localizeDefaultUI_Root: function(L, LF, setStr, settingsComment, nodes) {
+	var localizeRoot = function() {
+		var nodes = Core.ui.nodes;
+		var getSoValue = Core.system.getSoValue;
+		
 		setStr(nodes["continue"], "CONTINUE");
 		nodes["continue"]._mycomment = function (arg) {
-			return kbook.model.currentBook !== null ? this.comment() : L("NO_BOOK");
+			var bookNode = kbook.model.currentBook;
+			return bookNode !== null ?  getSoValue(bookNode, "media.title") : L("NO_BOOK");
 		};
 		
 		// Books by ?
@@ -85,6 +211,10 @@ Core.lang = {
 		setStr(nodes.collections, "COLLECTIONS");
 		nodes.collections._mycomment = function () {
 			return LF("FUNC_X_COLLECTIONS", this.length);
+		};
+		// Books inside collections
+		kbook.root.children.collections.prototype._mycomment = function() {
+			return LF("FUNC_X_BOOKS", this.playlist.items.length);
 		};
 		
 		// Bookmarks
@@ -114,11 +244,12 @@ Core.lang = {
 		// Settings
 		setStr(nodes.settings, "SETTINGS");
 		nodes.settings._mycomment = settingsComment;		
-	},
+	};
 	
-	_localizeDefaultUI_Settings: function(L, LF, setStr, settingsComment, nodes) {
+	var localizeSettings = function() {
 		// Settings - Orientation
-		var settingsChildren = nodes.settings.children; 
+		var settingsNode = Core.ui.nodes.settings;
+		var settingsChildren = settingsNode.children; 
 		setStr(settingsChildren.orientation, "ORIENTATION");
 		settingsChildren.orientation._mycomment = function () {
 			return kbook.model.container.getVariable('ORIENTATION') ? L("HORIZONTAL") : L("VERTICAL");
@@ -129,7 +260,7 @@ Core.lang = {
 		settingsChildren.setdate_clock._mycomment = function() {
 			return LF("FUNC_GET_DATE_TIME", new Date());
 		};
-		var setDateNodes = Core.ui.nodes.settings.nodes[1].nodes;
+		var setDateNodes = settingsNode.nodes[1].nodes;
 		setDateNodes[0].name = L("YEAR"); //year
 		setDateNodes[1].name = L("MONTH"); // month
 		setDateNodes[2].name = L("DATE"); // day
@@ -169,10 +300,12 @@ Core.lang = {
 		// Settings - About
 		setStr(settingsChildren.about, "ABOUT");
 		setStr(settingsChildren.resetToFactorySettings, "RESET_TO_FACTORY");
-	},
+	};
 	
-	_localizeDefaultUI_AdvancedSettings: function(L, LF, setStr, settingsComment, nodes) {
+	var localizeAdvancedSettings = function() {
 		try {
+			var nodes = Core.ui.nodes;
+			
 			// Settings - Advanced Settings
 			setStr(nodes.advancedSettings, "ADVANCED_SETTINGS");
 			nodes.advancedSettings._mycomment = settingsComment;
@@ -202,11 +335,11 @@ Core.lang = {
 			// Settings - Advanced Settings - Shutdown
 			setStr(advancedSettingsChildren.deviceShutdown, "DEVICE_SHUTDOWN");
 		} catch (e) {
-			log.error("in _localizeDefaultUI_AdvancedSettings: " + e);
+			log.error("in localizeAdvancedSettings: " + e);
 		}
-	},
+	};
 	
-	_localizeDefaultUI_Book: function(L, LF, setStr, settingsComment, nodes) {
+	var localizeBook = function() {
 		// Book
 		var bookChildren = kbook.children; 
 		setStr(bookChildren["continue"], "CONTINUE");
@@ -240,9 +373,9 @@ Core.lang = {
 		
 		setStr(kbook.children.utilities, "UTILITIES");
 		kbook.children.utilities._mycomment = settingsComment;		
-	},
+	};
 	
-	_localizeDefaultUI_BookUtils: function(L, LF, setStr, settingsComment, nodes) {
+	var localizeBookUtils = function() {
 		// Book.Utilities 
 		var bookUtilChildren = kbook.children.utilities.children;
 		var getSoValue = Core.system.getSoValue;
@@ -257,12 +390,12 @@ Core.lang = {
 		};
 		
 		setStr(bookUtilChildren.deleteBook, "DELETE_BOOK");
-	},
+	};
 	
-	_localizeDefaultUI_BookByDate: function(L, LF, setStr, settingsComment, nodes) {
+	var localizeBookByDate = function() {
 		try {		
 			// BooksByDate child children
-			var children = nodes.booksByDate.children;
+			var children = Core.ui.nodes.booksByDate.children;
 			setStr(children._1, "TODAY");
 			setStr(children._2, "EARLIER_THIS_WEEK");
 			setStr(children._3, "LAST_WEEK");
@@ -274,11 +407,11 @@ Core.lang = {
 			setStr(children._9, "LAST_YEAR");
 			setStr(children._0, "OLDER");
 		} catch (e) {
-			log.error("In _localizeDefaultUI_BookByDate: " + e);
+			log.error("In localizeBookByDate: " + e);
 		}
-	},
+	};
 
-	_localizeDefaultUI_BookByTitleAndAuthor: function(L, LF, setStr, settingsComment, nodes) {
+	var localizeBookByTitleAndAuthor = function() {
 		if (L("CUSTOM_SORT") === true) {
 			var setSoValue = Core.system.setSoValue;
 			var childrenTitle = Core.ui.nodes.booksByTitle.children;
@@ -296,9 +429,9 @@ Core.lang = {
 				setSoValue(obj2, "title", title);			
 			}
 		}
-	},
+	};
 	
-	_localizeDefaultUI_Comments: function(L, LF) {
+	var localizeComments = function() {
 		var getSoValue = Core.system.getSoValue;
 		var getFastSoValue = Core.system.getFastSoValue;
 		
@@ -375,9 +508,9 @@ Core.lang = {
 				return L("PAGE") + ' ' + page;
 			}
 		};		
-	},
+	};
 	
-	_localizeDefaultUI_Static: function(L) {
+	var localizeStatic = function() {
 		var obj;
 		var container = kbook.model.container;
 		// Invalid Format!
@@ -421,7 +554,6 @@ Core.lang = {
 		// internal memory.
 		obj.FORMAT_DEVICE.LB_MESSAGE2.setValue(L("MSG_INTERNAL_MEMORY"));
 		
-		
 		// Restore Defaults
 		obj = container.SOFT_RESET_GROUP;
 		obj.LB_TITLE.setValue(L("RESTORE_DEFAULTS"));
@@ -446,22 +578,10 @@ Core.lang = {
 		
 		// Info page 
 		var oldPageChanged = container.INFO_GROUP.INFO.pageChanged;		
-		container.INFO_GROUP.INFO.pageChanged = this._getPageChangedFunc("INFO_INDEX_COUNT", oldPageChanged, L);
-	},
+		container.INFO_GROUP.INFO.pageChanged = getPageChangedFunc("INFO_INDEX_COUNT", oldPageChanged, L);
+	};
 	
-	_getPageChangedFunc: function(varName, oldFunc, L) {
-		var model = kbook.model;
-		var of = L("OF");
-		return function() {
-			oldFunc.apply(this, arguments);
-			var s = model.getVariable(varName);
-			if (s) {
-				model.setVariable(varName, s.replace("of", of));
-			}
-		};
-	},
-	
-	_localizeDefaultUI_Kbook: function (L) {
+	var localizeKbook = function () {
 		// SHUTDOWN_MSG related stuff
 		// No battery!
 		kbook.model.SHUTDOWN_MSG = L("NO_BATTERY");
@@ -478,14 +598,14 @@ Core.lang = {
 		
 		// Pictures
 		var oldOnEnterPicture = kbook.model.onEnterPicture;
-		kbook.model.onEnterPicture = this._getPageChangedFunc("PICTURE_INDEX_COUNT", oldOnEnterPicture, L);
+		kbook.model.onEnterPicture = getPageChangedFunc("PICTURE_INDEX_COUNT", oldOnEnterPicture, L);
 		
 		// Songs
 		var oldPlaySong = kbook.model.playSong;
-		kbook.model.playSong = this._getPageChangedFunc("SONG_INDEX_COUNT", oldPlaySong, L);
-	},
+		kbook.model.playSong = getPageChangedFunc("SONG_INDEX_COUNT", oldPlaySong, L);
+	};
 	
-	_localizeDefaultUI_Misc: function (L) {
+	var localizeMisc = function () {
 		// mime types
 		var obj = Core.system.getSoValue("FskCache.tree.infoListNode.prototypes.mime");
 		var func = function (value) {
@@ -524,9 +644,9 @@ Core.lang = {
 			return s;
 		};
 		Core.system.setSoValue(obj, "format", func);
-	},
+	};
 	
-	_localizeDefaultUI_About: function (L) {
+	var localizeAbout = function () {
 		var setSoValue = Core.system.setSoValue;
 		var getFastSoValue = Core.system.getFastSoValue;
 		var about = kbook.model.container.ABOUT_GROUP.ABOUT;
@@ -574,7 +694,7 @@ Core.lang = {
 		
 		// Localize page index
 		var oldPageChanged = about.pageChanged;
-		about.pageChanged = this._getPageChangedFunc("ABOUT_INDEX_COUNT", oldPageChanged, L); 
+		about.pageChanged = getPageChangedFunc("ABOUT_INDEX_COUNT", oldPageChanged, L); 
 		
 		// Localize title
 		var aboutTitle = L("ABOUT");
@@ -584,53 +704,118 @@ Core.lang = {
 		
 		// Recalculate box sizes
 		about.dataChanged();
-	},
+	};
 	
-	_localizeDefaultUI: function () {
-		var str = this.getStrings("Sony");
-		var nodes = Core.ui.nodes;
+	localizeDefaultUI = function () {
+		var sony_str = Core.lang.getStrings("Sony");
 		// Helper functions
-		var L = function (key) {
-			if (str.hasOwnProperty(key)) {
-				return "@" + str[key];
+		L = function (key) {
+			if (sony_str.hasOwnProperty(key)) {
+				return sony_str[key];
 			} else {
 				return key;
 			}
 		};
-		var LF = function (key, param) {
+		LF = function (key, param) {
 			try {
-				if (typeof str[key] == "function") {
-					return str[key](param);
-				} else if (typeof str[key] != "undefined") {
-					return str[key];
+				if (typeof sony_str[key] == "function") {
+					return sony_str[key](param);
+				} else if (typeof sony_str[key] != "undefined") {
+					return sony_str[key];
 				}
 			} catch (e) {
 				log.error("when calling " + key + " with param " + param + ": " + e);
 			}
 			return key;
 		};
-		var setStr = function (node, strID) {
+		setStr = function (node, strID) {
 			node._myname = node.title = L(strID);
 		};
-		
-		var settingsComment = function () {
+		settingsComment = function () {
 			return LF("FUNC_X_SETTINGS", this.length);
-		};
-		
-		this._localizeDefaultUI_Root(L, LF, setStr, settingsComment, nodes);
-		this._localizeDefaultUI_Settings(L, LF, setStr, settingsComment, nodes);
-		this._localizeDefaultUI_AdvancedSettings(L, LF, setStr, settingsComment, nodes);
-		this._localizeDefaultUI_Book(L, LF, setStr, settingsComment, nodes);
-		this._localizeDefaultUI_BookUtils(L, LF, setStr, settingsComment, nodes);
-		this._localizeDefaultUI_BookByDate(L, LF, setStr, settingsComment, nodes);
-		this._localizeDefaultUI_BookByTitleAndAuthor(L, LF, setStr, settingsComment, nodes);
-		this._localizeDefaultUI_Comments(L, LF);
-		this._localizeDefaultUI_Static(L);
-		this._localizeDefaultUI_Kbook(L);
-		this._localizeDefaultUI_Misc(L);
-		this._localizeDefaultUI_About(L);
-		this._localizeDefaultUI_localizeDate();		
-	}
+		};	
+		getPageChangedFunc = function(varName, oldFunc, L) {
+			var model = kbook.model;
+			var of = L("OF");
+			return function() {
+				oldFunc.apply(this, arguments);
+				var s = model.getVariable(varName);
+				if (s) {
+					model.setVariable(varName, s.replace("of", of));
+				}
+			};
+		};	
+
+		localizeRoot();
+		localizeSettings();
+		localizeAdvancedSettings();
+		localizeBook();
+		localizeBookUtils();
+		localizeBookByDate();
+		localizeBookByTitleAndAuthor();
+		localizeComments();
+		localizeStatic();
+		localizeKbook();
+		localizeMisc();
+		localizeAbout();
+		localizeDate();
+	};
+
+	// Initialize lang
+	Core.lang.init();
+	
+	// Language options
+	var LangAddon = {
+		name: "Localization",
+		title:  langL("TITLE"),
+		comment: langL("COMMENT"),
+		optionDefs: [
+			{
+				name: "lang",
+				title: langL("OPTION_LANG"),
+				icon: "LIST",
+				defaultValue: "English.js",
+				values:	["English.js"],
+				valueTitles: ["English"]
+			},
+			{
+				name: "dateFormat",
+				title: langL("OPTION_DATE_FORMAT"),
+				defaultValue: "default",
+				values: ["default", "ddMMYY", "MMddYY", "YYMMdd", "ddMMMYY", "ddMONTHYY", "ddMMYYYY", "MMddYYYY", "YYYYMMdd", "ddMMMYYYY", "ddMONTHYYYY"],
+				valueTitles: {
+					ddMMYY: "31/01/99", 
+					MMddYY: "01/31/99", 
+					YYMMdd: "99/01/31", 
+					ddMMMYY: langL("ddMMMYY"), 
+					ddMONTHYY: langL("ddMONTHYY"),
+					ddMMYYYY: "31/01/1999", 
+					MMddYYYY: "01/31/1999", 
+					YYYYMMdd: "1999/01/31", 
+					ddMMMYYYY: langL("ddMMMYYYY"), 
+					ddMONTHYYYY: langL("ddMONTHYYYY")
+				}
+			},
+			{
+				name: "dateSeparator",
+				title: langL("OPTION_DATE_SEPARATOR"),
+				defaultValue: "backslash",
+				values: ["default", "minus", "dot", "space", "none"],
+				valueTitles: {
+					"default": "/",
+					"minus": "-",
+					"dot": ".",
+					"space": langL("VALUE_SPACE"),
+					"none": langL("VALUE_NONE")
+				}
+			}			
+		]		
+	};
+	Core.addUtil(LangAddon);
 };
 
-Core.utils.push(Core.lang);
+try {
+	tmp();
+} catch (e) {
+	log.error("initializing core-lang", e);
+}

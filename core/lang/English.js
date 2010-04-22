@@ -5,6 +5,52 @@
 //
 return {	
 	// PRS+ stuff
+	Core: {
+		NODE_PRSP_SETTINGS:  "PRS+ Settings"
+	},
+	
+	CoreLang: {
+		TITLE: "Localization",
+		COMMENT: "Requires restart",
+		OPTION_LANG: "Language",
+		
+		OPTION_DATE_FORMAT: "Date Format",
+		ddMMMYY: "31/Jan/99",
+		ddMONTHYY: "31/January/99",
+		ddMMMYYYY: "31/Jan/1999",
+		ddMONTHYYYY: "31/January/1999",
+		
+		OPTION_DATE_SEPARATOR: "Date Separator",
+		VALUE_SPACE: "space",
+		VALUE_NONE: "none",
+		
+		MONTH_SHORT_1: "Jan",
+		MONTH_SHORT_2: "Feb",
+		MONTH_SHORT_3: "Mar",
+		MONTH_SHORT_4: "Apr",
+		MONTH_SHORT_5: "May",
+		MONTH_SHORT_6: "Jun",
+		MONTH_SHORT_7: "Jul",
+		MONTH_SHORT_8: "Aug",
+		MONTH_SHORT_9: "Sep",
+		MONTH_SHORT_10: "Oct",
+		MONTH_SHORT_11: "Nov",
+		MONTH_SHORT_12: "Dec",		
+
+		MONTH_1: "January",
+		MONTH_2: "February",
+		MONTH_3: "March",
+		MONTH_4: "April",
+		MONTH_5: "May",
+		MONTH_6: "June",
+		MONTH_7: "July",
+		MONTH_8: "August",
+		MONTH_9: "September",
+		MONTH_10: "October",
+		MONTH_11: "November",
+		MONTH_12: "December"	
+	},
+	
 	MenuCaptions: {
 		TITLE: "Menu Captions",
 		TITLE_COMMENT: "Allows to choose menu caption style",
