@@ -188,7 +188,7 @@ return {
 			}
 		},
 		FUNC_GET_DATE_TIME: function (date) {
-			return this.FUNC_GET_DATE(date) + " " + this.FUNC_GET_TIME(date);
+			return date.toLocaleDateString() + " " + this.FUNC_GET_TIME(date);
 		},
 		FUNC_GET_DATE: function (date) {
 			var day, month, year;
