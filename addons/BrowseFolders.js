@@ -207,8 +207,7 @@ var FolderNode = function (root, path,  type,  name, kind) {
 	this.path = path;
 	this.type = type;
 	this.name = name ? name : path;
-	// todo restore
-	// this.title = this.name;
+	this.title = this.name;
 	this._mycomment = " ";
 	this.locked = 0;
 
