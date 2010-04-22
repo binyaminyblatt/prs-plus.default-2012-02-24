@@ -1,9 +1,10 @@
 // Name: Five Balls game
 // Description: adapted version of Five Balls
-// Author: Clemenseken, kartu
+// Author: Clemenseken
 //
 // History:
 //	2010-03-14 kartu - #Refactored Utils -> Core
+//	2010-04-10 kartu - Prepared for merge into single js
 
 var FiveBalls = {
 	name: "Five Balls",
@@ -23,4 +24,4 @@ var FiveBalls = {
 	}]
 };
 
-return FiveBalls;
+Core.addAddon(FiveBalls);

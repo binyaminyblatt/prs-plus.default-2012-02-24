@@ -3,8 +3,9 @@
 // Author: kartu
 //
 // History:
-//	2010-03-14 kartu - #Initial version, refactored from Utils
-//	2010-03-17 kartu - #Fixed date format to always have the same length
+//	2010-03-14 kartu - Initial version, refactored from Utils
+//	2010-03-17 kartu - Fixed date format to always have the same length
+//	2010-04-21 kartu - Added "exception" parameter to log.error
 
 Core.log = {
 	loggers: {},
@@ -82,7 +83,13 @@ Core.log = {
 	trace: function (msg) { this.log(msg, "T"); },
 	info: function (msg) { this.log(msg, "I"); },
 	warn: function (msg) { this.log(msg, "W"); },
-	error: function (msg) { this.log(msg, "E"); },
+	error: function (msg, e) { 
+		if (e !== undefined) {
+			this.log(msg + ": " + e, "E");
+		} else {
+			this.log(msg, "E");
+		}	
+	},
 	dummy: function () {}
 };
 
