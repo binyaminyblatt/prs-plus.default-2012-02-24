@@ -9,6 +9,7 @@
 //	2010-03-06 kartu - #Renamed Not_SHOWN_IF_SINGLE_PAGE to NOT_SHOWN_IF_SINGLE_PAGE
 //	2010-03-14 kartu - #Refactored Utils -> Core
 //	2010-03-14 kartu - Localized
+//	2010-04-22 kartu - Fixed minor bug: "1 of 1" menu was visible even when menu mode was "not shown on single pages"
 
 var log = Core.log.getLogger("Index");
 var str = Core.lang.getStrings("PageIndex");
@@ -174,6 +175,7 @@ var updateIndexMenu = function (args, oldFunc, tag) {
 Index.onInit = function () {
 	Core.hook.hookAfter(kbook.model.container.PAGE_GROUP.PAGE, "pageChanged", updateIndexBook, "book");
 	Core.hook.hookAfter(kbook.model.container.MENU_GROUP.MENU, "pageChanged", updateIndexMenu, "menu");
+	kbook.model.container.MENU_GROUP.MENU.pageChanged();
 };
 
 return Index;
