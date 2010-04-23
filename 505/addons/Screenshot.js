@@ -7,6 +7,7 @@
 //	2010-03-14 kartu - #Refactored Utils -> Core
 //	2010-03-14 kartu - Localized
 //	2010-04-17 kartu - Moved global vars into local functions context
+//	2010-04-23 kartu - Fixed: tmp() function wasn't called
 
 // dummy function, to avoid introducing global vars
 var tmp = function() {
@@ -155,4 +156,5 @@ var tmp = function() {
 	};
 
 	Core.addAddon(Screenshot);
-}
+};
+tmp();
