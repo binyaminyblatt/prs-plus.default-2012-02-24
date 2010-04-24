@@ -131,4 +131,9 @@ var tmp = function() {
 	
 	Core.addAddon(Clock);
 };
-tmp();
+try {
+	tmp();
+} catch (e) {
+	// Core's log
+	log.error("in Clock.js", e);
+}
