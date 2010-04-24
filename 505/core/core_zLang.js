@@ -9,6 +9,7 @@
 //	2010-04-22 kartu - Added date customization
 //	2010-04-24 kartu - Added Catalan, Georgian, German, Russian and Spanish locales
 //	2010-04-24 kartu - Fixed SS_ON related bug (was set to min instead of max field)
+//	2010-04-24 kartu - Changed language order
 
 var tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -777,7 +778,7 @@ var tmp = function() {
 				title: langL("OPTION_LANG"),
 				icon: "LIST",
 				defaultValue: "English.js",
-				values:	["Catalan.js", "German.js", "English.js", "Georgian.js", "Russian.js", "Spanish.js"],
+				values:	["Catalan.js", "German.js", "English.js",  "Spanish.js", "Georgian.js", "Russian.js",],
 				valueTitles: {
 					"Catalan.js": "Català",
 					"German.js": "Deutsch",

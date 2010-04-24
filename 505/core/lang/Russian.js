@@ -3,6 +3,8 @@
 //
 // Language: English
 //
+// History:
+//	2010-04-24 kartu - Fixed epub styles translation	
 return {
 	// Standard stuff
 	Sony: {
@@ -249,7 +251,7 @@ return {
 	
 	CoreLang: {
 		TITLE: "Локализация",
-		COMMENT: "Требуется перезагрузка",
+		COMMENT: "Требует перезагрузку",
 		OPTION_LANG: "Язык",
 	
 		OPTION_DATE_FORMAT: "Формат даты",
@@ -300,7 +302,7 @@ return {
 	
 	TextEncoding: {
 		TITLE: "Кодировка текста",
-		COMMENT: "Используется в книгах форматов TXT, RTF, требуется перезагрузка",
+		COMMENT: "Используется в книгах форматов TXT, RTF, требует перезагрузку",
 		OPTION_TITLE: "Кодировка",
 		DESCRIPTION: "Позволяет выбрать кодировку текста",
 		LATIN: "Latin",
@@ -442,8 +444,8 @@ return {
 	},
 	
 	EpubUserStyle: {
-		TITLE: "Потзовательский стиль EPUB",
-		COMMENT: "Экспериментально, влияет только на книги, созданные позднее.",
+		TITLE: "Пользовательский стиль EPUB",
+		COMMENT: "Экспер., влияет только на книги, созданные позднее.",
 		OPTION_EPUB_CSS_FILE: "Пользовательский файл EPUB css",
 		VALUE_DISABLED: "отключено"
 	}
