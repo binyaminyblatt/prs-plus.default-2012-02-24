@@ -3,20 +3,22 @@
 // Author: kartu
 //
 // History:
-//	2010-03-14 kartu - #Refactored to use Core instead of Utils
-//	2010-03-17 kartu - #Fixed date format to always have the same length
+//	2010-03-14 kartu - Refactored to use Core instead of Utils
+//	2010-03-17 kartu - Fixed date format to always have the same length
+//	2010-03-23 kartu - Replaced hardcoded prsp root with param from kconfig.xml
 
 // Started at, in milliseconds
 var startedAt = (new Date()).getTime();
-var root = "/Data/database/system/PRSPlus/";
+var root = System.applyEnvironment('[prspPath]');
+//"/Data/database/system/PRSPlus/";
 var config = {
 	root: root,
-	addonRoot: root + "addons/",
-	coreRoot: root + "core/",
+	addonRoot: System.applyEnvironment('[prspAddonsPath]'),
+	coreRoot: System.applyEnvironment('[prspCorePath]'),
 	coreFile: this.coreRoot + "core_all.js",
 	defaultLogLevel: "none",
 	logFile: this.addonRoot + "PRSPlus.log",
-	settingsRoot: root + "settings/"
+	settingsRoot: System.applyEnvironment('[prspSettingsPath]')
 };
 
 // Typically would be used to override path to addons and logging settings.

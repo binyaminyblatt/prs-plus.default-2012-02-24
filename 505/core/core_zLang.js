@@ -7,6 +7,8 @@
 //	2010-04-10 kartu - Fixed collections localization (reported by kravitz)
 //	2010-04-21 kartu - Localized. Fixed invisible "continue" comment bug.
 //	2010-04-22 kartu - Added date customization
+//	2010-04-24 kartu - Added Catalan, Georgian, German, Russian and Spanish locales
+//	2010-04-24 kartu - Fixed SS_ON related bug (was set to min instead of max field)
 
 var tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -278,7 +280,7 @@ var tmp = function() {
 		var slideshowNodes = slideshow.nodes;
 		slideshowNodes[0].name= L("SS_TURN");
 		slideshowNodes[0].min = L("SS_OFF") ;
-		slideshowNodes[0].min = L("SS_ON") ;
+		slideshowNodes[0].max = L("SS_ON") ;
 		slideshowNodes[1].name= L("SS_DURATION");
 		slideshowNodes[1].comment = L("SECONDS");
 		// makes no sense to localize this, as there is only space for "OK" text
@@ -775,8 +777,15 @@ var tmp = function() {
 				title: langL("OPTION_LANG"),
 				icon: "LIST",
 				defaultValue: "English.js",
-				values:	["English.js"],
-				valueTitles: ["English"]
+				values:	["Catalan.js", "German.js", "English.js", "Georgian.js", "Russian.js", "Spanish.js"],
+				valueTitles: {
+					"Catalan.js": "Català",
+					"German.js": "Deutsch",
+					"English.js": "English",
+					"Georgian.js": "ქართული",
+					"Russian.js": "Русский",
+					"Spanish.js": "Español"
+				}
 			},
 			{
 				name: "dateFormat",
