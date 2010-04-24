@@ -2,7 +2,8 @@
 //
 // History:
 //	2010-04-24 kartu - Added TITLE for "clock" addon
-//	2010-04-24 kartu - Fixed spelling of CONTINUE 
+//	2010-04-24 kartu - Fixed spelling of CONTINUE
+//	2010-04-24 kartu - Fixed spelling
 return {
 	// Standard stuff
 	Sony: {
@@ -426,15 +427,15 @@ return {
 	},
 	
 	PageIndex: {
-		TITLE: "გვერდის სტატუსი (1 of 1)",
+		TITLE: "გვერდის სტატუსი (1 - 1)",
 		INDEX_STYLE_BOOK: "ინდექსის სტილი წიგნებში",
 		INDEX_MODE_BOOK: "ინდექსის რეჟიმი წიგნებში",
-		INDEX_MODE_MENU: "ინდექსის რეჟიმი მენიუშიIndex mode in menu",
+		INDEX_MODE_MENU: "ინდექსის რეჟიმი მენიუში",
 		INDEX_STYLE_MENU: "ინდექსის სტილი მენიუში",
 		OF: "-",
 		ALWAYS_SHOWN: "ყოვეთვის ჩართულია",
 		NEVER_SHOWN: "გათიშულია",
-		NOT_SHOWN_IF_SINGLE_PAGE: "გატიშულია ცალკე გვერდებზე (1 of 1)"
+		NOT_SHOWN_IF_SINGLE_PAGE: "გატიშულია ცალკე გვერდებზე (1 - 1)"
 	},
 	
 	EpubUserStyle: {
