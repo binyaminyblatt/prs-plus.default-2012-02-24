@@ -11,18 +11,8 @@
 
 var tmp = function() {
 	
-	var str = Core.lang.getStrings("Clock");
+	var L = Core.lang.getLocalizer("Clock");
 	var log = Core.log.getLogger("Clock");
-	
-	// Localize
-	var L = function (key) {
-		if (str.hasOwnProperty(key)) {
-			return str[key];
-		} else {
-			return "Clock." + key;
-		}
-	};
-	
 	
 	// not to type this gazillion times
 	var MENU = kbook.model.container.MENU_GROUP.MENU;
