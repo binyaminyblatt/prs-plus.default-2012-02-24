@@ -1,7 +1,8 @@
 // Language: Georgian
 //
 // History:
-//	2010-04-24 kartu - Added TITLE for "clock" addon 
+//	2010-04-24 kartu - Added TITLE for "clock" addon
+//	2010-04-24 kartu - Fixed spelling of CONTINUE 
 return {
 	// Standard stuff
 	Sony: {
@@ -66,7 +67,7 @@ return {
 		SHUTTING_DOWN: "Shutting down...",
 		
 		// Root menu
-		CONTINUE: "კიტხვის გაგრძელება",
+		CONTINUE: "კითხვის გაგრძელება",
 		BOOKS_BY_TITLE: "წიგნები სათაურის მიხედვით",
 		BOOKS_BY_AUTHOR: "წიგნები ავტორის მიხედვით",
 		BOOKS_BY_DATE: "წიგნები თარიღის მიხედვით",
