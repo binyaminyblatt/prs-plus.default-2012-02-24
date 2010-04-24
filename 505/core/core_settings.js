@@ -208,7 +208,7 @@ try {
 		//
 		Core.settings.saveOptions = function(addon) {
 			try {
-				FileSystem.ensureDirectory(Core.config.settingsRoot);
+				FileSystem.ensureDirectory(Core.config.settingsPath);
 				var od;
 				var name;
 				
@@ -249,7 +249,7 @@ try {
 				}
 				
 				// If there is anything to save - save, if not, delete settings file
-				var settingsFile = Core.config.settingsRoot + addon.name + ".config";
+				var settingsFile = Core.config.settingsPath + addon.name + ".config";
 				if (gotSomethingToSave) {
 					var stream = new Stream.File(settingsFile, 1, 0);
 					try {
@@ -297,7 +297,7 @@ try {
 					// load settings from settings file
 					var options;
 					try {
-						var settingsFile = Core.config.settingsRoot + addon.name + ".config";
+						var settingsFile = Core.config.settingsPath + addon.name + ".config";
 						options = Core.system.callScript(settingsFile, log);
 					} catch (e0) {
 						log.warn("Failed loading settings file for addon " + addon.name + ": " + e0);

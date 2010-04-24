@@ -25,18 +25,14 @@ var tmp = function() {
 		};		
 		// "ddMMYY", "MMddYY", "YYMMdd", "ddMMMYY", "ddMONTHYY", "ddMMYYYY", "MMddYYYY", "YYYYMMdd", "ddMMMYYYY", "ddMONTHYYYY"
 		return function() {
-			var where = 0;
 			try {
 				var date = this;
-				where = 1;
 				var day, month, nMonth, year, shortYear;
 				day = toDoubleDigit(date.getDate());
 				nMonth = date.getMonth() + 1;
 				month = toDoubleDigit(nMonth); 
 				year = date.getFullYear();
-				where = 2;
 				shortYear = toDoubleDigit(year - Math.floor(year/100) * 100);
-				where = 3;
 				switch (format) {
 					case "ddMMYY":
 						return day + separator + month + separator + shortYear;
@@ -62,9 +58,8 @@ var tmp = function() {
 						return day + separator + month + separator + shortYear;
 				}
 			} catch (e) {
-				return "error in date func: " + where;
+				return e;
 			}
-
 		};
 	};
 	Core.lang = {
@@ -88,9 +83,9 @@ var tmp = function() {
 		init: function () {
 			try {
 				Core.settings.loadOptions(this);
-				
+
 				try {
-					_strings = Core.system.callScript(Core.config.coreRoot + "lang/" + this.options.lang, log);
+					_strings = Core.system.callScript(Core.config.corePath + "lang/" + this.options.lang, log);
 				} catch (e0) {
 					log.error("Failed to load strings: ", e0);
 				}
@@ -778,7 +773,7 @@ var tmp = function() {
 				title: langL("OPTION_LANG"),
 				icon: "LIST",
 				defaultValue: "English.js",
-				values:	["Catalan.js", "German.js", "English.js",  "Spanish.js", "Georgian.js", "Russian.js",],
+				values:	["Catalan.js", "German.js", "English.js",  "Spanish.js", "Georgian.js", "Russian.js"],
 				valueTitles: {
 					"Catalan.js": "Català",
 					"German.js": "Deutsch",
@@ -821,7 +816,8 @@ var tmp = function() {
 			}			
 		]		
 	};
-	Core.addUtil(LangAddon);
+
+	Core.addAddon(LangAddon);
 };
 
 try {
