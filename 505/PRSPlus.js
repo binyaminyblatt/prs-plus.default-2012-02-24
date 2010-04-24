@@ -1,3 +1,60 @@
+var tmp = function() {
+	var endsWith = function(str, postfix) {
+		return str.lastIndexOf(postfix) === str.length - postfix.length;
+	};
+	var listFiles = function(path, ext) {
+		try {
+			var iterator = new FileSystem.Iterator(path);
+			try {
+				var items = [];
+				var item;
+				while (item = iterator.getNext()) {
+					if (item.type == "file") {
+						path = item.path;
+						if (ext === undefined || endsWith(path, ext)) {
+							items.push(path);
+						}
+					}
+				}
+				items.sort();
+				return items;
+			} finally {
+				iterator.close();
+			}
+		} catch (e) {
+			myerror = e;
+		}
+		return [];
+	};
+	var getFileContent = function(path) {
+		var f = new Stream.File(path, 2);
+		var result = f.toString();
+		f.close();
+		return result;
+	};
+	
+	var corePath = System.applyEnvironment("[prspCorePath]");
+	var addonsPath = System.applyEnvironment("[prspAddonsPath]");
+	var coreFiles = listFiles(corePath);
+	var addonFiles = listFiles(addonsPath);
+	var code = "";
+	for (var i = 0, n = corePath.length; i < n; i++) {
+		code = code + getFileContent(corePath + coreFiles[i]);
+	}
+	for (var i = 0, n = addonFiles.length; i < n; i++) {
+		code = code + getFileContent(addonsPath + addonFiles[i]);
+	}
+	
+	var s = new Stream.File("b:/test.log", 3);
+	s.writeString(code);
+	s.close();
+};
+try {
+	tmp();
+} catch (e) {
+	myerror = e;
+}
+
 // Name: PRSPlus
 // Description: PRS+ startup file 
 // Author: kartu
@@ -164,4 +221,4 @@ initializeCore(config.coreRoot, config.coreFile);
 delete initializeCore;
 
 // Finished at, in milliseconds
-logTiming("PRSPlus initialization took ");
+logTiming("PRSPlus initialization took, my error is  " + myerror);

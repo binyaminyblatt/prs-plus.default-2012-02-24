@@ -6,19 +6,11 @@
 //	2010-03-04 kartu - Initial version
 //	2010-03-14 kartu - #Refactored Utils -> Core
 //	2010-04-17 kartu - Moved global vars into local functions context
+//	2010-04-24 kartu - Prepared for merging into single JS
 
 // dummy function, to avoid introducing global vars
 var tmp = function () {
-	var str = Core.lang.getStrings("TextEncoding");
-	
-	// Localize
-	var L = function (key) {
-		if (str.hasOwnProperty(key)) {
-			return str[key];
-		} else {
-			return "TextEncoding." + key;
-		}
-	};
+	var L = Core.lang.getLocalizer("TextEncoding");
 	
 	Core.addAddon({
 		name: "TextEncoding",
@@ -43,4 +35,9 @@ var tmp = function () {
 		}
 	});
 };
-tmp();
+try {
+	tmp();
+} catch (e) {
+	// Core's log
+	log.error("in TextEncoding.js", e);
+}

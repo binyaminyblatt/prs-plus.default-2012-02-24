@@ -8,20 +8,12 @@
 //	2010-03-14 kartu - Localized
 //	2010-04-17 kartu - Moved global vars into local functions context
 //	2010-04-23 kartu - Fixed: tmp() function wasn't called
+//	2010-04-24 kartu - Prepared for merging into single JS
 
 // dummy function, to avoid introducing global vars
 var tmp = function() {
-	var str = Core.lang.getStrings("Screenshot");
+	var L = Core.lang.getLocalizer("Screenshot");
 	var log = Core.log.getLogger("Screenshot");
-	
-	var L = function (key) {
-		if (str.hasOwnProperty(key)) {
-			return str[key];
-		} else {
-			return "Screenshot." + key;
-		}
-	};
-	
 	
 	var extension = ".jpg";
 	var getSavePath = function (root) {
@@ -157,4 +149,9 @@ var tmp = function() {
 
 	Core.addAddon(Screenshot);
 };
-tmp();
+try {
+	tmp();
+} catch (e) {
+	// Core's log
+	log.error("in Screenshot.js", e);
+}

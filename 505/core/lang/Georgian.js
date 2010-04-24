@@ -112,8 +112,8 @@ return {
 		ADVANCED_SETTINGS: "Advanced Settings",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "წიგნის დალუქვა",
-		SL_OFF: "ჩარ",
-		SL_ON: "გამ",
+		SL_OFF: "გამ",
+		SL_ON: "ჩარ",
 		SL_CODE: "კოდი",
 		SL_TURN: "Turn",
 		// format device
