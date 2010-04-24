@@ -1,6 +1,3 @@
-// Description: English localization
-// Author: kartu
-//
 // Language: English
 //
 return {	

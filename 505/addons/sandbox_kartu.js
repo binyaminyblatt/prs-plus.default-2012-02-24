@@ -1,5 +1,6 @@
-return;
+//FileSystem.copyFile("b:/mainStorage.xml", "/tmp/mainStorage.xml");
 
+return
 var log = Core.log.getLogger("sandbox");
 var getSoValue = Core.system.getSoValue;
 var setSoValue = Core.system.setSoValue;

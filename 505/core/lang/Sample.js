@@ -411,6 +411,7 @@ return {
 	},
 	
 	Clock: {
+		TITLE: "Clock"
 		OPTION_STYLE: "Clock Style",
 		VALUE_24H: "24 hours",
 		VALUE_12H: "12 hours",
