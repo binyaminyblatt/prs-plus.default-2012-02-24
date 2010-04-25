@@ -19,7 +19,7 @@ return {
 			"ავტორი: მიხეილ სუხიაშვილი aka kartu (kartu3@gmail.com) using work of: " + 
 			"igorsk, boroda, obelix, pepak, llasram და სხვები.\n" +
 			"© GNU Lesser General Public License.",
-		ABOUT_1: "Copyright Â©2006-2008 Sony Corporation",
+		ABOUT_1: "Copyright ©2006-2008 Sony Corporation",
 		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + 
 			" trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
 		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + 
