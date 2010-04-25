@@ -7,14 +7,14 @@
 //	2010-04-10 kartu - Prepared for merging into single JS
 //	2010-04-24 kartu - Prepared for merging into single JS once more... :)
 
-var tmp = function() {
+tmp = function() {
 	var Sudoku = {
 		name: "Sudoku",
 		title: "Sudoku",
 		description: "Sudoku Game",
 		icon: "GAME",
 		activate: function () {
-			kbook.autoRunRoot.path = Core.config.addonRoot + "Sudoku/sudoku.xml";
+			kbook.autoRunRoot.path = Core.config.addonsPath + "Sudoku/sudoku.xml";
 			kbook.autoRunRoot.enterIf(kbook.model);
 		},
 		actions: [{

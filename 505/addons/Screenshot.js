@@ -9,11 +9,13 @@
 //	2010-04-17 kartu - Moved global vars into local functions context
 //	2010-04-23 kartu - Fixed: tmp() function wasn't called
 //	2010-04-24 kartu - Prepared for merging into single JS
+//	2010-04-25 kartu - Made timer a local variable
 
 // dummy function, to avoid introducing global vars
-var tmp = function() {
+tmp = function() {
 	var L = Core.lang.getLocalizer("Screenshot");
 	var log = Core.log.getLogger("Screenshot");
+	var timer;
 	
 	var extension = ".jpg";
 	var getSavePath = function (root) {
@@ -66,11 +68,11 @@ var tmp = function() {
 			}
 		],
 		getTimer: function () {
-			if (typeof this.timer == "undefined") {
-				this.timer = new Timer();
-				this.timer.target = this;
+			if (typeof timer == "undefined") {
+				timer = new Timer();
+				timer.target = this;
 			}
-			return this.timer;
+			return timer;
 		},
 		actions: [{
 			name: "takeScreenshoot",

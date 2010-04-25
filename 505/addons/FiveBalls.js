@@ -7,13 +7,13 @@
 //	2010-04-10 kartu - Prepared for merge into single JS
 //	2010-04-10 kartu - Prepared for merge into single JS once more... :)
 
-var tmp = function() {
+tmp = function() {
 	var FiveBalls = {
 		name: "Five Balls",
 		description: "Five Balls Game",
 		icon: "GAME",
 		activate: function () {
-			kbook.autoRunRoot.path = Core.config.addonRoot + "FiveBalls/fiveballs.xml";
+			kbook.autoRunRoot.path = Core.config.addonsPath + "FiveBalls/fiveballs.xml";
 			kbook.autoRunRoot.enterIf(kbook.model);
 		},
 		actions: [{

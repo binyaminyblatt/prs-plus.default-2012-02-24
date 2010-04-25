@@ -6,7 +6,7 @@
 //	2010-03-14 kartu - Initial version, refactored from Utils
 //	2010-03-17 kartu - Fixed date format to always have the same length
 //	2010-04-21 kartu - Added "exception" parameter to log.error
-
+//	2010-04-25 kartu - Marked setLevel as constructor for closure compiler to shut up
 Core.log = {
 	loggers: {},
 	createLogger: function (cls, level) {
@@ -67,6 +67,9 @@ Core.log = {
 		} catch (ignore2) {
 		}
 	},
+	/**
+	 * @constructor
+	 */	
 	setLevel: function (level) {
 		this.trace = this.info = this.warn = this.error = Core.log.dummy;
 		switch (level) {

@@ -22,7 +22,7 @@ var tmp = function() {
 	//	methodName - name of the method to call
 	//	arg - argument to pass to <methodName> function
 	//
-	var callMethodForAll = function (objArray, methodName, arg) {
+	var callMethodForAll = function (objArray, methodName) {
 		if (!objArray) {
 			return;
 		}
@@ -31,7 +31,7 @@ var tmp = function() {
 			var func = obj[methodName];
 			if (typeof func === "function") {
 				try {
-					func.call(obj, arg);
+					func.call(obj);
 				} catch (e) {
 					try {
 						if (typeof obj != "undefined" && obj.hasOwnProperty("name")) {
@@ -108,6 +108,6 @@ var tmp = function() {
 // TODO onTerminate, onSleep, onResume
 try {
 	tmp();
-} catch (e) {
-	log.error("initializing core", e);
+} catch (ignore) {
+	// logging system is not yet initialized
 }

@@ -10,8 +10,9 @@
 //	2010-04-24 kartu - Added Catalan, Georgian, German, Russian and Spanish locales
 //	2010-04-24 kartu - Fixed SS_ON related bug (was set to min instead of max field)
 //	2010-04-24 kartu - Changed language order
+//	2010-04-25 kartu - Marked kbook.model.getDateAndClock as constructor
 
-var tmp = function() {
+tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
 	var langL;
 	var localizeDefaultUI;
@@ -173,6 +174,9 @@ var tmp = function() {
 				return sony.FUNC_GET_DATE(this);
 			};
 		}
+		/**
+		* @constructor
+		*/
 		// Need to fix this, since original version of the function made assumptions about date/time format 
 		kbook.model.getDateAndClock = function () {
 			this.getDateTimeStr();

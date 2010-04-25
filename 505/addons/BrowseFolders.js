@@ -8,8 +8,9 @@
 //	2010-03-14 kartu - Refactored Utils -> Core
 //	2010-03-14 kartu - Localized
 //	2010-04-24 kartu - Prepared for merging into single JS
+//	2010-04-25 kartu - Marked FolderNode and browseFoldersNode._myconstruct as constructors
 
-var tmp = function() {
+tmp = function() {
 	// Shortcuts
 	var log = Core.log.getLogger("BrowseFolders");
 	var cloneObj = Core.system.cloneObj;
@@ -196,6 +197,9 @@ var tmp = function() {
 	
 	
 	// Node that shows folder content
+	/**
+	* @constructor
+	*/
 	var FolderNode = function (root, path,  type,  name, kind) {
 		this.root = root;
 		this.path = path;
@@ -216,7 +220,7 @@ var tmp = function() {
 			this.isFolder = false;
 		}
 	};
-	FolderNode.prototype = new Core.ui.ContainerNode();
+	FolderNode.prototype = new Core.ui.ContainerNode(undefined);
 	FolderNode.prototype.update = function () {
 		// Recreate nodes
 		this._myconstruct();
@@ -391,7 +395,7 @@ var tmp = function() {
 					while (item = iterator.getNext()) {
 						var node;
 						if (item.type == "directory") {
-							node = new FolderNode(fullPath, item.path, item.type);
+							node = new FolderNode(fullPath, item.path, item.type, undefined, undefined);
 						} else if (item.type == "file") {
 							var mime = FileSystem.getMIMEType(item.path);
 							if (!mime || !BookMIMEs[mime]) {
@@ -402,7 +406,7 @@ var tmp = function() {
 							// Find existing node
 							node = pathToBookNode(fullPath + item.path, this);
 							if (!node) {
-								node = new FolderNode(fullPath, item.path, item.type);
+								node = new FolderNode(fullPath, item.path, item.type, undefined, undefined);
 							}
 						} else {
 							continue; // wtf, neither folder nor file?
@@ -538,6 +542,9 @@ var tmp = function() {
 		browseFoldersNode.update = function () {
 			this._myconstruct(kbook.model, true);
 		};
+		/**
+		* @constructor
+		*/
 		browseFoldersNode._myconstruct = function (model, fromChild) {	
 			try {
 				if (this.nodes !== null) {

@@ -16,6 +16,7 @@
 //	2010-04-05 kartu - Removed stale code, added logging to getValue
 //	2010-04-10 kartu - Improved error reporting
 //	2010-04-17 kartu - Removed global var
+//	2010-04-25 kartu - Marked setLevel Core.ui.ContainerNode as constructor
 
 try {
 	Core.ui = {
@@ -106,7 +107,7 @@ try {
 		//		separator - if equals to 1, node's bottom line will be shown in bold
 		createContainerNode: function (arg) {
 			var obj = Core.system.cloneObj(kbook.root.children.settings);
-			Core.ui.ContainerNode.call(obj);
+			Core.ui.ContainerNode.call(obj, undefined);
 			if (typeof arg !== "undefined") {
 				if (arg.hasOwnProperty("parent")) {obj.parent = arg.parent;}
 				if (arg.hasOwnProperty("title")) {obj.title = arg.title;}
@@ -132,6 +133,9 @@ try {
 	
 	
 	// Container node, displays subnodes, takes care of paging etc
+	/**
+	 * @constructor
+	 */
 	Core.ui.ContainerNode = function (arg) {	
 		var oldEnter = this.enter;
 		var oldExit = this.exit;

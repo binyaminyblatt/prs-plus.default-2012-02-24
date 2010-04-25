@@ -8,8 +8,9 @@
 //	2010-03-14 kartu - Refactored Utils -> Core
 //	2010-03-14 kartu - Localized
 //	2010-04-24 kartu - Prepared for merging into single JS
+//	2010-04-25 kartu - Marked onPreInit as constructor
 
-var tmp = function() {
+tmp = function() {
 	// Localize
 	var L = Core.lang.getLocalizer("EpubUserStyle");
 	
@@ -37,6 +38,9 @@ var tmp = function() {
 				}
 			}
 		],
+		/**
+		* @constructor
+		*/
 		onPreInit : function () {
 			this.root = Core.config.root + "epub/";
 	

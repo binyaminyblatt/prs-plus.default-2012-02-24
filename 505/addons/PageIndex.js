@@ -12,7 +12,7 @@
 //	2010-04-22 kartu - Fixed minor bug: "1 of 1" menu was visible even when menu mode was "not shown on single pages"
 //	2010-04-24 kartu - Prepared for merging into single JS
 
-var tmp = function() {
+tmp = function() {
 	var log = Core.log.getLogger("Index");
 	var L = Core.lang.getLocalizer("PageIndex");
 	

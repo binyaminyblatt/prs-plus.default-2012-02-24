@@ -6,8 +6,9 @@
 //	2010-03-07 kartu - #Prepared for localization
 //	2010-03-14 kartu - #Refactored Utils -> Core
 //	2010-03-14 kartu - Localized
+//	2010-04-25 kartu - Marked onInit as constructor
 
-var tmp = function() {
+tmp = function() {
 	var L = Core.lang.getLocalizer("MenuCaptions");
 	
 	var MenuCaptions = {
@@ -15,6 +16,9 @@ var tmp = function() {
 		title: L("TITLE"),
 		description: L("TITLE_COMMENT"),
 		icon: "LIST",
+		/**
+		* @constructor
+		*/
 		onInit: function () {
 			var styles = Core.system.getSoValue(kbook.tableData, "table.skin.styles");
 			this.big = styles[2];
@@ -23,19 +27,19 @@ var tmp = function() {
 		},
 		onSettingsChanged: function () {
 			var styles = Core.system.getSoValue(kbook.tableData, "table.skin.styles");
-			switch (this.options.style) {
+			switch (MenuCaptions.options.style) {
 				case "def":
-					styles[2] = this.big;
-					styles[3] = this.small;
+					styles[2] = MenuCaptions.big;
+					styles[3] = MenuCaptions.small;
 					break;
 				case "big":
-					styles[2] = this.big;
-					styles[3] = this.big;
+					styles[2] = MenuCaptions.big;
+					styles[3] = MenuCaptions.big;
 					break;
 				case "small": // fallthrough
 				default:
-					styles[2] = this.small;
-					styles[3] = this.small;
+					styles[2] = MenuCaptions.small;
+					styles[3] = MenuCaptions.small;
 					break;
 			}
 		},

@@ -7,14 +7,14 @@
 //	2010-04-10 kartu - Prepared for merging into single JS
 //	2010-04-10 kartu - Prepared for merging into single JS once more... :)
 
-var tmp = function() {
+tmp = function() {
 	var Mahjong = {
 		name: "Mahjong",
 		title: "Mahjong",
 		description: "Mahjong Game",
 		icon: "GAME",
 		activate: function () {
-			kbook.autoRunRoot.path = Core.config.addonRoot + "Mahjong/mahjong.xml";
+			kbook.autoRunRoot.path = Core.config.addonsPath + "Mahjong/mahjong.xml";
 			kbook.autoRunRoot.enterIf(kbook.model);
 		},
 		actions: [{
