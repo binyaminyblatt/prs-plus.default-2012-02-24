@@ -78,7 +78,7 @@ return {
 		NOW_PLAYING: "Now Playing",
 		MUSIC: "მუსიკა",
 		PICTURES: "სურათები",
-		SETTINGS: "ოპციები",
+		SETTINGS: "ოფციები",
 
 		// In Settings
 		// orientation
@@ -110,7 +110,7 @@ return {
 		RESET_TO_FACTORY: "Reset to factory settings",
 		
 		// In Advanced Settings
-		ADVANCED_SETTINGS: "დამატებითი ოპციები",
+		ADVANCED_SETTINGS: "დამატებითი ოფციები",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "წიგნის დალუქვა",
 		SL_OFF: "გამ",
@@ -212,7 +212,7 @@ return {
 			return this.FUNC_X_SOMETHING(n, "საგანი", "ცარიელი");
 		},
 		FUNC_X_SETTINGS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "ოპცია", "ცარიელი");
+			return this.FUNC_X_SOMETHING(n, "ოფცია", "ცარიელი");
 		},
 		FUNC_X_PICTURES: function (n) {
 			return this.FUNC_X_SOMETHING(n, "სურათი", "ცარიელი");
@@ -240,7 +240,7 @@ return {
 	
 	// PRS+ stuff
 	Core: {
-		NODE_PRSP_SETTINGS:  "PRS+ ოპციები"
+		NODE_PRSP_SETTINGS:  "PRS+ ოფციები"
 	},
 	
 	CoreLang: {
