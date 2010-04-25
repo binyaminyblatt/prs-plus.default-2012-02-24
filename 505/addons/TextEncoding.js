@@ -7,14 +7,18 @@
 //	2010-03-14 kartu - #Refactored Utils -> Core
 //	2010-04-17 kartu - Moved global vars into local functions context
 //	2010-04-24 kartu - Prepared for merging into single JS
+//	2010-04-25 kartu - Marked onPreInit as constructor
 
 // dummy function, to avoid introducing global vars
-var tmp = function () {
+tmp = function () {
 	var L = Core.lang.getLocalizer("TextEncoding");
 	
 	Core.addAddon({
 		name: "TextEncoding",
 		icon: "BOOK",
+		/**
+		* @constructor
+		*/
 		onPreInit: function() {
 			this.title = L("TITLE");
 			this.description = L("DESCRIPTION");

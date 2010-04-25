@@ -8,8 +8,9 @@
 //	2010-03-14 kartu - Localized
 //	2010-04-24 kartu - Added localized title
 //	2010-04-24 kartu - Prepared for single JS merge
+//	2010-04-25 kartu - Marked updateDate as constructor
 
-var tmp = function() {
+tmp = function() {
 	
 	var L = Core.lang.getLocalizer("Clock");
 	var log = Core.log.getLogger("Clock");
@@ -57,10 +58,10 @@ var tmp = function() {
 			icon: "CLOCK",
 			action: function (ignore, context, ignore2) {
 				// Quick & dirty...
-				if (this.options.mode === "all") {
-					this.options.mode = "off";
+				if (Clock.options.mode === "all") {
+					Clock.options.mode = "off";
 				} else {
-					this.options.mode = "all";
+					Clock.options.mode = "all";
 				}
 				var target;
 				if (context === "book") {
@@ -74,6 +75,9 @@ var tmp = function() {
 		}]
 	};
 	
+	/**
+	* @constructor
+	*/
 	updateDate = function (args, oldFunc, tag) {
 		try {
 			var mode = Clock.options.mode; 

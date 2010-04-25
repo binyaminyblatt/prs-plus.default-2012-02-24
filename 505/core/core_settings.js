@@ -5,10 +5,11 @@
 // History:
 //	2010-03-14 kartu - Initial version, refactored from Utils
 //	2010-04-17 kartu - Moved global vars into local functions context
+//	2010-04-25 kartu - Marked lazyCreateSettings as constructor for closure compiler to shut up
 
 try {
 	// dummy function, to avoid introducing global vars
-	var tmp = function() {
+	tmp = function() {
 		// Returns option title for given addon/option definition
 		//
 		var core_setting_translateValue = function(optionDef, value) {
@@ -88,6 +89,9 @@ try {
 		
 		
 		var doCreateAddonSettings;
+		/**
+		 * @constructor
+		 */		
 		var lazyCreateSettings = function(parent, optionDefs, addon) {
 			Core.hook.hookBefore(parent, "enter", function(args, oldFunc) {
 				if(!this.hasOwnProperty("prspInitialized")) {
@@ -123,7 +127,7 @@ try {
 				});
 				parent.nodes.push(node);
 		
-				doCreateAddonSettings(node, optionDef.optionDefs, addon);
+				doCreateAddonSettings(node, optionDef.optionDefs, addon, false);
 			} else {
 				// If target is defined, use it, else create "options"
 				var options;
@@ -193,7 +197,7 @@ try {
 					});
 					settingsNode.nodes.push(thisSettingsNode);
 		
-					doCreateAddonSettings(thisSettingsNode, optionDefs, addon);			
+					doCreateAddonSettings(thisSettingsNode, optionDefs, addon, false);
 				}
 			} catch (e) {
 				log.error("failed to create addon settings: " + addon.name + " " + e);

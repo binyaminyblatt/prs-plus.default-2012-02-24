@@ -8,8 +8,9 @@
 //	2010-03-14 kartu - Refactored Utils -> Core
 //	2010-03-14 kartu - Localized
 //	2010-04-24 kartu - Prepared for merging into single JS
+//	2010-04-25 kartu - Marked onPreInit as constructor
 
-var tmp = function() {
+tmp = function() {
 	var getSoValue = Core.system.getSoValue;
 	var log = Core.log.getLogger("KeyBindings");
 	var L = Core.lang.getLocalizer("KeyBindings");
@@ -217,6 +218,9 @@ var tmp = function() {
 				log.error("in onInit: " + e);
 			}
 		},
+		/**
+		* @constructor
+		*/	
 		onPreInit: function () {
 			try {
 				var contextLabels = [L("GLOBAL"), L("IN_MENU"), L("IN_BOOK")];

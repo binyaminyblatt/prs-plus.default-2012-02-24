@@ -9,6 +9,7 @@
 //	2010-04-03 kartu - Addec "compile" function
 //	2010-04-04 kartu - Added "getFastSoValue" function stub
 //	2010-04-21 kartu - Reformatted
+//	2010-04-25 kartu - Fixed minor syntax glitch: removed trailing comma
 
 try {
 	Core.system = {
@@ -88,7 +89,7 @@ try {
 		getFastSoValue: function (obj, propName) {
 			// TODO replace with custom code from prsp.xsb
 			return Core.system.getSoValue(obj, propName);
-		},
+		}
 	};
 
 	// Reference to the root object

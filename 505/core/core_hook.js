@@ -8,7 +8,7 @@
 
 try {
 	// dummy function, to avoid introducing global vars
-	var tmp = function() {
+	tmp = function() {
 		Core.hook = {};
 		
 		// Constants

@@ -9,7 +9,7 @@
 
 try {
 	// dummy function, to avoid introducing global vars
-	var tmp = function() {
+	tmp = function() {
 		// About
 		var getSoValue = Core.system.getSoValue;
 		var about = kbook.model.container.ABOUT_GROUP.ABOUT;
