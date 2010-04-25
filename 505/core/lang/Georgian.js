@@ -24,9 +24,9 @@ return {
 			" trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
 		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + 
 			" MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
-		ABOUT_4: "Application software designed and implemented by Kinoma (www.kinoma.com). Portions Copyright Â©2006,2007 Kinoma, Inc.",
+		ABOUT_4: "Application software designed and implemented by Kinoma (www.kinoma.com). Portions Copyright ©2006,2007 Kinoma, Inc.",
 		ABOUT_5: "Bitstream is a registered trademark, and Dutch, Font Fusion, and Swiss are trademarks, of Bitstream, Inc.",
-		ABOUT_6: "Portions of this software are Copyright Â©2005 The FreeType Project (www.freetype.org). All rights reserved.",
+		ABOUT_6: "Portions of this software are Copyright ©2005 The FreeType Project (www.freetype.org). All rights reserved.",
 		ABOUT_7: "This software is based in part on the work of the Independent JPEG Group.",
 		AUTHORIZED_SONY: "Authorized for the eBook Store.",
 		NOT_AUTHORIZED_SONY: "Not authorized for the eBook Store.",

@@ -1,5 +1,5 @@
-// Description: Sample localization file
-// Author: kartu
+// Description: Russian locale
+// Author: SLL
 //
 // Language: English
 //
@@ -10,21 +10,15 @@ return {
 	// Standard stuff
 	Sony: {
 		// USB connected
-		DO_NOT_DISCONNECT: "Не отсоединяйте устройство", 
-		USB_CONNECTED: "USB подключен", 
+		DO_NOT_DISCONNECT: "Не отсоединяйте устройство",
+		USB_CONNECTED: "USB подключен",
 		DEVICE_LOCKED: "Устройство заблокировано",
-	      
+
 		// About, translate either all or none
-		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" +
-			"PRS+ Firmware: @@@firmware@@@\n" +
-			"Автор: Михаил Сухиашвили или kartu (kartu3@gmail.com) с использованием работ: " +
-			"igorsk, boroda, obelix, pepak, llasram и других.\n" +
-			"© GNU Lesser General Public License.",
+		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" + "PRS+ Firmware: @@@firmware@@@\n" + "Автор: Михаил Сухиашвили или kartu (kartu3@gmail.com) с использованием работ: " + "igorsk, boroda, obelix, pepak, llasram и других.\n" + "© GNU Lesser General Public License.",
 		ABOUT_1: "Copyright ©2006-2008 Sony Corporation",
-		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + 
-			" trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
-		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + 
-			" MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
+		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + " trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
+		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + " MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
 		ABOUT_4: "Application software designed and implemented by Kinoma (www.kinoma.com). Portions Copyright ©2006,2007 Kinoma, Inc.",
 		ABOUT_5: "Bitstream is a registered trademark, and Dutch, Font Fusion, and Swiss are trademarks, of Bitstream, Inc.",
 		ABOUT_6: "Portions of this software are Copyright ©2005 The FreeType Project (www.freetype.org). All rights reserved.",
@@ -35,7 +29,7 @@ return {
 		NOT_AUTHORIZED_ADOBE: "Не авторизован для защищенных материалов Adobe DRM.",
 		SONY_FW_VERSION: "Версия",
 		DEVICE_ID: "Устройство",
-		
+
 		// Mime & card names
 		RICH_TEXT_FORMAT: "Rich Text Format",
 		ADOBE_PDF: "Adobe PDF",
@@ -45,7 +39,7 @@ return {
 		INTERNAL_MEMORY: "Внутренняя память",
 		MEMORY_STICK: "Memory Stick",
 		SD_CARD: "SD Memory",
-		
+
 		// Main.xml & kbook.so stuff
 		INVALID_FORMAT: "Неверный формат!",
 		FORMATTING: "Форматирую...",
@@ -68,7 +62,7 @@ return {
 		NO_BATTERY: "Батарея разряжена!",
 		FORMATTING_INTERNAL_MEMORY: "Форматирую внутреннюю память...",
 		SHUTTING_DOWN: "Отключаюсь...",
-		
+
 		// Root menu
 		CONTINUE: "Продолжить чтение",
 		BOOKS_BY_TITLE: "Книги по названию",
@@ -90,7 +84,8 @@ return {
 		SET_DATE: "Дата и время",
 		YEAR: "Год",
 		MONTH: "Месяц",
-		DATE: "День", // Day
+		DATE: "День",
+		// Day
 		HOUR: "Часы",
 		MINUTE: "Минуты",
 		// slideshow
@@ -109,7 +104,7 @@ return {
 		ABOUT: "О Ридере",
 		// reset to factory settings
 		RESET_TO_FACTORY: "Сброс на заводские настройки",
-		
+
 		// In Advanced Settings
 		ADVANCED_SETTINGS: "Дополнительные настройки",
 		// screen lock (aka device lock)
@@ -120,7 +115,7 @@ return {
 		SL_TURN: "Активировать",
 		// format device
 		FORMAT_DEVICE: "Форматировать внутреннюю память",
-		
+
 		// In Book menu
 		BEGIN: "В начало",
 		END: "В конец",
@@ -129,12 +124,12 @@ return {
 		HISTORY: "Журнал",
 		INFO: "Информация",
 		UTILITIES: "Инструменты",
-		
+
 		// In Book Utilities
 		REMOVE_ALL_BOOKMARKS: "Удалить все закладки",
 		CLEAR_HISTORY: "Очистить журнал",
 		DELETE_BOOK: "Удалить книгу",
-		
+
 		// In Books by Date
 		TODAY: "Сегодня",
 		EARLIER_THIS_WEEK: "С начала недели",
@@ -145,8 +140,8 @@ return {
 		LAST_QUARTER: "За прошлый квартал",
 		EARLIER_THIS_YEAR: "С начала года",
 		LAST_YEAR: "За прошлый год",
-		OLDER: "Ещё ранее",		
-		
+		OLDER: "Ещё ранее",
+
 		PAGE: "Страница",
 		PART: "Часть",
 		OF: "из",
@@ -155,12 +150,12 @@ return {
 
 		// Info title strings, comma separated, no spaces after comma
 		INFO_TITLES: "Обожка,Название,Автор,Издатель,Категория,eBook ID,Тип,Дата,Размер,Источник,Файл,Права,Истекает",
-		
+
 		// Titles and criterions for "Books by Title" and "Books by Folder"
 		// title is displayed, "criterion" is used for sorting.
 		//
 		// NOTE: if localization doesn't need custom Books by sorting, just remove CUSTOM_SORT, TITLE_*, CRITERION_* items
-		CUSTOM_SORT: true, 
+		CUSTOM_SORT: true,
 		TITLE_1: "0-9",
 		CRITERION_1: "0123456789",
 		TITLE_2: "А Б В Г",
@@ -196,7 +191,7 @@ return {
 		FUNC_GET_DATE: function (date) {
 			var day, month, year;
 			day = this.toDoubleDigit(date.getDate());
-			month = this.toDoubleDigit(date.getMonth() + 1); 
+			month = this.toDoubleDigit(date.getMonth() + 1);
 			year = date.getFullYear();
 			return month + "/" + day + "/" + year;
 		},
@@ -216,7 +211,7 @@ return {
 			return this.FUNC_X_SOMETHING(n, "1 настройка", "настройки", "настроек", "Пусто");
 		},
 		FUNC_X_PICTURES: function (n) {
-			return this.FUNC_X_SOMETHING(n, "1 изображение", "изображения", "изображений",  "Пусто");
+			return this.FUNC_X_SOMETHING(n, "1 изображение", "изображения", "изображений", "Пусто");
 		},
 		FUNC_X_SONGS: function (n) {
 			return this.FUNC_X_SOMETHING(n, "1 песня", "песни", "песен", "Пусто");
@@ -228,14 +223,14 @@ return {
 			return this.FUNC_X_SOMETHING(n, "1 коллекция", "коллекции", "коллекций", "Пусто");
 		},
 		FUNC_X_BOOKS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "1 книга", "книги", "книг",  "Пусто");
+			return this.FUNC_X_SOMETHING(n, "1 книга", "книги", "книг", "Пусто");
 		},
-		FUNC_X_SOMETHING: function(n, form1, form2, form5, form0) {
+		FUNC_X_SOMETHING: function (n, form1, form2, form5, form0) {
 			switch (n) {
-				case 0:
-					return form0;
-				case 1: 
-					return form1;
+			case 0:
+				return form0;
+			case 1:
+				return form1;
 			}
 			var n1 = (n % 100) % 10;
 			if (n1 > 1 & n1 < 5) {
@@ -244,27 +239,27 @@ return {
 			return n + " " + form5;
 		}
 	},
-	
+
 	// PRS+ stuff
 	Core: {
-		NODE_PRSP_SETTINGS:  "PRS+ Установки"
+		NODE_PRSP_SETTINGS: "PRS+ Установки"
 	},
-	
+
 	CoreLang: {
 		TITLE: "Локализация",
 		COMMENT: "Требует перезагрузку",
 		OPTION_LANG: "Язык",
-	
+
 		OPTION_DATE_FORMAT: "Формат даты",
 		ddMMMYY: "31/янв/99",
 		ddMONTHYY: "31/января/99",
 		ddMMMYYYY: "31/янв/1999",
 		ddMONTHYYYY: "31/января/1999",
-		
+
 		OPTION_DATE_SEPARATOR: "Разделитель даты",
 		VALUE_SPACE: "пробел",
 		VALUE_NONE: "нет",
-		
+
 		MONTH_SHORT_1: "янв",
 		MONTH_SHORT_2: "фев",
 		MONTH_SHORT_3: "мар",
@@ -276,7 +271,7 @@ return {
 		MONTH_SHORT_9: "сен",
 		MONTH_SHORT_10: "окт",
 		MONTH_SHORT_11: "ноя",
-		MONTH_SHORT_12: "дек",		
+		MONTH_SHORT_12: "дек",
 
 		MONTH_1: "январь",
 		MONTH_2: "февраль",
@@ -289,7 +284,7 @@ return {
 		MONTH_9: "сентябрь",
 		MONTH_10: "октябрь",
 		MONTH_11: "ноябрь",
-		MONTH_12: "декабрь"	
+		MONTH_12: "декабрь"
 	},
 
 	MenuCaptions: {
@@ -300,40 +295,40 @@ return {
 		VALUE_ALWAYS_SMALL: "Всегда маленькие",
 		VALUE_ALWAYS_BIG: "Всегда большие"
 	},
-	
+
 	TextEncoding: {
 		TITLE: "Кодировка текста",
 		COMMENT: "Используется в книгах форматов TXT, RTF, требует перезагрузку",
 		OPTION_TITLE: "Кодировка",
 		DESCRIPTION: "Позволяет выбрать кодировку текста",
 		LATIN: "Latin",
-		RUSSIAN:  "Русская (win1251)"
+		RUSSIAN: "Русская (win1251)"
 	},
-	
+
 	KeyBindings: {
 		TITLE: "Привязка кнопок",
 		DESCRIPTION: "Позволяет задавать действия кнопкам ридера",
-		
+
 		DEFAULT_VALUE: "по умолчанию",
-		
+
 		// Contexts
-		GLOBAL:  "Глобально",
+		GLOBAL: "Глобально",
 		IN_MENU: "В меню",
-		IN_BOOK:  "При чтении",
-		
+		IN_BOOK: "При чтении",
+
 		// Button groups
 		NUM_BUTTONS: "Цифровые кнопки",
 		JP_BUTTONS: "Кнопки джойстика",
 		OTHER_BUTTONS: "Другие кнопки",
 		VOLUME_BUTTONS: "Клавиша громкости",
-		
+
 		// Buttons
 		BN_SIZE: "Кнопка масштаба",
 		BN_BOOKMARK: "Кнопка закладки",
 		BN_BL_NEXT: "Нижняя левая 'вперёд'",
 		BN_BL_PREVIOUS: "Нижняя левая 'назад'",
 		BN_SB_NEXT: "Боковая 'вперёд'",
-		BN_SB_PREVIOUS:  "Боковая 'назад'",
+		BN_SB_PREVIOUS: "Боковая 'назад'",
 		BN_MENU: "Кнопка меню",
 		BN_JP_LEFT: "Джойстик влево",
 		BN_JP_RIGHT: "Джойстик вправо",
@@ -362,7 +357,7 @@ return {
 		BN_H_VOLUME_DOWN: "Удерживать громкость-",
 		BN_VOLUME_UP: "Громкость+",
 		BN_H_VOLUME_UP: "Удерживать громкость+",
-		
+
 		// Actions
 		ACTION_SHUTDOWN: "Отключить",
 		ACTION_NEXT_PAGE: "Следующая страница",
@@ -372,7 +367,7 @@ return {
 		ACTION_PREVIOUS_SONG: "Предыдущая песня",
 		ACTION_NEXT_SONG: "Следующая песня"
 	},
-	
+
 	Screenshot: {
 		TITLE: "Снимок экрана",
 		ACTION_TITLE: "Сделать снимок экрана",
@@ -386,9 +381,9 @@ return {
 		SD_CARD: "SD Card",
 		INTERNAL_MEMORY: "Внутренняя память"
 	},
-	
+
 	BrowseFolders: {
-		TITLE:  "Просмотр папок",
+		TITLE: "Просмотр папок",
 		OPTION_SORTING_MODE: "Тип сортировки",
 		VALUE_BY_TITLE: "По названию",
 		VALUE_BY_AUTHOR_THEN_TITLE: "По автору и по названию",
@@ -416,7 +411,7 @@ return {
 		NODE_SD_CARD_MOUNT: "SD Card через монтирование",
 		NODE_GAMES_AND_UTILITIES: "Игры и инструменты"
 	},
-	
+
 	Clock: {
 		TITLE: "Часы",
 		OPTION_STYLE: "Стиль часов",
@@ -431,19 +426,19 @@ return {
 		AM: "am",
 		PM: "pm"
 	},
-	
+
 	PageIndex: {
-		TITLE: "Индексная строка", 
-		INDEX_STYLE_BOOK: "Стиль индексной строки в книге", 
-		INDEX_MODE_BOOK: "Режим индексной строки в книге", 
-		INDEX_MODE_MENU: "Режим индексной строки в меню", 
-		INDEX_STYLE_MENU: "Стиль индексной строки в меню", 
-		OF: "из", 
-		ALWAYS_SHOWN: "Всегда показывать", 
-		NEVER_SHOWN: "Никогда не показывать", 
+		TITLE: "Индексная строка",
+		INDEX_STYLE_BOOK: "Стиль индексной строки в книге",
+		INDEX_MODE_BOOK: "Режим индексной строки в книге",
+		INDEX_MODE_MENU: "Режим индексной строки в меню",
+		INDEX_STYLE_MENU: "Стиль индексной строки в меню",
+		OF: "из",
+		ALWAYS_SHOWN: "Всегда показывать",
+		NEVER_SHOWN: "Никогда не показывать",
 		NOT_SHOWN_IF_SINGLE_PAGE: "Не показывать на единственной странице"
 	},
-	
+
 	EpubUserStyle: {
 		TITLE: "Пользовательский стиль EPUB",
 		COMMENT: "Экспер., влияет только на книги, созданные позднее.",
