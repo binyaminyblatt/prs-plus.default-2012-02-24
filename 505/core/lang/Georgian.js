@@ -4,6 +4,7 @@
 //	2010-04-24 kartu - Added TITLE for "clock" addon
 //	2010-04-24 kartu - Fixed spelling of CONTINUE
 //	2010-04-24 kartu - Fixed spelling
+//	2010-04-25 kartu - Translated more stuff
 return {
 	// Standard stuff
 	Sony: {
@@ -61,11 +62,11 @@ return {
 		RESTORE_DEFAULTS: "Restore Defaults",
 		PRESS_MARK_TO_RESTORE: "Press MARK to restore",
 		DEFAULT_SETTINGS: "default settings.",
-		UPPER_PAGE: "PAGE",
+		UPPER_PAGE: "გვერდი",
 		ONE_OF_ONE: "1 - 1",
-		NO_BATTERY: "No battery!",
-		FORMATTING_INTERNAL_MEMORY: "Formatting Internal Memory...",
-		SHUTTING_DOWN: "Shutting down...",
+		NO_BATTERY: "აკუმულატორი დამჯდარია!",
+		FORMATTING_INTERNAL_MEMORY: "შიდა მეხსიერების ფორმატირება...",
+		SHUTTING_DOWN: "გამორთვა...",
 		
 		// Root menu
 		CONTINUE: "კითხვის გაგრძელება",
@@ -73,11 +74,11 @@ return {
 		BOOKS_BY_AUTHOR: "წიგნები ავტორის მიხედვით",
 		BOOKS_BY_DATE: "წიგნები თარიღის მიხედვით",
 		COLLECTIONS: "კოლექციები",
-		ALL_BOOKMARKS: "All Bookmarks",
+		ALL_BOOKMARKS: "ყველა ჩანიშვნა",
 		NOW_PLAYING: "Now Playing",
 		MUSIC: "მუსიკა",
 		PICTURES: "სურათები",
-		SETTINGS: "Settings",
+		SETTINGS: "ოპციები",
 
 		// In Settings
 		// orientation
@@ -95,42 +96,42 @@ return {
 		SLIDESHOW: "Slideshow",
 		SS_ON: "ჩარ",
 		SS_OFF: "გამ",
-		SS_TURN: "Turn",
+		SS_TURN: "აქტივირება",
 		SS_DURATION: "ხანძლიობა",
 		SECONDS: "წამი",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "Sleep Mode",
 		AS_ON: "ჩარ",
 		AS_OFF: "გამ",
-		AS_TURN: "Turn",
+		AS_TURN: "აქტივირება",
 		// about
 		ABOUT: "წიგნის შესახებ",
 		// reset to factory settings
 		RESET_TO_FACTORY: "Reset to factory settings",
 		
 		// In Advanced Settings
-		ADVANCED_SETTINGS: "Advanced Settings",
+		ADVANCED_SETTINGS: "დამატებითი ოპციები",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "წიგნის დალუქვა",
 		SL_OFF: "გამ",
 		SL_ON: "ჩარ",
 		SL_CODE: "კოდი",
-		SL_TURN: "Turn",
+		SL_TURN: "აქტივირება",
 		// format device
 		FORMAT_DEVICE: "წიგნის ფორმატირება",
 		
 		// In Book menu
 		BEGIN: "დასაწყისი",
 		END: "დასასრული",
-		BOOKMARKS: "Bookmarks",
-		CONTENTS: "Contents",
-		HISTORY: "History",
+		BOOKMARKS: "ჩანიშვნები",
+		CONTENTS: "შინაარსი",
+		HISTORY: "ისტორია",
 		INFO: "დეტალები",
-		UTILITIES: "Utilities",
+		UTILITIES: "უტილიტები",
 		
 		// In Book Utilities
-		REMOVE_ALL_BOOKMARKS: "Remove All Bookmarks",
-		CLEAR_HISTORY: "Clear History",
+		REMOVE_ALL_BOOKMARKS: "ჩანიშნულების წაშლა",
+		CLEAR_HISTORY: "ისტორიის წაშლა",
 		DELETE_BOOK: "წიგნის წაშლა",
 		
 		// In Books by Date
@@ -205,34 +206,32 @@ return {
 			return hour + ":" + minute;
 		},
 		FUNC_X_PAGES: function (n) {
-			return this.FUNC_X_SOMETHING(n, "გვერდი", "1 გვერდი", "ცარიელი");
+			return this.FUNC_X_SOMETHING(n, "გვერდი", "ცარიელი");
 		},
 		FUNC_X_ITEMS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "საგანი", "1 საგანი", "ცარიელი");
+			return this.FUNC_X_SOMETHING(n, "საგანი", "ცარიელი");
 		},
 		FUNC_X_SETTINGS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "settings", "1 setting", "ცარიელი");
+			return this.FUNC_X_SOMETHING(n, "ოპცია", "ცარიელი");
 		},
 		FUNC_X_PICTURES: function (n) {
-			return this.FUNC_X_SOMETHING(n, "სურათი", "1 სურათი", "ცარიელი");
+			return this.FUNC_X_SOMETHING(n, "სურათი", "ცარიელი");
 		},
 		FUNC_X_SONGS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "სიმღერა", "1 სიმღერა", "ცარიელი");
+			return this.FUNC_X_SOMETHING(n, "სიმღერა", "ცარიელი");
 		},
 		FUNC_X_BOOKMARKS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "bookmarks", "1 bookmark", "ცარიელი");
+			return this.FUNC_X_SOMETHING(n, "ჩანიშნული", "ცარიელი");
 		},
 		FUNC_X_COLLECTIONS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "კოლეკცია", "1 კოკექცია", "ცარიელი");
+			return this.FUNC_X_SOMETHING(n, "კოლეკცია", "ცარიელი");
 		},
 		FUNC_X_BOOKS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "წიგნი", "1 წიგნი", "ცარიელი");
+			return this.FUNC_X_SOMETHING(n, "წიგნი", "ცარიელი");
 		},
-		FUNC_X_SOMETHING: function (n, many, one, zero) {
-			if (n > 1) {
+		FUNC_X_SOMETHING: function (n, many, zero) {
+			if (n > 0) {
 				return n + " " + many;
-			} else if (n == 1) {
-				return one;
 			} else {
 				return zero;
 			}
@@ -241,7 +240,7 @@ return {
 	
 	// PRS+ stuff
 	Core: {
-		NODE_PRSP_SETTINGS:  "PRS+ Settings"
+		NODE_PRSP_SETTINGS:  "PRS+ ოპციები"
 	},
 	
 	CoreLang: {
@@ -255,7 +254,7 @@ return {
 		ddMMMYYYY: "31/იან/1999",
 		ddMONTHYYYY: "31/იანვარი/1999",
 		
-		OPTION_DATE_SEPARATOR: "თარიღის Separator",
+		OPTION_DATE_SEPARATOR: "თარიღის სიმბოლო",
 		VALUE_SPACE: "space",
 		VALUE_NONE: "არაფერი",
 		
@@ -361,8 +360,8 @@ return {
 		ACTION_SHUTDOWN: "გათიშვა",
 		ACTION_NEXT_PAGE: "შემდეგი გვერდი",
 		ACTION_PREVIOUS_PAGE: "წინა გვერდი",
-		ACTION_NEXT_IN_HISTORY: "Next in History",
-		ACTION_PREVIOUS_IN_HISTORY: "Previous in History",
+		ACTION_NEXT_IN_HISTORY: "წინა ისტორიაში",
+		ACTION_PREVIOUS_IN_HISTORY: "შემდეგი ისტორიაში",
 		ACTION_PREVIOUS_SONG: "წინა სიმღერა",
 		ACTION_NEXT_SONG: "შემდეგი სიმღერა"
 	},
@@ -378,7 +377,7 @@ return {
 		FEEDBACK_ON: "on",
 		FEEDBACK_OFF: "off",
 		SD_CARD: "SD Card",
-		INTERNAL_MEMORY: "Internal Memory"
+		INTERNAL_MEMORY: "შიდა მეხსიერება"
 	},
 	
 	BrowseFolders: {
