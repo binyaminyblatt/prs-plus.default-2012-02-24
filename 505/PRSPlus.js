@@ -40,9 +40,9 @@ var tmp = function() {
 		delete f;
 	}
 
-	// In debug mode, need to combine files manually, in normal mode, do nothing
+	// In debug mode, need to combine files manually, otherwise call prspFile, which was created by bulid script
+	//
 	if (debugMode) {
-	
 		var endsWith = function(str, postfix) {
 			return str.lastIndexOf(postfix) === str.length - postfix.length;
 		};
@@ -84,7 +84,7 @@ var tmp = function() {
 		delete core;
 		delete coreCode;
 		
-		// Combine & call addon files
+		// Call addon files
 		var addonsPath = config.addonsPath;
 		var addonFiles = listFiles(addonsPath, ".js");
 		var addonCode = "";
@@ -96,7 +96,14 @@ var tmp = function() {
 		addons(Core, log);
 		delete addonCode;
 		delete addons;
+		
+	} else {
+		var prspFile = System.applyEnvironment("[prspFile]");
+		var core = new Function("Core", getFileContent(prspFile));
+		core(Core);
+		delete core;
 	}
+	Core.init();
 };
 try {
 	tmp();
