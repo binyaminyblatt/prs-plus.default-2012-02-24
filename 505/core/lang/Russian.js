@@ -4,7 +4,8 @@
 // Language: English
 //
 // History:
-//	2010-04-24 kartu - Fixed epub styles translation	
+//	2010-04-24 kartu - Fixed epub styles translation
+//	2010-04-25 kartu - Fixed "turn on/off" translation
 return {
 	// Standard stuff
 	Sony: {
@@ -96,14 +97,14 @@ return {
 		SLIDESHOW: "Показ слайдов",
 		SS_ON: "Вкл",
 		SS_OFF: "Выкл",
-		SS_TURN: "Поворот",
+		SS_TURN: "Активировать",
 		SS_DURATION: "Продолжительность",
 		SECONDS: "Секунд",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "Спящий режим",
 		AS_ON: "Вкл",
 		AS_OFF: "Выкл",
-		AS_TURN: "Поворот",
+		AS_TURN: "Активировать",
 		// about
 		ABOUT: "О Ридере",
 		// reset to factory settings
@@ -116,7 +117,7 @@ return {
 		SL_OFF: "Вкл",
 		SL_ON: "Выкл",
 		SL_CODE: "Пароль",
-		SL_TURN: "Поворот",
+		SL_TURN: "Активировать",
 		// format device
 		FORMAT_DEVICE: "Форматировать внутреннюю память",
 		
