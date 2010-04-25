@@ -241,7 +241,7 @@ return {
 	},
 	
 	CoreLang: {
-		TITLE: "Localizaci"+String.fromCharCode(243)+"n"",
+		TITLE: "Localizaci"+String.fromCharCode(243)+"n",
 		COMMENT: "Requiere reincio",
 		OPTION_LANG: "Idioma",
 	
