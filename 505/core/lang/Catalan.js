@@ -438,9 +438,4 @@ return {
 		OPTION_EPUB_CSS_FILE: "Arxius .css de l'usuari",
 		VALUE_DISABLED: "desactivat"
 	}
-}; /*   paste in your code and press Beautify button   */
-if ('this_is' == /an_example/) {
-	do_something();
-} else {
-	var a = b ? (c % d) : e[f];
-}
+};
