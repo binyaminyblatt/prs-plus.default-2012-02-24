@@ -1,4 +1,10 @@
 var bootLog;
+
+if (FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
+	// Safe mode (USB was connected during startup) not initializing PRS+
+	return;
+}
+
 var tmp = function() {
 	var config = {
 		debugMode: false,
