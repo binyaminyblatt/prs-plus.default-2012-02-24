@@ -92,16 +92,21 @@ var tmp = function() {
 			addonCode = addonCode + getFileContent(addonsPath + addonFiles[i]);
 		}
 		var log = Core.log.getLogger("addons");
-		var addons = new Function("Core,log", addonCode);
-		addons(Core, log);
+		var addons = new Function("Core,log,tmp", addonCode);
+		addons(Core, log, undefined);
 		delete addonCode;
 		delete addons;
 		
 	} else {
-		var prspFile = System.applyEnvironment("[prspFile]");
-		var core = new Function("Core", getFileContent(prspFile));
+		var prspCoreFile = System.applyEnvironment("[prspCoreFile]");
+		var core = new Function("Core", getFileContent(prspCoreFile));
 		core(Core);
 		delete core;
+		
+		var prspAddonsFile = System.applyEnvironment("[prspAddonsFile]");
+		var addons = new Function("Core", getFileContent(prspAddonsFile));
+		addons(Core);
+		delete addons;
 	}
 	Core.init();
 };
