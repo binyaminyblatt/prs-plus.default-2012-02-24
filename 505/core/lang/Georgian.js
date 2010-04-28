@@ -5,13 +5,14 @@
 //	2010-04-24 kartu - Fixed spelling of CONTINUE
 //	2010-04-24 kartu - Fixed spelling
 //	2010-04-25 kartu - Translated more stuff
+//	2010-04-28 kartu - Finalized Georgian translation
 return {
 	// Standard stuff
 	Sony: {
 		// USB connected
 		DO_NOT_DISCONNECT: "არ გამორთოთ",
-		USB_CONNECTED: "USB მიერთებულია",
-		DEVICE_LOCKED: "წიგნი დალუქულია",
+		USB_CONNECTED: "USB შეერთებულია",
+		DEVICE_LOCKED: "წიგნი დაბლოკილია",
 
 		// About, translate either all or none
 		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" +
@@ -19,7 +20,7 @@ return {
 			"ავტორი: მიხეილ სუხიაშვილი aka kartu (kartu3@gmail.com) using work of: " + 
 			"igorsk, boroda, obelix, pepak, llasram და სხვები.\n" +
 			"© GNU Lesser General Public License.",
-		ABOUT_1: "Copyright ©2006-2008 Sony Corporation",
+		ABOUT_1: "საავტორო უფლებები ©2006-2008 Sony Corporation",
 		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + 
 			" trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
 		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + 
@@ -28,18 +29,18 @@ return {
 		ABOUT_5: "Bitstream is a registered trademark, and Dutch, Font Fusion, and Swiss are trademarks, of Bitstream, Inc.",
 		ABOUT_6: "Portions of this software are Copyright ©2005 The FreeType Project (www.freetype.org). All rights reserved.",
 		ABOUT_7: "This software is based in part on the work of the Independent JPEG Group.",
-		AUTHORIZED_SONY: "Authorized for the eBook Store.",
-		NOT_AUTHORIZED_SONY: "Not authorized for the eBook Store.",
-		AUTHORIZED_ADOBE: "This device is authorized for Adobe DRM protected content.",
-		NOT_AUTHORIZED_ADOBE: "This device is not authorized for Adobe DRM protected content.",
-		SONY_FW_VERSION: "Version",
-		DEVICE_ID: "Device",
+		AUTHORIZED_SONY: "წიგნი ავტორიზებულია eBook Store-ისთვის.",
+		NOT_AUTHORIZED_SONY: "წიგნი არ არის ავტორიზებული eBook Store-ისთვის.",
+		AUTHORIZED_ADOBE: "წიგნი ავტორიზირებულია Adobe DRM დაცული მასალისთვის.",
+		NOT_AUTHORIZED_ADOBE: "წიგნი არ არის ავტორიზირებული Adobe DRM დაცული მასალისთვის.",
+		SONY_FW_VERSION: "ვერსია",
+		DEVICE_ID: "მოწყობილობა",
 		
 		// Mime & card names
-		RICH_TEXT_FORMAT: "Rich Text Format",
+		RICH_TEXT_FORMAT: "Rich Text ფორმატი",
 		ADOBE_PDF: "Adobe PDF",
-		EPUB_DOCUMENT: "EPUB document",
-		BBEB_BOOK: "BBeB Book",
+		EPUB_DOCUMENT: "EPUB დოკუმენტი",
+		BBEB_BOOK: "BBeB წიგნი",
 		PLAIN_TEXT: "უბრალო ტექსტი",
 		INTERNAL_MEMORY: "შიდა მეხსიერება",
 		MEMORY_STICK: "Memory Stick",
@@ -47,26 +48,26 @@ return {
 		
 		// Main.xml & kbook.so stuff
 		INVALID_FORMAT: "არასწორი ფორმატი!",
-		FORMATTING: "ფორმატირება...",
-		LOADING: "ჩატვირთვა...",
-		LOW_BATTERY: "Low Battery!",
-		HR_WARNING: "Do you want to DELETE all content, restore all factory settings, and clear the DRM authorization state?\n\nYes - Press 5\nNo - Press MENU",
-		DEVICE_SHUTDOWN: "Device Shutdown",
-		PRESS_MARK_TO_SHUTDOWN: "Press MARK to shutdown",
-		THIS_DEVICE: "this device.",
-		PRESS_MARK_TO_DELETE: "Press MARK to",
-		THIS_BOOK: "delete book.",
-		FORMAT_INTERNAL_MEMORY: "Format Internal Memory",
-		PRESS_MARK_TO_FORMAT: "Press MARK to format",
-		MSG_INTERNAL_MEMORY: "internal memory.",
-		RESTORE_DEFAULTS: "Restore Defaults",
-		PRESS_MARK_TO_RESTORE: "Press MARK to restore",
-		DEFAULT_SETTINGS: "default settings.",
+		FORMATTING: "დაფორმატება...",
+		LOADING: "იტვირთება...",
+		LOW_BATTERY: "აკუმულატორი დამჯდარია!",
+		HR_WARNING: "გინდათ წაშალოდ მთელი მასალა, აღადგინოთ საწყისი პარამეტრები და წაშალოთ DRM ავტორიზაცია?\n\nდიახ - დააჭირეთ 5-ს\nარა - დააჭირეთ MENU-ს",
+		DEVICE_SHUTDOWN: "სისტემის გათიშვა",
+		PRESS_MARK_TO_SHUTDOWN: "დააჭირეთ MARK-ს წიგნის",
+		THIS_DEVICE: "გასათიშად.",
+		PRESS_MARK_TO_DELETE: "დააჭირეთ MARK-ს წიგნის",
+		THIS_BOOK: "წასაშლელად.",
+		FORMAT_INTERNAL_MEMORY: "შიდა მეხსიერების დაფორმატება",
+		PRESS_MARK_TO_FORMAT: "დააჭირეთ MARK-ს შიდა",
+		MSG_INTERNAL_MEMORY: "მეხსიერების დასაფორმატებლად.",
+		RESTORE_DEFAULTS: "ნაგულისხმევის აღდგენა",
+		PRESS_MARK_TO_RESTORE: "დააჭირეთ MARK-ს",
+		DEFAULT_SETTINGS: "ნაგულისხმევის აღსადგენად.",
 		UPPER_PAGE: "გვერდი",
 		ONE_OF_ONE: "1 - 1",
 		NO_BATTERY: "აკუმულატორი დამჯდარია!",
 		FORMATTING_INTERNAL_MEMORY: "შიდა მეხსიერების ფორმატირება...",
-		SHUTTING_DOWN: "გამორთვა...",
+		SHUTTING_DOWN: "	მუშაობის დასრულება...",
 		
 		// Root menu
 		CONTINUE: "კითხვის გაგრძელება",
@@ -74,11 +75,11 @@ return {
 		BOOKS_BY_AUTHOR: "წიგნები ავტორის მიხედვით",
 		BOOKS_BY_DATE: "წიგნები თარიღის მიხედვით",
 		COLLECTIONS: "კოლექციები",
-		ALL_BOOKMARKS: "ყველა ჩანიშვნა",
-		NOW_PLAYING: "Now Playing",
+		ALL_BOOKMARKS: "ყველა სანიშნე",
+		NOW_PLAYING: "	ახლა იკვრება",
 		MUSIC: "მუსიკა",
 		PICTURES: "სურათები",
-		SETTINGS: "ოფციები",
+		SETTINGS: "პარამეტრები",
 
 		// In Settings
 		// orientation
@@ -93,26 +94,26 @@ return {
 		HOUR: "საათი",
 		MINUTE: "წუთი",
 		// slideshow
-		SLIDESHOW: "Slideshow",
+		SLIDESHOW: "დიაფილმი",
 		SS_ON: "ჩარ",
 		SS_OFF: "გამ",
 		SS_TURN: "აქტივირება",
 		SS_DURATION: "ხანძლიობა",
 		SECONDS: "წამი",
 		// auto standby (aka sleep mode)
-		AUTOSTANDBY: "Sleep Mode",
+		AUTOSTANDBY: "ძილის რეჟიმი",
 		AS_ON: "ჩარ",
 		AS_OFF: "გამ",
 		AS_TURN: "აქტივირება",
 		// about
 		ABOUT: "წიგნის შესახებ",
 		// reset to factory settings
-		RESET_TO_FACTORY: "Reset to factory settings",
+		RESET_TO_FACTORY: "საწყისი პარამეტრების აღდგენა",
 		
 		// In Advanced Settings
-		ADVANCED_SETTINGS: "დამატებითი ოფციები",
+		ADVANCED_SETTINGS: "გაფართოებული პარამეტრები",
 		// screen lock (aka device lock)
-		SCREEN_LOCK: "წიგნის დალუქვა",
+		SCREEN_LOCK: "წიგნის ჩაკეტვა",
 		SL_OFF: "გამ",
 		SL_ON: "ჩარ",
 		SL_CODE: "კოდი",
@@ -123,14 +124,14 @@ return {
 		// In Book menu
 		BEGIN: "დასაწყისი",
 		END: "დასასრული",
-		BOOKMARKS: "ჩანიშვნები",
-		CONTENTS: "შინაარსი",
+		BOOKMARKS: "სანიშნეები",
+		CONTENTS: "სარჩევი",
 		HISTORY: "ისტორია",
-		INFO: "დეტალები",
+		INFO: "ინფორმაცია",
 		UTILITIES: "უტილიტები",
 		
 		// In Book Utilities
-		REMOVE_ALL_BOOKMARKS: "ჩანიშნულების წაშლა",
+		REMOVE_ALL_BOOKMARKS: "ყველა სანიშნეს წაშლა",
 		CLEAR_HISTORY: "ისტორიის წაშლა",
 		DELETE_BOOK: "წიგნის წაშლა",
 		
@@ -153,7 +154,7 @@ return {
 		NO_SONG: "ცარიელი",
 
 		// Info title strings, comma separated, no spaces after comma
-		INFO_TITLES: "გარეკანი,სათაური,ავტორი,გამომცემელი,კატეგორია,eBook ID,ტიპი,თარიღი,სიდიდე,წყარო,ფაილი,Digital Rights,გათავდება",
+		INFO_TITLES: "გარეკანი,სათაური,ავტორი,გამომცემელი,კატეგორია,eBook ID,ტიპი,თარიღი,სიდიდე,წყარო,ფაილი,Digital Rights,ვადის ამოწურვა",
 		
 		// Titles and criterions for "Books by Title" and "Books by Folder"
 		// title is displayed, "criterion" is used for sorting.
@@ -240,7 +241,7 @@ return {
 	
 	// PRS+ stuff
 	Core: {
-		NODE_PRSP_SETTINGS:  "PRS+ ოფციები"
+		NODE_PRSP_SETTINGS:  "PRS+ პარამეტრები"
 	},
 	
 	CoreLang: {
@@ -286,9 +287,9 @@ return {
 	},
 
 	MenuCaptions: {
-		TITLE: "მენიუს სათაური",
+		TITLE: "მენიუს წარწერები",
 		TITLE_COMMENT: "",
-		OPTION_STYLE: "მენიუს სათაურის სტილი",
+		OPTION_STYLE: "წარწერების სტილი",
 		VALUE_SONY_DEFAULT: "Sony (ხან დიდი ხან პატარა)",
 		VALUE_ALWAYS_SMALL: "ყოველთვის პატარა",
 		VALUE_ALWAYS_BIG: "ყოველთვის დიდი"
@@ -304,10 +305,10 @@ return {
 	},
 	
 	KeyBindings: {
-		TITLE: "Key Bindings",
-		DESCRIPTION: "Allows to bind actions to keys",
+		TITLE: "ღილაკები",
+		DESCRIPTION: "ღილაკების კონფიგურირება",
 		
-		DEFAULT_VALUE: "default",
+		DEFAULT_VALUE: "ნაგულისხმევი",
 		
 		// Contexts
 		GLOBAL:  "ყველგან",
@@ -315,46 +316,46 @@ return {
 		IN_BOOK:  "წიგნში",
 		
 		// Button groups
-		NUM_BUTTONS: "Numeric Buttons",
-		JP_BUTTONS: "Joypad Buttons",
-		OTHER_BUTTONS: "Other Buttons",
-		VOLUME_BUTTONS: "Volume Buttons",
+		NUM_BUTTONS: "ციფრული ღილაკები",
+		JP_BUTTONS: "ჯოისტიკის ღილაკები",
+		OTHER_BUTTONS: "სხვა ღილაკები",
+		VOLUME_BUTTONS: "ხმის ღილაკები",
 		
 		// Buttons
-		BN_SIZE: "Size button",
-		BN_BOOKMARK: "Bookmark button",
-		BN_BL_NEXT: "Bottom left 'next'",
-		BN_BL_PREVIOUS: "Bottom left 'previous'",
-		BN_SB_NEXT: "Sidebar 'next'",
-		BN_SB_PREVIOUS:  "Sidebar 'previous'",
-		BN_MENU: "Menu button",
-		BN_JP_LEFT: "Joypad left",
-		BN_JP_RIGHT: "Joypad right",
-		BN_JP_UP: "Joypad up",
-		BN_JP_DOWN: "Joypad down",
-		BN_JP_CENTER: "Joypad center",
-		BN_H_SIZE: "Holding size button",
-		BN_H_BOOKMARK: "Holding bookmark button",
-		BN_H_BL_NEXT: "Holding bottom left 'next page'",
-		BN_H_BL_PREVIOUS: "Holding bottom left 'previous page'",
-		BN_H_MENU: "Holding menu button",
-		BN_H_SB_NEXT: "Holding sidebar 'next page'",
-		BN_H_SB_PREVIOUS: "Holding sidebar 'previous page'",
-		BN_H_JP_CENTER: "Holding joypad center button",
-		BN_H_1: "Hold 1",
-		BN_H_2: "Hold 2",
-		BN_H_3: "Hold 3",
-		BN_H_4: "Hold 4",
-		BN_H_5: "Hold 5",
-		BN_H_6: "Hold 6",
-		BN_H_7: "Hold 7",
-		BN_H_8: "Hold 8",
-		BN_H_9: "Hold 9",
-		BN_H_0: "Hold 0",
-		BN_VOLUME_DOWN: "Volume-",
-		BN_H_VOLUME_DOWN: "Hold Volume-",
-		BN_VOLUME_UP: "Volume+",
-		BN_H_VOLUME_UP: "Hold Volume+",
+		BN_SIZE: "გადიდების ღილაკი",
+		BN_BOOKMARK: "სანიშნეს ღილაკი",
+		BN_BL_NEXT: "ქვედა მარცხენა 'შემდეგი' ღილ.",
+		BN_BL_PREVIOUS: "ქვედა მარცხენა 'წინა' ღილ.",
+		BN_SB_NEXT: "გვერდითი 'შემდეგი' ღილ.",
+		BN_SB_PREVIOUS:  "გვერდითი 'წინა' ღილ.",
+		BN_MENU: "მენიუს ღილაკი",
+		BN_JP_LEFT: "ჯოისტიკის მარცხენა ღილ.",
+		BN_JP_RIGHT: "ჯოისტიკის მარჯვენა ღილ.",
+		BN_JP_UP: "ჯოისტიკის ზედა ღილ.",
+		BN_JP_DOWN: "ჯოისტიკის ქვედა ღილ.",
+		BN_JP_CENTER: "ჯოისტიკის შუა ღილ.",
+		BN_H_SIZE: "დაჭერილი გადიდების ღილ.",
+		BN_H_BOOKMARK: "დაჭერილი სანიშნეს ღილაკი",
+		BN_H_BL_NEXT: "დაჭერილი ქვ. მარც. 'შემდეგი'",
+		BN_H_BL_PREVIOUS: "დაჭერილი ქვ. მარც. 'წინა'",
+		BN_H_MENU: "დაჭერილი მენუს ღილაკი",
+		BN_H_SB_NEXT: "დაჭერილი გვერდითი 'შემდეგი'",
+		BN_H_SB_PREVIOUS: "დაჭერილი გვერდითი 'წინა'",
+		BN_H_JP_CENTER: "დაჭერილი ჯოისტიკის შუა ღილ.",
+		BN_H_1: "დაჭერილი 1",
+		BN_H_2: "დაჭერილი 2",
+		BN_H_3: "დაჭერილი 3",
+		BN_H_4: "დაჭერილი 4",
+		BN_H_5: "დაჭერილი 5",
+		BN_H_6: "დაჭერილი 6",
+		BN_H_7: "დაჭერილი 7",
+		BN_H_8: "დაჭერილი 8",
+		BN_H_9: "დაჭერილი 9",
+		BN_H_0: "დაჭერილი 0",
+		BN_VOLUME_DOWN: "ხმა-",
+		BN_H_VOLUME_DOWN: "დაჭერილი ხმა-",
+		BN_VOLUME_UP: "ხმა+",
+		BN_H_VOLUME_UP: "დაჭერილი ხმა+",
 		
 		// Actions
 		ACTION_SHUTDOWN: "გათიშვა",
@@ -367,16 +368,16 @@ return {
 	},
 	
 	Screenshot: {
-		TITLE: "Screenshot",
-		ACTION_TITLE: "Take a Screenshot",
+		TITLE: "ეკრანის სურათი",
+		ACTION_TITLE: "ეკრანის სურათის გადაღება",
 		SAVING_TO: "Saving to ",
 		FAILED_TO_SAVE: "Failed to save",
-		OPT_SAVETO: "Save to",
-		OPT_FEEDBACK: "Show save progress",
+		OPT_SAVETO: "ვინახავ",
+		OPT_FEEDBACK: "შენახვის შეტყობინება",
 		MEMORY_STICK: "Memory Stick",
-		FEEDBACK_ON: "on",
-		FEEDBACK_OFF: "off",
-		SD_CARD: "SD Card",
+		FEEDBACK_ON: "ჩარ",
+		FEEDBACK_OFF: "გამ",
+		SD_CARD: "SD კარტა",
 		INTERNAL_MEMORY: "შიდა მეხსიერება"
 	},
 	
@@ -396,17 +397,17 @@ return {
 		NODE_RESCAN_INTERNAL_MEMORY: "შიდა მეხსიერების დასკანირება",
 		NODE_COPY_TO_INTERNAL_MEMORY: "შიდა მეხსიერებაში კოპირება",
 		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "აკოპირებს ფაილს შიდა მეხსიერებაში",
-		NODE_COPY_AND_RESCAN: "აკოპირებს ფაილს შ.მ.-ში და იწყებს სკანირებას",
-		NODE_COPY_AND_RESCAN_COMMENT: "",
+		NODE_COPY_AND_RESCAN: "შიდა მეხსიერებაში კოპირება+დასკანირება",
+		NODE_COPY_AND_RESCAN_COMMENT: "აკოპირებს ფაილს შ.მ.-ში და იწყებს სკანირებას",
 		ERROR_TARGET_EXISTS: "შეცდომა: ფაილი ასეთი სახელით არსებობს",
 		NODE_AUDIO_AND_PICTURES: "სიმღერები და სურათები",
 		NODE_BROWSE_FOLDERS: "ფოლდერების დათვალიერება",
-		NODE_BROWSE_FOLDERS_COMMENT: "",
+		NODE_BROWSE_FOLDERS_COMMENT: "ფაილური სისტემის დათვალიერება",
 		NODE_INTERNAL_MEMORY: "შიდა მეხსიერება",
 		NODE_MEMORY_STICK: "Memory Stick",
 		NODE_MEMORY_STICK_MOUNT: "Memory Stick via mount",
-		NODE_SD_CARD: "SD Card",
-		NODE_SD_CARD_MOUNT: "SD Card via mount",
+		NODE_SD_CARD: "SD კარტა",
+		NODE_SD_CARD_MOUNT: "SD კარტა mount-ის გამოყებნებით",
 		NODE_GAMES_AND_UTILITIES: "თამაშები და უტილიტები"
 	},
 	
@@ -419,7 +420,7 @@ return {
 		VALUE_ALWAYS_SHOWN: "ყოვეთვის ჩართულია",
 		VALUE_SHOWN_ONLY_IN_MENU: "მხოლოდ მენიუში",
 		VALUE_SHOWN_WHEN_READING: "მხოლოდ წიგნის კითხვისას",
-		VALUE_OFF: "გამ.",
+		VALUE_OFF: "გამ",
 		ACTION_TOGGLE_CLOCK: "საათის ჩართ./გამორთ.",
 		AM: "am",
 		PM: "pm"
@@ -432,15 +433,15 @@ return {
 		INDEX_MODE_MENU: "ინდექსის რეჟიმი მენიუში",
 		INDEX_STYLE_MENU: "ინდექსის სტილი მენიუში",
 		OF: "-",
-		ALWAYS_SHOWN: "ყოვეთვის ჩართულია",
-		NEVER_SHOWN: "გათიშულია",
-		NOT_SHOWN_IF_SINGLE_PAGE: "გატიშულია ცალკე გვერდებზე (1 - 1)"
+		ALWAYS_SHOWN: "ყოვეთვის ჩართული",
+		NEVER_SHOWN: "ყოვეთვის გათიშული",
+		NOT_SHOWN_IF_SINGLE_PAGE: "გატიშული ერთმაგ გვერდებზე (1 - 1)"
 	},
 	
 	EpubUserStyle: {
 		TITLE: "EPUB მომხმარებლის სტილი",
 		COMMENT: "ექსპ. მოქმედებს მხოლოდ შემდგომ გახსნილ წიგნებზე",
-		OPTION_EPUB_CSS_FILE: "მომხმარებლის EPUB css ფაილიe",
-		VALUE_DISABLED: "გატიშულია"
+		OPTION_EPUB_CSS_FILE: "მომხმარებლის EPUB css ფაილი",
+		VALUE_DISABLED: "გათიშული"
 	}
 };
