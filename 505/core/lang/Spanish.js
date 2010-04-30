@@ -1,5 +1,73 @@
 // Language: Spanish
-// Translate by surquizu and VICTORSJG
+// Description: Localization file
+// Author: kartu
+// Translator: surquizu, VICTORSJG
+//
+// History:
+//	2010-04-30 kravitz - Refactored, added new strings
+
+var FUNC_X_SOMETHING = function (n, s) {
+	if (n > 1) {
+		return n + " " + s[0];
+	}
+	if (n == 1) {
+		return s[1];
+	}
+	return s[2];
+};
+
+var FUNC_X_BOOKS = function (n) {
+	return FUNC_X_SOMETHING(n, ["libros", "1 libro", "Ning" + String.fromCharCode(250) + "n libro"]);
+};
+var FUNC_X_SETTINGS = function (n) {
+	return FUNC_X_SOMETHING(n, ["ajustes", "1 ajuste", "Ning" + String.fromCharCode(250) + "n ajuste"]);
+};
+var FUNC_X_ITEMS = function (n) {
+	return FUNC_X_SOMETHING(n, ["elementos", "1 elemento", "Ning" + String.fromCharCode(250) + "n elemento"]);
+};
+var FUNC_X_PAGES = function (n) {
+	return FUNC_X_SOMETHING(n, ["p" + String.fromCharCode(225) + "ginas", "1 p" + String.fromCharCode(225) + "gina", "Ninguna p" + String.fromCharCode(225) + "gina"]);
+};
+var FUNC_X_PICTURES = function (n) {
+	return FUNC_X_SOMETHING(n, ["im" + String.fromCharCode(225) + "genes", "1 imagen", "Ninguna imagen"]);
+};
+var FUNC_X_SONGS = function (n) {
+	return FUNC_X_SOMETHING(n, ["canciones", "1 canci" + String.fromCharCode(243) + "n", "Ninguna canci" + String.fromCharCode(243) + "n"]);
+};
+var FUNC_X_BOOKMARKS = function (n) {
+	return FUNC_X_SOMETHING(n, ["marcadores", "1 marcador", "Ning" + String.fromCharCode(250) + "n marcador"]);
+};
+var FUNC_X_COLLECTIONS = function (n) {
+	return FUNC_X_SOMETHING(n, ["colecciones", "1 colecci" + String.fromCharCode(243) + "n", "Ninguna colecci" + String.fromCharCode(243) + "n"]);
+};
+
+// Utility function, no need to localize
+var toDoubleDigit = function (num) {
+	if (num < 10) {
+		return "0" + num;
+	}
+	return num;
+};
+
+var FUNC_GET_DATE = function (date) {
+	var day, month, year;
+	day = toDoubleDigit(date.getDate());
+	month = toDoubleDigit(date.getMonth() + 1);
+	year = date.getFullYear();
+	return month + "/" + day + "/" + year;
+};
+
+var FUNC_GET_TIME = function (date) {
+	var hour, minute;
+	hour = toDoubleDigit(date.getHours());
+	minute = toDoubleDigit(date.getMinutes());
+	return hour + ":" + minute;
+};
+
+var FUNC_GET_DATE_TIME = function (date) {
+	return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
+};
+
 return {
 	// Standard stuff
 	Sony: {
@@ -37,7 +105,7 @@ return {
 		// Main.xml & kbook.so stuff
 		INVALID_FORMAT: "Formato No V" + String.fromCharCode(225) + "lido!",
 		FORMATTING: "Formateando...",
-		LOADING: "Cargando ...",
+		LOADING: "Cargando...",
 		LOW_BATTERY: "¡Bater" + String.fromCharCode(237) + "a Baja!",
 		HR_WARNING: "¿Quieres BORRAR todo el contenido y restaurar los ajustes iniciales y el estado de la autorizaci" + String.fromCharCode(243) + "n del DRM?\n\nSi - Pulsa 5\nNo - Pulsa MENU",
 		DEVICE_SHUTDOWN: "Apagar Dispositivo",
@@ -164,75 +232,34 @@ return {
 		CRITERION_6: "MNOmno",
 		TITLE_7: "P Q R S",
 		CRITERION_7: "PQRSpqrs",
-		TITLE_8: "T U V",
+		TITLE_8: "T U V W",
 		CRITERION_8: "TUVWtuvw",
-		TITLE_9: "W X Y Z",
+		TITLE_9: "X Y Z",
 		CRITERION_9: "XYZxyz",
 		TITLE_0: "Otro",
 		CRITERION_0: "",
 
-		// Utility function, no need to localize
-		toDoubleDigit: function (num) {
-			if (num < 10) {
-				return "0" + num;
-			} else {
-				return num;
-			}
-		},
-		FUNC_GET_DATE_TIME: function (date) {
-			return this.FUNC_GET_DATE(date) + " " + this.FUNC_GET_TIME(date);
-		},
-		FUNC_GET_DATE: function (date) {
-			var day, month, year;
-			day = this.toDoubleDigit(date.getDate());
-			month = this.toDoubleDigit(date.getMonth() + 1);
-			year = date.getFullYear();
-			return month + "/" + day + "/" + year;
-		},
-		FUNC_GET_TIME: function (date) {
-			var hour, minute;
-			hour = this.toDoubleDigit(date.getHours());
-			minute = this.toDoubleDigit(date.getMinutes());
-			return hour + ":" + minute;
-		},
-		FUNC_X_PAGES: function (n) {
-			return this.FUNC_X_SOMETHING(n, "p" + String.fromCharCode(225) + "ginas", "1 p" + String.fromCharCode(225) + "gina", "Ninguna p" + String.fromCharCode(225) + "gina");
-		},
-		FUNC_X_ITEMS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "elementos", "1 elemento", "Ning" + String.fromCharCode(250) + "n elemento");
-		},
-		FUNC_X_SETTINGS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "ajustes", "1 ajuste", "Ning" + String.fromCharCode(250) + "n ajuste");
-		},
-		FUNC_X_PICTURES: function (n) {
-			return this.FUNC_X_SOMETHING(n, "im" + String.fromCharCode(225) + "genes", "1 imagen", "Ninguna imagen");
-		},
-		FUNC_X_SONGS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "canciones", "1 canci" + String.fromCharCode(243) + "n", "Ninguna canci" + String.fromCharCode(243) + "n");
-		},
-		FUNC_X_BOOKMARKS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "marcadores", "1 marcador", "Ning" + String.fromCharCode(250) + "n marcador");
-		},
-		FUNC_X_COLLECTIONS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "colecciones", "1 colecci" + String.fromCharCode(243) + "n", "Ninguna colecci" + String.fromCharCode(243) + "n");
-		},
-		FUNC_X_BOOKS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "libros", "1 libro", "Ning" + String.fromCharCode(250) + "n libro");
-		},
-		FUNC_X_SOMETHING: function (n, many, one, zero) {
-			if (n > 1) {
-				return n + " " + many;
-			} else if (n == 1) {
-				return one;
-			} else {
-				return zero;
-			}
-		}
+		FUNC_GET_DATE_TIME: FUNC_GET_DATE_TIME,
+		FUNC_GET_DATE: FUNC_GET_DATE,
+		FUNC_GET_TIME: FUNC_GET_TIME,
+
+		FUNC_X_PAGES: FUNC_X_PAGES,
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
+		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		FUNC_X_PICTURES: FUNC_X_PICTURES,
+		FUNC_X_SONGS: FUNC_X_SONGS,
+		FUNC_X_BOOKMARKS: FUNC_X_BOOKMARKS,
+		FUNC_X_COLLECTIONS: FUNC_X_COLLECTIONS,
+		FUNC_X_BOOKS: FUNC_X_BOOKS
 	},
 
 	// PRS+ stuff
 	Core: {
-		NODE_PRSP_SETTINGS: "PRS+ Ajustes"
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		NODE_PRSP_SETTINGS: "PRS+ Ajustes",
+		GROUP_MENU_TITLE: "Menu Settings",
+		GROUP_VIEWER_TITLE: "Viewer Settings"
 	},
 
 	CoreLang: {
@@ -278,8 +305,6 @@ return {
 	},
 
 	MenuCaptions: {
-		TITLE: "Men" + String.fromCharCode(250) + " T" + String.fromCharCode(237) + "tulos",
-		TITLE_COMMENT: "Permite escoger el estilo de los t" + String.fromCharCode(237) + "tulos de los men" + String.fromCharCode(250) + "s",
 		OPTION_STYLE: "Estilo T" + String.fromCharCode(237) + "tulos",
 		VALUE_SONY_DEFAULT: "Original Sony",
 		VALUE_ALWAYS_SMALL: "Siempre peque" + String.fromCharCode(241) + "os",
@@ -287,12 +312,10 @@ return {
 	},
 
 	TextEncoding: {
-		TITLE: "Codificaci" + String.fromCharCode(243) + "n de Texto",
-		COMMENT: "Afecta a libros en formato TXT y RTF, requiere reiniciar",
-		OPTION_TITLE: "Codificaci" + String.fromCharCode(243) + "n",
-		DESCRIPTION: "Permite escoger la codificaci" + String.fromCharCode(243) + "n del texto",
+		OPTION_TITLE: "Codificaci" + String.fromCharCode(243) + "n de TXT y RTF libros",
+		MSG_RESTART: "¡Requiere reincio!",
 		LATIN: "Car" + String.fromCharCode(225) + "cteres latinos",
-		RUSSIAN: "Car" + String.fromCharCode(225) + "cteres rusos (win1251)"
+		RUSSIAN: "Car" + String.fromCharCode(225) + "cteres rusos (Windows-1251)"
 	},
 
 	KeyBindings: {
@@ -354,8 +377,8 @@ return {
 		ACTION_PREVIOUS_PAGE: "P" + String.fromCharCode(225) + "gina anterior",
 		ACTION_NEXT_IN_HISTORY: "Siguiente en el Historial",
 		ACTION_PREVIOUS_IN_HISTORY: "Anterior en el Historial",
-		ACTION_NEXT_SONG: "Siguiente canci" + String.fromCharCode(243) + "n",
-		ACTION_PREVIOUS_SONG: "Anterior canci" + String.fromCharCode(243) + "n"
+		ACTION_PREVIOUS_SONG: "Anterior canci" + String.fromCharCode(243) + "n",
+		ACTION_NEXT_SONG: "Siguiente canci" + String.fromCharCode(243) + "n"
 	},
 
 	Screenshot: {
@@ -379,7 +402,7 @@ return {
 		VALUE_BY_AUTHOR_THEN_TITLE: "Por autor y luego t" + String.fromCharCode(237) + "tulo",
 		VALUE_BY_AUTHOR_SWAPPING: "Por autor intercambiando nombre/apellido",
 		VALUE_BY_FILENAME: "Por archivo",
-		OPTION_TITLE_SORTER: "Ordenar con TitleSorter",
+		OPTION_TITLE_SORTER: "Ordenar con 'titleSorter'",
 		ENABLED: "Activado",
 		DISABLED: "Desactivado",
 		OPTION_IM_ROOT: "Ra" + String.fromCharCode(237) + "z de la Memoria Interna",
@@ -391,15 +414,13 @@ return {
 		NODE_COPY_AND_RESCAN: "Copia y escanea la Memoria Interna",
 		NODE_COPY_AND_RESCAN_COMMENT: "Copia a la ra" + String.fromCharCode(237) + "z de la Memoria Interna y escanea",
 		ERROR_TARGET_EXISTS: "Error, el archivo destino existe",
-		NODE_AUDIO_AND_PICTURES: "Audio - Im" + String.fromCharCode(225) + "genes",
 		NODE_BROWSE_FOLDERS: "Libros por Carpetas",
 		NODE_BROWSE_FOLDERS_COMMENT: "Explorar",
 		NODE_INTERNAL_MEMORY: "Memoria Interna",
 		NODE_MEMORY_STICK: "Memory Stick",
 		NODE_MEMORY_STICK_MOUNT: "Memory Stick a trav" + String.fromCharCode(233) + "s de montaje",
 		NODE_SD_CARD: "Tarjeta SD",
-		NODE_SD_CARD_MOUNT: "Tarjeta SD a trav" + String.fromCharCode(233) + "s de montaje",
-		NODE_GAMES_AND_UTILITIES: "Juegos - Utilidades"
+		NODE_SD_CARD_MOUNT: "Tarjeta SD a trav" + String.fromCharCode(233) + "s de montaje"
 	},
 
 	Clock: {
@@ -430,9 +451,36 @@ return {
 	},
 
 	EpubUserStyle: {
-		TITLE: "EPUB Estilo de Usuario",
-		COMMENT: "Experimental, Solo se aplica a libros5abiertos despu" + String.fromCharCode(233) + "s",
-		OPTION_EPUB_CSS_FILE: "Archivos .css del usuario",
-		VALUE_DISABLED: "desactivado"
+		OPTION_EPUB_CSS_FILE: "EPUB Estilo de Usuario (CSS del usuario)",
+		MSG_WARNING: "¡Solo se aplica a libros5abiertos despu" + String.fromCharCode(233) + "s!",
+		VALUE_DISABLED: "Desactivado"
+	},
+
+	ReadingList: {
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		VALUE_DISABLED: "One book",
+		VALUE_3: "Three books",
+		VALUE_10: "Ten books"
+	},
+
+//ReadMark	ReadMark: {
+//		TITLE_UNREAD: "Mark Book - Already Read",
+//		TITLE_READ: "Mark Book - Not Yet Read",
+//	},
+
+	TextScale: {
+		OPTION_SCALE_DEFAULT: "Default Scale",
+		VALUE_SMALL: "(S)mall Size",
+		VALUE_MEDIUM: "(M)edium Size",
+		VALUE_LARGE: "(L)arge Size",
+		VALUE_DISABLED: "Desactivado",
+		VALUE_ENABLED: "Activado"
+	},
+
+	MenuTuning: {
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
+		OPTION_OUTER: "Top Level Menu Contains",
+		NODE_OTHERS: "Multimedia",
+		NODE_GAMES_AND_UTILS: "Juegos - Utilidades"
 	}
 };

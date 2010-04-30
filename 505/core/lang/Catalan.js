@@ -1,8 +1,73 @@
-// Description: Sample localization file
+// Language: Сatalan
+// Description: Localization file
 // Author: kartu
-// 
-// Language: catalan
-// Translate by surquizu
+// Translator: surquizu
+//
+// History:
+//	2010-04-30 kravitz - Refactored, added new strings
+
+var FUNC_X_SOMETHING = function (n, s) {
+	if (n > 1) {
+		return n + " " + s[0];
+	}
+	if (n == 1) {
+		return s[1];
+	}
+	return s[2];
+};
+
+var FUNC_X_BOOKS = function (n) {
+	return FUNC_X_SOMETHING(n, ["llibres", "1 llibre", "Cap llibre"]);
+};
+var FUNC_X_SETTINGS = function (n) {
+	return FUNC_X_SOMETHING(n, ["ajustaments", "1 ajustament", "Cap Ajustament"]);
+};
+var FUNC_X_ITEMS = function (n) {
+	return FUNC_X_SOMETHING(n, ["elements", "1 element", "Cap element"]);
+};
+var FUNC_X_PAGES = function (n) {
+	return FUNC_X_SOMETHING(n, ["p" + String.fromCharCode(224) + "gines", "1 p" + String.fromCharCode(224) + "gina", "Cap p" + String.fromCharCode(224) + "gina"]);
+};
+var FUNC_X_PICTURES = function (n) {
+	return FUNC_X_SOMETHING(n, ["imatges", "1 imatge", "Cap imatge"]);
+};
+var FUNC_X_SONGS = function (n) {
+	return FUNC_X_SOMETHING(n, ["can" + String.fromCharCode(231) + "ons", "1 can" + String.fromCharCode(231) + "o", "Cap can" + String.fromCharCode(231) + "o"]);
+};
+var FUNC_X_BOOKMARKS = function (n) {
+	return FUNC_X_SOMETHING(n, ["marcadors", "1 marcador", "Cap marcador"]);
+};
+var FUNC_X_COLLECTIONS = function (n) {
+	return FUNC_X_SOMETHING(n, ["col" + String.fromCharCode(183) + "leccions", "1 col" + String.fromCharCode(183) + "lecci" + String.fromCharCode(243) + "", "Cap col" + String.fromCharCode(183) + "lecci" + String.fromCharCode(243) + ""]);
+};
+
+// Utility function, no need to localize
+var toDoubleDigit = function (num) {
+	if (num < 10) {
+		return "0" + num;
+	}
+	return num;
+};
+
+var FUNC_GET_DATE = function (date) {
+	var day, month, year;
+	day = toDoubleDigit(date.getDate());
+	month = toDoubleDigit(date.getMonth() + 1);
+	year = date.getFullYear();
+	return month + "/" + day + "/" + year;
+};
+
+var FUNC_GET_TIME = function (date) {
+	var hour, minute;
+	hour = toDoubleDigit(date.getHours());
+	minute = toDoubleDigit(date.getMinutes());
+	return hour + ":" + minute;
+};
+
+var FUNC_GET_DATE_TIME = function (date) {
+	return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
+};
+
 return {
 	// Standard stuff
 	Sony: {
@@ -81,8 +146,7 @@ return {
 		SET_DATE: "Data i Hora",
 		YEAR: "Any",
 		MONTH: "Mes",
-		DATE: "D" + String.fromCharCode(237) + "a",
-		// Day
+		DATE: "D" + String.fromCharCode(237) + "a", // Day
 		HOUR: "Hora",
 		MINUTE: "Minut",
 		// slideshow
@@ -167,76 +231,34 @@ return {
 		CRITERION_6: "MNOmno",
 		TITLE_7: "P Q R S",
 		CRITERION_7: "PQRSpqrs",
-		TITLE_8: "T U V",
+		TITLE_8: "T U V W",
 		CRITERION_8: "TUVWtuvw",
-		TITLE_9: "W X Y Z",
+		TITLE_9: "X Y Z",
 		CRITERION_9: "XYZxyz",
 		TITLE_0: "Altres",
 		CRITERION_0: "",
 
-		// Utility function, no need to localize
-		toDoubleDigit: function (num) {
-			if (num < 10) {
-				return "0" + num;
-			} else {
-				return num;
-			}
-		},
-		FUNC_GET_DATE_TIME: function (date) {
-			return this.FUNC_GET_DATE(date) + " " + this.FUNC_GET_TIME(date);
-		},
-		FUNC_GET_DATE: function (date) {
-			var day, month, year;
-			day = this.toDoubleDigit(date.getDate());
-			month = this.toDoubleDigit(date.getMonth() + 1);
-			year = date.getFullYear();
-			return month + "/" + day + "/" + year;
-		},
-		FUNC_GET_TIME: function (date) {
-			var hour, minute;
-			hour = this.toDoubleDigit(date.getHours());
-			minute = this.toDoubleDigit(date.getMinutes());
-			return hour + ":" + minute;
-		},
-		FUNC_X_PAGES: function (n) {
-			return this.FUNC_X_SOMETHING(n, "p" + String.fromCharCode(224) + "gines", "1 p" + String.fromCharCode(224) + "gina", "Cap p" + String.fromCharCode(224) + "gina");
-		},
-		FUNC_X_ITEMS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "elements", "1 element", "Cap element");
-		},
-		FUNC_X_SETTINGS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "ajustaments", "1 ajustament", "Cap Ajustament");
-		},
-		FUNC_X_PICTURES: function (n) {
-			return this.FUNC_X_SOMETHING(n, "imatges", "1 imatge", "Cap imatge");
-		},
-		FUNC_X_SONGS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "can" + String.fromCharCode(231) + "ons", "1 can" + String.fromCharCode(231) + "o", "Cap can" + String.fromCharCode(231) + "o");
-		},
-		FUNC_X_BOOKMARKS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "marcadors", "1 marcador", "Cap marcador");
-		},
-		FUNC_X_COLLECTIONS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "col" + String.fromCharCode(183) + "leccions", "1 col" + String.fromCharCode(183) + "lecci" + String.fromCharCode(243) + "", "Cap col" + String.fromCharCode(183) + "lecci" + String.fromCharCode(243) + "");
-		},
-		FUNC_X_BOOKS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "llibres", "1 llibre", "Cap llibre");
-		},
-		FUNC_X_SOMETHING: function (n, many, one, zero) {
-			if (n > 1) {
-				return n + " " + many;
-			} else if (n == 1) {
-				return one;
-			} else {
-				return zero;
-			}
-		}
+		FUNC_GET_DATE_TIME: FUNC_GET_DATE_TIME,
+		FUNC_GET_DATE: FUNC_GET_DATE,
+		FUNC_GET_TIME: FUNC_GET_TIME,
+
+		FUNC_X_PAGES: FUNC_X_PAGES,
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
+		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		FUNC_X_PICTURES: FUNC_X_PICTURES,
+		FUNC_X_SONGS: FUNC_X_SONGS,
+		FUNC_X_BOOKMARKS: FUNC_X_BOOKMARKS,
+		FUNC_X_COLLECTIONS: FUNC_X_COLLECTIONS,
+		FUNC_X_BOOKS: FUNC_X_BOOKS
 	},
 
 	// PRS+ stuff
-	// PRS+ stuff
 	Core: {
-		NODE_PRSP_SETTINGS: "Ajustaments PRS+"
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		NODE_PRSP_SETTINGS: "Ajustaments PRS+",
+		GROUP_MENU_TITLE: "Menu Settings",
+		GROUP_VIEWER_TITLE: "Viewer Settings"
 	},
 
 	CoreLang: {
@@ -282,8 +304,6 @@ return {
 	},
 
 	MenuCaptions: {
-		TITLE: "Men" + String.fromCharCode(250) + " T" + String.fromCharCode(237) + "tols",
-		TITLE_COMMENT: "Permet escollir l'estil dels t" + String.fromCharCode(237) + "tols dels men" + String.fromCharCode(250) + "s",
 		OPTION_STYLE: "Estil T" + String.fromCharCode(237) + "tols",
 		VALUE_SONY_DEFAULT: "Original Sony",
 		VALUE_ALWAYS_SMALL: "T" + String.fromCharCode(237) + "tols petits",
@@ -291,19 +311,17 @@ return {
 	},
 
 	TextEncoding: {
-		TITLE: "Codificaci" + String.fromCharCode(243) + " de Text",
-		COMMENT: "Afecta als llibres en format TXT i RTF, requereix reiniciar",
-		OPTION_TITLE: "Codificaci" + String.fromCharCode(243) + "",
-		DESCRIPTION: "Permet escollir la codificaci" + String.fromCharCode(243) + " del text",
+		OPTION_TITLE: "Codificaci" + String.fromCharCode(243) + " de TXT i RTF llibres",
+		MSG_RESTART: "Cal reiniciar!",
 		LATIN: "Car" + String.fromCharCode(224) + "cters llatins",
-		RUSSIAN: "Car" + String.fromCharCode(224) + "cters russos (win1251)"
+		RUSSIAN: "Car" + String.fromCharCode(224) + "cters russos (Windows-1251)"
 	},
 
 	KeyBindings: {
 		TITLE: "Configuraci" + String.fromCharCode(243) + " Tecles",
 		DESCRIPTION: "Permet asignar accions a les tecles",
 
-		DEFAULT_VALUE: "per defecte",
+		DEFAULT_VALUE: "Per defecte",
 
 		// Contexts
 		GLOBAL: "En tot moment",
@@ -350,6 +368,7 @@ return {
 		BN_VOLUME_DOWN: "Volum -",
 		BN_H_VOLUME_DOWN: "Mantenir Volum -",
 		BN_VOLUME_UP: "Volum +",
+		BN_H_VOLUME_UP: "Mantenir Volum +",
 
 		// Actions
 		ACTION_SHUTDOWN: "Apagar",
@@ -357,8 +376,8 @@ return {
 		ACTION_PREVIOUS_PAGE: "Pagina Anterior",
 		ACTION_NEXT_IN_HISTORY: "Proper en l'Historial",
 		ACTION_PREVIOUS_IN_HISTORY: "Anterior en l'Historial",
-		ACTION_NEXT_SONG: "Seg" + String.fromCharCode(252) + "ent can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "",
-		ACTION_PREVIOUS_SONG: "Anterior can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + ""
+		ACTION_PREVIOUS_SONG: "Anterior can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "",
+		ACTION_NEXT_SONG: "Seg" + String.fromCharCode(252) + "ent can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + ""
 	},
 
 	Screenshot: {
@@ -382,7 +401,7 @@ return {
 		VALUE_BY_AUTHOR_THEN_TITLE: "Per autor i despr" + String.fromCharCode(233) + "s t" + String.fromCharCode(237) + "tol",
 		VALUE_BY_AUTHOR_SWAPPING: "Per autor amb intercanvi nom/cognom",
 		VALUE_BY_FILENAME: "Per nom d'arxiu",
-		OPTION_TITLE_SORTER: "Ordenar amb TitleSorter",
+		OPTION_TITLE_SORTER: "Ordenar amb 'TitleSorter'",
 		ENABLED: "Activat",
 		DISABLED: "Desactivat",
 		OPTION_IM_ROOT: "Arrel de la Mem" + String.fromCharCode(242) + "ria Interna",
@@ -394,15 +413,13 @@ return {
 		NODE_COPY_AND_RESCAN: "Copia i Escaneja mem" + String.fromCharCode(242) + "ria interna",
 		NODE_COPY_AND_RESCAN_COMMENT: "Copia arxius a l'arrel de la Mem" + String.fromCharCode(242) + "ria Interna i escaneja",
 		ERROR_TARGET_EXISTS: "Error, l'arxiu dest" + String.fromCharCode(237) + " existeix",
-		NODE_AUDIO_AND_PICTURES: "" + String.fromCharCode(192) + "udio - Imatges",
 		NODE_BROWSE_FOLDERS: "Llibres per Carpetes",
 		NODE_BROWSE_FOLDERS_COMMENT: "Explorar",
 		NODE_INTERNAL_MEMORY: "Mem" + String.fromCharCode(242) + "ria Interna",
 		NODE_MEMORY_STICK: "Memory Stick",
 		NODE_MEMORY_STICK_MOUNT: "Memory Stick a trav" + String.fromCharCode(233) + "s de muntatge",
 		NODE_SD_CARD: "Targeta SD",
-		NODE_SD_CARD_MOUNT: "Targeta SD a trav" + String.fromCharCode(233) + "s de muntatge",
-		NODE_GAMES_AND_UTILITIES: "Jocs - Aplicacions"
+		NODE_SD_CARD_MOUNT: "Targeta SD a trav" + String.fromCharCode(233) + "s de muntatge"
 	},
 
 	Clock: {
@@ -433,9 +450,36 @@ return {
 	},
 
 	EpubUserStyle: {
-		TITLE: "EPUB Estil d'Usuari",
-		COMMENT: "Experimental, Nom" + String.fromCharCode(233) + "s s'aplica a llibres oberts despr" + String.fromCharCode(233) + "s",
-		OPTION_EPUB_CSS_FILE: "Arxius .css de l'usuari",
-		VALUE_DISABLED: "desactivat"
+		OPTION_EPUB_CSS_FILE: "EPUB Estil d'Usuari (CSS File)",
+		MSG_WARNING: "Nom" + String.fromCharCode(233) + "s s'aplica a llibres oberts despr" + String.fromCharCode(233) + "s!",
+		VALUE_DISABLED: "Desactivat"
+	},
+
+	ReadingList: {
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		VALUE_DISABLED: "One book",
+		VALUE_3: "Three books",
+		VALUE_10: "Ten books"
+	},
+
+//ReadMark	ReadMark: {
+//		TITLE_UNREAD: "Mark Book - Already Read",
+//		TITLE_READ: "Mark Book - Not Yet Read",
+//	},
+
+	TextScale: {
+		OPTION_SCALE_DEFAULT: "Default Scale",
+		VALUE_SMALL: "(S)mall Size",
+		VALUE_MEDIUM: "(M)edium Size",
+		VALUE_LARGE: "(L)arge Size",
+		VALUE_DISABLED: "Disabled",
+		VALUE_ENABLED: "Enabled"
+	},
+
+	MenuTuning: {
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
+		OPTION_OUTER: "Top Level Menu Contains",
+		NODE_OTHERS: "Multimedia",
+		NODE_GAMES_AND_UTILS: "Jocs - Aplicacions"
 	}
 };

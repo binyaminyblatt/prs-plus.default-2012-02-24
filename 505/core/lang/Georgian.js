@@ -1,4 +1,7 @@
 // Language: Georgian
+// Description: Localization file
+// Author: kartu
+// Translator: kartu
 //
 // History:
 //	2010-04-24 kartu - Added TITLE for "clock" addon
@@ -6,6 +9,67 @@
 //	2010-04-24 kartu - Fixed spelling
 //	2010-04-25 kartu - Translated more stuff
 //	2010-04-28 kartu - Finalized Georgian translation
+//	2010-04-30 kravitz - Refactored, added new strings
+
+var FUNC_X_SOMETHING = function (n, s) {
+	if (n > 0) {
+		return n + " " + s[0];
+	}
+	return s[1];
+};
+var FUNC_X_BOOKS = function (n) {
+	return FUNC_X_SOMETHING(n, ["წიგნი", "ცარიელი"]);
+};
+var FUNC_X_SETTINGS = function (n) {
+	return FUNC_X_SOMETHING(n, ["ოფცია", "ცარიელი"]);
+};
+var FUNC_X_ITEMS = function (n) {
+	return FUNC_X_SOMETHING(n, ["საგანი", "ცარიელი"]);
+};
+var FUNC_X_PAGES = function (n) {
+	return FUNC_X_SOMETHING(n, ["გვერდი", "ცარიელი"]);
+};
+var FUNC_X_PICTURES = function (n) {
+	return FUNC_X_SOMETHING(n, ["სურათი", "ცარიელი"]);
+};
+var FUNC_X_SONGS = function (n) {
+	return FUNC_X_SOMETHING(n, ["სიმღერა", "ცარიელი"]);
+};
+var FUNC_X_BOOKMARKS = function (n) {
+	return FUNC_X_SOMETHING(n, ["ჩანიშნული", "ცარიელი"]);
+};
+var FUNC_X_COLLECTIONS = function (n) {
+	return FUNC_X_SOMETHING(n, ["კოლეკცია", "ცარიელი"]);
+};
+
+// Utility function, no need to localize
+var toDoubleDigit = function (num) {
+	if (num < 10) {
+		return "0" + num;
+	}
+	return num;
+};
+
+var FUNC_GET_DATE = function (date) {
+	var day, month, year;
+	day = toDoubleDigit(date.getDate());
+	month = toDoubleDigit(date.getMonth() + 1);
+	year = date.getFullYear();
+	return month + "/" + day + "/" + year;
+};
+
+var FUNC_GET_TIME = function (date) {
+	var hour, minute;
+	hour = toDoubleDigit(date.getHours());
+	minute = toDoubleDigit(date.getMinutes());
+	return hour + ":" + minute;
+};
+
+var FUNC_GET_DATE_TIME = function (date) {
+	return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
+};
+
+
 return {
 	// Standard stuff
 	Sony: {
@@ -15,16 +79,10 @@ return {
 		DEVICE_LOCKED: "წიგნი დაბლოკილია",
 
 		// About, translate either all or none
-		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" +
-			"PRS+ Firmware: @@@firmware@@@\n" +
-			"ავტორი: მიხეილ სუხიაშვილი aka kartu (kartu3@gmail.com) using work of: " + 
-			"igorsk, boroda, obelix, pepak, llasram და სხვები.\n" +
-			"© GNU Lesser General Public License.",
+		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" + "PRS+ Firmware: @@@firmware@@@\n" + "ავტორი: მიხეილ სუხიაშვილი aka kartu (kartu3@gmail.com) using work of: " + "igorsk, boroda, obelix, pepak, llasram და სხვები.\n" + "© GNU Lesser General Public License.",
 		ABOUT_1: "საავტორო უფლებები ©2006-2008 Sony Corporation",
-		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + 
-			" trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
-		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + 
-			" MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
+		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + " trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
+		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + " MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
 		ABOUT_4: "Application software designed and implemented by Kinoma (www.kinoma.com). Portions Copyright ©2006,2007 Kinoma, Inc.",
 		ABOUT_5: "Bitstream is a registered trademark, and Dutch, Font Fusion, and Swiss are trademarks, of Bitstream, Inc.",
 		ABOUT_6: "Portions of this software are Copyright ©2005 The FreeType Project (www.freetype.org). All rights reserved.",
@@ -35,7 +93,7 @@ return {
 		NOT_AUTHORIZED_ADOBE: "წიგნი არ არის ავტორიზირებული Adobe DRM დაცული მასალისთვის.",
 		SONY_FW_VERSION: "ვერსია",
 		DEVICE_ID: "მოწყობილობა",
-		
+
 		// Mime & card names
 		RICH_TEXT_FORMAT: "Rich Text ფორმატი",
 		ADOBE_PDF: "Adobe PDF",
@@ -45,7 +103,7 @@ return {
 		INTERNAL_MEMORY: "შიდა მეხსიერება",
 		MEMORY_STICK: "Memory Stick",
 		SD_CARD: "SD კარტა",
-		
+
 		// Main.xml & kbook.so stuff
 		INVALID_FORMAT: "არასწორი ფორმატი!",
 		FORMATTING: "დაფორმატება...",
@@ -68,7 +126,7 @@ return {
 		NO_BATTERY: "აკუმულატორი დამჯდარია!",
 		FORMATTING_INTERNAL_MEMORY: "შიდა მეხსიერების ფორმატირება...",
 		SHUTTING_DOWN: "	მუშაობის დასრულება...",
-		
+
 		// Root menu
 		CONTINUE: "კითხვის გაგრძელება",
 		BOOKS_BY_TITLE: "წიგნები სათაურის მიხედვით",
@@ -109,7 +167,7 @@ return {
 		ABOUT: "წიგნის შესახებ",
 		// reset to factory settings
 		RESET_TO_FACTORY: "საწყისი პარამეტრების აღდგენა",
-		
+
 		// In Advanced Settings
 		ADVANCED_SETTINGS: "გაფართოებული პარამეტრები",
 		// screen lock (aka device lock)
@@ -120,7 +178,7 @@ return {
 		SL_TURN: "აქტივირება",
 		// format device
 		FORMAT_DEVICE: "წიგნის ფორმატირება",
-		
+
 		// In Book menu
 		BEGIN: "დასაწყისი",
 		END: "დასასრული",
@@ -129,12 +187,12 @@ return {
 		HISTORY: "ისტორია",
 		INFO: "ინფორმაცია",
 		UTILITIES: "უტილიტები",
-		
+
 		// In Book Utilities
 		REMOVE_ALL_BOOKMARKS: "ყველა სანიშნეს წაშლა",
 		CLEAR_HISTORY: "ისტორიის წაშლა",
 		DELETE_BOOK: "წიგნის წაშლა",
-		
+
 		// In Books by Date
 		TODAY: "დღეს",
 		EARLIER_THIS_WEEK: "ამ კვირას",
@@ -145,8 +203,8 @@ return {
 		LAST_QUARTER: "წინა კვარტალში",
 		EARLIER_THIS_YEAR: "წელს",
 		LAST_YEAR: "შარშან",
-		OLDER: "უფრო ძველი",		
-		
+		OLDER: "უფრო ძველი",
+
 		PAGE: "გვერდი",
 		PART: "ნაწილი",
 		OF: "/",
@@ -155,12 +213,12 @@ return {
 
 		// Info title strings, comma separated, no spaces after comma
 		INFO_TITLES: "გარეკანი,სათაური,ავტორი,გამომცემელი,კატეგორია,eBook ID,ტიპი,თარიღი,სიდიდე,წყარო,ფაილი,Digital Rights,ვადის ამოწურვა",
-		
+
 		// Titles and criterions for "Books by Title" and "Books by Folder"
 		// title is displayed, "criterion" is used for sorting.
 		//
 		// NOTE: if localization doesn't need custom Books by sorting, just remove CUSTOM_SORT, TITLE_*, CRITERION_* items
-		CUSTOM_SORT: true, 
+		CUSTOM_SORT: true,
 		TITLE_1: "0-9",
 		CRITERION_1: "0123456789",
 		TITLE_2: "A B C D E F",
@@ -182,83 +240,44 @@ return {
 		TITLE_0: "სხვა",
 		CRITERION_0: "",
 
-		// Utility function, no need to localize
-		toDoubleDigit: function (num) {
-			if (num < 10) {
-				return "0" + num;
-			} else {
-				return num;
-			}
-		},
-		FUNC_GET_DATE_TIME: function (date) {
-			return date.toLocaleDateString() + " " + this.FUNC_GET_TIME(date);
-		},
-		FUNC_GET_DATE: function (date) {
-			var day, month, year;
-			day = this.toDoubleDigit(date.getDate());
-			month = this.toDoubleDigit(date.getMonth() + 1); 
-			year = date.getFullYear();
-			return month + "/" + day + "/" + year;
-		},
-		FUNC_GET_TIME: function (date) {
-			var hour, minute;
-			hour = this.toDoubleDigit(date.getHours());
-			minute = this.toDoubleDigit(date.getMinutes());
-			return hour + ":" + minute;
-		},
-		FUNC_X_PAGES: function (n) {
-			return this.FUNC_X_SOMETHING(n, "გვერდი", "ცარიელი");
-		},
-		FUNC_X_ITEMS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "საგანი", "ცარიელი");
-		},
-		FUNC_X_SETTINGS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "ოფცია", "ცარიელი");
-		},
-		FUNC_X_PICTURES: function (n) {
-			return this.FUNC_X_SOMETHING(n, "სურათი", "ცარიელი");
-		},
-		FUNC_X_SONGS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "სიმღერა", "ცარიელი");
-		},
-		FUNC_X_BOOKMARKS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "ჩანიშნული", "ცარიელი");
-		},
-		FUNC_X_COLLECTIONS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "კოლეკცია", "ცარიელი");
-		},
-		FUNC_X_BOOKS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "წიგნი", "ცარიელი");
-		},
-		FUNC_X_SOMETHING: function (n, many, zero) {
-			if (n > 0) {
-				return n + " " + many;
-			} else {
-				return zero;
-			}
-		}
+		FUNC_GET_DATE_TIME: FUNC_GET_DATE_TIME,
+		FUNC_GET_DATE: FUNC_GET_DATE,
+		FUNC_GET_TIME: FUNC_GET_TIME,
+
+		FUNC_X_PAGES: FUNC_X_PAGES,
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
+		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		FUNC_X_PICTURES: FUNC_X_PICTURES,
+		FUNC_X_SONGS: FUNC_X_SONGS,
+		FUNC_X_BOOKMARKS: FUNC_X_BOOKMARKS,
+		FUNC_X_COLLECTIONS: FUNC_X_COLLECTIONS,
+		FUNC_X_BOOKS: FUNC_X_BOOKS
 	},
-	
+
 	// PRS+ stuff
 	Core: {
-		NODE_PRSP_SETTINGS:  "PRS+ პარამეტრები"
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		NODE_PRSP_SETTINGS:  "PRS+ პარამეტრები",
+		GROUP_MENU_TITLE: "Menu Settings",
+		GROUP_VIEWER_TITLE: "Viewer Settings"
 	},
-	
+
 	CoreLang: {
 		TITLE: "ლოკალიზაცია",
 		COMMENT: "საჭიროებს გადატვირთვას",
 		OPTION_LANG: "ენა",
-	
+
 		OPTION_DATE_FORMAT: "თარიღის ფორმატი",
 		ddMMMYY: "31/იან/99",
 		ddMONTHYY: "31/იანვარი/99",
 		ddMMMYYYY: "31/იან/1999",
 		ddMONTHYYYY: "31/იანვარი/1999",
-		
+
 		OPTION_DATE_SEPARATOR: "თარიღის სიმბოლო",
 		VALUE_SPACE: "space",
 		VALUE_NONE: "არაფერი",
-		
+
 		MONTH_SHORT_1: "იან",
 		MONTH_SHORT_2: "თებ",
 		MONTH_SHORT_3: "მარ",
@@ -270,7 +289,7 @@ return {
 		MONTH_SHORT_9: "სექ",
 		MONTH_SHORT_10: "ოქტ",
 		MONTH_SHORT_11: "ნოე",
-		MONTH_SHORT_12: "დეკ",		
+		MONTH_SHORT_12: "დეკ",
 
 		MONTH_1: "იანვარი",
 		MONTH_2: "თებერვალი",
@@ -283,44 +302,40 @@ return {
 		MONTH_9: "სექტემბერი",
 		MONTH_10: "ოქტომბერი",
 		MONTH_11: "ნოემბერი",
-		MONTH_12: "დეკემბერი"	
+		MONTH_12: "დეკემბერი"
 	},
 
 	MenuCaptions: {
-		TITLE: "მენიუს წარწერები",
-		TITLE_COMMENT: "",
 		OPTION_STYLE: "წარწერების სტილი",
 		VALUE_SONY_DEFAULT: "Sony (ხან დიდი ხან პატარა)",
 		VALUE_ALWAYS_SMALL: "ყოველთვის პატარა",
 		VALUE_ALWAYS_BIG: "ყოველთვის დიდი"
 	},
-	
+
 	TextEncoding: {
-		TITLE: "ტექსტის კოდირება",
-		COMMENT: "ეხება მხოლოდ TXT,RTF წიგნებს, საჭიროებს გადატვირთვას",
-		OPTION_TITLE: "კოდირება",
-		DESCRIPTION: "",
+		OPTION_TITLE: "ტექსტის კოდირება",
+		MSG_RESTART: "საჭიროებს გადატვირთვას",
 		LATIN: "Latin",
-		RUSSIAN:  "Russian (win1251)"
+		RUSSIAN:  "Russian (Windows-1251)"
 	},
-	
+
 	KeyBindings: {
 		TITLE: "ღილაკები",
 		DESCRIPTION: "ღილაკების კონფიგურირება",
-		
+
 		DEFAULT_VALUE: "ნაგულისხმევი",
-		
+
 		// Contexts
 		GLOBAL:  "ყველგან",
 		IN_MENU: "მენიუში",
 		IN_BOOK:  "წიგნში",
-		
+
 		// Button groups
 		NUM_BUTTONS: "ციფრული ღილაკები",
 		JP_BUTTONS: "ჯოისტიკის ღილაკები",
 		OTHER_BUTTONS: "სხვა ღილაკები",
 		VOLUME_BUTTONS: "ხმის ღილაკები",
-		
+
 		// Buttons
 		BN_SIZE: "გადიდების ღილაკი",
 		BN_BOOKMARK: "სანიშნეს ღილაკი",
@@ -352,11 +367,11 @@ return {
 		BN_H_8: "დაჭერილი 8",
 		BN_H_9: "დაჭერილი 9",
 		BN_H_0: "დაჭერილი 0",
-		BN_VOLUME_DOWN: "ხმა-",
-		BN_H_VOLUME_DOWN: "დაჭერილი ხმა-",
-		BN_VOLUME_UP: "ხმა+",
-		BN_H_VOLUME_UP: "დაჭერილი ხმა+",
-		
+		BN_VOLUME_DOWN: "ხმა -",
+		BN_H_VOLUME_DOWN: "დაჭერილი ხმა -",
+		BN_VOLUME_UP: "ხმა +",
+		BN_H_VOLUME_UP: "დაჭერილი ხმა +",
+
 		// Actions
 		ACTION_SHUTDOWN: "გათიშვა",
 		ACTION_NEXT_PAGE: "შემდეგი გვერდი",
@@ -366,7 +381,7 @@ return {
 		ACTION_PREVIOUS_SONG: "წინა სიმღერა",
 		ACTION_NEXT_SONG: "შემდეგი სიმღერა"
 	},
-	
+
 	Screenshot: {
 		TITLE: "ეკრანის სურათი",
 		ACTION_TITLE: "ეკრანის სურათის გადაღება",
@@ -380,7 +395,7 @@ return {
 		SD_CARD: "SD კარტა",
 		INTERNAL_MEMORY: "შიდა მეხსიერება"
 	},
-	
+
 	BrowseFolders: {
 		TITLE:  "ფოლდერების დათვალიერება",
 		OPTION_SORTING_MODE: "სორტირების რეჟიმი",
@@ -388,7 +403,7 @@ return {
 		VALUE_BY_AUTHOR_THEN_TITLE: "ავტორის, შემდეგ სათაურის მიხ.",
 		VALUE_BY_AUTHOR_SWAPPING: "ავტორის სახელის, შემდეგ გვარის მიხ.",
 		VALUE_BY_FILENAME: "ფაილის სახელის მიხ.",
-		OPTION_TITLE_SORTER: "titleSorter ველის მიხ.",
+		OPTION_TITLE_SORTER: "'titleSorter' ველის მიხ.",
 		ENABLED: "ჩარ",
 		DISABLED: "გამ",
 		OPTION_IM_ROOT: "შიდა მეხს. საწყისი ფოლდერი",
@@ -400,17 +415,15 @@ return {
 		NODE_COPY_AND_RESCAN: "შიდა მეხსიერებაში კოპირება+დასკანირება",
 		NODE_COPY_AND_RESCAN_COMMENT: "აკოპირებს ფაილს შ.მ.-ში და იწყებს სკანირებას",
 		ERROR_TARGET_EXISTS: "შეცდომა: ფაილი ასეთი სახელით არსებობს",
-		NODE_AUDIO_AND_PICTURES: "სიმღერები და სურათები",
 		NODE_BROWSE_FOLDERS: "ფოლდერების დათვალიერება",
 		NODE_BROWSE_FOLDERS_COMMENT: "ფაილური სისტემის დათვალიერება",
 		NODE_INTERNAL_MEMORY: "შიდა მეხსიერება",
 		NODE_MEMORY_STICK: "Memory Stick",
-		NODE_MEMORY_STICK_MOUNT: "Memory Stick via mount",
+		NODE_MEMORY_STICK_MOUNT: "Memory Stick via Mount",
 		NODE_SD_CARD: "SD კარტა",
-		NODE_SD_CARD_MOUNT: "SD კარტა mount-ის გამოყებნებით",
-		NODE_GAMES_AND_UTILITIES: "თამაშები და უტილიტები"
+		NODE_SD_CARD_MOUNT: "SD კარტა mount-ის გამოყებნებით"
 	},
-	
+
 	Clock: {
 		TITLE: "საათი",
 		OPTION_STYLE: "საათის სტილი",
@@ -425,7 +438,7 @@ return {
 		AM: "am",
 		PM: "pm"
 	},
-	
+
 	PageIndex: {
 		TITLE: "გვერდის სტატუსი (1 - 1)",
 		INDEX_STYLE_BOOK: "ინდექსის სტილი წიგნებში",
@@ -437,11 +450,38 @@ return {
 		NEVER_SHOWN: "ყოვეთვის გათიშული",
 		NOT_SHOWN_IF_SINGLE_PAGE: "გატიშული ერთმაგ გვერდებზე (1 - 1)"
 	},
-	
+
 	EpubUserStyle: {
-		TITLE: "EPUB მომხმარებლის სტილი",
-		COMMENT: "ექსპ. მოქმედებს მხოლოდ შემდგომ გახსნილ წიგნებზე",
-		OPTION_EPUB_CSS_FILE: "მომხმარებლის EPUB css ფაილი",
+		OPTION_EPUB_CSS_FILE: "EPUB მომხმარებლის სტილი (CSS ფაილი)",
+		MSG_WARNING: "ექსპ. მოქმედებს მხოლოდ შემდგომ გახსნილ წიგნებზე",
 		VALUE_DISABLED: "გათიშული"
+	},
+
+	ReadingList: {
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		VALUE_DISABLED: "One book",
+		VALUE_3: "Three books",
+		VALUE_10: "Ten books"
+	},
+
+//ReadMark	ReadMark: {
+//		TITLE_UNREAD: "Mark Book - Already Read",
+//		TITLE_READ: "Mark Book - Not Yet Read",
+//	},
+
+	TextScale: {
+		OPTION_SCALE_DEFAULT: "Default Scale",
+		VALUE_SMALL: "(S)mall Size",
+		VALUE_MEDIUM: "(M)edium Size",
+		VALUE_LARGE: "(L)arge Size",
+		VALUE_DISABLED: "Disabled",
+		VALUE_ENABLED: "Enabled"
+	},
+
+	MenuTuning: {
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
+		OPTION_OUTER: "Top Level Menu Contains",
+		NODE_OTHERS: "Multimedia",
+		NODE_GAMES_AND_UTILS: "თამაშები და უტილიტები"
 	}
 };

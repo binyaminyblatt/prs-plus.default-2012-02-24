@@ -1,26 +1,58 @@
 // Language: English
+// Description: Localization file
+// Author: kartu
+// Translator:
 //
-return {	
+// History:
+//	2010-04-30 kravitz - Refactored, added new strings
+
+var FUNC_X_SOMETHING = function (n, s) {
+	if (n > 1) {
+		return n + " " + s[0];
+	}
+	if (n == 1) {
+		return s[1];
+	}
+	return s[2];
+};
+
+var FUNC_X_BOOKS = function (n) {
+	return FUNC_X_SOMETHING(n, ["books", "1 book", "No book"]);
+};
+
+var FUNC_X_SETTINGS = function (n) {
+	return FUNC_X_SOMETHING(n, ["settings", "1 setting", "No setting"]);
+};
+
+var FUNC_X_ITEMS = function (n) {
+	return FUNC_X_SOMETHING(n, ["items", "1 item", "No item"]);
+};
+
+return {
 	// PRS+ stuff
 	Core: {
-		NODE_PRSP_SETTINGS:  "PRS+ Settings"
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		NODE_PRSP_SETTINGS:  "PRS+ Settings",
+		GROUP_MENU_TITLE: "Menu Settings",
+		GROUP_VIEWER_TITLE: "Viewer Settings"
 	},
-	
+
 	CoreLang: {
 		TITLE: "Localization",
 		COMMENT: "Requires restart",
 		OPTION_LANG: "Language",
-		
+
 		OPTION_DATE_FORMAT: "Date Format",
 		ddMMMYY: "31/Jan/99",
 		ddMONTHYY: "31/January/99",
 		ddMMMYYYY: "31/Jan/1999",
 		ddMONTHYYYY: "31/January/1999",
-		
+
 		OPTION_DATE_SEPARATOR: "Date Separator",
-		VALUE_SPACE: "space",
-		VALUE_NONE: "none",
-		
+		VALUE_SPACE: "Space",
+		VALUE_NONE: "None",
+
 		MONTH_SHORT_1: "Jan",
 		MONTH_SHORT_2: "Feb",
 		MONTH_SHORT_3: "Mar",
@@ -32,7 +64,7 @@ return {
 		MONTH_SHORT_9: "Sep",
 		MONTH_SHORT_10: "Oct",
 		MONTH_SHORT_11: "Nov",
-		MONTH_SHORT_12: "Dec",		
+		MONTH_SHORT_12: "Dec",
 
 		MONTH_1: "January",
 		MONTH_2: "February",
@@ -45,65 +77,61 @@ return {
 		MONTH_9: "September",
 		MONTH_10: "October",
 		MONTH_11: "November",
-		MONTH_12: "December"	
+		MONTH_12: "December"
 	},
-	
+
 	MenuCaptions: {
-		TITLE: "Menu Captions",
-		TITLE_COMMENT: "Allows to choose menu caption style",
 		OPTION_STYLE: "Menu Captions Style",
 		VALUE_SONY_DEFAULT: "Sony default",
 		VALUE_ALWAYS_SMALL: "Always small",
 		VALUE_ALWAYS_BIG: "Always big"
 	},
-	
+
 	TextEncoding: {
-		TITLE: "Text Encoding",
-		COMMENT: "Affects books in TXT,RTF format, requires restart",
-		OPTION_TITLE: "Encoding",
-		DESCRIPTION: "Allows to choose menu caption style",
+		OPTION_TITLE: "TXT and RTF Books Encoding",
+		MSG_RESTART: "Requires restart!",
 		LATIN: "Latin",
-		RUSSIAN:  "Russian (win1251)"
+		RUSSIAN:  "Russian (Windows-1251)"
 	},
-	
+
 	KeyBindings: {
 		TITLE: "Key Bindings",
 		DESCRIPTION: "Allows to bind actions to keys",
-		
-		DEFAULT_VALUE: "default",
-		
+
+		DEFAULT_VALUE: "Default",
+
 		// Contexts
 		GLOBAL:  "Global",
-		IN_MENU: "When in menu",
-		IN_BOOK:  "When reading book",
-		
+		IN_MENU: "When in Menu",
+		IN_BOOK:  "When Reading Book",
+
 		// Button groups
 		NUM_BUTTONS: "Numeric Buttons",
 		JP_BUTTONS: "Joypad Buttons",
 		OTHER_BUTTONS: "Other Buttons",
 		VOLUME_BUTTONS: "Volume Buttons",
-		
+
 		// Buttons
-		BN_SIZE: "Size button",
-		BN_BOOKMARK: "Bookmark button",
-		BN_BL_NEXT: "Bottom left 'next'",
-		BN_BL_PREVIOUS: "Bottom left 'previous'",
-		BN_SB_NEXT: "Sidebar 'next'",
-		BN_SB_PREVIOUS:  "Sidebar 'previous'",
-		BN_MENU: "Menu button",
-		BN_JP_LEFT: "Joypad left",
-		BN_JP_RIGHT: "Joypad right",
-		BN_JP_UP: "Joypad up",
-		BN_JP_DOWN: "Joypad down",
-		BN_JP_CENTER: "Joypad center",
-		BN_H_SIZE: "Holding size button",
-		BN_H_BOOKMARK: "Holding bookmark button",
-		BN_H_BL_NEXT: "Holding bottom left 'next page'",
-		BN_H_BL_PREVIOUS: "Holding bottom left 'previous page'",
-		BN_H_MENU: "Holding menu button",
-		BN_H_SB_NEXT: "Holding sidebar 'next page'",
-		BN_H_SB_PREVIOUS: "Holding sidebar 'previous page'",
-		BN_H_JP_CENTER: "Holding joypad center button",
+		BN_SIZE: "Size Button",
+		BN_BOOKMARK: "Bookmark Button",
+		BN_BL_NEXT: "Bottom Left 'Next'",
+		BN_BL_PREVIOUS: "Bottom Left 'Previous'",
+		BN_SB_NEXT: "Sidebar 'Next'",
+		BN_SB_PREVIOUS:  "Sidebar 'Previous'",
+		BN_MENU: "Menu Button",
+		BN_JP_LEFT: "Joypad Left",
+		BN_JP_RIGHT: "Joypad Right",
+		BN_JP_UP: "Joypad Up",
+		BN_JP_DOWN: "Joypad Down",
+		BN_JP_CENTER: "Joypad Center",
+		BN_H_SIZE: "Holding Size Button",
+		BN_H_BOOKMARK: "Holding Bookmark Button",
+		BN_H_BL_NEXT: "Holding Bottom Left 'Next Page'",
+		BN_H_BL_PREVIOUS: "Holding Bottom Left 'Previous Page'",
+		BN_H_MENU: "Holding Menu Button",
+		BN_H_SB_NEXT: "Holding Sidebar 'Next Page'",
+		BN_H_SB_PREVIOUS: "Holding Sidebar 'Previous Page'",
+		BN_H_JP_CENTER: "Holding Joypad Center Button",
 		BN_H_1: "Hold 1",
 		BN_H_2: "Hold 2",
 		BN_H_3: "Hold 3",
@@ -118,7 +146,7 @@ return {
 		BN_H_VOLUME_DOWN: "Hold Volume-",
 		BN_VOLUME_UP: "Volume+",
 		BN_H_VOLUME_UP: "Hold Volume+",
-		
+
 		// Actions
 		ACTION_SHUTDOWN: "Shutdown",
 		ACTION_NEXT_PAGE: "Next Page",
@@ -128,52 +156,51 @@ return {
 		ACTION_PREVIOUS_SONG: "Previous Song",
 		ACTION_NEXT_SONG: "Next Song"
 	},
-	
+
 	Screenshot: {
 		TITLE: "Screenshot",
 		ACTION_TITLE: "Take a Screenshot",
 		SAVING_TO: "Saving to ",
 		FAILED_TO_SAVE: "Failed to save",
 		OPT_SAVETO: "Save to",
-		OPT_FEEDBACK: "Show save progress",
-		MEMORY_STICK: "Memory Stick",
-		FEEDBACK_ON: "on",
-		FEEDBACK_OFF: "off",
-		SD_CARD: "SD Card",
-		INTERNAL_MEMORY: "Internal Memory"
+		OPT_FEEDBACK: "Show Save Progress",
+		MEMORY_STICK: "Memory stick",
+		FEEDBACK_ON: "On",
+		FEEDBACK_OFF: "Off",
+		SD_CARD: "SD card",
+		INTERNAL_MEMORY: "Internal memory"
 	},
-	
+
 	BrowseFolders: {
 		TITLE:  "Browse Folders",
-		OPTION_SORTING_MODE: "Sorting mode",
+		OPTION_SORTING_MODE: "Sorting Mode",
 		VALUE_BY_TITLE: "By title",
 		VALUE_BY_AUTHOR_THEN_TITLE: "By author then title",
 		VALUE_BY_AUTHOR_SWAPPING: "By author swapping name/surname",
 		VALUE_BY_FILENAME: "By filename",
-		OPTION_TITLE_SORTER: "Use titleSorter field, when sorting",
-		ENABLED: "enabled",
-		DISABLED: "disabled",
-		OPTION_IM_ROOT: "Internal memory root folder",
-		OPTION_CARD_SCAN: "SD/MS card scan",
-		OPTION_MOUNT: "Use mount with SD/MS (experimental)",
-		NODE_RESCAN_INTERNAL_MEMORY: "Rescan internal memory",
-		NODE_COPY_TO_INTERNAL_MEMORY: "Copy to internal memory",
+		OPTION_TITLE_SORTER: "Use 'titleSorter' Field, when Sorting",
+		ENABLED: "Enabled",
+		DISABLED: "Disabled",
+		OPTION_IM_ROOT: "Internal Memory Root Folder",
+		OPTION_CARD_SCAN: "SD/MS Card Scan",
+		OPTION_MOUNT: "Use Mount with SD/MS (experimental)",
+		NODE_RESCAN_INTERNAL_MEMORY: "Rescan Internal Memory",
+		NODE_COPY_TO_INTERNAL_MEMORY: "Copy to Internal Memory",
 		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copies file to the internal memory root",
-		NODE_COPY_AND_RESCAN: "Copy & Rescan internal memory",
+		NODE_COPY_AND_RESCAN: "Copy & Rescan Internal Memory",
 		NODE_COPY_AND_RESCAN_COMMENT: "Copies file to the internal memory root and rescans books",
 		ERROR_TARGET_EXISTS: "Error, target file exists",
-		NODE_AUDIO_AND_PICTURES: "Audio & Pictures",
 		NODE_BROWSE_FOLDERS: "Browse Folders",
 		NODE_BROWSE_FOLDERS_COMMENT: "Browse the file system",
 		NODE_INTERNAL_MEMORY: "Internal Memory",
 		NODE_MEMORY_STICK: "Memory Stick",
-		NODE_MEMORY_STICK_MOUNT: "Memory Stick via mount",
+		NODE_MEMORY_STICK_MOUNT: "Memory Stick via Mount",
 		NODE_SD_CARD: "SD Card",
-		NODE_SD_CARD_MOUNT: "SD Card via mount",
-		NODE_GAMES_AND_UTILITIES: "Games & Utilities"
+		NODE_SD_CARD_MOUNT: "SD Card via Mount"
 	},
-	
+
 	Clock: {
+		TITLE: "Clock",
 		OPTION_STYLE: "Clock Style",
 		VALUE_24H: "24 hours",
 		VALUE_12H: "12 hours",
@@ -181,28 +208,55 @@ return {
 		VALUE_ALWAYS_SHOWN: "Always shown",
 		VALUE_SHOWN_ONLY_IN_MENU: "Shown only in menu",
 		VALUE_SHOWN_WHEN_READING: "Shown only when reading",
-		VALUE_OFF: "OFF",
+		VALUE_OFF: "Off",
 		ACTION_TOGGLE_CLOCK: "Toggle Clock",
 		AM: "am",
 		PM: "pm"
 	},
-	
+
 	PageIndex: {
 		TITLE: "Page Index",
-		INDEX_STYLE_BOOK: "Index style in books",
-		INDEX_MODE_BOOK: "Index mode in books",
-		INDEX_MODE_MENU: "Index mode in menu",
-		INDEX_STYLE_MENU: "Index style in menu",
+		INDEX_STYLE_BOOK: "Index Style in Books",
+		INDEX_MODE_BOOK: "Index Mode in Books",
+		INDEX_MODE_MENU: "Index Mode in Menu",
+		INDEX_STYLE_MENU: "Index Style in Menu",
 		OF: "of",
 		ALWAYS_SHOWN: "Always shown",
 		NEVER_SHOWN: "Never shown",
 		NOT_SHOWN_IF_SINGLE_PAGE: "Not shown on single pages"
 	},
-	
+
 	EpubUserStyle: {
-		TITLE: "EPUB User Style",
-		COMMENT: "Experimental, affects only books opened afterwards",
-		OPTION_EPUB_CSS_FILE: "User EPUB css file",
-		VALUE_DISABLED: "disabled"
+		OPTION_EPUB_CSS_FILE: "User EPUB Style (CSS File)",
+		MSG_WARNING: "Affects only books opened afterwards!",
+		VALUE_DISABLED: "Disabled"
+	},
+
+	ReadingList: {
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		VALUE_DISABLED: "One book",
+		VALUE_3: "Three books",
+		VALUE_10: "Ten books"
+	},
+
+//ReadMark	ReadMark: {
+//		TITLE_UNREAD: "Mark Book - Already Read",
+//		TITLE_READ: "Mark Book - Not Yet Read",
+//	},
+
+	TextScale: {
+		OPTION_SCALE_DEFAULT: "Default Scale",
+		VALUE_SMALL: "(S)mall Size",
+		VALUE_MEDIUM: "(M)edium Size",
+		VALUE_LARGE: "(L)arge Size",
+		VALUE_DISABLED: "Disabled",
+		VALUE_ENABLED: "Enabled"
+	},
+
+	MenuTuning: {
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
+		OPTION_OUTER: "Top Level Menu Contains",
+		NODE_OTHERS: "Multimedia",
+		NODE_GAMES_AND_UTILS: "Games & Utilities"
 	}
 };

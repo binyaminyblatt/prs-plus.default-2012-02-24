@@ -1,11 +1,85 @@
-// Description: Russian locale
-// Author: SLL
-//
-// Language: English
+// Language: Russian
+// Description: Localization file
+// Author: kartu
+// Translator: SLL
 //
 // History:
 //	2010-04-24 kartu - Fixed epub styles translation
 //	2010-04-25 kartu - Fixed "turn on/off" translation
+//	2010-04-30 kravitz - Refactored, added new strings
+//	2010-04-30 kravitz - Fixed and optimized FUNC_X_SOMETHING()
+
+var _x_cache = [];
+var _x_cases = [2, 0, 1, 1, 1, 2];
+var FUNC_X_SOMETHING = function (n, s) {
+	if (!n) {
+		return s[3];
+	}
+	if (!_x_cache[n]) {
+		_x_cache[n] = (n % 100 > 4 && n % 100 < 20) ? 2 : _x_cases[Math.min(n % 10, 5)];
+	}
+	return n + " " + s[_x_cache[n]];
+};
+
+var FUNC_X_BOOKS = function (n) {
+	return FUNC_X_SOMETHING(n, ["книга", "книги", "книг", "Пусто"]);
+};
+
+var FUNC_X_SETTINGS = function (n) {
+	return FUNC_X_SOMETHING(n, ["настройка", "настройки", "настроек", "Пусто"]);
+};
+
+var FUNC_X_ITEMS = function (n) {
+	return FUNC_X_SOMETHING(n, ["пункт", "пункта", "пунктов", "Пусто"]);
+};
+
+var FUNC_X_PAGES = function (n) {
+	return FUNC_X_SOMETHING(n, ["страница", "страницы", "страниц", "Пусто"]);
+};
+
+var FUNC_X_PICTURES = function (n) {
+	return FUNC_X_SOMETHING(n, ["изображение", "изображения", "изображений", "Пусто"]);
+};
+
+var FUNC_X_SONGS = function (n) {
+	return FUNC_X_SOMETHING(n, ["песня", "песни", "песен", "Пусто"]);
+};
+
+var FUNC_X_BOOKMARKS = function (n) {
+	return FUNC_X_SOMETHING(n, ["закладка", "закладки", "закладок", "Пусто"]);
+};
+
+var FUNC_X_COLLECTIONS = function (n) {
+	return FUNC_X_SOMETHING(n, ["коллекция", "коллекции", "коллекций", "Пусто"]);
+};
+
+// Utility function, no need to localize
+var toDoubleDigit = function (num) {
+	if (num < 10) {
+		return "0" + num;
+	}
+	return num;
+};
+
+var FUNC_GET_DATE = function (date) {
+	var day, month, year;
+	day = toDoubleDigit(date.getDate());
+	month = toDoubleDigit(date.getMonth() + 1);
+	year = date.getFullYear();
+	return month + "/" + day + "/" + year;
+};
+
+var FUNC_GET_TIME = function (date) {
+	var hour, minute;
+	hour = toDoubleDigit(date.getHours());
+	minute = toDoubleDigit(date.getMinutes());
+	return hour + ":" + minute;
+};
+
+var FUNC_GET_DATE_TIME = function (date) {
+	return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
+};
+
 return {
 	// Standard stuff
 	Sony: {
@@ -84,8 +158,7 @@ return {
 		SET_DATE: "Дата и время",
 		YEAR: "Год",
 		MONTH: "Месяц",
-		DATE: "День",
-		// Day
+		DATE: "День", // Day
 		HOUR: "Часы",
 		MINUTE: "Минуты",
 		// slideshow
@@ -177,72 +250,27 @@ return {
 		TITLE_0: "Прочие",
 		CRITERION_0: "",
 
-		// Utility function, no need to localize
-		toDoubleDigit: function (num) {
-			if (num < 10) {
-				return "0" + num;
-			} else {
-				return num;
-			}
-		},
-		FUNC_GET_DATE_TIME: function (date) {
-			return date.toLocaleDateString() + " " + this.FUNC_GET_TIME(date);
-		},
-		FUNC_GET_DATE: function (date) {
-			var day, month, year;
-			day = this.toDoubleDigit(date.getDate());
-			month = this.toDoubleDigit(date.getMonth() + 1);
-			year = date.getFullYear();
-			return month + "/" + day + "/" + year;
-		},
-		FUNC_GET_TIME: function (date) {
-			var hour, minute;
-			hour = this.toDoubleDigit(date.getHours());
-			minute = this.toDoubleDigit(date.getMinutes());
-			return hour + ":" + minute;
-		},
-		FUNC_X_PAGES: function (n) {
-			return this.FUNC_X_SOMETHING(n, "1 страница", "страницы", "страниц", "Пусто");
-		},
-		FUNC_X_ITEMS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "1 пункт", "пункта", "пунктов", "Пусто");
-		},
-		FUNC_X_SETTINGS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "1 настройка", "настройки", "настроек", "Пусто");
-		},
-		FUNC_X_PICTURES: function (n) {
-			return this.FUNC_X_SOMETHING(n, "1 изображение", "изображения", "изображений", "Пусто");
-		},
-		FUNC_X_SONGS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "1 песня", "песни", "песен", "Пусто");
-		},
-		FUNC_X_BOOKMARKS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "1 закладка", "закладки", "закладок", "Пусто");
-		},
-		FUNC_X_COLLECTIONS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "1 коллекция", "коллекции", "коллекций", "Пусто");
-		},
-		FUNC_X_BOOKS: function (n) {
-			return this.FUNC_X_SOMETHING(n, "1 книга", "книги", "книг", "Пусто");
-		},
-		FUNC_X_SOMETHING: function (n, form1, form2, form5, form0) {
-			switch (n) {
-			case 0:
-				return form0;
-			case 1:
-				return form1;
-			}
-			var n1 = (n % 100) % 10;
-			if (n1 > 1 & n1 < 5) {
-				return n + " " + form2;
-			}
-			return n + " " + form5;
-		}
+		FUNC_GET_DATE_TIME: FUNC_GET_DATE_TIME,
+		FUNC_GET_DATE: FUNC_GET_DATE,
+		FUNC_GET_TIME: FUNC_GET_TIME,
+
+		FUNC_X_PAGES: FUNC_X_PAGES,
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
+		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		FUNC_X_PICTURES: FUNC_X_PICTURES,
+		FUNC_X_SONGS: FUNC_X_SONGS,
+		FUNC_X_BOOKMARKS: FUNC_X_BOOKMARKS,
+		FUNC_X_COLLECTIONS: FUNC_X_COLLECTIONS,
+		FUNC_X_BOOKS: FUNC_X_BOOKS
 	},
 
 	// PRS+ stuff
 	Core: {
-		NODE_PRSP_SETTINGS: "PRS+ Установки"
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		NODE_PRSP_SETTINGS: "Настройки PRS+",
+		GROUP_MENU_TITLE: "Menu Settings",
+		GROUP_VIEWER_TITLE: "Viewer Settings"
 	},
 
 	CoreLang: {
@@ -257,8 +285,8 @@ return {
 		ddMONTHYYYY: "31/января/1999",
 
 		OPTION_DATE_SEPARATOR: "Разделитель даты",
-		VALUE_SPACE: "пробел",
-		VALUE_NONE: "нет",
+		VALUE_SPACE: "Пробел",
+		VALUE_NONE: "Нет",
 
 		MONTH_SHORT_1: "янв",
 		MONTH_SHORT_2: "фев",
@@ -288,8 +316,6 @@ return {
 	},
 
 	MenuCaptions: {
-		TITLE: "Строки меню",
-		TITLE_COMMENT: "Позволяет выбрать стиль строчек меню",
 		OPTION_STYLE: "Стиль строк меню",
 		VALUE_SONY_DEFAULT: "Оригинальный Sony",
 		VALUE_ALWAYS_SMALL: "Всегда маленькие",
@@ -297,19 +323,18 @@ return {
 	},
 
 	TextEncoding: {
-		TITLE: "Кодировка текста",
-		COMMENT: "Используется в книгах форматов TXT, RTF, требует перезагрузку",
-		OPTION_TITLE: "Кодировка",
-		DESCRIPTION: "Позволяет выбрать кодировку текста",
+		OPTION_TITLE: "Кодировка книг в формате TXT и RTF",
+		MSG_RESTART: "Требуется перезагрузка!",
+
 		LATIN: "Latin",
-		RUSSIAN: "Русская (win1251)"
+		RUSSIAN: "Русская (Windows-1251)"
 	},
 
 	KeyBindings: {
 		TITLE: "Привязка кнопок",
 		DESCRIPTION: "Позволяет задавать действия кнопкам ридера",
 
-		DEFAULT_VALUE: "по умолчанию",
+		DEFAULT_VALUE: "По умолчанию",
 
 		// Contexts
 		GLOBAL: "Глобально",
@@ -353,10 +378,10 @@ return {
 		BN_H_8: "Удерживать 8",
 		BN_H_9: "Удерживать 9",
 		BN_H_0: "Удерживать 0",
-		BN_VOLUME_DOWN: "Громкость-",
-		BN_H_VOLUME_DOWN: "Удерживать громкость-",
-		BN_VOLUME_UP: "Громкость+",
-		BN_H_VOLUME_UP: "Удерживать громкость+",
+		BN_VOLUME_DOWN: "Громкость -",
+		BN_H_VOLUME_DOWN: "Удерживать громкость -",
+		BN_VOLUME_UP: "Громкость +",
+		BN_H_VOLUME_UP: "Удерживать громкость +",
 
 		// Actions
 		ACTION_SHUTDOWN: "Отключить",
@@ -375,10 +400,10 @@ return {
 		FAILED_TO_SAVE: "Ошибка сохранения",
 		OPT_SAVETO: "Сохранить в",
 		OPT_FEEDBACK: "Показывать прогресс сохранения",
-		MEMORY_STICK: "Memory Stick",
-		FEEDBACK_ON: "вкл",
-		FEEDBACK_OFF: "выкл",
-		SD_CARD: "SD Card",
+		MEMORY_STICK: "Memory stick",
+		FEEDBACK_ON: "Вкл",
+		FEEDBACK_OFF: "Выкл",
+		SD_CARD: "SD card",
 		INTERNAL_MEMORY: "Внутренняя память"
 	},
 
@@ -389,9 +414,9 @@ return {
 		VALUE_BY_AUTHOR_THEN_TITLE: "По автору и по названию",
 		VALUE_BY_AUTHOR_SWAPPING: "По автору с заменой имени/фамилии",
 		VALUE_BY_FILENAME: "По имени файла",
-		OPTION_TITLE_SORTER: "Использовать поле titleSorter для сортировки",
-		ENABLED: "включено",
-		DISABLED: "выключено",
+		OPTION_TITLE_SORTER: "Использовать поле 'titleSorter' для сортировки",
+		ENABLED: "Включено",
+		DISABLED: "Выключено",
 		OPTION_IM_ROOT: "Верхний уровень внутренней памяти",
 		OPTION_CARD_SCAN: "Сканировать карты SD/MS",
 		OPTION_MOUNT: "Использовать монтирование SD/MS (экспериментально)",
@@ -401,16 +426,14 @@ return {
 		NODE_COPY_AND_RESCAN: "Копировать и просканировать внутреннюю память",
 		NODE_COPY_AND_RESCAN_COMMENT: "Копирует файл на верхний уровень внутренней памяти и сканирует книги в памяти",
 		ERROR_TARGET_EXISTS: "Ошибка, файл уже существует",
-		NODE_AUDIO_AND_PICTURES: "Аудио и изображения",
 		NODE_BROWSE_FOLDERS: "Просмотр папок",
 		NODE_BROWSE_FOLDERS_COMMENT: "Просмотр файловой системы",
 		NODE_INTERNAL_MEMORY: "Внутренняя память",
 		NODE_MEMORY_STICK: "Memory Stick",
 		NODE_MEMORY_STICK_MOUNT: "Memory Stick через монтирование",
 		NODE_SD_CARD: "SD Card",
-		NODE_SD_CARD_MOUNT: "SD Card через монтирование",
-		NODE_GAMES_AND_UTILITIES: "Игры и инструменты"
-	},
+		NODE_SD_CARD_MOUNT: "SD Card через монтирование"
+},
 
 	Clock: {
 		TITLE: "Часы",
@@ -421,7 +444,7 @@ return {
 		VALUE_ALWAYS_SHOWN: "Всегда показывать",
 		VALUE_SHOWN_ONLY_IN_MENU: "Показывать только в меню",
 		VALUE_SHOWN_WHEN_READING: "Показывать только при чтении",
-		VALUE_OFF: "ВЫКЛ",
+		VALUE_OFF: "Выкл",
 		ACTION_TOGGLE_CLOCK: "Переключить часы",
 		AM: "am",
 		PM: "pm"
@@ -440,9 +463,36 @@ return {
 	},
 
 	EpubUserStyle: {
-		TITLE: "Пользовательский стиль EPUB",
-		COMMENT: "Экспер., влияет только на книги, созданные позднее.",
-		OPTION_EPUB_CSS_FILE: "Пользовательский файл EPUB css",
-		VALUE_DISABLED: "отключено"
+		OPTION_EPUB_CSS_FILE: "Пользовательский стиль EPUB (CSS файл)",
+		MSG_WARNING: "Влияет только на книги, созданные позднее!",
+		VALUE_DISABLED: "Отключено"
+	},
+
+	ReadingList: {
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		VALUE_DISABLED: "One book",
+		VALUE_3: "Three books",
+		VALUE_10: "Ten books"
+	},
+
+//ReadMark	ReadMark: {
+//		TITLE_UNREAD: "Mark Book - Already Read",
+//		TITLE_READ: "Mark Book - Not Yet Read",
+//	},
+
+	TextScale: {
+		OPTION_SCALE_DEFAULT: "Default Scale",
+		VALUE_SMALL: "(S)mall Size",
+		VALUE_MEDIUM: "(M)edium Size",
+		VALUE_LARGE: "(L)arge Size",
+		VALUE_DISABLED: "Disabled",
+		VALUE_ENABLED: "Enabled"
+	},
+
+	MenuTuning: {
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
+		OPTION_OUTER: "Top Level Menu Contains",
+		NODE_OTHERS: "Multimedia",
+		NODE_GAMES_AND_UTILS: "Игры и инструменты"
 	}
 };
