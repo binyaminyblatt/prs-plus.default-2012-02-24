@@ -8,6 +8,7 @@
 //	2010-04-25 kartu - Fixed "turn on/off" translation
 //	2010-04-30 kravitz - Refactored, added new strings
 //	2010-04-30 kravitz - Fixed and optimized FUNC_X_SOMETHING()
+//	2010-04-30 kravitz - Fixed SL_OFF and SL_ON translation
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -164,14 +165,14 @@ return {
 		// slideshow
 		SLIDESHOW: "Показ слайдов",
 		SS_ON: "Вкл",
-		SS_OFF: "Выкл",
+		SS_OFF: "Откл",
 		SS_TURN: "Активировать",
 		SS_DURATION: "Продолжительность",
 		SECONDS: "Секунд",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "Спящий режим",
 		AS_ON: "Вкл",
-		AS_OFF: "Выкл",
+		AS_OFF: "Откл",
 		AS_TURN: "Активировать",
 		// about
 		ABOUT: "О Ридере",
@@ -182,8 +183,8 @@ return {
 		ADVANCED_SETTINGS: "Дополнительные настройки",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "Защитить паролем",
-		SL_OFF: "Вкл",
-		SL_ON: "Выкл",
+		SL_OFF: "Откл",
+		SL_ON: "Вкл",
 		SL_CODE: "Пароль",
 		SL_TURN: "Активировать",
 		// format device
@@ -269,8 +270,8 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		NODE_PRSP_SETTINGS: "Настройки PRS+",
-		GROUP_MENU_TITLE: "Menu Settings",
-		GROUP_VIEWER_TITLE: "Viewer Settings"
+		GROUP_MENU_TITLE: "Настройки меню",
+		GROUP_VIEWER_TITLE: "Настройки чтения"
 	},
 
 	CoreLang: {
@@ -402,7 +403,7 @@ return {
 		OPT_FEEDBACK: "Показывать прогресс сохранения",
 		MEMORY_STICK: "Memory stick",
 		FEEDBACK_ON: "Вкл",
-		FEEDBACK_OFF: "Выкл",
+		FEEDBACK_OFF: "Откл",
 		SD_CARD: "SD card",
 		INTERNAL_MEMORY: "Внутренняя память"
 	},
@@ -416,7 +417,7 @@ return {
 		VALUE_BY_FILENAME: "По имени файла",
 		OPTION_TITLE_SORTER: "Использовать поле 'titleSorter' для сортировки",
 		ENABLED: "Включено",
-		DISABLED: "Выключено",
+		DISABLED: "Отключено",
 		OPTION_IM_ROOT: "Верхний уровень внутренней памяти",
 		OPTION_CARD_SCAN: "Сканировать карты SD/MS",
 		OPTION_MOUNT: "Использовать монтирование SD/MS (экспериментально)",
@@ -444,7 +445,7 @@ return {
 		VALUE_ALWAYS_SHOWN: "Всегда показывать",
 		VALUE_SHOWN_ONLY_IN_MENU: "Показывать только в меню",
 		VALUE_SHOWN_WHEN_READING: "Показывать только при чтении",
-		VALUE_OFF: "Выкл",
+		VALUE_OFF: "Откл",
 		ACTION_TOGGLE_CLOCK: "Переключить часы",
 		AM: "am",
 		PM: "pm"
@@ -470,29 +471,29 @@ return {
 
 	ReadingList: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		VALUE_DISABLED: "One book",
-		VALUE_3: "Three books",
-		VALUE_10: "Ten books"
+		VALUE_DISABLED: "Одна книга",
+		VALUE_3: "Три книги",
+		VALUE_10: "Десять книг"
 	},
 
 //ReadMark	ReadMark: {
-//		TITLE_UNREAD: "Mark Book - Already Read",
-//		TITLE_READ: "Mark Book - Not Yet Read",
+//		TITLE_UNREAD: "Пометить книгу - Уже прочитана",
+//		TITLE_READ: "Пометить книгу - Еще не прочитана",
 //	},
 
 	TextScale: {
-		OPTION_SCALE_DEFAULT: "Default Scale",
-		VALUE_SMALL: "(S)mall Size",
-		VALUE_MEDIUM: "(M)edium Size",
-		VALUE_LARGE: "(L)arge Size",
-		VALUE_DISABLED: "Disabled",
-		VALUE_ENABLED: "Enabled"
+		OPTION_SCALE_DEFAULT: "Размер шрифта по умолчанию",
+		VALUE_SMALL: "(S) Маленький шрифт",
+		VALUE_MEDIUM: "(M) Средний шрифт",
+		VALUE_LARGE: "(L) Большой шрифт",
+		VALUE_DISABLED: "Отключено",
+		VALUE_ENABLED: "Включено"
 	},
 
 	MenuTuning: {
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		OPTION_OUTER: "Top Level Menu Contains",
-		NODE_OTHERS: "Multimedia",
+		OPTION_OUTER: "В главном меню",
+		NODE_OTHERS: "Мультимедиа",
 		NODE_GAMES_AND_UTILS: "Игры и инструменты"
 	}
 };
