@@ -72,18 +72,18 @@ return {
 	// Standard stuff
 	Sony: {
 		// USB connected
-		DO_NOT_DISCONNECT: "Â¡No Desconecte!",
+		DO_NOT_DISCONNECT: "¡No Desconecte!",
 		USB_CONNECTED: "USB conectado",
 		DEVICE_LOCKED: "Dispositivo bloqueado",
 
 		// About, translate either all or none
-		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" + "PRS+ Firmware: @@@firmware@@@\n" + "Autor: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + "igorsk, boroda, obelix, pepak, llasram and others.\n" + "Â© GNU Lesser General Public License.",
-		ABOUT_1: "Copyright Â©2006-2008 Sony Corporation",
+		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" + "PRS+ Firmware: @@@firmware@@@\n" + "Autor: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + "igorsk, boroda, obelix, pepak, llasram and others.\n" + "© GNU Lesser General Public License.",
+		ABOUT_1: "Copyright ©2006-2008 Sony Corporation",
 		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + " trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
 		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + " MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
-		ABOUT_4: "Application software designed and implemented by Kinoma (www.kinoma.com). Portions Copyright Â©2006,2007 Kinoma, Inc.",
+		ABOUT_4: "Application software designed and implemented by Kinoma (www.kinoma.com). Portions Copyright ©2006,2007 Kinoma, Inc.",
 		ABOUT_5: "Bitstream is a registered trademark, and Dutch, Font Fusion, and Swiss are trademarks, of Bitstream, Inc.",
-		ABOUT_6: "Portions of this software are Copyright Â©2005 The FreeType Project (www.freetype.org). All rights reserved.",
+		ABOUT_6: "Portions of this software are Copyright ©2005 The FreeType Project (www.freetype.org). All rights reserved.",
 		ABOUT_7: "This software is based in part on the work of the Independent JPEG Group.",
 		AUTHORIZED_SONY: "Authorized for the eBook Store.",
 		NOT_AUTHORIZED_SONY: "Not authorized for the eBook Store.",
@@ -106,8 +106,8 @@ return {
 		INVALID_FORMAT: "Formato No V" + String.fromCharCode(225) + "lido!",
 		FORMATTING: "Formateando...",
 		LOADING: "Cargando...",
-		LOW_BATTERY: "Â¡Bater" + String.fromCharCode(237) + "a Baja!",
-		HR_WARNING: "Â¿Quieres BORRAR todo el contenido y restaurar los ajustes iniciales y el estado de la autorizaci" + String.fromCharCode(243) + "n del DRM?\n\nSi - Pulsa 5\nNo - Pulsa MENU",
+		LOW_BATTERY: "¡Bater" + String.fromCharCode(237) + "a Baja!",
+		HR_WARNING: "¿Quieres BORRAR todo el contenido y restaurar los ajustes iniciales y el estado de la autorizaci" + String.fromCharCode(243) + "n del DRM?\n\nSi - Pulsa 5\nNo - Pulsa MENU",
 		DEVICE_SHUTDOWN: "Apagar Dispositivo",
 		PRESS_MARK_TO_SHUTDOWN: "Pulsa MARK para apagar",
 		THIS_DEVICE: "lector.",
@@ -313,7 +313,7 @@ return {
 
 	TextEncoding: {
 		OPTION_TITLE: "Codificaci" + String.fromCharCode(243) + "n de TXT y RTF libros",
-		MSG_RESTART: "Â¡Requiere reincio!",
+		MSG_RESTART: "¡Requiere reincio!",
 		LATIN: "Car" + String.fromCharCode(225) + "cteres latinos",
 		RUSSIAN: "Car" + String.fromCharCode(225) + "cteres rusos (Windows-1251)"
 	},
@@ -452,34 +452,34 @@ return {
 
 	EpubUserStyle: {
 		OPTION_EPUB_CSS_FILE: "EPUB Estilo de Usuario (CSS del usuario)",
-		MSG_WARNING: "Â¡Solo se aplica a libros5abiertos despu" + String.fromCharCode(233) + "s!",
+		MSG_WARNING: "¡Solo se aplica a libros abiertos despu" + String.fromCharCode(233) + "s!",
 		VALUE_DISABLED: "Desactivado"
 	},
 
 	ReadingList: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		VALUE_DISABLED: "One book",
-		VALUE_3: "Three books",
-		VALUE_10: "Ten books"
+		VALUE_DISABLED: "Un libro",
+		VALUE_3: "Tres libros",
+		VALUE_10: "Diez libros"
 	},
 
 //ReadMark	ReadMark: {
-//		TITLE_UNREAD: "Mark Book - Already Read",
-//		TITLE_READ: "Mark Book - Not Yet Read",
+//		TITLE_UNREAD: "Marcadores - Ya le" + String.fromCharCode(237) + "dos",
+//		TITLE_READ: "Marcadores - No le" + String.fromCharCode(237) + "dos todav" + String.fromCharCode(237) + "a",
 //	},
 
 	TextScale: {
-		OPTION_SCALE_DEFAULT: "Default Scale",
-		VALUE_SMALL: "(S)mall Size",
-		VALUE_MEDIUM: "(M)edium Size",
-		VALUE_LARGE: "(L)arge Size",
+		OPTION_SCALE_DEFAULT: "Escala por defecto",
+		VALUE_SMALL: "(S)Tama" + String.fromCharCode(241) + "o peque" + String.fromCharCode(241) + "o",
+		VALUE_MEDIUM: "(M)Tama" + String.fromCharCode(241) + "o mediano",
+		VALUE_LARGE: "(L)Tama" + String.fromCharCode(241) + "o grande",
 		VALUE_DISABLED: "Desactivado",
 		VALUE_ENABLED: "Activado"
 	},
 
 	MenuTuning: {
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		OPTION_OUTER: "Top Level Menu Contains",
+		OPTION_OUTER: "Contenido del men" + String.fromCharCode(250) + " superior",
 		NODE_OTHERS: "Multimedia",
 		NODE_GAMES_AND_UTILS: "Juegos - Utilidades"
 	}
