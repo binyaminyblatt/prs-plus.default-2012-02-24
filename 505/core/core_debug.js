@@ -5,6 +5,7 @@
 // History:
 //	2010-03-14 kartu - Initial version, refactored from Utils
 //	2010-04-21 kartu - Reformatted
+//	2010-04-27 kravitz - Assignment to oprop is moved into try..catch
 
 try {
 	Core.debug = {
@@ -15,7 +16,7 @@ try {
 				log.trace(p + " => " + obj);
 			}
 		},
-		
+
 		dumpToString: function (o, prefix, depth) {
 			var typeofo = typeof o;
 			if (typeofo == "string" || typeofo == "boolean" || typeofo == "number") {
@@ -25,7 +26,7 @@ try {
 			if (typeof depth == "undefined") {
 				depth = 1;
 			}
-			// we show prefix if depth is 
+			// we show prefix if depth is
 			if (typeofo == "undefined") {
 				return "undefined";
 			}
@@ -52,7 +53,7 @@ try {
 			if (typeofo != "object") {
 				return "unknown entitiy of type (" + (typeof o) + ")";
 			}
-			
+
 			// if depth is less than 1, return just "an object" string
 			if (depth < 1) {
 				return "an object";
@@ -60,14 +61,14 @@ try {
 			if (typeof prefix == "undefined") {
 				prefix = "";
 			}
-		
+
 			// at this point, o is not null, and is an object
 			var str = "dumping\n";
 			var hasProps = false;
 			for (var prop in o) {
 				hasProps = true;
-				var oprop = o[prop];
 				try {
+					var oprop = o[prop];
 					str += prefix + prop + " => " + this.dumpToString(oprop, prefix + "\t", depth - 1) + "\n";
 				} catch (ee) {
 					str += prefix + prop + " => " + "failed to tostring: " + ee + "\n";
@@ -85,4 +86,4 @@ try {
 	};
 } catch (e) {
 	log.error("initializing core-debug", e);
-}	
+}
