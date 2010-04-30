@@ -12,6 +12,7 @@
 //	2010-04-24 kartu - Changed language order
 //	2010-04-25 kartu - Marked kbook.model.getDateAndClock as constructor
 //	2010-04-25 kartu - Moved default UI localizer into separate file
+//	2010-04-27 kravitz - Localizers are adapted for work with functions
 
 tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -23,7 +24,7 @@ tmp = function() {
 					} else {
 						return num;
 					}
-		};		
+		};
 		// "ddMMYY", "MMddYY", "YYMMdd", "ddMMMYY", "ddMONTHYY", "ddMMYYYY", "MMddYYYY", "YYYYMMdd", "ddMMMYYYY", "ddMONTHYYYY"
 		return function() {
 			try {
@@ -31,7 +32,7 @@ tmp = function() {
 				var day, month, nMonth, year, shortYear;
 				day = toDoubleDigit(date.getDate());
 				nMonth = date.getMonth() + 1;
-				month = toDoubleDigit(nMonth); 
+				month = toDoubleDigit(nMonth);
 				year = date.getFullYear();
 				shortYear = toDoubleDigit(year - Math.floor(year/100) * 100);
 				switch (format) {
@@ -80,7 +81,7 @@ tmp = function() {
 				defaultValue: "/"
 			}
 		],
-	
+
 		init: function () {
 			try {
 				Core.settings.loadOptions(this);
@@ -90,12 +91,12 @@ tmp = function() {
 				} catch (e0) {
 					log.error("Failed to load strings: ", e0);
 				}
-	
+
 				// If locale is English, there is nothing to localize
 				if ("English.js" !== this.options.lang) {
 					try {
 						// localize default ui
-						var code = Core.io.getFileContent(Core.config.corePath + "lang/defaultUILocalizer.js"); 
+						var code = Core.io.getFileContent(Core.config.corePath + "lang/defaultUILocalizer.js");
 						var localizeDefaultUI = new Function("_strings,Core", code);
 						localizeDefaultUI(_strings, Core);
 						delete localizeDefaultUI;
@@ -103,7 +104,7 @@ tmp = function() {
 						log.error("Failed to localize default UI", e1);
 					}
 				}
-				
+
 				// Date
 				if ("default" !== this.options.dateFormat) {
 					var separator = "/";
@@ -123,14 +124,14 @@ tmp = function() {
 					}
 					Date.prototype.toLocaleDateString = getDateFunc(this.options.dateFormat, separator);
 				}
-				
+
 				coreL = this.getLocalizer("Core"); // defined in core
 				langL = this.getLocalizer("CoreLang");
 			} catch (e) {
 				log.error("in Core.lang.init: " + e);
 			}
 		},
-		
+
 		getStrings: function (category) {
 			try {
 				if (_strings !== undefined && _strings[category] !== undefined) {
@@ -143,26 +144,31 @@ tmp = function() {
 				log.error("in getStrings: " + e);
 			}
 		},
-		
+
 		getLocalizer: function (category) {
 			var createLocalizer = function(str, prefix) {
-				var f = function(key) {
+				var f = function(key, param) {
 					if (str.hasOwnProperty(key)) {
-						return str[key];
-					} else {
-						return prefix + key;
+						try {
+							if (typeof str[key] == "function") {
+								return str[key](param);
+							}
+							return str[key];
+						} catch (e) {
+						}
 					}
+					return prefix + key;
 				};
 				return f;
 			};
 			return createLocalizer(this.getStrings(category), category + ".");
-		}		
+		}
 	};
-	
+
 
 	// Initialize lang
 	Core.lang.init();
-	
+
 	// Language options
 	var LangAddon = {
 		name: "Localization",
@@ -190,15 +196,15 @@ tmp = function() {
 				defaultValue: "default",
 				values: ["default", "ddMMYY", "MMddYY", "YYMMdd", "ddMMMYY", "ddMONTHYY", "ddMMYYYY", "MMddYYYY", "YYYYMMdd", "ddMMMYYYY", "ddMONTHYYYY"],
 				valueTitles: {
-					ddMMYY: "31/01/99", 
-					MMddYY: "01/31/99", 
-					YYMMdd: "99/01/31", 
-					ddMMMYY: langL("ddMMMYY"), 
+					ddMMYY: "31/01/99",
+					MMddYY: "01/31/99",
+					YYMMdd: "99/01/31",
+					ddMMMYY: langL("ddMMMYY"),
 					ddMONTHYY: langL("ddMONTHYY"),
-					ddMMYYYY: "31/01/1999", 
-					MMddYYYY: "01/31/1999", 
-					YYYYMMdd: "1999/01/31", 
-					ddMMMYYYY: langL("ddMMMYYYY"), 
+					ddMMYYYY: "31/01/1999",
+					MMddYYYY: "01/31/1999",
+					YYYYMMdd: "1999/01/31",
+					ddMMMYYYY: langL("ddMMMYYYY"),
 					ddMONTHYYYY: langL("ddMONTHYYYY")
 				}
 			},
@@ -214,8 +220,8 @@ tmp = function() {
 					"space": langL("VALUE_SPACE"),
 					"none": langL("VALUE_NONE")
 				}
-			}			
-		]		
+			}
+		]
 	};
 
 	Core.addAddon(LangAddon);

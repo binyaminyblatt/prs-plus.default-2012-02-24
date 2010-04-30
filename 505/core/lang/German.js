@@ -1,5 +1,73 @@
 // Language: German
+// Description: Localization file
+// Author: kartu
+// Translator:
 //
+// History:
+//	2010-04-30 kravitz - Refactored, added new strings
+
+var FUNC_X_SOMETHING = function (n, s) {
+	if (n > 1) {
+		return n + " " + s[0];
+	}
+	if (n == 1) {
+		return s[1];
+	}
+	return s[2];
+};
+
+var FUNC_X_BOOKS = function (n) {
+	return FUNC_X_SOMETHING(n, ["Bücher", "1 Buch", "Kein Buch"]);
+};
+var FUNC_X_SETTINGS = function (n) {
+	return FUNC_X_SOMETHING(n, ["Einstellungen", "1 Einstellung", "Keine Einstellung"]);
+};
+var FUNC_X_ITEMS = function (n) {
+	return FUNC_X_SOMETHING(n, ["Menüpunkte", "1 Menüpunkt", "Kein Menüpunkt"]);
+};
+var FUNC_X_PAGES = function (n) {
+	return FUNC_X_SOMETHING(n, ["Seiten", "1 Seite", "Keine Seite"]);
+};
+var FUNC_X_PICTURES = function (n) {
+	return FUNC_X_SOMETHING(n, ["Bilder", "1 Bild", "Kein Bild"]);
+};
+var FUNC_X_SONGS = function (n) {
+	return FUNC_X_SOMETHING(n, ["Lieder", "1 Lied", "Kein Lied"]);
+};
+var FUNC_X_BOOKMARKS = function (n) {
+	return FUNC_X_SOMETHING(n, ["Lesezeichen", "1 Lesezeichen", "Kein Lesezeichen"]);
+};
+var FUNC_X_COLLECTIONS = function (n) {
+	return FUNC_X_SOMETHING(n, ["Sammlungen", "1 Sammlung", "Keine Sammlung"]);
+};
+
+// Utility function, no need to localize
+var toDoubleDigit = function (num) {
+	if (num < 10) {
+		return "0" + num;
+	}
+	return num;
+};
+
+var FUNC_GET_DATE = function (date) {
+	var day, month, year;
+	day = toDoubleDigit(date.getDate());
+	month = toDoubleDigit(date.getMonth() + 1);
+	year = date.getFullYear();
+	return month + "/" + day + "/" + year;
+};
+
+var FUNC_GET_TIME = function (date) {
+	var hour, minute;
+	hour = toDoubleDigit(date.getHours());
+	minute = toDoubleDigit(date.getMinutes());
+	return hour + ":" + minute;
+};
+
+var FUNC_GET_DATE_TIME = function (date) {
+	return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
+};
+
 return {
 	// Standard stuff
 	Sony: {
@@ -9,16 +77,10 @@ return {
 		DEVICE_LOCKED: "Gerät gesperrt",
 
 		// About, translate either all or none
-		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" +
-			"PRS+ Firmware: @@@firmware@@@\n" +
-			"Autor: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + 
-			"igorsk, boroda, obelix, pepak, llasram und anderer.\n" +
-			"© GNU Lesser General Public License.",
+		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" + "PRS+ Firmware: @@@firmware@@@\n" + "Autor: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + "igorsk, boroda, obelix, pepak, llasram und anderer.\n" + "© GNU Lesser General Public License.",
 		ABOUT_1: "Copyright ©2006-2008 Sony Corporation",
-		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + 
-			" trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
-		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + 
-			" MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
+		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + " trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
+		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + " MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
 		ABOUT_4: "Application software designed and implemented by Kinoma (www.kinoma.com). Portions Copyright ©2006,2007 Kinoma, Inc.",
 		ABOUT_5: "Bitstream is a registered trademark, and Dutch, Font Fusion, and Swiss are trademarks, of Bitstream, Inc.",
 		ABOUT_6: "Portions of this software are Copyright ©2005 The FreeType Project (www.freetype.org). All rights reserved.",
@@ -29,7 +91,7 @@ return {
 		NOT_AUTHORIZED_ADOBE: "Dieses Gerät ist nicht authorisiert für Adobe DRM-geschützte Inhalte.",
 		SONY_FW_VERSION: "Version",
 		DEVICE_ID: "Gerät",
-		
+
 		// Mime & card names
 		RICH_TEXT_FORMAT: "RTF-Datei",
 		ADOBE_PDF: "PDF-Datei",
@@ -39,7 +101,7 @@ return {
 		INTERNAL_MEMORY: "Interner Speicher",
 		MEMORY_STICK: "Memory Stick",
 		SD_CARD: "SD-Karte",
-		
+
 		// Main.xml & kbook.so stuff
 		INVALID_FORMAT: "Ungültiges Format!",
 		FORMATTING: "Formatiere...",
@@ -62,7 +124,7 @@ return {
 		NO_BATTERY: "Batterie leer!",
 		FORMATTING_INTERNAL_MEMORY: "Formatiere internen Speicher...",
 		SHUTTING_DOWN: "Gerät ausschalten...",
-		
+
 		// Root menu
 		CONTINUE: "Weiterlesen",
 		BOOKS_BY_TITLE: "Bücher nach Titel",
@@ -103,7 +165,7 @@ return {
 		ABOUT: "Über",
 		// reset to factory settings
 		RESET_TO_FACTORY: "Auf Werkseinstellungen zurücksetzen",
-		
+
 		// In Advanced Settings
 		ADVANCED_SETTINGS: "Erweiterte Einstellungen",
 		// screen lock (aka device lock)
@@ -114,7 +176,7 @@ return {
 		SL_TURN: "Aktivieren",
 		// format device
 		FORMAT_DEVICE: "Gerät formatieren",
-		
+
 		// In Book menu
 		BEGIN: "Anfang",
 		END: "Ende",
@@ -123,12 +185,12 @@ return {
 		HISTORY: "Verlauf",
 		INFO: "Informationen",
 		UTILITIES: "Werkzeuge",
-		
+
 		// In Book Utilities
 		REMOVE_ALL_BOOKMARKS: "Alle Lesezeichen löschen",
 		CLEAR_HISTORY: "Verlauf löschen",
 		DELETE_BOOK: "Buch löschen",
-		
+
 		// In Books by Date
 		TODAY: "Heute",
 		EARLIER_THIS_WEEK: "Diese Woche",
@@ -139,8 +201,8 @@ return {
 		LAST_QUARTER: "Letztes Quartal",
 		EARLIER_THIS_YEAR: "Dieses Jahr",
 		LAST_YEAR: "Letztes Jahr",
-		OLDER: "Älter",		
-		
+		OLDER: "Älter",
+
 		PAGE: "Seite",
 		PART: "Teil",
 		OF: "von",
@@ -149,12 +211,12 @@ return {
 
 		// Info title strings, comma separated, no spaces after comma
 		INFO_TITLES: "Einband,Titel,Autor,Verleger,Kategorie,eBook ID,Dateityp,Datum,Dateigröße,Speicherort,Dateipfad,Digitale Rechte,Gültigkeitsende",
-		
+
 		// Titles and criterions for "Books by Title" and "Books by Folder"
 		// title is displayed, "criterion" is used for sorting.
 		//
 		// NOTE: if localization doesn't need custom Books by sorting, just remove CUSTOM_SORT, TITLE_*, CRITERION_* items
-		CUSTOM_SORT: true, 
+		CUSTOM_SORT: true,
 		TITLE_1: "0-9",
 		CRITERION_1: "0123456789",
 		TITLE_2: "A B C",
@@ -176,85 +238,44 @@ return {
 		TITLE_0: "Sonstige",
 		CRITERION_0: "",
 
-		// Utility function, no need to localize
-		toDoubleDigit: function (num) {
-			if (num < 10) {
-				return "0" + num;
-			} else {
-				return num;
-			}
-		},
-		FUNC_GET_DATE_TIME: function (date) {
-			return this.FUNC_GET_DATE(date) + " " + this.FUNC_GET_TIME(date);
-		},
-		FUNC_GET_DATE: function (date) {
-			var day, month, year;
-			day = this.toDoubleDigit(date.getDate());
-			month = this.toDoubleDigit(date.getMonth() + 1); 
-			year = date.getFullYear();
-			return month + "/" + day + "/" + year;
-		},
-		FUNC_GET_TIME: function (date) {
-			var hour, minute;
-			hour = this.toDoubleDigit(date.getHours());
-			minute = this.toDoubleDigit(date.getMinutes());
-			return hour + ":" + minute;
-		},
-                                FUNC_X_PAGES: function (n) {
-                                return this.FUNC_X_SOMETHING(n, "Seiten", "1 Seite", "Keine Seite");
-                                },
-                                FUNC_X_ITEMS: function (n) {
-                                return this.FUNC_X_SOMETHING(n, "Menüpunkte", "1 Menüpunkt", "Kein Menüpunkt");
-                                },
-                                FUNC_X_SETTINGS: function (n) {
-                                return this.FUNC_X_SOMETHING(n, "Einstellungen", "1 Einstellung", "Keine Einstellung");
-                                },
-                                FUNC_X_PICTURES: function (n) {
-                                return this.FUNC_X_SOMETHING(n, "Bilder", "1 Bild", "Kein Bild");
-                                },
-                                FUNC_X_SONGS: function (n) {
-                                return this.FUNC_X_SOMETHING(n, "Lieder", "1 Lied", "Kein Lied");
-                                },
-                                FUNC_X_BOOKMARKS: function (n) {
-                                return this.FUNC_X_SOMETHING(n, "Lesezeichen", "1 Lesezeichen", "Kein Lesezeichen");
-                                },
-                                FUNC_X_COLLECTIONS: function (n) {
-                                return this.FUNC_X_SOMETHING(n, "Sammlungen", "1 Sammlung", "Keine Sammlung");
-                                },
-                                FUNC_X_BOOKS: function (n) {
-                                return this.FUNC_X_SOMETHING(n, "Bücher", "1 Buch", "Kein Buch"); 
-		},
-		FUNC_X_SOMETHING: function (n, many, one, zero) {
-			if (n > 1) {
-				return n + " " + many;
-			} else if (n == 1) {
-				return one;
-			} else {
-				return zero;
-			}
-		}
+		FUNC_GET_DATE_TIME: FUNC_GET_DATE_TIME,
+		FUNC_GET_DATE: FUNC_GET_DATE,
+		FUNC_GET_TIME: FUNC_GET_TIME,
+
+		FUNC_X_PAGES: FUNC_X_PAGES,
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
+		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		FUNC_X_PICTURES: FUNC_X_PICTURES,
+		FUNC_X_SONGS: FUNC_X_SONGS,
+		FUNC_X_BOOKMARKS: FUNC_X_BOOKMARKS,
+		FUNC_X_COLLECTIONS: FUNC_X_COLLECTIONS,
+		FUNC_X_BOOKS: FUNC_X_BOOKS
 	},
-	
+
 	// PRS+ stuff
 	Core: {
-		NODE_PRSP_SETTINGS:  "PRS+ Einstellungen"
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		NODE_PRSP_SETTINGS:  "PRS+ Einstellungen",
+		GROUP_MENU_TITLE: "Menu Settings",
+		GROUP_VIEWER_TITLE: "Viewer Settings"
 	},
-	
+
 	CoreLang: {
 		TITLE: "Lokalisierung",
 		COMMENT: "Benötigt Neustart",
 		OPTION_LANG: "Sprache",
-	
+
 		OPTION_DATE_FORMAT: "Datums-Format",
 		ddMMMYY: "31/Jan/99",
 		ddMONTHYY: "31/Januar/99",
 		ddMMMYYYY: "31/Jan/1999",
 		ddMONTHYYYY: "31/Januar/1999",
-		
+
 		OPTION_DATE_SEPARATOR: "Datums-Separator",
 		VALUE_SPACE: "Leerzeichen",
 		VALUE_NONE: "Keins",
-		
+
 		MONTH_SHORT_1: "Jan",
 		MONTH_SHORT_2: "Feb",
 		MONTH_SHORT_3: "Mar",
@@ -266,7 +287,7 @@ return {
 		MONTH_SHORT_9: "Sep",
 		MONTH_SHORT_10: "Okt",
 		MONTH_SHORT_11: "Nov",
-		MONTH_SHORT_12: "Dez",		
+		MONTH_SHORT_12: "Dez",
 
 		MONTH_1: "Januar",
 		MONTH_2: "Februar",
@@ -279,43 +300,40 @@ return {
 		MONTH_9: "September",
 		MONTH_10: "Oktober",
 		MONTH_11: "November",
-		MONTH_12: "Dezember"	
+		MONTH_12: "Dezember"
 	},
+
 	MenuCaptions: {
-		TITLE: "Menü-Überschriften",
-		TITLE_COMMENT: "Ermöglicht das Setzen des Überschriften-Stils",
 		OPTION_STYLE: "Überschriften-Stil",
 		VALUE_SONY_DEFAULT: "Sony Standard",
 		VALUE_ALWAYS_SMALL: "Immer klein",
 		VALUE_ALWAYS_BIG: "Immer groß"
 	},
-	
+
 	TextEncoding: {
-		TITLE: "Text-Codierung",
-		COMMENT: "Betrifft Bücher im TXT,RTF-Format, erfordert Neustart",
-		OPTION_TITLE: "Codierung",
-		DESCRIPTION: "Ermöglicht das ändern der Text-Codierung",
+		OPTION_TITLE: "TXT und RTF Bücher Codierung",
+		MSG_RESTART: "Benötigt Neustart!",
 		LATIN: "Latin",
-		RUSSIAN:  "Russian (win1251)"
+		RUSSIAN:  "Russian (Windows-1251)"
 	},
-	
+
 	KeyBindings: {
 		TITLE: "Tasteneinstellungen",
 		DESCRIPTION: "Ermöglicht das Binden von Aktionen an Tasten",
-		
+
 		DEFAULT_VALUE: "Standardwert",
-		
+
 		// Contexts
 		GLOBAL:  "Global",
 		IN_MENU: "Im Menü",
 		IN_BOOK:  "Im Buch",
-		
+
 		// Button groups
 		NUM_BUTTONS: "Numerische Tasten",
 		JP_BUTTONS: "Joypad-Tasten",
 		OTHER_BUTTONS: "Andere Tasten",
 		VOLUME_BUTTONS: "Lautstärke-Tasten",
-		
+
 		// Buttons
 		BN_SIZE: "Größe-Taste",
 		BN_BOOKMARK: "Lesezeichen-Taste",
@@ -347,11 +365,11 @@ return {
 		BN_H_8: "8 halten",
 		BN_H_9: "9 halten",
 		BN_H_0: "0 halten",
-		BN_VOLUME_DOWN: "Lautstärke-",
-		BN_H_VOLUME_DOWN: "Lautstärke- halten",
-		BN_VOLUME_UP: "Lautstärke+",
-		BN_H_VOLUME_UP: "Lautstärke+ halten",
-		
+		BN_VOLUME_DOWN: "Lautstärke -",
+		BN_H_VOLUME_DOWN: "Lautstärke - halten",
+		BN_VOLUME_UP: "Lautstärke +",
+		BN_H_VOLUME_UP: "Lautstärke + halten",
+
 		// Actions
 		ACTION_SHUTDOWN: "Herunterfahren",
 		ACTION_NEXT_PAGE: "Nächste Seite",
@@ -361,7 +379,7 @@ return {
 		ACTION_PREVIOUS_SONG: "Verheriges Lied",
 		ACTION_NEXT_SONG: "Nächstes Lied"
 	},
-	
+
 	Screenshot: {
 		TITLE: "Screenshot",
 		ACTION_TITLE: "Screenshot erstellen",
@@ -375,7 +393,7 @@ return {
 		SD_CARD: "auf SD-Karte",
 		INTERNAL_MEMORY: "im Internen Speicher"
 	},
-	
+
 	BrowseFolders: {
 		TITLE:  "Verzeichnisse durchsuchen",
 		OPTION_SORTING_MODE: "Sortier-Modus",
@@ -383,9 +401,9 @@ return {
 		VALUE_BY_AUTHOR_THEN_TITLE: "Nach Autor, dann Titel",
 		VALUE_BY_AUTHOR_SWAPPING: "Nach Autor, Namen vertauscht",
 		VALUE_BY_FILENAME: "Nach Dateiname",
-		OPTION_TITLE_SORTER: "Beim Sortieren titleSorter benutzen",
-		ENABLED: "aktiviert",
-		DISABLED: "deaktiviert",
+		OPTION_TITLE_SORTER: "Beim Sortieren 'titleSorter' benutzen",
+		ENABLED: "Aktiviert",
+		DISABLED: "Deaktiviert",
 		OPTION_IM_ROOT: "Verzeichnis des internen Speichers",
 		OPTION_CARD_SCAN: "SD/Memory Stick scannen",
 		OPTION_MOUNT: "SD/Memory Stick mounten (experimentell)",
@@ -395,17 +413,15 @@ return {
 		NODE_COPY_AND_RESCAN: "Kopieren & internen Speicher erneut scannen",
 		NODE_COPY_AND_RESCAN_COMMENT: "Kopiert Datei in das Wurzelverzeichnis des internen Speichers und scannt erneut",
 		ERROR_TARGET_EXISTS: "Fehler, Zieldatei existiert bereits",
-		NODE_AUDIO_AND_PICTURES: "Audio & Bilder",
 		NODE_BROWSE_FOLDERS: "Verzeichnisse durchsuchen",
 		NODE_BROWSE_FOLDERS_COMMENT: "",
 		NODE_INTERNAL_MEMORY: "Interner Speicher",
 		NODE_MEMORY_STICK: "Memory Stick",
 		NODE_MEMORY_STICK_MOUNT: "Memory Stick via mount",
 		NODE_SD_CARD: "SD-Karte",
-		NODE_SD_CARD_MOUNT: "SD-Karte via mount",
-		NODE_GAMES_AND_UTILITIES: "Spiele & Werkzeuge"
+		NODE_SD_CARD_MOUNT: "SD-Karte via mount"
 	},
-	
+
 	Clock: {
 		TITLE: "Uhr",
 		OPTION_STYLE: "Zeitanzeige",
@@ -420,7 +436,7 @@ return {
 		AM: "am",
 		PM: "pm"
 	},
-	
+
 	PageIndex: {
 		TITLE: "Seiten-Index",
 		INDEX_STYLE_BOOK: "Index-Stil in Büchern",
@@ -432,11 +448,38 @@ return {
 		NEVER_SHOWN: "Nie anzeigen",
 		NOT_SHOWN_IF_SINGLE_PAGE: "Nicht bei einzelner Seite anzeigen"
 	},
-	
+
 	EpubUserStyle: {
-		TITLE: "EPUB benutzerdefinierter Stil",
-		COMMENT: "Experimentell: Bücher nach ändern neu öffnen",
-		OPTION_EPUB_CSS_FILE: "EPUB css-Datei des Benutzers",
-		VALUE_DISABLED: "deaktiviert"
+		OPTION_EPUB_CSS_FILE: "EPUB benutzerdefinierter Stil (CSS-Datei)",
+		MSG_WARNING: "Bücher nach ändern neu öffnen!",
+		VALUE_DISABLED: "Deaktiviert"
+	},
+
+	ReadingList: {
+		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		VALUE_DISABLED: "One book",
+		VALUE_3: "Three books",
+		VALUE_10: "Ten books"
+	},
+
+//ReadMark	ReadMark: {
+//		TITLE_UNREAD: "Mark Book - Already Read",
+//		TITLE_READ: "Mark Book - Not Yet Read",
+//	},
+
+	TextScale: {
+		OPTION_SCALE_DEFAULT: "Default Scale",
+		VALUE_SMALL: "(S)mall Size",
+		VALUE_MEDIUM: "(M)edium Size",
+		VALUE_LARGE: "(L)arge Size",
+		VALUE_DISABLED: "Deaktiviert",
+		VALUE_ENABLED: "Aktiviert"
+	},
+
+	MenuTuning: {
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
+		OPTION_OUTER: "Top Level Menu Contains",
+		NODE_OTHERS: "Multimedia",
+		NODE_GAMES_AND_UTILS: "Spiele & Werkzeuge"
 	}
 };
