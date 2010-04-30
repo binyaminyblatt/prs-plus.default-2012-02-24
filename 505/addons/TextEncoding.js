@@ -8,21 +8,19 @@
 //	2010-04-17 kartu - Moved global vars into local functions context
 //	2010-04-24 kartu - Prepared for merging into single JS
 //	2010-04-25 kartu - Marked onPreInit as constructor
+//	2010-04-27 kravitz - Joined "viewer" settings group
 
 // dummy function, to avoid introducing global vars
 tmp = function () {
 	var L = Core.lang.getLocalizer("TextEncoding");
-	
+
 	Core.addAddon({
 		name: "TextEncoding",
-		icon: "BOOK",
+		settingsGroup: "viewer",
 		/**
 		* @constructor
 		*/
 		onPreInit: function() {
-			this.title = L("TITLE");
-			this.description = L("DESCRIPTION");
-			this.comment = L("COMMENT");
 			this.optionDefs = [
 				{
 					name: "encoding",
@@ -31,11 +29,17 @@ tmp = function () {
 					defaultValue: "___latin___",
 					values:	["___latin___", "___win1251___"],
 					valueTitles: {
-						___latin___: L("LATIN"), 
-						___win1251___: L("RUSSIAN") 
+						___latin___: L("LATIN"),
+						___win1251___: L("RUSSIAN")
 					}
 				}
 			];
+		},
+		onSettingsChanged: function (propertyName, oldValue, newValue) {
+			if (oldValue === newValue) {
+				return;
+			}
+			Core.ui.showMsg([L("MSG_RESTART")]);
 		}
 	});
 };

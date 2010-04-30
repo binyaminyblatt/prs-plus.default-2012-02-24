@@ -7,15 +7,14 @@
 //	2010-03-14 kartu - #Refactored Utils -> Core
 //	2010-03-14 kartu - Localized
 //	2010-04-25 kartu - Marked onInit as constructor
+//	2010-04-27 kravitz - Joined "menu" settings group
 
 tmp = function() {
 	var L = Core.lang.getLocalizer("MenuCaptions");
-	
+
 	var MenuCaptions = {
 		name: "MenuCaptions",
-		title: L("TITLE"),
-		description: L("TITLE_COMMENT"),
-		icon: "LIST",
+		settingsGroup: "menu",
 		/**
 		* @constructor
 		*/
@@ -51,14 +50,14 @@ tmp = function() {
 				defaultValue: "small",
 				values:	["def", "small" , "big"],
 				valueTitles: {
-					def: L("VALUE_SONY_DEFAULT"), 
-					small: L("VALUE_ALWAYS_SMALL"), 
+					def: L("VALUE_SONY_DEFAULT"),
+					small: L("VALUE_ALWAYS_SMALL"),
 					big: L("VALUE_ALWAYS_BIG")
 				}
 			}
 		]
 	};
-	
+
 	Core.addAddon(MenuCaptions);
 };
 try {

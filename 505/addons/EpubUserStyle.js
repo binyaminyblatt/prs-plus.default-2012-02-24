@@ -9,28 +9,27 @@
 //	2010-03-14 kartu - Localized
 //	2010-04-24 kartu - Prepared for merging into single JS
 //	2010-04-25 kartu - Marked onPreInit as constructor
+//	2010-04-27 kravitz - Joined "viewer" settings group
+//	2010-04-28 kravitz - Fixed user .css files path
 
 tmp = function() {
 	// Localize
 	var L = Core.lang.getLocalizer("EpubUserStyle");
-	
+
 	var endsWith = Core.string.endsWith;
-	
+
 	// Constants
 	var USER_CSS = "style.css";
-	var DISABLED = "disabled"; 
-	
+	var DISABLED = "disabled";
+
 	var EpubUserStyle = {
 		name: "EpubUserStyle",
-		title: L("TITLE"),
-		description: L("DESCRIPTION"),
-		comment: L("COMMENT"),
-		icon: "BACK",
+		settingsGroup: "viewer",
 		optionDefs: [
 			{
 				name: "epubCssFile",
 				title: L("OPTION_EPUB_CSS_FILE"),
-				icon: "LIST",
+				icon: "BACK",
 				defaultValue: DISABLED,
 				values: [DISABLED],
 				valueTitles: {
@@ -42,8 +41,8 @@ tmp = function() {
 		* @constructor
 		*/
 		onPreInit : function () {
-			this.root = Core.config.root + "epub/";
-	
+			this.root = Core.config.userCSSPath;
+
 			// Init epubCssFile values
 			if (!FileSystem.getFileInfo(this.root)) {
 				// epub folder doesn't exist, nothing to do
@@ -72,9 +71,10 @@ tmp = function() {
 			} else {
 				Core.io.copyFile(EpubUserStyle.root + newValue, EpubUserStyle.root + USER_CSS);
 			}
+			Core.ui.showMsg([L("MSG_WARNING")]);
 		}
 	};
-	
+
 	Core.addAddon(EpubUserStyle);
 };
 try {
