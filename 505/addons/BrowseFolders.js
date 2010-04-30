@@ -1,5 +1,5 @@
 // Name: Browse Folders
-// Description: Adds "Browse Folders" menu option, groups music&picture related menus, adds "Games & Utilities" menu
+// Description: Adds "Browse Folders" menu option
 // Author: kartu
 //
 // History:
@@ -9,6 +9,9 @@
 //	2010-03-14 kartu - Localized
 //	2010-04-24 kartu - Prepared for merging into single JS
 //	2010-04-25 kartu - Marked FolderNode and browseFoldersNode._myconstruct as constructors
+//	2010-04-27 kravitz - Exported pathToBookNode() (fixing required)
+//	2010-04-27 kravitz - Code of main menu forming is moved to MenuTuning.js
+//	2010-04-29 kravitz - Refactored events handling
 
 tmp = function() {
 	// Shortcuts
@@ -18,12 +21,12 @@ tmp = function() {
 	var startsWith = Core.string.startsWith;
 	var NodeKinds = Core.ui.NodeKinds;
 	var BookMIMEs = Core.ui.BookMIMEs;
-	
+
 	var doInit;
-	
+
 	// Localize
 	var L = Core.lang.getLocalizer("BrowseFolders");
-	
+
 	// This addon
 	var BrowseFolders = {
 		name: "BrowseFolders",
@@ -74,7 +77,7 @@ tmp = function() {
 					enabled: L("ENABLED"),
 					disabled: L("DISABLED")
 				}
-				
+
 			},
 			{
 				name: "useMount",
@@ -85,14 +88,14 @@ tmp = function() {
 				valueTitles: {
 					enabled: L("ENABLED"),
 					disabled: L("DISABLED")
-				}			
+				}
 			}
 		],
 		onInit: function () {
 			doInit();
 		}
 	};
-	
+
 	// Skipping card scanning, if ".noscan" file is present in the root folder
 	var originalHandler = FskCache.diskSupport.canHandleVolume;
 	FskCache.diskSupport.canHandleVolume = function (volume) {
@@ -105,45 +108,44 @@ tmp = function() {
 		}
 		return originalHandler(volume);
 	};
-	
+
 	// Resolves "delete book" problem in custom booknodes. Functions body is mostly copy paste from the original doDeleteBook.
-	var oldDeleteBook = kbook.model.doDeleteBook;
-	kbook.model.doDeleteBook = function () {
+	BrowseFolders.doDeleteBook = function (owner, oldDeleteBook, args) {
 		try {
-			if (this.currentBook && this.currentBook._myclass) {
+			var book = owner.currentBook;
+			if (book && book._myclass) {
 				try {
-					var bookPath = this.currentBook.media.source.path + this.currentBook.media.path;
-					var bookNode = this.currentBook;
-					var media = this.currentBook.media;
+					var bookPath = book.media.source.path + book.media.path;
+					var media = book.media;
 					var source = media.source;
 					source.deleteRecord(media.id);
-					this.addPathToDCL(media.source, media.path);
-					var closeFunc = getSoValue(bookNode, "media.close");
+					owner.addPathToDCL(media.source, media.path);
+					var closeFunc = getSoValue(book, "media.close");
 					closeFunc.call(media, kbook.bookData);
 					kbook.bookData.setData(null);
-					bookNode.unlockPath();
+					book.unlockPath();
 					FileSystem.deleteFile(bookPath);
 					kbook.root.update(kbook.model);
 				} catch (e) {
 					log.error("Failed to delete my node: " + e);
 				}
-				
-				this.currentBook.gotoParent(kbook.model);
+
+				book.gotoParent(kbook.model);
 			} else {
-				oldDeleteBook.apply(this, arguments);
+				oldDeleteBook.apply(owner, args);
 			}
 		} catch (ee) {
-			log.error("Error in doDeleteBook: " + ee);
+			log.error("doDeleteBook(): " + ee);
 		}
 	};
-	
+
 	// Book path to index map. Allows to find existing book node corresponding to a given path.
 	var pathToBook = null;
 	var indexBooks = function () {
 		if (!pathToBook) {
 			pathToBook = {};
 			var records = kbook.model.cache.textMasters;
-	
+
 			for (var i = 0, n = records.count(); i < n; i++) {
 				var book = records.getRecord(i);
 				var bookPath = book.source.path + book.path;
@@ -151,9 +153,9 @@ tmp = function() {
 			}
 		}
 	};
-	
+
 	var createBookNode;
-	
+
 	//
 	// Returns:
 	//	returns new BookNode given a path, or null, if media cannot be found
@@ -167,7 +169,7 @@ tmp = function() {
 		}
 		return null;
 	};
-	
+
 	// Constructs a book node
 	// Arguments:
 	//	book - book media
@@ -179,23 +181,25 @@ tmp = function() {
 		node.parent = parent;
 		node.children = kbook.children;
 		FskCache.tree.xdbNode.construct.call(node);
-		
+
 		// set misc props
 		node.onEnter = "onEnterBook";
 		node.onSelect = "onSelectDefault";
 		node.kind = 2;
-		node._mykind = 2;
+		node._mykind = 2; //ReadMark function() {
+//			return this.media._read ? NodeKinds.READ_BOOK : NodeKinds.BOOK;
+//		};
 		node._mytitle = book.title;
 		node._myname = book.title;
 		node._mycomment = book.author;
 		node._myclass = "BookNode";
-		
+
 		node.type = "book";
-		
+
 		return node;
 	};
-	
-	
+
+
 	// Node that shows folder content
 	/**
 	* @constructor
@@ -208,7 +212,7 @@ tmp = function() {
 		this.title = this.name;
 		this._mycomment = " ";
 		this.locked = 0;
-	
+
 		if (typeof kind != "undefined") {
 			this.kind = kind;
 			this.isFolder = true;
@@ -225,17 +229,17 @@ tmp = function() {
 		// Recreate nodes
 		this._myconstruct();
 	};
-	
-	
+
+
 	//------------------------------------------------------------------------------
 	// Sorting
 	//------------------------------------------------------------------------------
 	var compareStrings = Core.string.compareStrings;
-	
+
 	var compareTitles = function (a, b) {
 	    var atitle;
 	    var btitle;
-	
+
 	    if (BrowseFolders.options.useTitleSorter === "disabled") {
 		    // ignore title sorter field
 		    atitle = a.media.title;
@@ -244,10 +248,10 @@ tmp = function() {
 		    atitle = a.media.titleSorter ? a.media.titleSorter : a.media.title;
 		    btitle = b.media.titleSorter ? b.media.titleSorter : b.media.title;
 	    }
-	    
+
 	    return compareStrings(atitle, btitle);
 	};
-	
+
 	var TYPE_SORT_WEIGHTS = {
 		directory: -100,
 		book: -50,
@@ -255,7 +259,7 @@ tmp = function() {
 		audio: -10,
 		file: 0
 	};
-	
+
 	var swapNameAndSurname = function (str) {
 		var idx = str.lastIndexOf(" ");
 		if (idx < 0) {
@@ -265,7 +269,7 @@ tmp = function() {
 		var surname = str.substring(idx + 1);
 		return surname + " " + name;
 	};
-	
+
 	var sortByTitle = function (a, b) {
 		try {
 			if (a.type !== b.type) {
@@ -275,9 +279,9 @@ tmp = function() {
 			return compareTitles(a, b);
 		} catch (e) {
 			log.error("in sortByTitle : " + e);
-		}		
+		}
 	};
-	
+
 	var sortByAuthor = function (a, b, swap) {
 		try {
 			if (a.type !== b.type) {
@@ -303,11 +307,11 @@ tmp = function() {
 			log.error("in sortByAuthor : " + e);
 		}
 	};
-	
+
 	var sortByAuthorSwappingName = function (a, b) {
 		return sortByAuthor(a, b, true);
 	};
-	
+
 	var sortByFilename = function (a, b) {
 		try {
 			if (a.type !== b.type) {
@@ -317,7 +321,7 @@ tmp = function() {
 			if (a.type !== "book") {
 				return compareStrings(a.name, b.name);
 			}
-			
+
 			var aPath = a.media.path;
 			var bPath = b.media.path;
 			return compareStrings(aPath, bPath);
@@ -325,7 +329,7 @@ tmp = function() {
 			log.error("In sortByFilename: " + e);
 		}
 	};
-	
+
 	FolderNode.prototype.sortNodes = function () {
 		switch (BrowseFolders.options.sortMode) {
 			case "author":
@@ -342,7 +346,7 @@ tmp = function() {
 		}
 	};
 	//------------------------------------------------------------------------------
-	
+
 	// Mounts SD/MS card if mounting is enabled and path starts with MOUNT_PATH
 	//
 	var needMount = function (path) {
@@ -361,9 +365,9 @@ tmp = function() {
 				}
 			}
 		}
-		return mountHandle;	
+		return mountHandle;
 	};
-	
+
 	// Umounts card previously mounted by needMount
 	//
 	var releaseMount = function (mountHandle) {
@@ -375,7 +379,7 @@ tmp = function() {
 			}
 		}
 	};
-	
+
 	FolderNode.prototype._myconstruct = function() {
 		indexBooks();
 		var fullPath = this.root + this.path + "/";
@@ -383,7 +387,7 @@ tmp = function() {
 		if (this.isFolder) {
 			// if mount/remount is enabled, and we are accessing SD/MS cards, mount
 			mountHandle = needMount(fullPath);
-			
+
 			var iterator = new FileSystem.Iterator(fullPath);
 			try {
 				var item;
@@ -402,7 +406,7 @@ tmp = function() {
 								// not a book
 								continue;
 							}
-							
+
 							// Find existing node
 							node = pathToBookNode(fullPath + item.path, this);
 							if (!node) {
@@ -434,13 +438,13 @@ tmp = function() {
 				this.nodes = [this.createUnscannedBookNode(this, L("NODE_RESCAN_INTERNAL_MEMORY"), "", true, true)];
 			} else {
 				var copy = this.createUnscannedBookNode(this, L("NODE_COPY_TO_INTERNAL_MEMORY"), L("NODE_COPY_TO_INTERNAL_MEMORY_COMMENT"));
-				var copyAndReload = this.createUnscannedBookNode(this, L("NODE_COPY_AND_RESCAN"), 
+				var copyAndReload = this.createUnscannedBookNode(this, L("NODE_COPY_AND_RESCAN"),
 								L("NODE_COPY_AND_RESCAN_COMMENT"), true);
-				this.nodes = [copy, copyAndReload];			
+				this.nodes = [copy, copyAndReload];
 			}
 		}
 	};
-	// Book that was not scanned 
+	// Book that was not scanned
 	FolderNode.prototype.createUnscannedBookNode = function (parent, title, comment, doSynchronize, dontCopy) {
 		var node = Core.ui.createContainerNode({
 			"parent": parent,
@@ -449,7 +453,7 @@ tmp = function() {
 			"kind": NodeKinds.BACK,
 			"comment": comment
 		});
-		
+
 		var rootFolder = "/Data" + BrowseFolders.options.imRoot + "/";
 		var from = parent.root + parent.path;
 		var to = rootFolder + parent.path;
@@ -458,31 +462,31 @@ tmp = function() {
 				if (!dontCopy) {
 					// Mount if needed
 					var mountHandle = needMount(from);
-					
+
 					FileSystem.ensureDirectory(rootFolder);
-				
+
 					// check if the file target exists
 					if (FileSystem.getFileInfo(to)) {
 						this.parent.enter(kbook.model);
 						// warn and exit
 						kbook.model.container.MENU_GROUP.MENU.setVariable("MENU_INDEX_COUNT", L("ERROR_TARGET_EXISTS"));
 						parent._mycomment = L("ERROR_TARGET_EXISTS");
-						return;			
+						return;
 					}
-	
-					// copy the file			
+
+					// copy the file
 					FileSystem.copyFile(from, to);
-					
+
 					// Umount if needed
 					releaseMount(mountHandle);
 				}
-	
+
 				if (doSynchronize) {
 					// get source by ID would be more appropriate
 					var target = kbook.model.cache.sources[1];
 					try {
 						target.synchronize();
-		
+
 						// Delete pathToBook so that it gets reinitialized on the next call
 						var tmp = pathToBook;
 						pathToBook = false;
@@ -502,36 +506,9 @@ tmp = function() {
 		};
 		return node;
 	};
-	
+
 	doInit = function () {
-		var nodes = kbook.root.nodes;
-		
-		// Audio & Pictures nodes, shows "Now Playing", "Audio", "Pictures" nodes
-		var audioAndPicturesNode = Core.ui.createContainerNode({
-			parent: kbook.root,
-			title: L("NODE_AUDIO_AND_PICTURES"),
-			kind: NodeKinds.AUDIO
-		});
-		// TODO must reference by name
-		audioAndPicturesNode.nodes = [nodes[6], nodes[7], nodes[8]];
-		
-		// update from ContainerNode doesn't work for whatever reason, probably it is accessing the wrong "nodes"
-		audioAndPicturesNode.update = function (model) {
-			for (var i = 0, n = this.nodes.length; i < n; i++) {
-				if (this.nodes[i].update) {
-					this.nodes[i].update.call(this.nodes[i], model);
-				}
-			}
-		};
-		nodes[6].parent = audioAndPicturesNode;
-		nodes[7].parent = audioAndPicturesNode;
-		nodes[8].parent = audioAndPicturesNode;
-		
-		// Global
-		Core.ui.nodes.audioAndPictures = audioAndPicturesNode;
-		
-		
-		// Browse Folders node
+		// Create "Browse Folders" node
 		var browseFoldersNode = Core.ui.createContainerNode({
 			parent: kbook.root,
 			title: L("NODE_BROWSE_FOLDERS"),
@@ -545,7 +522,7 @@ tmp = function() {
 		/**
 		* @constructor
 		*/
-		browseFoldersNode._myconstruct = function (model, fromChild) {	
+		browseFoldersNode._myconstruct = function (model, fromChild) {
 			try {
 				if (this.nodes !== null) {
 					delete this.nodes;
@@ -559,7 +536,7 @@ tmp = function() {
 					node = new FolderNode("a:", "", "directory", L("NODE_MEMORY_STICK"), NodeKinds.MS);
 					node.parent = this;
 					nodes.push(node);
-					
+
 					if (BrowseFolders.options.useMount && BrowseFolders.options.cardScan === "disabled") {
 						node = new FolderNode(Core.shell.MS_MOUNT_PATH, "", "directory", L("NODE_MEMORY_STICK_MOUNT"), NodeKinds.MS);
 						node.parent = this;
@@ -570,16 +547,16 @@ tmp = function() {
 					node = new FolderNode("b:", "", "directory", L("NODE_SD_CARD"), NodeKinds.SD);
 					node.parent = this;
 					nodes.push(node);
-	
+
 					if (BrowseFolders.options.useMount  && BrowseFolders.options.cardScan  === "disabled") {
 						node = new FolderNode(Core.shell.SD_MOUNT_PATH, "", "directory", L("NODE_SD_CARD_MOUNT"), NodeKinds.SD);
 						node.parent = this;
 						nodes.push(node);
 					}
 				}
-		
+
 				// Since there is no direct way to determine in "enter" whether we are going from child to parent or not
-				// this little hack is needed, forceEnter is true if 
+				// this little hack is needed, forceEnter is true if
 				var myGotoParent = function () {
 					this.exit(kbook.model);
 					this.parent.enter(kbook.model, true);
@@ -587,8 +564,8 @@ tmp = function() {
 				for (var i = 0, n = nodes.length; i < n; i++) {
 					nodes[i].gotoParent = myGotoParent;
 				}
-				
-				
+
+
 				if (nodes.length == 1) {
 					// If there is only one subnode, don't show it
 					if (fromChild) {
@@ -597,50 +574,44 @@ tmp = function() {
 					} else {
 						// going from parent to child
 						node = nodes[0];
-						
+
 						this.gotoNode(node, kbook.model);
 					}
 					return true;
 				}
-				
+
 			} catch (e) {
-				log.error("error in browseFoldersNode._myconstruct : " + e);
+				log.error("browseFoldersNode._myconstruct(): " + e);
 			}
 		};
-		
-		// Global
 		Core.ui.nodes.browseFolders = browseFoldersNode;
-		
-		var gamesNode = Core.ui.createContainerNode({
-			parent: kbook.root,
-			title: L("NODE_GAMES_AND_UTILITIES"),
-			comment: "",
-			kind: NodeKinds.GAME,
-			separator: 1
-		});
-		
-		// Global
-		Core.ui.nodes.gamesAndUtils = gamesNode;
-		
-		// Add separator to collections and remove separator from bookmarks.
-		nodes[4]._myseparator = 1;
-		nodes[5]._myseparator = 0;
-		nodes[5].separator = 0;
-		
-		// Rearranging root node, hiding Audio&Pictures related nodes, adding Browse Folders, swapping bookmarks and collections node
-		kbook.root.nodes = [nodes[0], nodes[1], nodes[2], nodes[3], browseFoldersNode, nodes[5], nodes[4], audioAndPicturesNode,  gamesNode, nodes[9]];
-		
-		// Adding Rescan internal memory node"
+		// Add "Browse Folders" to Main menu
+		kbook.root.nodes[4] = Core.ui.nodes.browseFolders;
+
+		// Add "Rescan Internal Memory" node to "Advanced Settings"
 		var advancedSettingsNode = Core.ui.nodes.advancedSettings;
 		var rescanInternalMemoryNode = FolderNode.prototype.createUnscannedBookNode(advancedSettingsNode, L("NODE_RESCAN_INTERNAL_MEMORY"), "", true, true);
-		advancedSettingsNode.nodes.push(rescanInternalMemoryNode);
-		
-		// Global
 		Core.ui.nodes.rescanInternalMemory = rescanInternalMemoryNode;
+		advancedSettingsNode.nodes.push(rescanInternalMemoryNode);
 	};
-	
+
 	Core.addAddon(BrowseFolders);
+
+	//FIXME export... O_o
+
+	_BF_pathToBookNode = function(path, parent) {
+		return pathToBookNode(path, parent);
+	};
+
+//ReadMark	_BF_indexBooks = function() {
+//		indexBooks();
+//	};
+
+//ReadMark	_BF_pathToBook = function(path) {
+//		return pathToBook[path];
+//	};
 };
+
 try {
 	tmp();
 } catch (e) {

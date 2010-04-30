@@ -1,15 +1,16 @@
 // Name: System
-// Description: Fsk system methods 
+// Description: Fsk system methods
 // Author: kartu
 //
 // History:
 //	2010-03-14 kartu - Initial version, refactored from Utils
 //	2010-03-27 kartu - Added setSoValue, rootObj
 //	2010-03-27 kartu - Modified getSoValue to support single parameter call
-//	2010-04-03 kartu - Addec "compile" function
+//	2010-04-03 kartu - Added "compile" function
 //	2010-04-04 kartu - Added "getFastSoValue" function stub
 //	2010-04-21 kartu - Reformatted
 //	2010-04-25 kartu - Fixed minor syntax glitch: removed trailing comma
+//	2010-04-27 kravitz - Added getFastBookMedia()
 
 try {
 	Core.system = {
@@ -19,7 +20,7 @@ try {
 		//	log - logger
 		// Throws exceptions if script fails or file cannot be found.
 		callScript: function (path, log) {
-			try {		
+			try {
 				if (FileSystem.getFileInfo(path)) {
 					var f = new Stream.File(path);
 					try {
@@ -37,10 +38,10 @@ try {
 					log.error(msg);
 				}
 				throw msg;
-				
+
 			}
 		},
-		
+
 		// A bit weird way to clone an object. There might be a better function or FSK specific operator to do the same
 		// Arguments:
 		//      obj - object to clone
@@ -63,7 +64,7 @@ try {
 				FskCache.playlistResult = temp;
 			}
 		},
-		
+
 		// Getting values of properties of objects created by .so bytecode isn't always possible for custom functions.
 		// However they are visible to .xb code
 		// Arguments:
@@ -72,7 +73,7 @@ try {
 		// Returns:
 		//      property value or undefined, if property is not defined
 		//
-		// Note: 
+		// Note:
 		//	Supports 2 ways of calling:
 		//		getSoValue(obj, "someProperty.somOtherProperty...");
 		//		getSoValue("SomeObject.someProperty.someOtherProperty...");
@@ -83,19 +84,30 @@ try {
 				return FskCache.mediaMaster.getInstance.call(obj, propName);
 			}
 		},
-		
+
 		// Same as setSoValue but slightly faster, doesn't support nested properties
 		//
 		getFastSoValue: function (obj, propName) {
 			// TODO replace with custom code from prsp.xsb
 			return Core.system.getSoValue(obj, propName);
+		},
+
+		// Accelerates book media access
+		getFastBookMedia: function (book)  {
+			if (book._myclass) {
+				return book.media;
+			}
+			if (book._media === undefined) {
+				book._media = Core.system.getSoValue(book, "media");
+			}
+			return book._media;
 		}
 	};
 
 	// Reference to the root object
 	//
 	Core.system.rootObj =  this;
-	
+
 	// Similiar as getSoValue but could be used to set settings
 	// Arguments:
 	//	obj - object to set value
