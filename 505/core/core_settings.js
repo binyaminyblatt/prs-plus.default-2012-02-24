@@ -6,6 +6,9 @@
 //	2010-03-14 kartu - Initial version, refactored from Utils
 //	2010-04-17 kartu - Moved global vars into local functions context
 //	2010-04-25 kartu - Marked lazyCreateSettings as constructor for closure compiler to shut up
+//	2010-04-27 kravitz - Added Core.settings.init()
+//	2010-04-27 kravitz - Grouping of settings (based on "settingsGroup")
+//	2010-04-27 kravitz - Added "N Settings" comment (if not preset anything else)
 
 try {
 	// dummy function, to avoid introducing global vars
@@ -25,7 +28,7 @@ try {
 				return core_setting_translateValue(optionDef, options[optionDef.name]);
 			};
 		};
-		
+
 		// Creates "value" node (used in settings).
 		// Arguments:
 		//	arg, in addition to fields from createContainerNode, can have the following fields
@@ -40,17 +43,17 @@ try {
 				try {
 					var optionDef = arg.optionDef;
 					var propertyName = optionDef.name;
-		
+
 					var oldValue = arg.object[propertyName];
 					arg.object[propertyName] = arg.value;
-					
+
 					if(arg.addon && arg.addon.onSettingsChanged) {
 						arg.addon.onSettingsChanged(propertyName, oldValue, arg.value, arg.object);
 					}
-			
+
 					// Save changes
 					Core.settings.saveOptions(arg.addon);
-					
+
 					// Goto parent node
 					this.parent.parent.enter(kbook.model);
 				} catch (e) {
@@ -59,9 +62,9 @@ try {
 			};
 			return node;
 		};
-		
+
 		// Creates value nodes (used in addon settings) for given option definition and addon.
-		//  
+		//
 		var core_setting_createValueNodes = function(parent, optionDef, addon, options) {
 			try {
 				var values = optionDef.values;
@@ -86,33 +89,34 @@ try {
 				log.error("in core_setting_createValueNodes for addon " + addon.name + " option " + optionDef.name + ": " + e);
 			}
 		};
-		
-		
+
+
 		var doCreateAddonSettings;
 		/**
 		 * @constructor
-		 */		
+		 */
 		var lazyCreateSettings = function(parent, optionDefs, addon) {
+			parent._uncreated = (parent._uncreated) ? parent._uncreated + 1 : 1;
 			Core.hook.hookBefore(parent, "enter", function(args, oldFunc) {
-				if(!this.hasOwnProperty("prspInitialized")) {
-					this.prspInitialized = true;
+				if (this._uncreated) {
+					this._uncreated--;
 					doCreateAddonSettings(parent, optionDefs, addon, true);
 				}
 			});
 		};
-		
+
 		var doCreateSingleSetting;
 		doCreateAddonSettings = function(parent, optionDefs, addon, ignoreLazy) {
 			if(ignoreLazy !== true) {
 				lazyCreateSettings(parent, optionDefs, addon);
 				return;
 			}
-		
+
 			for (var i = 0, n = optionDefs.length; i < n; i++) {
 				doCreateSingleSetting(parent, optionDefs[i], addon);
 			}
 		};
-		
+
 		// Recursively creates setting nodes
 		//
 		doCreateSingleSetting = function(parent, optionDef, addon) {
@@ -122,11 +126,13 @@ try {
 				node = Core.ui.createContainerNode({
 						parent: parent,
 						title: optionDef.groupTitle,
-						comment: optionDef.groupComment ? optionDef.groupComment : "",
+						comment: optionDef.groupComment ? optionDef.groupComment : function () {
+							return coreL("FUNC_X_SETTINGS", optionDef.optionDefs.length);
+						},
 						kind: Core.ui.NodeKinds.getIcon(optionDef.groupIcon)
 				});
 				parent.nodes.push(node);
-		
+
 				doCreateAddonSettings(node, optionDef.optionDefs, addon, false);
 			} else {
 				// If target is defined, use it, else create "options"
@@ -136,7 +142,7 @@ try {
 				} else {
 					options = addon.options;
 				}
-		
+
 				// Create parent node
 				node = Core.ui.createContainerNode({
 						parent: parent,
@@ -145,14 +151,33 @@ try {
 				});
 				parent.nodes.push(node);
 				parent = node;
-		
+
 				parent._mycomment = core_setting_getValueTranslator(options, optionDef);
 				core_setting_createValueNodes(parent, optionDef, addon, options);
 			}
 		};
-	
+
 		Core.settings = {};
-		
+
+		Core.settings.init = function(addons) {
+			// Init settings groups
+			Core.settings.settingsGroupDefs = {
+				menu: {
+					title: coreL("GROUP_MENU_TITLE"),
+					icon: "LIST"
+				},
+				viewer: {
+					title: coreL("GROUP_VIEWER_TITLE"),
+					icon: "BOOK"
+				}
+			};
+			// Create addon nodes and addon option nodes
+			for (i = 0, n = addons.length; i < n; i++) {
+				Core.settings.createAddonNodes(addons[i]);
+				Core.settings.createAddonSettings(addons[i]);
+			}
+		};
+
 		// Creates entry under "Games & Utilities" corresponding to the addon.
 		// Arguments:
 		//	addon - addon variable
@@ -175,8 +200,8 @@ try {
 				Core.ui.nodes.gamesAndUtils.nodes.push(node);
 			}
 		};
-		
-		
+
+
 		// Creates entry under "Settings => Addon Settings" corresponding to the addon.
 		// Arguments:
 		//	addon - addon variable
@@ -186,25 +211,62 @@ try {
 				if(addon && addon.optionDefs && addon.optionDefs.length > 0) {
 					var optionDefs = addon.optionDefs;
 					var settingsNode = Core.ui.nodes.addonSettingsNode;
-		
-					// Settings node for this addon
-					var title = addon.hasOwnProperty("title") ? addon.title : addon.name;
-					var thisSettingsNode = Core.ui.createContainerNode({
+					// Search for settings node with same settingsGroup property
+					var thisSettingsNode;
+					var group;
+					var title, comment;
+					var icon;
+					if (addon.settingsGroup && this.settingsGroupDefs[addon.settingsGroup]) {
+						group = addon.settingsGroup;
+						for (var i = 0, n = settingsNode.nodes.length; i < n; i++) {
+							if (settingsNode.nodes[i]._settingsGroup === group) {
+								// ...group found
+								thisSettingsNode = settingsNode.nodes[i];
+                                                                if (thisSettingsNode._settingsCount) {
+                                                                	// Group comment is undefined
+									thisSettingsNode._settingsCount += optionDefs.length;
+									thisSettingsNode._mycomment = coreL("FUNC_X_SETTINGS", thisSettingsNode._settingsCount);
+								}
+								break;
+							}
+						}
+						if (thisSettingsNode === undefined) {
+							// ...group not found
+							var defs = this.settingsGroupDefs[group];
+							title = defs.title;
+							comment = defs.comment;
+							icon = defs.icon;
+						}
+					} else {
+						group = addon.name;
+						title = (addon.title) ? addon.title : addon.name;
+						comment = addon.comment;
+						icon = addon.icon;
+					}
+					if (thisSettingsNode === undefined) {
+						// Create settings node for this addon
+						thisSettingsNode = Core.ui.createContainerNode({
 							parent: settingsNode,
 							title: title,
-							kind: Core.ui.NodeKinds.getIcon(addon.icon),
-							comment: addon.comment ? addon.comment : ""
-					});
-					settingsNode.nodes.push(thisSettingsNode);
-		
+							kind: Core.ui.NodeKinds.getIcon(icon)
+						});
+						thisSettingsNode._settingsGroup = group;
+						if (comment) {
+							thisSettingsNode._mycomment = comment;
+						} else {
+							thisSettingsNode._settingsCount = optionDefs.length;
+							thisSettingsNode._mycomment = coreL("FUNC_X_SETTINGS", thisSettingsNode._settingsCount);
+						}
+						settingsNode.nodes.push(thisSettingsNode);
+					}
 					doCreateAddonSettings(thisSettingsNode, optionDefs, addon, false);
 				}
 			} catch (e) {
-				log.error("failed to create addon settings: " + addon.name + " " + e);
+				log.error("failed to create addon settings: " + addon.name + ": " + e);
 			}
 		};
-		
-		
+
+
 		// Saves addon's non-default options as JSON object.
 		// WARNING: no escaping is done!
 		// Arguments:
@@ -215,7 +277,7 @@ try {
 				FileSystem.ensureDirectory(Core.config.settingsPath);
 				var od;
 				var name;
-				
+
 				// Find out which options need to be saved (do not save devault values)
 				var options = addon.options;
 				var optionDefs = addon.optionDefs;
@@ -223,17 +285,17 @@ try {
 				var gotSomethingToSave = false;
 				for (var i = 0; i < optionDefs.length; i++) {
 					od = optionDefs[i];
-					
+
 					// Add group suboptions
 					if(od.hasOwnProperty("groupTitle")) {
 						optionDefs = optionDefs.concat(od.optionDefs);
 						continue;
 					}
-		
+
 					name = od.name;
 					var defValue = od.defaultValue;
 					var target = od.hasOwnProperty("target") ? od.target : false;
-		
+
 					if(target) {
 						if(options.hasOwnProperty(target) && options[target].hasOwnProperty(name) && options[target][name] !== defValue) {
 							if (!optionDefsToSave.hasOwnProperty(target)) {
@@ -251,7 +313,7 @@ try {
 						optionDefsToSave.push(od);
 					}
 				}
-				
+
 				// If there is anything to save - save, if not, delete settings file
 				var settingsFile = Core.config.settingsPath + addon.name + ".config";
 				if (gotSomethingToSave) {
@@ -261,10 +323,10 @@ try {
 						for (var ii in optionDefsToSave) {
 							od = optionDefsToSave[ii];
 							name = od.name;
-							
+
 							var str = null;
 							if (od.isGroup) {
-								str = "\t\"" + od.target + "\": {\n"; 
+								str = "\t\"" + od.target + "\": {\n";
 								for (var j = 0, m = od.optionDefs.length; j < m; j++) {
 									var od2 = od.optionDefs[j];
 									str = str +  "\t\t\"" + od2.name + "\":\"" + options[od2.target][od2.name] + "\",\n";
@@ -291,8 +353,8 @@ try {
 				log.error("saving options for addon: " + addon.name);
 			}
 		};
-		
-		
+
+
 		// Loads addon's options, using default option values, if settings file or value is not present.
 		//
 		Core.settings.loadOptions = function(addon) {
@@ -309,7 +371,7 @@ try {
 					if(!options) {
 						options = {};
 					}
-					
+
 					var optionDefs = addon.optionDefs;
 					for (var i = 0; i < optionDefs.length; i++) {
 						var od = optionDefs[i];
@@ -320,7 +382,7 @@ try {
 								if(!options.hasOwnProperty(od.target)) {
 									options[od.target] = {};
 								}
-								
+
 								if(!options[od.target].hasOwnProperty(od.name)) {
 									options[od.target][od.name] = od.defaultValue;
 								}
@@ -331,7 +393,7 @@ try {
 							}
 						}
 					}
-					
+
 					addon.options = options;
 				}
 			} catch (e) {

@@ -1,11 +1,15 @@
 // Name: Core
-// Description: controls PRS+ initialization 
+// Description: controls PRS+ initialization
 // Author: kartu
 //
 // History:
 //	2010-03-14 kartu - Initial version, refactored from Utils
 //	2010-04-17 kartu - Moved module specific global vars into local functions context
 //	2010-04-21 kartu - Localized, removed call to lang.init
+//	2010-04-27 kravitz - Added "PRS+ Settings" node comment
+//	2010-04-27 kravitz - Creation of addon and setting nodes are moved to Core.settings.init()
+//	2010-04-29 kravitz - Refactored events handling
+
 var log;
 
 // initialized in lang
@@ -15,14 +19,15 @@ var coreL;
 var tmp = function() {
 	Core.addons = [];
 	Core.actions = [];
-	
+	Core.addonByName = {};
+
 	// Calls given method for all array objects, passing arg as argument
 	// Arguments:
 	//	objArray - array of objects to call
 	//	methodName - name of the method to call
-	//	arg - argument to pass to <methodName> function
+	//	args - arguments to pass to <methodName> function
 	//
-	var callMethodForAll = function (objArray, methodName) {
+	Core.callMethodForAll = function (objArray, methodName, args) {
 		if (!objArray) {
 			return;
 		}
@@ -31,7 +36,7 @@ var tmp = function() {
 			var func = obj[methodName];
 			if (typeof func === "function") {
 				try {
-					func.call(obj);
+					func.apply(obj, args);
 				} catch (e) {
 					try {
 						if (typeof obj != "undefined" && obj.hasOwnProperty("name")) {
@@ -45,26 +50,29 @@ var tmp = function() {
 			}
 		}
 	};
-	
+
 	// Adds all addons actions to the Core.actions array
 	var addActions = function(addon) {
-		if(addon && addon.actions) {
-			for(var i = 0, n = addon.actions.length; i < n; i++) {
+		if (addon && addon.actions) {
+			for (var i = 0, n = addon.actions.length; i < n; i++) {
 				addon.actions[i].addon = addon;
 				Core.actions.push(addon.actions[i]);
 			}
 		}
 	};
-	
+
 	// Adds addon nodes, calls onPreInit & onInit
 	//
 	Core.addAddon = function(addon) {
+		if (addon.name) {
+			this.addonByName[addon.name] = addon;
+		}
 		this.addons.push(addon);
 		addActions(addon);
 	};
-	
+
 	// Creates addon related nodes
-	// 
+	//
 	Core.init = function () {
 		try {
 			// Root settings node, located "Settings" => "Addon Settings"
@@ -72,16 +80,18 @@ var tmp = function() {
 				parent: Core.ui.nodes.settings,
 				title: coreL("NODE_PRSP_SETTINGS"),
 				kind: Core.ui.NodeKinds.SETTINGS,
-				comment: ""
+				comment: function () {
+					return coreL("FUNC_X_SETTINGS", this.nodes.length);
+				}
 			});
 			Core.ui.nodes.settings.nodes.splice(0, 0, Core.ui.nodes.addonSettingsNode);
-	
+
 			var addons = this.addons;
-			
+
 			// All addon's are loaded, call preInit (some addon's might change option defs)
-			callMethodForAll(addons, "onPreInit");
-			
-			// Load options 
+			Core.callMethodForAll(addons, "onPreInit");
+
+			// Load options
 			for (var i = 0, n = addons.length; i < n; i++) {
 				try {
 					Core.settings.loadOptions(addons[i]);
@@ -89,23 +99,21 @@ var tmp = function() {
 					log.warn("error loading settings for addon " + addons[i].name + ": " + e0);
 				}
 			}
-			
+
 			// Addons and options are loaded, call init
-			callMethodForAll(addons, "onInit");
-			
+			Core.callMethodForAll(addons, "onInit");
+
+			// Create event handlers
+			Core.events.init();
+
 			// Create addon nodes and addon option nodes
-			// FIXME: shouldn't it be done by "settings.init()"???
-			for (i = 0, n = addons.length; i < n; i++) {
-				Core.settings.createAddonNodes(addons[i]);
-				Core.settings.createAddonSettings(addons[i]);
-			}
+			Core.settings.init(addons);
 		} catch (e) {
 			log.error("in core init", e);
 		}
 	};
 };
 
-// TODO onTerminate, onSleep, onResume
 try {
 	tmp();
 } catch (ignore) {
