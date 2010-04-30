@@ -1,17 +1,16 @@
 // This file allows you to move addon's directory anywhere you want.
-// **************************************************************************** 
+// ****************************************************************************
 //    It MUST be located in the root of your SD card (rename it to user.config)
 // ****************************************************************************
-// Edit the settings and rename it to PRSPlus-user.config
 // Note:
-//	/Data - is a root of 
+//	/Data - is a root of
 //	a: - is a root of MS card
 //	b: - is a root of SD card
-// 
+//
 // Note:
 //	Folder path MUST end with slash!
 
 config.addonsPath = "b:/addons/";
 config.corePath = "b:/core/";
 config.defaultLogLevel = "trace";
-config.logFile = "b:/PRSPlus.log";
+config.logFile = "b:/prsp.log";
