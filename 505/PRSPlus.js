@@ -8,7 +8,8 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 			logFile: "b:/prsp.log",
 			corePath: System.applyEnvironment("[prspCorePath]"),
 			addonsPath: System.applyEnvironment("[prspAddonsPath]"),
-			settingsPath: System.applyEnvironment("[prspSettingsPath]")
+			settingsPath: System.applyEnvironment("[prspSettingsPath]"),
+			userCSSPath: System.applyEnvironment("[prspUserCSSPath]")
 		};
 		bootLog = function(msg) {
 			if (config.defaultLogLevel === "none") {
@@ -17,7 +18,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 			var s = new Stream.File(config.logFile, 3, 0);
 			s.seek(s.bytesAvailable);
 			s.writeLine(msg);
-			s.close();	
+			s.close();
 		};
 		var Core = {config: config};
 		var getFileContent = function(path) {
@@ -31,7 +32,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 			}
 			return "";
 		};
-		
+
 		// Load user config
 		var userConfig = System.applyEnvironment("[prspUserConfig]");
 		var debugMode = false;
@@ -41,14 +42,14 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 			f(config);
 			delete f;
 		}
-	
+
 		// In debug mode, need to combine files manually, otherwise call prspFile, which was created by bulid script
 		//
 		if (debugMode) {
 			var endsWith = function(str, postfix) {
 				return str.lastIndexOf(postfix) === str.length - postfix.length;
 			};
-		
+
 			var listFiles = function(path, ext) {
 				try {
 					var iterator = new FileSystem.Iterator(path);
@@ -73,7 +74,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 				}
 				return [];
 			};
-			
+
 			// Combine & call core files (there seems to be 100k limitation on javascript size, that's why it's split from addons)
 			var corePath = config.corePath;
 			var coreFiles = listFiles(corePath, ".js");
@@ -85,7 +86,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 			core(Core);
 			delete core;
 			delete coreCode;
-			
+
 			// Call addon files
 			var addonsPath = config.addonsPath;
 			var addonFiles = listFiles(addonsPath, ".js");
@@ -98,13 +99,13 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 			addons(Core, log, undefined);
 			delete addonCode;
 			delete addons;
-			
+
 		} else {
 			var prspCoreFile = System.applyEnvironment("[prspCoreFile]");
 			var core = new Function("Core", getFileContent(prspCoreFile));
 			core(Core);
 			delete core;
-			
+
 			var prspAddonsFile = System.applyEnvironment("[prspAddonsFile]");
 			var addons = new Function("Core", getFileContent(prspAddonsFile));
 			addons(Core);
