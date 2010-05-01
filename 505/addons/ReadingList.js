@@ -5,6 +5,7 @@
 // History:
 //	2010-04-27 kravitz - Initial version
 //	2010-04-29 kravitz - Refactored events handling
+//	2010-05-01 kravitz - Fixed onSettingsChanged()
 
 tmp = function() {
 	// Shortcuts
@@ -122,7 +123,7 @@ tmp = function() {
 
 			if (oldValue == RL_DEFAULT) {
 				// Add current book to Reading list
-				this.onChangeBook(kbook.model.currentBook);
+				this.onChangeBook(kbook.model);
 			} else if (oldValue) {
 				// Adjust Reading list length to new max
 				this.truncTo((this.options.maxLength == RL_DEFAULT) ? 0 : this.options.maxLength);
