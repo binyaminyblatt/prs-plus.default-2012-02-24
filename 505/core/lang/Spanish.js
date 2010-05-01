@@ -4,8 +4,8 @@
 //
 // History:
 //	2010-04-30 kravitz - Refactored, added new strings
-//	2010-05-01 Translation is corrected by VICTORSJG
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
+//	2010-05-01 Translation is corrected by VICTORSJG
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -259,8 +259,8 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		NODE_PRSP_SETTINGS: "PRS+ Ajustes",
-		GROUP_MENU_TITLE: "Menu Settings",
-		GROUP_VIEWER_TITLE: "Book Viewer Settings"
+		GROUP_MENU_TITLE: "Men" + String.fromCharCode(250) + " Ajustes",
+		GROUP_VIEWER_TITLE: "Ajustes Visualizador Libros"
 	},
 
 	CoreLang: {
@@ -379,7 +379,8 @@ return {
 		ACTION_NEXT_IN_HISTORY: "Siguiente en el Historial",
 		ACTION_PREVIOUS_IN_HISTORY: "Anterior en el Historial",
 		ACTION_PREVIOUS_SONG: "Anterior canci" + String.fromCharCode(243) + "n",
-		ACTION_NEXT_SONG: "Siguiente canci" + String.fromCharCode(243) + "n"
+		ACTION_NEXT_SONG: "Siguiente canci" + String.fromCharCode(243) + "n",
+		ACTION_GOTO_LINK: "Ir enlace"
 	},
 
 	Screenshot: {
