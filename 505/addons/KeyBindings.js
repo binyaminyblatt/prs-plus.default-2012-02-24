@@ -14,19 +14,19 @@ tmp = function() {
 	var getSoValue = Core.system.getSoValue;
 	var log = Core.log.getLogger("KeyBindings");
 	var L = Core.lang.getLocalizer("KeyBindings");
-	
+
 	// --------------------------------------
 	// Saving original functions
 	var model = kbook.model;
 	var modelDoMute = model.doMute;
-	
+
 	var menu = model.container.MENU_GROUP.MENU;
 	var menuDoNext = menu.doNext;
 	var menuDoPrevious = menu.doPrevious;
 	var menuDoCenter = menu.doCenter;
 	var menuDoFirst = menu.doFirst;
 	var menuDoLast = menu.doLast;
-	
+
 	var book = model.container.PAGE_GROUP.PAGE;
 	var bookDoNext = book.doNext;
 	var bookDoPrevious = book.doPrevious;
@@ -35,22 +35,22 @@ tmp = function() {
 	var bookDoCenter = book.doCenter;
 	var bookDoFirst = book.doFirst;
 	var bookDoLast = book.doLast;
-	//--------------------------------------	
-	
+	//--------------------------------------
+
 	var contexts = ["global", "menu", "book"];
 	var contextObjects = {
-			"global": model, 
-			"menu": model.container.MENU_GROUP.MENU, 
+			"global": model,
+			"menu": model.container.MENU_GROUP.MENU,
 			"book": model.container.PAGE_GROUP.PAGE
 		};
-	
+
 	// Key events
 	var events = ["kHold1", "kHold2", "kHold3", "kHold4", "kHold5", "kHold6", "kHold7", "kHold8", "kHold9", "kHold0",
 			"kLeft", "kRight", "kUp", "kDown",
 			"0x27", "0x27-hold", "0x42", "0x32", "0x30", "0x31", "kNext", "kPrevious",
 			"0x21", "0x42-hold", "0x32-hold", "0x30-hold", "0x31-hold", "0x21-hold", "kLast", "kFirst",
 			"0x41", "0x41-hold", "0x40", "0x40-hold"];
-			
+
 	// Key to method mappings
 	var eventMethods = {
 		"kHold1": "doHold1",
@@ -93,7 +93,7 @@ tmp = function() {
 	var actionName2action = {};
 	var savedHooks = {};
 	var hookFunction;
-	
+
 	var doHook = function (contextObj, eventMethod, context) {
 		var oldFunc = contextObj[eventMethod];
 		if (oldFunc === hookFunction) {
@@ -103,10 +103,10 @@ tmp = function() {
 		// save old hook
 		savedHooks[context + eventMethod] = oldFunc;
 		// hook
-		Core.hook.hook(contextObj, eventMethod, hookFunction, context);	
+		Core.hook.hook(contextObj, eventMethod, hookFunction, context);
 	};
-	
-	// Calls default handlers. 
+
+	// Calls default handlers.
 	// This function Is needed because some functions are called for more than one key
 	//
 	var callDefaultHandler = function (context, key) {
@@ -120,7 +120,7 @@ tmp = function() {
 				}
 				break;
 			case "0x31-hold": // falltrhough
-			case "kFirst": 
+			case "kFirst":
 				if (context == "book") {
 					bookDoFirst.call(book);
 				} else {
@@ -159,12 +159,12 @@ tmp = function() {
 				model.doBlink();
 		}
 	};
-	
+
 	hookFunction = function (args, oldFunc, tag) {
 		try {
 			var event = args[0];
 			var key = getSoValue(event, "key");
-			
+
 			var options = KeyBindings.options;
 			if (options.hasOwnProperty(tag) && options[tag].hasOwnProperty(key) && options[tag][key] !== defVal) {
 				var actionName = options[tag][key];
@@ -191,7 +191,7 @@ tmp = function() {
 			log.error("in hookFunction: " + e);
 		}
 	};
-	
+
 	KeyBindings = {
 		name: "KeyBindings",
 		title: L("TITLE"),
@@ -200,7 +200,7 @@ tmp = function() {
 		onInit: function () {
 			try {
 				var options = this.options;
-				
+
 				for (var i = 0, n = contexts.length; i < n; i++) {
 					var context = contexts[i];
 					var contextObj = contextObjects[context];
@@ -220,17 +220,17 @@ tmp = function() {
 		},
 		/**
 		* @constructor
-		*/	
+		*/
 		onPreInit: function () {
 			try {
 				var contextLabels = [L("GLOBAL"), L("IN_MENU"), L("IN_BOOK")];
-	
-				var actions = Core.actions;	
+
+				var actions = Core.actions;
 				var values = [];
 				var valueTitles = {};
 				values.push(defVal);
 				valueTitles[defVal] = L("DEFAULT_VALUE");
-	
+
 				for (var i = 0, n = actions.length; i < n; i++) {
 					var action = actions[i];
 					if (action && action.hasOwnProperty("name")) {
@@ -239,12 +239,12 @@ tmp = function() {
 						if (action.hasOwnProperty("title")) {
 							valueTitles[action.name] = action.title;
 						}
-					}				
+					}
 				}
-	
+
 				// Global
 				this.optionDefs = [];
-				
+
 				// Menu & Book
 				for (i = 0, n = contextLabels.length; i < n; i++) {
 					var context = contextLabels[i];
@@ -255,7 +255,7 @@ tmp = function() {
 						optionDefs: []
 					};
 					this.optionDefs.push(rootGroup);
-		
+
 					// Numbers
 					var numberGroup = {
 						groupTitle: L("NUM_BUTTONS"),
@@ -274,7 +274,7 @@ tmp = function() {
 						{target: target, name: "kHold9", title: L("BN_H_9"), defaultValue: defVal, values: values, valueTitles: valueTitles},
 						{target: target, name: "kHold0", title: L("BN_H_0"), defaultValue: defVal, values: values, valueTitles: valueTitles}
 					];
-								
+
 					// Volume buttons
 					var volumeGroup = {
 						groupTitle: L("VOLUME_BUTTONS"),
@@ -287,7 +287,7 @@ tmp = function() {
 						{target: target, name: "0x40", title: L("BN_VOLUME_UP"), defaultValue: defVal, values: values, valueTitles: valueTitles},
 						{target: target, name: "0x40-hold", title: L("BN_H_VOLUME_UP"), defaultValue: defVal, values: values, valueTitles: valueTitles}
 					];
-					
+
 					// Joypad & Other buttons are for menu/book contexts only
 					if (i > 0) {
 						// Joypad
@@ -304,7 +304,7 @@ tmp = function() {
 							{target: target, name: "0x27", title: L("BN_JP_CENTER"), defaultValue: defVal, values: values, valueTitles: valueTitles},
 							{target: target, name: "0x27-hold", title: L("BN_H_JP_CENTER"), defaultValue: defVal, values: values, valueTitles: valueTitles}
 						];
-							
+
 						// Other buttons
 						var otherGroup = {
 							groupTitle: L("OTHER_BUTTONS"),
@@ -343,7 +343,7 @@ tmp = function() {
 				// nothing to do, since property is not a key
 				return;
 			}
-		
+
 			// Determine target object
 			var context, contextObj;
 			if (object === this.options.global) {
@@ -353,11 +353,11 @@ tmp = function() {
 			} else if (object === this.options.book) {
 				context = "book";
 			}
-			contextObj = contextObjects[context];		
-			
+			contextObj = contextObjects[context];
+
 			if (oldValue === defVal) {
 				// Hook if not already hooked
-				doHook(contextObj, eventMethod, context);	
+				doHook(contextObj, eventMethod, context);
 			} else if (newValue === defVal) {
 				// Unhook
 				var oldFunc = savedHooks[context + eventMethod];
@@ -440,12 +440,12 @@ tmp = function() {
 			}
 		]
 	};
-	
+
 	Core.addAddon(KeyBindings);
 };
 try {
 	tmp();
 } catch (e) {
 	// Core's log
-	log.error("in KeBindings.js", e);
+	log.error("in KeyBindings.js", e);
 }

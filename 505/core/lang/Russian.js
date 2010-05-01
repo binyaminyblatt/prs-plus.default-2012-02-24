@@ -10,6 +10,7 @@
 //	2010-04-30 kravitz - Fixed SL_OFF and SL_ON translation
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-01 kravitz - Changed TextScale translation
+//	2010-05-01 kravitz - Added VALUE_HIDDEN
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -475,7 +476,8 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		VALUE_DISABLED: "Одна книга",
 		VALUE_3: "Три книги",
-		VALUE_10: "Десять книг"
+		VALUE_10: "Десять книг",
+		VALUE_HIDDEN: "скрытый, отображается по кнопке"
 	},
 
 //ReadMark	ReadMark: {
