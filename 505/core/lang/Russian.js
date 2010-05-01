@@ -9,6 +9,7 @@
 //	2010-04-30 kravitz - Fixed and optimized FUNC_X_SOMETHING()
 //	2010-04-30 kravitz - Fixed SL_OFF and SL_ON translation
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
+//	2010-05-01 kravitz - Changed TextScale translation
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -484,9 +485,9 @@ return {
 
 	TextScale: {
 		OPTION_SCALE_DEFAULT: "Размер шрифта по умолчанию",
-		VALUE_SMALL: "(S) Маленький шрифт",
+		VALUE_SMALL: "(S) Мелкий шрифт",
 		VALUE_MEDIUM: "(M) Средний шрифт",
-		VALUE_LARGE: "(L) Большой шрифт",
+		VALUE_LARGE: "(L) Крупный шрифт",
 		VALUE_DISABLED: "Отключено",
 		VALUE_ENABLED: "Включено"
 	},
