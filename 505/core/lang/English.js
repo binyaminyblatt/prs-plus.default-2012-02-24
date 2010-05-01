@@ -5,6 +5,7 @@
 //
 // History:
 //	2010-04-30 kravitz - Refactored, added new strings
+//	2010-05-01 kartu - Renamed "Viewer settings" to "Book Viewer Settings"
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -35,7 +36,7 @@ return {
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		NODE_PRSP_SETTINGS:  "PRS+ Settings",
 		GROUP_MENU_TITLE: "Menu Settings",
-		GROUP_VIEWER_TITLE: "Viewer Settings"
+		GROUP_VIEWER_TITLE: "Book Viewer Settings"
 	},
 
 	CoreLang: {
