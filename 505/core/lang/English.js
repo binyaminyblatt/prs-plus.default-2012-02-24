@@ -1,11 +1,11 @@
 // Language: English
 // Description: Localization file
-// Author: kartu
 // Translator:
 //
 // History:
 //	2010-04-30 kravitz - Refactored, added new strings
 //	2010-05-01 kartu - Renamed "Viewer settings" to "Book Viewer Settings"
+//				Added ACTION_GOTO_LINK
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -155,7 +155,8 @@ return {
 		ACTION_NEXT_IN_HISTORY: "Next in History",
 		ACTION_PREVIOUS_IN_HISTORY: "Previous in History",
 		ACTION_PREVIOUS_SONG: "Previous Song",
-		ACTION_NEXT_SONG: "Next Song"
+		ACTION_NEXT_SONG: "Next Song",
+		ACTION_GOTO_LINK: "Goto Link"
 	},
 
 	Screenshot: {

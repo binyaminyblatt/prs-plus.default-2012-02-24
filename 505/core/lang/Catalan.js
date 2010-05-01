@@ -1,10 +1,10 @@
 // Language: Сatalan
 // Description: Localization file
-// Author: kartu
 // Translator: surquizu
 //
 // History:
 //	2010-04-30 kravitz - Refactored, added new strings
+//	2010-05-01 kartu - Added ACTION_GOTO_LINK
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -377,7 +377,8 @@ return {
 		ACTION_NEXT_IN_HISTORY: "Proper en l'Historial",
 		ACTION_PREVIOUS_IN_HISTORY: "Anterior en l'Historial",
 		ACTION_PREVIOUS_SONG: "Anterior can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "",
-		ACTION_NEXT_SONG: "Seg" + String.fromCharCode(252) + "ent can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + ""
+		ACTION_NEXT_SONG: "Seg" + String.fromCharCode(252) + "ent can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "",
+		ACTION_GOTO_LINK: "Goto Link"
 	},
 
 	Screenshot: {

@@ -1,6 +1,5 @@
 // Language: Russian
 // Description: Localization file
-// Author: kartu
 // Translator: SLL
 //
 // History:
@@ -9,6 +8,7 @@
 //	2010-04-30 kravitz - Refactored, added new strings
 //	2010-04-30 kravitz - Fixed and optimized FUNC_X_SOMETHING()
 //	2010-04-30 kravitz - Fixed SL_OFF and SL_ON translation
+//	2010-05-01 kartu - Added ACTION_GOTO_LINK
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -391,7 +391,8 @@ return {
 		ACTION_NEXT_IN_HISTORY: "Следующая в журнале",
 		ACTION_PREVIOUS_IN_HISTORY: "Предыдущая в журнале",
 		ACTION_PREVIOUS_SONG: "Предыдущая песня",
-		ACTION_NEXT_SONG: "Следующая песня"
+		ACTION_NEXT_SONG: "Следующая песня",
+		ACTION_GOTO_LINK: "Перейти по ссылке"
 	},
 
 	Screenshot: {

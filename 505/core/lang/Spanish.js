@@ -1,10 +1,10 @@
 // Language: Spanish
 // Description: Localization file
-// Author: kartu
 // Translator: surquizu, VICTORSJG
 //
 // History:
 //	2010-04-30 kravitz - Refactored, added new strings
+//	2010-05-01 kartu - Added ACTION_GOTO_LINK
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {

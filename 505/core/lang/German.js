@@ -1,10 +1,10 @@
 // Language: German
 // Description: Localization file
-// Author: kartu
-// Translator:
+// Translator: Durglum, klawong, Mark Nord
 //
 // History:
 //	2010-04-30 kravitz - Refactored, added new strings
+//	2010-05-01 kartu - Added ACTION_GOTO_LINK
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -377,7 +377,8 @@ return {
 		ACTION_NEXT_IN_HISTORY: "Nächstes im Verlauf",
 		ACTION_PREVIOUS_IN_HISTORY: "Verheriges im Verlauf",
 		ACTION_PREVIOUS_SONG: "Verheriges Lied",
-		ACTION_NEXT_SONG: "Nächstes Lied"
+		ACTION_NEXT_SONG: "Nächstes Lied",
+		ACTION_GOTO_LINK: "Verknüpfung folgen"
 	},
 
 	Screenshot: {
