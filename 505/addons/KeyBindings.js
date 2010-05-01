@@ -428,7 +428,16 @@ tmp = function() {
 				action: function () {
 					model.doGotoPreviousSong();
 				}
-			}		
+			},
+			{
+				name: "GotoLink",
+				title: L("ACTION_GOTO_LINK"),
+				group: "Utils",
+				icon: "NEXT_PAGE",
+				action: function () {
+					bookDoCenter.call(book);
+				}
+			}
 		]
 	};
 	

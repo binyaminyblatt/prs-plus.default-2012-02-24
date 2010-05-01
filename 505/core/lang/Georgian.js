@@ -1,6 +1,5 @@
 // Language: Georgian
 // Description: Localization file
-// Author: kartu
 // Translator: kartu
 //
 // History:
@@ -10,7 +9,8 @@
 //	2010-04-25 kartu - Translated more stuff
 //	2010-04-28 kartu - Finalized Georgian translation
 //	2010-04-30 kravitz - Refactored, added new strings
-//	2010-04-30 kartu - Translated new strings, fixed minor glitches
+//	2010-05-01 kartu - Translated new strings, fixed minor glitches
+//				Added ACTION_GOTO_LINK
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 0) {
@@ -380,7 +380,8 @@ return {
 		ACTION_NEXT_IN_HISTORY: "წინა ისტორიაში",
 		ACTION_PREVIOUS_IN_HISTORY: "შემდეგი ისტორიაში",
 		ACTION_PREVIOUS_SONG: "წინა სიმღერა",
-		ACTION_NEXT_SONG: "შემდეგი სიმღერა"
+		ACTION_NEXT_SONG: "შემდეგი სიმღერა",
+		ACTION_GOTO_LINK: "ბმულის გახსნა"
 	},
 
 	Screenshot: {
