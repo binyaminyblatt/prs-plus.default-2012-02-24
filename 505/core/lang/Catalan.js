@@ -259,7 +259,7 @@ return {
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		NODE_PRSP_SETTINGS: "Configuraci" + String.fromCharCode(243) + " PRS+",
 		GROUP_MENU_TITLE: "Menu Configuraci" + String.fromCharCode(243) + "",
-		GROUP_VIEWER_TITLE: "Llibre Visor Configuraci" + String.fromCharCode(243) + ""
+		GROUP_VIEWER_TITLE: "Visor Configuraci" + String.fromCharCode(243) + " Llibre"
 	},
 
 	CoreLang: {
@@ -379,7 +379,7 @@ return {
 		ACTION_PREVIOUS_IN_HISTORY: "Anterior en l'Historial",
 		ACTION_PREVIOUS_SONG: "Anterior can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "",
 		ACTION_NEXT_SONG: "Seg" + String.fromCharCode(252) + "ent can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "",
-		ACTION_GOTO_LINK: "Goto Link"
+		ACTION_GOTO_LINK: "Anar a Enlla" + String.fromCharCode(231) + ""
 	},
 
 	Screenshot: {
