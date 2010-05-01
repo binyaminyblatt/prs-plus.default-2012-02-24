@@ -5,7 +5,7 @@
 // History:
 //	2010-04-30 kravitz - Refactored, added new strings
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
-//	2010-05-01 klawong - translation is corrected
+//	2010-05-01 Duglum, klawong, Mark Nord - translation is corrected
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -106,7 +106,7 @@ return {
 		// Main.xml & kbook.so stuff
 		INVALID_FORMAT: "Ungültiges Format!",
 		FORMATTING: "Formatiere...",
-		LOADING: "Lade...",
+		LOADING: "Lade auf...",
 		LOW_BATTERY: "Batterie schwach!",
 		HR_WARNING: "Willst Du alle Inhalte LÖSCHEN, auf Werkseinstellungen zurücksetzen und die DRM-Authorisierung zurücksetzen?\n\nJa - Drücke 5\nNein - Drücke MENÜ",
 		DEVICE_SHUTDOWN: "Gerät ausschalten",
@@ -124,7 +124,7 @@ return {
 		ONE_OF_ONE: "1 von 1",
 		NO_BATTERY: "Batterie leer!",
 		FORMATTING_INTERNAL_MEMORY: "Formatiere internen Speicher...",
-		SHUTTING_DOWN: "Gerät ausschalten...",
+		SHUTTING_DOWN: "Gerät schaltet aus...",
 
 		// Root menu
 		CONTINUE: "Weiterlesen",
@@ -259,7 +259,7 @@ return {
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		NODE_PRSP_SETTINGS:  "PRS+ Einstellungen",
 		GROUP_MENU_TITLE: "Menü-Einstellungen",
-		GROUP_VIEWER_TITLE: "Buch-Betrachtungs-Einstellungen"
+		GROUP_VIEWER_TITLE: "Darstellungsoptionen"
 	},
 
 	CoreLang: {
@@ -312,7 +312,7 @@ return {
 	},
 
 	TextEncoding: {
-		OPTION_TITLE: "TXT und RTF Bücher Codierung",
+		OPTION_TITLE: "TXT- und RTF-Bücher Codierung",
 		MSG_RESTART: "Benötigt Neustart!",
 		LATIN: "Latin",
 		RUSSIAN:  "Russian (Windows-1251)"
@@ -320,7 +320,7 @@ return {
 
 	KeyBindings: {
 		TITLE: "Tasteneinstellungen",
-		DESCRIPTION: "Ermöglicht das Binden von Aktionen an Tasten",
+		DESCRIPTION: "Bindet Aktionen an Tasten",
 
 		DEFAULT_VALUE: "Standardwert",
 
@@ -376,8 +376,8 @@ return {
 		ACTION_NEXT_PAGE: "Nächste Seite",
 		ACTION_PREVIOUS_PAGE: "Vorherige Seite",
 		ACTION_NEXT_IN_HISTORY: "Nächstes im Verlauf",
-		ACTION_PREVIOUS_IN_HISTORY: "Verheriges im Verlauf",
-		ACTION_PREVIOUS_SONG: "Verheriges Lied",
+		ACTION_PREVIOUS_IN_HISTORY: "Vorheriges im Verlauf",
+		ACTION_PREVIOUS_SONG: "Vorheriges Lied",
 		ACTION_NEXT_SONG: "Nächstes Lied",
 		ACTION_GOTO_LINK: "Verknüpfung folgen"
 	},
@@ -390,8 +390,8 @@ return {
 		OPT_SAVETO: "Speichern",
 		OPT_FEEDBACK: "Fortschrittsanzeige",
 		MEMORY_STICK: "auf Memory Stick",
-		FEEDBACK_ON: "an",
-		FEEDBACK_OFF: "aus",
+		FEEDBACK_ON: "Ja",
+		FEEDBACK_OFF: "Nein",
 		SD_CARD: "auf SD-Karte",
 		INTERNAL_MEMORY: "im Internen Speicher"
 	},
@@ -434,7 +434,7 @@ return {
 		VALUE_SHOWN_ONLY_IN_MENU: "Nur im Menü anzeigen",
 		VALUE_SHOWN_WHEN_READING: "Nur beim Lesen anzeigen",
 		VALUE_OFF: "AUS",
-		ACTION_TOGGLE_CLOCK: "Uhr umschalten",
+		ACTION_TOGGLE_CLOCK: "Uhr ein-/ausschalten",
 		AM: "am",
 		PM: "pm"
 	},
