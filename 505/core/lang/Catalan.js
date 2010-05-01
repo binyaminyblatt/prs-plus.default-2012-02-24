@@ -5,6 +5,7 @@
 // History:
 //	2010-04-30 kravitz - Refactored, added new strings
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
+//	2010-05-01 Translation is corrected by surquizu
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -20,7 +21,7 @@ var FUNC_X_BOOKS = function (n) {
 	return FUNC_X_SOMETHING(n, ["llibres", "1 llibre", "Cap llibre"]);
 };
 var FUNC_X_SETTINGS = function (n) {
-	return FUNC_X_SOMETHING(n, ["ajustaments", "1 ajustament", "Cap Ajustament"]);
+	return FUNC_X_SOMETHING(n, ["opcions", "1 opci" + String.fromCharCode(243) + "", "Cap opci" + String.fromCharCode(243) + ""]);
 };
 var FUNC_X_ITEMS = function (n) {
 	return FUNC_X_SOMETHING(n, ["elements", "1 element", "Cap element"]);
@@ -32,7 +33,7 @@ var FUNC_X_PICTURES = function (n) {
 	return FUNC_X_SOMETHING(n, ["imatges", "1 imatge", "Cap imatge"]);
 };
 var FUNC_X_SONGS = function (n) {
-	return FUNC_X_SOMETHING(n, ["can" + String.fromCharCode(231) + "ons", "1 can" + String.fromCharCode(231) + "o", "Cap can" + String.fromCharCode(231) + "o"]);
+	return FUNC_X_SOMETHING(n, ["can" + String.fromCharCode(231) + "ons", "1 can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "", "Cap can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + ""]);
 };
 var FUNC_X_BOOKMARKS = function (n) {
 	return FUNC_X_SOMETHING(n, ["marcadors", "1 marcador", "Cap marcador"]);
@@ -98,7 +99,7 @@ return {
 		EPUB_DOCUMENT: "Document EPUB",
 		BBEB_BOOK: "Llibre BBeB",
 		PLAIN_TEXT: "Text Sense Format",
-		INTERNAL_MEMORY: "Memòria Interna",
+		INTERNAL_MEMORY: "Mem" + String.fromCharCode(242) + "ria Interna",
 		MEMORY_STICK: "Memory Stick",
 		SD_CARD: "Targeta SD",
 
@@ -107,22 +108,22 @@ return {
 		FORMATTING: "Formatejant...",
 		LOADING: "Carregant ...",
 		LOW_BATTERY: "Bateria Baixa!",
-		HR_WARNING: "Vols ESBORRAR tot el contingut i restablir els ajustaments inicials i l'estat de l'autoritzaci" + String.fromCharCode(243) + " del DRM?\n\nSi - Clica 5\nNo - Clica MENU",
+		HR_WARNING: "Vols ESBORRAR tot el contingut i restablir la Configuraci" + String.fromCharCode(243) + " inicial i l'estat de l'autoritzaci" + String.fromCharCode(243) + " del DRM?\n\nSi - Clica 5\nNo - Clica MENU",
 		DEVICE_SHUTDOWN: "Apagar Lector",
 		PRESS_MARK_TO_SHUTDOWN: "Clica MARK per apagar",
 		THIS_DEVICE: "el lector.",
 		PRESS_MARK_TO_DELETE: "Clica MARK per",
 		THIS_BOOK: "esborrar el llibre.",
-		FORMAT_INTERNAL_MEMORY: "Formatejar Memòria Interna",
-		PRESS_MARK_TO_FORMAT: "Clica MARK per a formatejar",
-		MSG_INTERNAL_MEMORY: "la memòria interna.",
+		FORMAT_INTERNAL_MEMORY: "Formatejar Mem" + String.fromCharCode(242) + "ria Interna",
+		PRESS_MARK_TO_FORMAT: "Clica MARK per formatejar",
+		MSG_INTERNAL_MEMORY: "la mem" + String.fromCharCode(242) + "ria interna.",
 		RESTORE_DEFAULTS: "Restablir Valors Inicials",
-		PRESS_MARK_TO_RESTORE: "Clica MARK per a restablir",
+		PRESS_MARK_TO_RESTORE: "Clica MARK per restablir",
 		DEFAULT_SETTINGS: "els valors inicials.",
 		UPPER_PAGE: "P" + String.fromCharCode(192) + "GINA",
 		ONE_OF_ONE: "1 de 1",
 		NO_BATTERY: "Sense Bateria!",
-		FORMATTING_INTERNAL_MEMORY: "Formatejant Memòria Interna...",
+		FORMATTING_INTERNAL_MEMORY: "Formatejant Mem" + String.fromCharCode(242) + "ria Interna...",
 		SHUTTING_DOWN: "Apagant...",
 
 		// Root menu
@@ -135,7 +136,7 @@ return {
 		NOW_PLAYING: "Reproduint-se Ara",
 		MUSIC: "" + String.fromCharCode(192) + "udio",
 		PICTURES: "Imatges",
-		SETTINGS: "Ajustaments",
+		SETTINGS: "Configuraci" + String.fromCharCode(243) + "",
 
 		// In Settings
 		// orientation
@@ -151,15 +152,15 @@ return {
 		MINUTE: "Minut",
 		// slideshow
 		SLIDESHOW: "Presentaci" + String.fromCharCode(243) + " Diapositives",
-		SS_ON: "Activat",
-		SS_OFF: "Desactivat",
+		SS_ON: "Si",
+		SS_OFF: "No",
 		SS_TURN: "Estat",
 		SS_DURATION: "Durada",
 		SECONDS: "Segons",
 		// auto standby (aka sleep mode)
-		AUTOSTANDBY: "Mode en Repòs",
-		AS_ON: "Activat",
-		AS_OFF: "Desactivat",
+		AUTOSTANDBY: "Mode en Rep" + String.fromCharCode(242) + "s",
+		AS_ON: "Si",
+		AS_OFF: "No",
 		AS_TURN: "Estat",
 		// about
 		ABOUT: "Sobre el Reader",
@@ -167,11 +168,11 @@ return {
 		RESET_TO_FACTORY: "Valors Inicials",
 
 		// In Advanced Settings
-		ADVANCED_SETTINGS: "Ajustaments Avan" + String.fromCharCode(231) + "ats",
+		ADVANCED_SETTINGS: "Configuraci" + String.fromCharCode(243) + " Avan" + String.fromCharCode(231) + "ada",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "Bloquejar Lector",
-		SL_OFF: "Desactivat",
-		SL_ON: "Activat",
+		SL_OFF: "No",
+		SL_ON: "Si",
 		SL_CODE: "Codi",
 		SL_TURN: "Estat",
 		// format device
@@ -256,9 +257,9 @@ return {
 	Core: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
-		NODE_PRSP_SETTINGS: "Ajustaments PRS+",
-		GROUP_MENU_TITLE: "Menu Settings",
-		GROUP_VIEWER_TITLE: "Viewer Settings"
+		NODE_PRSP_SETTINGS: "Configuraci" + String.fromCharCode(243) + " PRS+",
+		GROUP_MENU_TITLE: "Menu Configuraci" + String.fromCharCode(243) + "",
+		GROUP_VIEWER_TITLE: "Llibre Visor Configuraci" + String.fromCharCode(243) + ""
 	},
 
 	CoreLang: {
@@ -311,7 +312,7 @@ return {
 	},
 
 	TextEncoding: {
-		OPTION_TITLE: "Codificaci" + String.fromCharCode(243) + " de TXT i RTF llibres",
+		OPTION_TITLE: "Codificaci" + String.fromCharCode(243) + " TXT i RTF",
 		MSG_RESTART: "Cal reiniciar!",
 		LATIN: "Car" + String.fromCharCode(224) + "cters llatins",
 		RUSSIAN: "Car" + String.fromCharCode(224) + "cters russos (Windows-1251)"
@@ -373,7 +374,7 @@ return {
 		// Actions
 		ACTION_SHUTDOWN: "Apagar",
 		ACTION_NEXT_PAGE: "P" + String.fromCharCode(224) + "gina Seg" + String.fromCharCode(252) + "ent",
-		ACTION_PREVIOUS_PAGE: "Pagina Anterior",
+		ACTION_PREVIOUS_PAGE: "P" + String.fromCharCode(224) + "gina Anterior",
 		ACTION_NEXT_IN_HISTORY: "Proper en l'Historial",
 		ACTION_PREVIOUS_IN_HISTORY: "Anterior en l'Historial",
 		ACTION_PREVIOUS_SONG: "Anterior can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "",
@@ -388,7 +389,7 @@ return {
 		FAILED_TO_SAVE: "Captura fallida",
 		OPT_SAVETO: "Salvar a ...",
 		OPT_FEEDBACK: "Mostra progr" + String.fromCharCode(233) + "s de salvar",
-		MEMORY_STICK: "Memory St5ck",
+		MEMORY_STICK: "Memory Stick",
 		FEEDBACK_ON: "Activat",
 		FEEDBACK_OFF: "Desactivat",
 		SD_CARD: "Targeta SD",
@@ -400,14 +401,14 @@ return {
 		OPTION_SORTING_MODE: "Tipus d'Ordre",
 		VALUE_BY_TITLE: "Per t" + String.fromCharCode(237) + "tol",
 		VALUE_BY_AUTHOR_THEN_TITLE: "Per autor i despr" + String.fromCharCode(233) + "s t" + String.fromCharCode(237) + "tol",
-		VALUE_BY_AUTHOR_SWAPPING: "Per autor amb intercanvi nom/cognom",
+		VALUE_BY_AUTHOR_SWAPPING: "Per autor (cognom)",
 		VALUE_BY_FILENAME: "Per nom d'arxiu",
 		OPTION_TITLE_SORTER: "Ordenar amb 'TitleSorter'",
 		ENABLED: "Activat",
 		DISABLED: "Desactivat",
 		OPTION_IM_ROOT: "Arrel de la Mem" + String.fromCharCode(242) + "ria Interna",
 		OPTION_CARD_SCAN: "Escaneja targetes SD/MS",
-		OPTION_MOUNT: "Usar muntatge amb SD/MS (experimental)",
+		OPTION_MOUNT: "Montar targetes SD/MS",
 		NODE_RESCAN_INTERNAL_MEMORY: "Escaneja Mem" + String.fromCharCode(242) + "ria Interna",
 		NODE_COPY_TO_INTERNAL_MEMORY: "Copia a Mem" + String.fromCharCode(242) + "ria Interna",
 		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copia arxius a l'arrel de la mem" + String.fromCharCode(242) + "ria interna",
@@ -458,29 +459,29 @@ return {
 
 	ReadingList: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		VALUE_DISABLED: "One book",
-		VALUE_3: "Three books",
-		VALUE_10: "Ten books"
+		VALUE_DISABLED: "Un llibre",
+		VALUE_3: "Tres llibres",
+		VALUE_10: "Deu llibres"
 	},
 
 //ReadMark	ReadMark: {
-//		TITLE_UNREAD: "Mark Book - Already Read",
-//		TITLE_READ: "Mark Book - Not Yet Read",
+//		TITLE_UNREAD: "Marcadors - Ja llegits",
+//		TITLE_READ: "Marcadors - no llegits",
 //	},
 
 	TextScale: {
-		OPTION_SCALE_DEFAULT: "Default Scale",
-		VALUE_SMALL: "(S)mall Size",
-		VALUE_MEDIUM: "(M)edium Size",
-		VALUE_LARGE: "(L)arge Size",
-		VALUE_DISABLED: "Disabled",
-		VALUE_ENABLED: "Enabled"
+		OPTION_SCALE_DEFAULT: "Mida per defecte",
+		VALUE_SMALL: "(S) Petita",
+		VALUE_MEDIUM: "(M) Mitjana",
+		VALUE_LARGE: "(L) Gran",
+		VALUE_DISABLED: "Desactivat",
+		VALUE_ENABLED: "Activat"
 	},
 
 	MenuTuning: {
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		OPTION_OUTER: "Top Level Menu Contains",
-		NODE_OTHERS: "Multimedia",
+		OPTION_OUTER: "Contingut del men" + String.fromCharCode(250) + " superior",
+		NODE_OTHERS: "Multim" + String.fromCharCode(232) + "dia",
 		NODE_GAMES_AND_UTILS: "Jocs - Aplicacions"
 	}
 };

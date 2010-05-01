@@ -4,6 +4,7 @@
 //
 // History:
 //	2010-04-30 kravitz - Refactored, added new strings
+//	2010-05-01 Translation is corrected by VICTORSJG
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 
 var FUNC_X_SOMETHING = function (n, s) {
@@ -259,7 +260,7 @@ return {
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		NODE_PRSP_SETTINGS: "PRS+ Ajustes",
 		GROUP_MENU_TITLE: "Menu Settings",
-		GROUP_VIEWER_TITLE: "Viewer Settings"
+		GROUP_VIEWER_TITLE: "Book Viewer Settings"
 	},
 
 	CoreLang: {
