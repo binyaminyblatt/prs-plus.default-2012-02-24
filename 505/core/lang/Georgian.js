@@ -10,6 +10,7 @@
 //	2010-04-25 kartu - Translated more stuff
 //	2010-04-28 kartu - Finalized Georgian translation
 //	2010-04-30 kravitz - Refactored, added new strings
+//	2010-04-30 kartu - Translated new strings, fixed minor glitches
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 0) {
@@ -39,7 +40,7 @@ var FUNC_X_BOOKMARKS = function (n) {
 	return FUNC_X_SOMETHING(n, ["ჩანიშნული", "ცარიელი"]);
 };
 var FUNC_X_COLLECTIONS = function (n) {
-	return FUNC_X_SOMETHING(n, ["კოლეკცია", "ცარიელი"]);
+	return FUNC_X_SOMETHING(n, ["კოლქკცია", "ცარიელი"]);
 };
 
 // Utility function, no need to localize
@@ -134,7 +135,7 @@ return {
 		BOOKS_BY_DATE: "წიგნები თარიღის მიხედვით",
 		COLLECTIONS: "კოლექციები",
 		ALL_BOOKMARKS: "ყველა სანიშნე",
-		NOW_PLAYING: "	ახლა იკვრება",
+		NOW_PLAYING: "ახლა იკვრება",
 		MUSIC: "მუსიკა",
 		PICTURES: "სურათები",
 		SETTINGS: "პარამეტრები",
@@ -259,8 +260,8 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		NODE_PRSP_SETTINGS:  "PRS+ პარამეტრები",
-		GROUP_MENU_TITLE: "Menu Settings",
-		GROUP_VIEWER_TITLE: "Viewer Settings"
+		GROUP_MENU_TITLE: "მენიუს პარამეტრები",
+		GROUP_VIEWER_TITLE: "წიგნის მნახველის პარამეტრები"
 	},
 
 	CoreLang: {
@@ -385,8 +386,8 @@ return {
 	Screenshot: {
 		TITLE: "ეკრანის სურათი",
 		ACTION_TITLE: "ეკრანის სურათის გადაღება",
-		SAVING_TO: "Saving to ",
-		FAILED_TO_SAVE: "Failed to save",
+		SAVING_TO: "ვინახავ ",
+		FAILED_TO_SAVE: "შენახვა ჩაიშალა",
 		OPT_SAVETO: "ვინახავ",
 		OPT_FEEDBACK: "შენახვის შეტყობინება",
 		MEMORY_STICK: "Memory Stick",
@@ -470,18 +471,18 @@ return {
 //	},
 
 	TextScale: {
-		OPTION_SCALE_DEFAULT: "Default Scale",
-		VALUE_SMALL: "(S)mall Size",
-		VALUE_MEDIUM: "(M)edium Size",
-		VALUE_LARGE: "(L)arge Size",
-		VALUE_DISABLED: "Disabled",
-		VALUE_ENABLED: "Enabled"
+		OPTION_SCALE_DEFAULT: "ნაგულისხმები მასშტაბი",
+		VALUE_SMALL: "(S) პატარა",
+		VALUE_MEDIUM: "(M) საშუალო",
+		VALUE_LARGE: "(L) დიდი",
+		VALUE_DISABLED: "გამორთულია",
+		VALUE_ENABLED: "ჩართულია"
 	},
 
 	MenuTuning: {
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		OPTION_OUTER: "Top Level Menu Contains",
-		NODE_OTHERS: "Multimedia",
+		OPTION_OUTER: "მენიუს სათაური შეიცავს",
+		NODE_OTHERS: "მულტიმედია",
 		NODE_GAMES_AND_UTILS: "თამაშები და უტილიტები"
 	}
 };
