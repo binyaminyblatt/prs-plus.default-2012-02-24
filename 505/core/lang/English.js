@@ -5,7 +5,8 @@
 // History:
 //	2010-04-30 kravitz - Refactored, added new strings
 //	2010-05-01 kartu - Renamed "Viewer settings" to "Book Viewer Settings"
-//				Added ACTION_GOTO_LINK
+//	2010-05-01 kartu - Added ACTION_GOTO_LINK
+//	2010-05-01 kravitz - Added VALUE_HIDDEN
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -238,7 +239,8 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		VALUE_DISABLED: "One book",
 		VALUE_3: "Three books",
-		VALUE_10: "Ten books"
+		VALUE_10: "Ten books",
+		VALUE_HIDDEN: "hidden, shown on bound key"
 	},
 
 //ReadMark	ReadMark: {

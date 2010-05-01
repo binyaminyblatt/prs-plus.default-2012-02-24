@@ -6,6 +6,7 @@
 //	2010-04-27 kravitz - Initial version
 //	2010-04-29 kravitz - Refactored events handling
 //	2010-05-01 kravitz - Fixed onSettingsChanged()
+//	2010-05-01 kravitz - Added Continue Reading action, added hidden Reading list, fixed minor bugs
 
 tmp = function() {
 	// Shortcuts
@@ -32,11 +33,27 @@ tmp = function() {
 			title: RL_TITLE,
 			icon: "CONTINUE",
 			defaultValue: RL_DEFAULT,
-			values:	[RL_DEFAULT, 3 , 10],
+			values:	["1", "3" , "10", "-3", "-10"],
 			valueTitles: {
-				1: L("VALUE_DISABLED"),
-				3: L("VALUE_3"),
-				10: L("VALUE_10")
+				"1": L("VALUE_DISABLED"),
+				"3": L("VALUE_3"),
+				"10": L("VALUE_10"),
+				"-3": L("VALUE_3") + ", " + L("VALUE_HIDDEN"),
+				"-10": L("VALUE_10") + ", " + L("VALUE_HIDDEN")
+			}
+		}],
+
+		actions: [{
+			name: "ReadingList",
+			title: RL_TITLE,
+			group: "Utils",
+			icon: "CONTINUE",
+			action: function () {
+				try {
+					ReadingList.showList();
+				} catch (e) {
+					log.error("showList(): " + e);
+				}
 			}
 		}]
 	};
@@ -68,8 +85,8 @@ tmp = function() {
 		// Not found... add to ReadingList
 		book._bookPath = bookPath;
 		list.nodes.unshift(book);
-		if (list.nodes.length > this.options.maxLength) {
-			delete list.nodes.pop()[0]; // Remove last node from list
+		if (list.nodes.length > Math.abs(this.options.maxLength)) {
+			list.nodes.pop(); // Remove last node from list
 		}
 	};
 
@@ -91,23 +108,47 @@ tmp = function() {
 		// Search current book in Reading list
 		for (var i = 0, n = list.nodes.length; i < n; i++) {
 			if (list.nodes[i]._bookPath == bookPath) { // Found...
-				delete list.nodes.splice(i, 1)[0]; // Remove node from list
+				list.nodes.splice(i, 1); // Remove node from list
 			}
 			break;
 		}
 	};
 
+	// Shows Reading list
+	ReadingList.showList = function () {
+		if (this.options.maxLength == RL_DEFAULT) {
+			// Show book
+			kbook.model.onEnterContinue();
+		} else {
+			// Show Reading list
+			var list = Core.ui.nodes.readingList;
+			kbook.model.current = list;
+			kbook.model.STATE = 'MENU';
+			kbook.tableData.setNode(list);
+			kbook.imageData.setData(null);
+			kbook.settingData.setNode(null);
+		}
+	};
+
 	// Sets original or expanded Continue Reading style
 	ReadingList.setStyle = function (l) {
-		kbook.root.nodes[0] = (l == RL_DEFAULT) ? Core.ui.nodes["continue"] : Core.ui.nodes.readingList;
+		kbook.root.nodes[0] = (l > RL_DEFAULT) ? Core.ui.nodes.readingList : Core.ui.nodes["continue"];
 	};
 
 	// Truncates list to desired length
 	ReadingList.truncTo = function (l) {
 		var list = Core.ui.nodes.readingList;
-		var n = list.nodes.length - l;
-		for (var i = 0; i < n; i++) {
-			delete list.nodes.pop()[0]; // Remove last node from list
+		if (l) {
+			var n = list.nodes.length - l;
+			for (var i = 0; i < n; i++) {
+				list.nodes.pop(); // Remove last node from list
+			}
+		} else {
+			var node = kbook.model.currentBook;
+			if (node && node.parent == list) {
+				node.parent = kbook.root; // Change currentBook parent, if Reading list is disabled
+			}
+			list.nodes = [];
 		}
 	};
 
@@ -116,17 +157,17 @@ tmp = function() {
 			return;
 		}
 		if (propertyName === "maxLength") {
-			if (this.options.maxLength < RL_DEFAULT) {
-				this.options.maxLength = RL_DEFAULT;
+			if (this.options.maxLength == 0) {
+				this.options.maxLength = String(RL_DEFAULT);
 			}
 			this.setStyle(this.options.maxLength);
 
 			if (oldValue == RL_DEFAULT) {
 				// Add current book to Reading list
 				this.onChangeBook(kbook.model);
-			} else if (oldValue) {
+			} else if (oldValue != 0) {
 				// Adjust Reading list length to new max
-				this.truncTo((this.options.maxLength == RL_DEFAULT) ? 0 : this.options.maxLength);
+				this.truncTo((this.options.maxLength == RL_DEFAULT) ? 0 : Math.abs(this.options.maxLength));
 			}
 		}
 	};
@@ -215,7 +256,7 @@ tmp = function() {
 
 		Core.ui.nodes.readingList = readingListNode;
 
-		this.onSettingsChanged("maxLength", 0, this.options.maxLength);
+		this.onSettingsChanged("maxLength", "0", this.options.maxLength);
 
 		if (this.options.maxLength != RL_DEFAULT) {
 			// Load saved Reading list
