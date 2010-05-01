@@ -258,7 +258,7 @@ return {
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		NODE_PRSP_SETTINGS:  "PRS+ Einstellungen",
 		GROUP_MENU_TITLE: "Menu Settings",
-		GROUP_VIEWER_TITLE: "Viewer Settings"
+		GROUP_VIEWER_TITLE: "Book Viewer Settings"
 	},
 
 	CoreLang: {
