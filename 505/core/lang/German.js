@@ -1,10 +1,11 @@
 // Language: German
 // Description: Localization file
-// Translator: Durglum, klawong, Mark Nord
+ // Translator: Duglum, klawong, Mark Nord
 //
 // History:
 //	2010-04-30 kravitz - Refactored, added new strings
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
+//	2010-05-01 klawong - translation is corrected
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -96,7 +97,7 @@ return {
 		RICH_TEXT_FORMAT: "RTF-Datei",
 		ADOBE_PDF: "PDF-Datei",
 		EPUB_DOCUMENT: "EPUB-Dokument",
-		BBEB_BOOK: "BBeB Buch",
+		BBEB_BOOK: "BBeB-Buch",
 		PLAIN_TEXT: "Textdatei",
 		INTERNAL_MEMORY: "Interner Speicher",
 		MEMORY_STICK: "Memory Stick",
@@ -115,9 +116,9 @@ return {
 		THIS_BOOK: "dieses Buch zu löschen.",
 		FORMAT_INTERNAL_MEMORY: "Formatiere internen Speicher",
 		PRESS_MARK_TO_FORMAT: "Drücke LESEZEICHEN",
-		MSG_INTERNAL_MEMORY: "zum formatieren.",
+		MSG_INTERNAL_MEMORY: "zum Formatieren.",
 		RESTORE_DEFAULTS: "Standardeinstellungen wiederherstellen",
-		PRESS_MARK_TO_RESTORE: "Drücke LESEZEICHEN zum wiederherstellen",
+		PRESS_MARK_TO_RESTORE: "Drücke LESEZEICHEN zum Wiederherstellen",
 		DEFAULT_SETTINGS: "der Standardeinstellungen.",
 		UPPER_PAGE: "Seite",
 		ONE_OF_ONE: "1 von 1",
@@ -257,8 +258,8 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		NODE_PRSP_SETTINGS:  "PRS+ Einstellungen",
-		GROUP_MENU_TITLE: "Menu Settings",
-		GROUP_VIEWER_TITLE: "Book Viewer Settings"
+		GROUP_MENU_TITLE: "Menü-Einstellungen",
+		GROUP_VIEWER_TITLE: "Buch-Betrachtungs-Einstellungen"
 	},
 
 	CoreLang: {
@@ -272,7 +273,7 @@ return {
 		ddMMMYYYY: "31/Jan/1999",
 		ddMONTHYYYY: "31/Januar/1999",
 
-		OPTION_DATE_SEPARATOR: "Datums-Separator",
+		OPTION_DATE_SEPARATOR: "Datums-Trennzeichen",
 		VALUE_SPACE: "Leerzeichen",
 		VALUE_NONE: "Keins",
 
@@ -335,7 +336,7 @@ return {
 		VOLUME_BUTTONS: "Lautstärke-Tasten",
 
 		// Buttons
-		BN_SIZE: "Größe-Taste",
+		BN_SIZE: "Zoom-Taste",
 		BN_BOOKMARK: "Lesezeichen-Taste",
 		BN_BL_NEXT: "Unten links 'weiter'",
 		BN_BL_PREVIOUS: "Unten links 'zurück'",
@@ -347,7 +348,7 @@ return {
 		BN_JP_UP: "Joypad hoch",
 		BN_JP_DOWN: "Joypad runter",
 		BN_JP_CENTER: "Joypad Mitte",
-		BN_H_SIZE: "Größe-Taste halten",
+		BN_H_SIZE: "Zoom-Taste halten",
 		BN_H_BOOKMARK: "Lesezeichen-Taste halten",
 		BN_H_BL_NEXT: "Unten links 'weiter' halten",
 		BN_H_BL_PREVIOUS: "Unten links 'zurück' halten",
@@ -371,7 +372,7 @@ return {
 		BN_H_VOLUME_UP: "Lautstärke + halten",
 
 		// Actions
-		ACTION_SHUTDOWN: "Herunterfahren",
+		ACTION_SHUTDOWN: "Gerät ausschalten",
 		ACTION_NEXT_PAGE: "Nächste Seite",
 		ACTION_PREVIOUS_PAGE: "Vorherige Seite",
 		ACTION_NEXT_IN_HISTORY: "Nächstes im Verlauf",
@@ -452,15 +453,15 @@ return {
 
 	EpubUserStyle: {
 		OPTION_EPUB_CSS_FILE: "EPUB benutzerdefinierter Stil (CSS-Datei)",
-		MSG_WARNING: "Bücher nach ändern neu öffnen!",
+		MSG_WARNING: "Bücher nach Ändern neu öffnen!",
 		VALUE_DISABLED: "Deaktiviert"
 	},
 
 	ReadingList: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		VALUE_DISABLED: "One book",
-		VALUE_3: "Three books",
-		VALUE_10: "Ten books"
+		VALUE_DISABLED: "Ein Buch",
+		VALUE_3: "Drei Bücher",
+		VALUE_10: "Zehn Bücher"
 	},
 
 //ReadMark	ReadMark: {
@@ -469,17 +470,17 @@ return {
 //	},
 
 	TextScale: {
-		OPTION_SCALE_DEFAULT: "Default Scale",
-		VALUE_SMALL: "(S)mall Size",
-		VALUE_MEDIUM: "(M)edium Size",
-		VALUE_LARGE: "(L)arge Size",
+		OPTION_SCALE_DEFAULT: "Standardgröße",
+		VALUE_SMALL: "(S) Kleine Schrift",
+		VALUE_MEDIUM: "(M) Mittlere Schrift",
+		VALUE_LARGE: "(L) Große Schrift",
 		VALUE_DISABLED: "Deaktiviert",
 		VALUE_ENABLED: "Aktiviert"
 	},
 
 	MenuTuning: {
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		OPTION_OUTER: "Top Level Menu Contains",
+		OPTION_OUTER: "Oberste Menü-Ebene besteht aus",
 		NODE_OTHERS: "Multimedia",
 		NODE_GAMES_AND_UTILS: "Spiele & Werkzeuge"
 	}
