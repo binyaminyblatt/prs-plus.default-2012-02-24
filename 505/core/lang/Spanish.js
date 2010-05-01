@@ -73,7 +73,7 @@ return {
 	// Standard stuff
 	Sony: {
 		// USB connected
-		DO_NOT_DISCONNECT: "¡No Desconecte!",
+		DO_NOT_DISCONNECT: "¡No Desconectar!",
 		USB_CONNECTED: "USB conectado",
 		DEVICE_LOCKED: "Dispositivo bloqueado",
 
@@ -94,7 +94,7 @@ return {
 		DEVICE_ID: "Device",
 
 		// Mime & card names
-		RICH_TEXT_FORMAT: "Texto de Formato Enriquecido",
+		RICH_TEXT_FORMAT: "Texto de Formato Enriquecido (RTF)",
 		ADOBE_PDF: "Adobe PDF",
 		EPUB_DOCUMENT: "Documento EPUB",
 		BBEB_BOOK: "Libro BBeB",
@@ -117,12 +117,12 @@ return {
 		FORMAT_INTERNAL_MEMORY: "Formatear Memoria Interna",
 		PRESS_MARK_TO_FORMAT: "Pulsa MARK para formatear",
 		MSG_INTERNAL_MEMORY: "memoria interna.",
-		RESTORE_DEFAULTS: "Restaurar ajustes iniciales",
+		RESTORE_DEFAULTS: "Restaurar a ajustes iniciales",
 		PRESS_MARK_TO_RESTORE: "Pulsa MARK para restaurar",
-		DEFAULT_SETTINGS: "ajustes iniciales.",
+		DEFAULT_SETTINGS: "a ajustes iniciales.",
 		UPPER_PAGE: "P" + String.fromCharCode(181) + "GINA",
 		ONE_OF_ONE: "1 de 1",
-		NO_BATTERY: "Sin Bater" + String.fromCharCode(237) + "a!",
+		NO_BATTERY: "¡Sin Bater" + String.fromCharCode(237) + "a!",
 		FORMATTING_INTERNAL_MEMORY: "Formateando Memoria Interna...",
 		SHUTTING_DOWN: "Apagando...",
 
@@ -189,7 +189,7 @@ return {
 		UTILITIES: "Utilidades",
 
 		// In Book Utilities
-		REMOVE_ALL_BOOKMARKS: "Quitar Marcadores",
+		REMOVE_ALL_BOOKMARKS: "Eliminar Marcadores",
 		CLEAR_HISTORY: "Borrar Historial",
 		DELETE_BOOK: "Borrar Libro",
 
@@ -200,7 +200,7 @@ return {
 		EARLIER_THIS_MONTH: "Primeros de Este Mes",
 		LAST_MONTH: "El Mes Pasado",
 		EARLIER_THIS_QUARTER: "Primeros de Este Trimestre",
-		LAST_QUARTER: "Ultimo Trimestre",
+		LAST_QUARTER: String.fromCharCode(218) + "ltimo Trimestre",
 		EARLIER_THIS_YEAR: "Primeros de Este A" + String.fromCharCode(241) + "o",
 		LAST_YEAR: "El A" + String.fromCharCode(241) + "o Pasado",
 		OLDER: "M" + String.fromCharCode(225) + "s Antiguo",
@@ -258,9 +258,9 @@ return {
 	Core: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
-		NODE_PRSP_SETTINGS: "PRS+ Ajustes",
+		NODE_PRSP_SETTINGS: "Ajustes PRS+",
 		GROUP_MENU_TITLE: "Men" + String.fromCharCode(250) + " Ajustes",
-		GROUP_VIEWER_TITLE: "Ajustes Visualizador Libros"
+		GROUP_VIEWER_TITLE: "Ajustes del Visualizador de Libros"
 	},
 
 	CoreLang: {
@@ -307,7 +307,7 @@ return {
 
 	MenuCaptions: {
 		OPTION_STYLE: "Estilo T" + String.fromCharCode(237) + "tulos",
-		VALUE_SONY_DEFAULT: "Original Sony",
+		VALUE_SONY_DEFAULT: "Original de Sony",
 		VALUE_ALWAYS_SMALL: "Siempre peque" + String.fromCharCode(241) + "os",
 		VALUE_ALWAYS_BIG: "Siempre grandes"
 	},
@@ -321,7 +321,7 @@ return {
 
 	KeyBindings: {
 		TITLE: "Configuraci" + String.fromCharCode(243) + "n Teclas",
-		DESCRIPTION: "Permite asignar acciones a les teclas",
+		DESCRIPTION: "Permite asignar acciones a las teclas",
 
 		DEFAULT_VALUE: "Por defecto",
 
@@ -380,12 +380,12 @@ return {
 		ACTION_PREVIOUS_IN_HISTORY: "Anterior en el Historial",
 		ACTION_PREVIOUS_SONG: "Anterior canci" + String.fromCharCode(243) + "n",
 		ACTION_NEXT_SONG: "Siguiente canci" + String.fromCharCode(243) + "n",
-		ACTION_GOTO_LINK: "Ir enlace"
+		ACTION_GOTO_LINK: "Ir al enlace"
 	},
 
 	Screenshot: {
-		TITLE: "Captura de Pantallas",
-		ACTION_TITLE: "Captura de pantalla",
+		TITLE: "Capturador de Pantallas",
+		ACTION_TITLE: "Capturar pantalla",
 		SAVING_TO: "Salvando en ",
 		FAILED_TO_SAVE: "Fallo en captura",
 		OPT_SAVETO: "Salvar en...",
@@ -404,17 +404,17 @@ return {
 		VALUE_BY_AUTHOR_THEN_TITLE: "Por autor y luego t" + String.fromCharCode(237) + "tulo",
 		VALUE_BY_AUTHOR_SWAPPING: "Por autor intercambiando nombre/apellido",
 		VALUE_BY_FILENAME: "Por archivo",
-		OPTION_TITLE_SORTER: "Ordenar con 'titleSorter'",
+		OPTION_TITLE_SORTER: "Ordenar por tipo de orden",
 		ENABLED: "Activado",
 		DISABLED: "Desactivado",
 		OPTION_IM_ROOT: "Ra" + String.fromCharCode(237) + "z de la Memoria Interna",
-		OPTION_CARD_SCAN: "Escanea tarjetas SD/MS",
-		OPTION_MOUNT: "Utilizar montaje en SD/MS (experimental)",
+		OPTION_CARD_SCAN: "Escaneo de tarjetas SD/MS",
+		OPTION_MOUNT: "Montar SD/MS",
 		NODE_RESCAN_INTERNAL_MEMORY: "Escaneo Memoria Interna",
-		NODE_COPY_TO_INTERNAL_MEMORY: "Copia a Memoria Interna",
-		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copia a la ra" + String.fromCharCode(237) + "z de la Memoria Interna",
-		NODE_COPY_AND_RESCAN: "Copia y escanea la Memoria Interna",
-		NODE_COPY_AND_RESCAN_COMMENT: "Copia a la ra" + String.fromCharCode(237) + "z de la Memoria Interna y escanea",
+		NODE_COPY_TO_INTERNAL_MEMORY: "Copiar a Memoria Interna",
+		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copiar a la ra" + String.fromCharCode(237) + "z de la Memoria Interna",
+		NODE_COPY_AND_RESCAN: "Copiar y escanear la Memoria Interna",
+		NODE_COPY_AND_RESCAN_COMMENT: "Copiar a la ra" + String.fromCharCode(237) + "z de la Memoria Interna y escanear",
 		ERROR_TARGET_EXISTS: "Error, el archivo destino existe",
 		NODE_BROWSE_FOLDERS: "Libros por Carpetas",
 		NODE_BROWSE_FOLDERS_COMMENT: "Explorar",
@@ -432,8 +432,8 @@ return {
 		VALUE_12H: "Formato 12 horas",
 		OPTION_MODE: "Uso del Reloj",
 		VALUE_ALWAYS_SHOWN: "Se muestra siempre",
-		VALUE_SHOWN_ONLY_IN_MENU: "Solo en los men" + String.fromCharCode(250) + "s",
-		VALUE_SHOWN_WHEN_READING: "Solo en la lectura",
+		VALUE_SHOWN_ONLY_IN_MENU: "S" + String.fromCharCode(243) + "lo en los men" + String.fromCharCode(250) + "s",
+		VALUE_SHOWN_WHEN_READING: "S" + String.fromCharCode(243) + "lo en la lectura",
 		VALUE_OFF: "Desactivado",
 		ACTION_TOGGLE_CLOCK: "Alternar Reloj",
 		AM: "am",
@@ -449,12 +449,12 @@ return {
 		OF: "de",
 		ALWAYS_SHOWN: "Siempre",
 		NEVER_SHOWN: "Nunca",
-		NOT_SHOWN_IF_SINGLE_PAGE: "Solo si hay m" + String.fromCharCode(225) + "s de una p" + String.fromCharCode(225) + "gina"
+		NOT_SHOWN_IF_SINGLE_PAGE: "S" + String.fromCharCode(243) + "lo si hay m" + String.fromCharCode(225) + "s de una p" + String.fromCharCode(225) + "gina"
 	},
 
 	EpubUserStyle: {
-		OPTION_EPUB_CSS_FILE: "EPUB Estilo de Usuario (CSS del usuario)",
-		MSG_WARNING: "¡Solo se aplica a libros abiertos despu" + String.fromCharCode(233) + "s!",
+		OPTION_EPUB_CSS_FILE: "Archivo usario EPUB css",
+		MSG_WARNING: "¡S" + String.fromCharCode(243) + "lo se aplica a libros abiertos despu" + String.fromCharCode(233) + "s!",
 		VALUE_DISABLED: "Desactivado"
 	},
 
