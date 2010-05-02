@@ -13,6 +13,7 @@
 //				Added ACTION_GOTO_LINK
 //	2010-05-02 kartu - Added dictionary translations
 //				Fixed spelling (shutdown message)
+//	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 0) {
@@ -72,6 +73,13 @@ var FUNC_GET_DATE_TIME = function (date) {
 	return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
 };
 
+
+var okText = "შენახვა";
+var okSize = 4.5;
+var onText = "ჩართულია";
+var offText = "გამორთულია";
+var onOffSize = 7.5;
+var activateText = "სტატუსი";
 
 return {
 	// Standard stuff
@@ -154,18 +162,27 @@ return {
 		DATE: "დღე", // Day
 		HOUR: "საათი",
 		MINUTE: "წუთი",
+		SETDATE_OK: okText,
+		SETDATE_OK_SIZE: okSize,
 		// slideshow
 		SLIDESHOW: "დიაფილმი",
-		SS_ON: "ჩარ",
-		SS_OFF: "გამ",
-		SS_TURN: "აქტივირება",
+		SS_ON: onText,
+		SS_OFF: offText,
+		SS_TURN: activateText,
 		SS_DURATION: "ხანძლიობა",
+		SS_SIZE: onOffSize,
+		SS_OK: okText,
+		SS_OK_SIZE: okSize,
 		SECONDS: "წამი",
+		
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "ძილის რეჟიმი",
-		AS_ON: "ჩარ",
-		AS_OFF: "გამ",
-		AS_TURN: "აქტივირება",
+		AS_ON: onText,
+		AS_OFF: offText,
+		AS_TURN: activateText,
+		AS_SIZE: onOffSize,
+		AS_OK: okText,
+		AS_OK_SIZE: okSize,
 		// about
 		ABOUT: "წიგნის შესახებ",
 		// reset to factory settings
@@ -175,10 +192,15 @@ return {
 		ADVANCED_SETTINGS: "გაფართოებული პარამეტრები",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "წიგნის ჩაკეტვა",
-		SL_OFF: "გამ",
-		SL_ON: "ჩარ",
+		SL_ON: onText,
+		SL_OFF: offText,
 		SL_CODE: "კოდი",
-		SL_TURN: "აქტივირება",
+		SL_TURN: activateText,
+		SL_SIZE: onOffSize,
+		SL_OK: okText,
+		SL_OK_SIZE: okSize,
+		SL_OK_UNLOCK: "გახსნა",
+		SL_OK_UNLOCK_SIZE: 5,
 		// format device
 		FORMAT_DEVICE: "წიგნის ფორმატირება",
 

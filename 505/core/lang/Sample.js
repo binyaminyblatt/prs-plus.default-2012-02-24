@@ -5,6 +5,7 @@
 //	2010-04-30 kravitz - Refactored, added new strings
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-02 kartu - Added dictionary strings
+//	2010-05-02	kartu - Added translations and sizes for a number of strings, including "OK"
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -156,18 +157,31 @@ return {
 		DATE: "Date", // Day
 		HOUR: "Hour",
 		MINUTE: "Minute",
+		SETDATE_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		SETDATE_OK_SIZE: 2,
 		// slideshow
 		SLIDESHOW: "Slideshow",
 		SS_ON: "On",
 		SS_OFF: "Off",
 		SS_TURN: "Turn",
 		SS_DURATION: "Duration",
+		// width in pixels = ..._SIZE * 35
+		SS_SIZE: 2,
+		SS_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		SS_OK_SIZE: 2,
 		SECONDS: "Seconds",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "Sleep Mode",
 		AS_ON: "On",
 		AS_OFF: "Off",
 		AS_TURN: "Turn",
+		// width in pixels = ..._SIZE * 35
+		AS_SIZE: 2,
+		AS_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		AS_OK_SIZE: 2,
 		// about
 		ABOUT: "About",
 		// reset to factory settings
@@ -181,6 +195,13 @@ return {
 		SL_ON: "On",
 		SL_CODE: "Code",
 		SL_TURN: "Turn",
+		// width in pixels = ..._SIZE * 35
+		SL_SIZE: 2,
+		SL_OK: "OK",
+		SL_OK_SIZE: 2,
+		SL_OK_UNLOCK: "OK", // unlock
+		// width in pixels = ..._SIZE * 35
+		SL_OK_UNLOCK_SIZE: 2,
 		// format device
 		FORMAT_DEVICE: "Format Device",
 

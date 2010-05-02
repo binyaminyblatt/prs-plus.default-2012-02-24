@@ -7,6 +7,7 @@
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-01 Translation is corrected by surquizu
 //	2010-05-02 kartu - Added dictionary strings
+//	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -151,18 +152,32 @@ return {
 		DATE: "D" + String.fromCharCode(237) + "a", // Day
 		HOUR: "Hora",
 		MINUTE: "Minut",
+		SETDATE_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		SETDATE_OK_SIZE: 2,
 		// slideshow
 		SLIDESHOW: "Presentaci" + String.fromCharCode(243) + " Diapositives",
 		SS_ON: "Si",
 		SS_OFF: "No",
 		SS_TURN: "Estat",
 		SS_DURATION: "Durada",
+		// width in pixels = ..._SIZE * 35
+		SS_SIZE: 2,
+		SS_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		SS_OK_SIZE: 2,
+
 		SECONDS: "Segons",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "Mode en Rep" + String.fromCharCode(242) + "s",
 		AS_ON: "Si",
 		AS_OFF: "No",
 		AS_TURN: "Estat",
+		// width in pixels = ..._SIZE * 35
+		AS_SIZE: 2,
+		AS_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		AS_OK_SIZE: 2,
 		// about
 		ABOUT: "Sobre el Reader",
 		// reset to factory settings
@@ -176,6 +191,13 @@ return {
 		SL_ON: "Si",
 		SL_CODE: "Codi",
 		SL_TURN: "Estat",
+		// width in pixels = ..._SIZE * 35
+		SL_SIZE: 2,
+		SL_OK: "OK",
+		SL_OK_SIZE: 2,
+		SL_OK_UNLOCK: "OK", // unlock
+		// width in pixels = ..._SIZE * 35
+		SL_OK_UNLOCK_SIZE: 2,
 		// format device
 		FORMAT_DEVICE: "Formatejar Lector",
 

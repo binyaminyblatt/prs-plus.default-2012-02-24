@@ -3,7 +3,9 @@
 //
 // History:
 //	2010-04-25 kartu - Refactored from core-lang
-//
+//	2010-05-02 kartu - Added second "unlock screen" localization (shown after sleep/usb connection)
+//				Added support for field sizes
+//				Localized "ok" texts
 
 var tmp = function() {
 	//--------------------------------------------------------------------------------------
@@ -119,8 +121,8 @@ var tmp = function() {
 		setDateNodes[2].name = L("DATE"); // day
 		setDateNodes[3].name = L("HOUR"); // hour
 		setDateNodes[4].name = L("MINUTE"); // minute
-		// makes no sense to localize this, as there is only space for "OK" text
-		// setDateNodes[5].min= L("SLIDESHOW_OK"); 
+		setDateNodes[5].min = setDateNodes[5].mAX = L("SETDATE_OK");
+		setDateNodes[5].kind = -parseFloat(L("SETDATE_OK_SIZE", 2));
 		
 		// Settings - Slideshow
 		var slideshow = Core.ui.nodes.settings.nodes[2];
@@ -132,13 +134,11 @@ var tmp = function() {
 		slideshowNodes[0].name= L("SS_TURN");
 		slideshowNodes[0].min = L("SS_OFF") ;
 		slideshowNodes[0].max = L("SS_ON") ;
-		// TODO
-		slideshowNodes[0].kind = -6.5;
+		slideshowNodes[0].kind = -parseFloat(L("SS_SIZE", 2)); 
 		slideshowNodes[1].name= L("SS_DURATION");
 		slideshowNodes[1].comment = L("SECONDS");
-		// makes no sense to localize this, as there is only space for "OK" text
-		// slideshowNodes[2].min= L("SLIDESHOW_OK"); 
-		
+		slideshowNodes[2].min =  slideshowNodes[2].max = L("SS_OK");
+		slideshowNodes[2].kind = -parseFloat(L("SS_OK_SIZE", 2));
 		// Settings - Auto Standby
 		var autoStandby = Core.ui.nodes.settings.nodes[3];
 		setStr(autoStandby, "AUTOSTANDBY");
@@ -149,8 +149,9 @@ var tmp = function() {
 		autoStandbyNodes[0].name = L("AS_TURN");
 		autoStandbyNodes[0].min = L("AS_OFF");
 		autoStandbyNodes[0].max = L("AS_ON");
-		// makes no sense to localize this, as there is only space for "OK" text
-		// slideshowNodes[1].min= L("SLIDESHOW_OK"); 
+		autoStandbyNodes[0].kind = -parseFloat(L("AS_SIZE", 2));
+		autoStandbyNodes[1].min = autoStandbyNodes[1].max = L("AS_OK"); 
+		autoStandbyNodes[1].kind = -parseFloat(L("AS_OK_SIZE", 2));
 		
 		// Settings - About
 		setStr(settingsChildren.about, "ABOUT");
@@ -170,12 +171,15 @@ var tmp = function() {
 			var screenLockSettings = kbook.screenLock;
 			var screenLockSettingsNodes = screenLockSettings.nodes;
 			setStr(screenLockSettings, "SCREEN_LOCK");
-			screenLockSettingsNodes[0].name =  L("SL_TURN");
+			screenLockSettingsNodes[0].name = L("SL_TURN");
 			screenLockSettingsNodes[0].min =  L("SL_OFF");
 			screenLockSettingsNodes[0].max =  L("SL_ON");
+			screenLockSettingsNodes[0].kind = -parseFloat(L("SL_SIZE", 2));
 			screenLockSettingsNodes[1].name =  L("SL_CODE");
+			screenLockSettingsNodes[2].min = screenLockSettingsNodes[2].max = L("SL_OK");
+			screenLockSettingsNodes[2].kind = -parseFloat(L("SL_OK_SIZE", 2));
 			
-			// Screen lock, shown to unlock the screen
+			// Shown to unlock settings
 			var screenLock = Core.ui.nodes.advancedSettings.nodes[0];
 			var screenLockNodes = screenLock.nodes;
 			screenLock._mycomment = function () {
@@ -183,6 +187,14 @@ var tmp = function() {
 			};			
 			setStr(screenLock, "SCREEN_LOCK");
 			screenLockNodes[0].name = L("SL_CODE");
+			screenLockNodes[1].min = screenLockNodes[1].max = L("SL_OK_UNLOCK");
+			screenLockNodes[1].kind = -parseFloat(L("SL_OK_UNLOCK_SIZE", 2));
+			
+			// Shown to unlock device after it was connected to USB / restart
+			var unlockNodes = kbook.screenUnlock.nodes;
+			unlockNodes[0].name = L("SL_CODE");
+			unlockNodes[1].min = unlockNodes[1].max = L("SL_OK_UNLOCK");
+			unlockNodes[1].kind = -parseFloat(L("SL_OK_UNLOCK_SIZE", 2));
 			
 			// Settings - Advanced Settings - Format Device
 			setStr(advancedSettingsChildren.formatDevice, "FORMAT_DEVICE");
@@ -564,11 +576,15 @@ var tmp = function() {
 	localizeDefaultUI = function () {
 		var sony_str = Core.lang.getStrings("Sony");
 		// Helper functions
-		L = function (key) {
+		L = function (key, defValue) {
 			if (sony_str.hasOwnProperty(key)) {
 				return sony_str[key];
 			} else {
-				return key;
+				if (defValue !== undefined) {
+					return defValue;
+				} else {
+					return key;
+				}
 			}
 		};
 		LF = function (key, param) {
