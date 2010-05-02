@@ -132,6 +132,8 @@ var tmp = function() {
 		slideshowNodes[0].name= L("SS_TURN");
 		slideshowNodes[0].min = L("SS_OFF") ;
 		slideshowNodes[0].max = L("SS_ON") ;
+		// TODO
+		slideshowNodes[0].kind = -6.5;
 		slideshowNodes[1].name= L("SS_DURATION");
 		slideshowNodes[1].comment = L("SECONDS");
 		// makes no sense to localize this, as there is only space for "OK" text

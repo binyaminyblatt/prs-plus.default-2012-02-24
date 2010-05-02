@@ -6,6 +6,7 @@
 //	2010-04-30 kravitz - Refactored, added new strings
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-01 Duglum, klawong, Mark Nord - translation is corrected
+//	2010-05-02 kartu - Added dictionary strings
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -482,6 +483,15 @@ return {
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		OPTION_OUTER: "Oberste Menü-Ebene besteht aus",
 		NODE_OTHERS: "Multimedia",
-		NODE_GAMES_AND_UTILS: "Spiele & Werkzeuge"
-	}
+		NODE_GAMES_AND_UTILS: "Spiele & Werkzeuge",
+	},
+	
+	Dictionary: {
+		TITLE: "Dictionary",
+		WARN_DICT_DISABLED: "Dictionary is disabled!",
+		WARN_DICT_DOESNT_EXIST: "Dictionary file doesn't exist!",
+		ACTION_DICTIONARY: "Launch dictionary",
+		OPTION_DICTIONARY: "Dictionary file",
+		VALUE_DISABLED: "disabled"
+	}	
 };
