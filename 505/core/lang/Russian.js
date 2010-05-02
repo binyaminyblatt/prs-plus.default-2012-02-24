@@ -12,6 +12,7 @@
 //	2010-05-01 kravitz - Changed TextScale translation
 //	2010-05-01 kravitz - Added VALUE_HIDDEN
 //	2010-05-02 kartu - Added dictionary strings
+//	2010-05-02	kartu - Added translations and sizes for a number of strings, including "OK"
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -165,18 +166,31 @@ return {
 		DATE: "День", // Day
 		HOUR: "Часы",
 		MINUTE: "Минуты",
+		SETDATE_OK: "Сохранить",
+		// width in pixels = ..._SIZE * 35
+		SETDATE_OK_SIZE: 5,
 		// slideshow
 		SLIDESHOW: "Показ слайдов",
 		SS_ON: "Вкл",
 		SS_OFF: "Откл",
 		SS_TURN: "Активировать",
 		SS_DURATION: "Продолжительность",
+		// width in pixels = ..._SIZE * 35
+		SS_SIZE: 3,
+		SS_OK: "Сохранить",
+		// width in pixels = ..._SIZE * 35
+		SS_OK_SIZE: 5,
 		SECONDS: "Секунд",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "Спящий режим",
 		AS_ON: "Вкл",
 		AS_OFF: "Откл",
 		AS_TURN: "Активировать",
+		// width in pixels = ..._SIZE * 35
+		AS_SIZE: 3,
+		AS_OK: "Сохранить",
+		// width in pixels = ..._SIZE * 35
+		AS_OK_SIZE: 5,
 		// about
 		ABOUT: "О Ридере",
 		// reset to factory settings
@@ -190,6 +204,13 @@ return {
 		SL_ON: "Вкл",
 		SL_CODE: "Пароль",
 		SL_TURN: "Активировать",
+		// width in pixels = ..._SIZE * 35
+		SL_SIZE: 3,
+		SL_OK: "Сохранить",
+		SL_OK_SIZE: 5,
+		SL_OK_UNLOCK: "Открыть", // unlock
+		// width in pixels = ..._SIZE * 35
+		SL_OK_UNLOCK_SIZE: 5,
 		// format device
 		FORMAT_DEVICE: "Форматировать внутреннюю память",
 

@@ -7,6 +7,7 @@
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-01 Translation is corrected by VICTORSJG
 //	2010-05-02 kartu - Added dictionary strings
+//	2010-05-02	kartu - Added translations and sizes for a number of strings, including "OK"
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -149,6 +150,9 @@ return {
 		YEAR: "A" + String.fromCharCode(241) + "o",
 		MONTH: "Mes",
 		DATE: "D" + String.fromCharCode(237) + "a",
+		SETDATE_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		SETDATE_OK_SIZE: 2,
 		// Day
 		HOUR: "Hora",
 		MINUTE: "Minuto",
@@ -158,12 +162,22 @@ return {
 		SS_OFF: "Desactivado",
 		SS_TURN: "Estado",
 		SS_DURATION: "Duraci" + String.fromCharCode(243) + "n",
+		// width in pixels = ..._SIZE * 35
+		SS_SIZE: 2,
+		SS_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		SS_OK_SIZE: 2,
 		SECONDS: "Segundos",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "Modo Reposo",
 		AS_ON: "Activado",
 		AS_OFF: "Desactivado",
 		AS_TURN: "Estado",
+		// width in pixels = ..._SIZE * 35
+		AS_SIZE: 2,
+		AS_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		AS_OK_SIZE: 2,
 		// about
 		ABOUT: "Acerca del Reader",
 		// reset to factory settings
@@ -177,6 +191,13 @@ return {
 		SL_ON: "Activado",
 		SL_CODE: "C" + String.fromCharCode(243) + "digo",
 		SL_TURN: "Estado",
+		// width in pixels = ..._SIZE * 35
+		SL_SIZE: 2,
+		SL_OK: "OK",
+		SL_OK_SIZE: 2,
+		SL_OK_UNLOCK: "OK", // unlock
+		// width in pixels = ..._SIZE * 35
+		SL_OK_UNLOCK_SIZE: 2,
 		// format device
 		FORMAT_DEVICE: "Formatear Dispositivo",
 

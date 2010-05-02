@@ -7,6 +7,7 @@
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-01 Duglum, klawong, Mark Nord - translation is corrected
 //	2010-05-02 kartu - Added dictionary strings
+//	2010-05-02	kartu - Added translations and sizes for a number of strings, including "OK"
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -151,18 +152,31 @@ return {
 		DATE: "Tag", // Day
 		HOUR: "Stunde",
 		MINUTE: "Minute",
+		SETDATE_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		SETDATE_OK_SIZE: 2,
 		// slideshow
 		SLIDESHOW: "Diashow",
 		SS_ON: "Ja",
 		SS_OFF: "Nein",
 		SS_TURN: "Aktivieren",
 		SS_DURATION: "Intervall",
+		// width in pixels = ..._SIZE * 35
+		SS_SIZE: 2,
+		SS_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		SS_OK_SIZE: 2,
 		SECONDS: "Sekunden",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "Schlaf-Modus",
 		AS_ON: "Ja",
 		AS_OFF: "Nein",
 		AS_TURN: "Aktivieren",
+		// width in pixels = ..._SIZE * 35
+		AS_SIZE: 2,
+		AS_OK: "OK",
+		// width in pixels = ..._SIZE * 35
+		AS_OK_SIZE: 2,
 		// about
 		ABOUT: "Über",
 		// reset to factory settings
@@ -176,6 +190,13 @@ return {
 		SL_ON: "Nein",
 		SL_CODE: "Code eingeben",
 		SL_TURN: "Aktivieren",
+		// width in pixels = ..._SIZE * 35
+		SL_SIZE: 2,
+		SL_OK: "OK",
+		SL_OK_SIZE: 2,
+		SL_OK_UNLOCK: "OK", // unlock
+		// width in pixels = ..._SIZE * 35
+		SL_OK_UNLOCK_SIZE: 2,
 		// format device
 		FORMAT_DEVICE: "Gerät formatieren",
 
