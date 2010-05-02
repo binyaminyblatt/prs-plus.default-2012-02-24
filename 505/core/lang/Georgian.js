@@ -11,6 +11,8 @@
 //	2010-04-30 kravitz - Refactored, added new strings
 //	2010-05-01 kartu - Translated new strings, fixed minor glitches
 //				Added ACTION_GOTO_LINK
+//	2010-05-02 kartu - Added dictionary translations
+//				Fixed spelling (shutdown message)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 0) {
@@ -126,7 +128,7 @@ return {
 		ONE_OF_ONE: "1 - 1",
 		NO_BATTERY: "აკუმულატორი დამჯდარია!",
 		FORMATTING_INTERNAL_MEMORY: "შიდა მეხსიერების ფორმატირება...",
-		SHUTTING_DOWN: "	მუშაობის დასრულება...",
+		SHUTTING_DOWN: "მუშაობის დასრულება...",
 
 		// Root menu
 		CONTINUE: "კითხვის გაგრძელება",
