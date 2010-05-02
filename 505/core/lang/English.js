@@ -7,6 +7,7 @@
 //	2010-05-01 kartu - Renamed "Viewer settings" to "Book Viewer Settings"
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-01 kravitz - Added VALUE_HIDDEN
+//	2010-05-02 kartu - Added dictionary strings
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -262,5 +263,14 @@ return {
 		OPTION_OUTER: "Top Level Menu Contains",
 		NODE_OTHERS: "Multimedia",
 		NODE_GAMES_AND_UTILS: "Games & Utilities"
+	},
+	
+	Dictionary: {
+		TITLE: "Dictionary",
+		WARN_DICT_DISABLED: "Dictionary is disabled!",
+		WARN_DICT_DOESNT_EXIST: "Dictionary file doesn't exist!",
+		ACTION_DICTIONARY: "Launch dictionary",
+		OPTION_DICTIONARY: "Dictionary file",
+		VALUE_DISABLED: "disabled"
 	}
 };

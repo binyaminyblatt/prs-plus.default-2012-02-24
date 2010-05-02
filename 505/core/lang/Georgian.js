@@ -461,9 +461,9 @@ return {
 
 	ReadingList: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		VALUE_DISABLED: "One book",
-		VALUE_3: "Three books",
-		VALUE_10: "Ten books"
+		VALUE_DISABLED: "ერთი წიგნი",
+		VALUE_3: "სამი წიგნი",
+		VALUE_10: "ათი წიგნი"
 	},
 
 //ReadMark	ReadMark: {
@@ -485,5 +485,14 @@ return {
 		OPTION_OUTER: "მენიუს სათაური შეიცავს",
 		NODE_OTHERS: "მულტიმედია",
 		NODE_GAMES_AND_UTILS: "თამაშები და უტილიტები"
+	},
+	
+	Dictionary: {
+		TITLE: "ლექსიკონი",
+		WARN_DICT_DISABLED: "ლექსიკონი გამორთულია!!",
+		WARN_DICT_DOESNT_EXIST: "ლექსიკონის ფაილი არ არსებობს!",
+		ACTION_DICTIONARY: "ლექსიკონის გაშვება",
+		OPTION_DICTIONARY: "ლექსიკონის ფაილი",
+		VALUE_DISABLED: "გამორთულია"
 	}
 };

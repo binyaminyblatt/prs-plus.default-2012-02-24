@@ -11,6 +11,7 @@
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-01 kravitz - Changed TextScale translation
 //	2010-05-01 kravitz - Added VALUE_HIDDEN
+//	2010-05-02 kartu - Added dictionary strings
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -499,5 +500,14 @@ return {
 		OPTION_OUTER: "В главном меню",
 		NODE_OTHERS: "Мультимедиа",
 		NODE_GAMES_AND_UTILS: "Игры и инструменты"
+	},
+	
+	Dictionary: {
+		TITLE: "Словарь",
+		WARN_DICT_DISABLED: "Словарь отключён!",
+		WARN_DICT_DOESNT_EXIST: "Файл словаря не существует!",
+		ACTION_DICTIONARY: "Запустить словарь",
+		OPTION_DICTIONARY: "Файл словаря",
+		VALUE_DISABLED: "Отключён"
 	}
 };
