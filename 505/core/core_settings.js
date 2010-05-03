@@ -9,6 +9,7 @@
 //	2010-04-27 kravitz - Added Core.settings.init()
 //	2010-04-27 kravitz - Grouping of settings (based on "settingsGroup")
 //	2010-04-27 kravitz - Added "N Settings" comment (if not preset anything else)
+//	2010-05-03 kravitz - Added insertAddonNode(), removeAddonNode()
 
 try {
 	// dummy function, to avoid introducing global vars
@@ -173,7 +174,7 @@ try {
 			};
 			// Create addon nodes and addon option nodes
 			for (i = 0, n = addons.length; i < n; i++) {
-				Core.settings.createAddonNodes(addons[i]);
+				Core.settings.createAddonNode(addons[i]);
 				Core.settings.createAddonSettings(addons[i]);
 			}
 		};
@@ -181,7 +182,7 @@ try {
 		// Creates entry under "Games & Utilities" corresponding to the addon.
 		// Arguments:
 		//	addon - addon variable
-		Core.settings.createAddonNodes = function(addon) {
+		Core.settings.createAddonNode = function(addon) {
 			if(addon && addon.activate) {
 				var kind = Core.ui.NodeKinds.getIcon(addon.icon);
 				var title = addon.hasOwnProperty("title") ? addon.title : addon.name;
@@ -194,13 +195,39 @@ try {
 				node.enter = function() {
 					addon.activate();
 				};
-				if(!Core.ui.nodes.gamesAndUtils.hasOwnProperty("nodes")) {
-					Core.ui.nodes.gamesAndUtils.nodes = [];
-				}
 				Core.ui.nodes.gamesAndUtils.nodes.push(node);
 			}
 		};
 
+		// Search node into "Games & Utilities".
+		Core.settings.searchAddonNode = function(node) {
+			var nodes = Core.ui.nodes.gamesAndUtils.nodes;
+			for (var i = 0, n = nodes.length; i < n; i++) {
+				if (nodes[i] == node) {
+					// ... found
+					return i;
+				}
+			}
+			// ... not found
+			return -1;
+		};
+
+		// Inserts node in front of "Games & Utilities".
+		Core.settings.insertAddonNode = function(node) {
+			if (Core.settings.searchAddonNode(node) == -1) {
+//				node.parent = Core.ui.nodes.gamesAndUtils;
+				Core.ui.nodes.gamesAndUtils.nodes.unshift(node);
+			}
+		};
+
+		// Removes node from "Games & Utilities".
+		Core.settings.removeAddonNode = function(node) {
+			var pos = Core.settings.searchAddonNode(node);
+			if (pos != -1) {
+//				node.parent = kbook.root;
+				Core.ui.nodes.gamesAndUtils.nodes.splice(pos, 1);
+			}
+		};
 
 		// Creates entry under "Settings => Addon Settings" corresponding to the addon.
 		// Arguments:
@@ -220,10 +247,10 @@ try {
 						group = addon.settingsGroup;
 						for (var i = 0, n = settingsNode.nodes.length; i < n; i++) {
 							if (settingsNode.nodes[i]._settingsGroup === group) {
-								// ...group found
+								// ... group found
 								thisSettingsNode = settingsNode.nodes[i];
-                                                                if (thisSettingsNode._settingsCount) {
-                                                                	// Group comment is undefined
+								if (thisSettingsNode._settingsCount) {
+									// Group comment is undefined
 									thisSettingsNode._settingsCount += optionDefs.length;
 									thisSettingsNode._mycomment = coreL("FUNC_X_SETTINGS", thisSettingsNode._settingsCount);
 								}
@@ -231,7 +258,7 @@ try {
 							}
 						}
 						if (thisSettingsNode === undefined) {
-							// ...group not found
+							// ... group not found
 							var defs = this.settingsGroupDefs[group];
 							title = defs.title;
 							comment = defs.comment;

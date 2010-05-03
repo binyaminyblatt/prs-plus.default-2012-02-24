@@ -14,6 +14,7 @@
 //	2010-05-02 kartu - Added dictionary translations
 //				Fixed spelling (shutdown message)
 //	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
+//	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 0) {
@@ -283,7 +284,10 @@ return {
 	Core: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS:  "PRS+ პარამეტრები",
+		NODE_OTHERS: "მულტიმედია",
+		NODE_GAMES_AND_UTILS: "თამაშები და უტილიტები",
 		GROUP_MENU_TITLE: "მენიუს პარამეტრები",
 		GROUP_VIEWER_TITLE: "წიგნის მნახველის პარამეტრები"
 	},
@@ -483,11 +487,13 @@ return {
 		VALUE_DISABLED: "გათიშული"
 	},
 
-	ReadingList: {
+	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		VALUE_DISABLED: "ერთი წიგნი",
-		VALUE_3: "სამი წიგნი",
-		VALUE_10: "ათი წიგნი"
+		TITLE: "Book History",
+		VALUE_DISABLED: "გამორთულია",
+		OPTION_REPLACE: "History into Continue Reading",
+		VALUE_ON: "On",
+		VALUE_OFF: "Off"
 	},
 
 //ReadMark	ReadMark: {
@@ -505,10 +511,7 @@ return {
 	},
 
 	MenuTuning: {
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		OPTION_OUTER: "მენიუს სათაური შეიცავს",
-		NODE_OTHERS: "მულტიმედია",
-		NODE_GAMES_AND_UTILS: "თამაშები და უტილიტები"
+		OPTION_OUTER: "მენიუს სათაური შეიცავს"
 	},
 	
 	Dictionary: {

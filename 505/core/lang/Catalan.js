@@ -8,6 +8,7 @@
 //	2010-05-01 Translation is corrected by surquizu
 //	2010-05-02 kartu - Added dictionary strings
 //	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
+//	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -280,7 +281,10 @@ return {
 	Core: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS: "Configuraci" + String.fromCharCode(243) + " PRS+",
+		NODE_OTHERS: "Multim" + String.fromCharCode(232) + "dia",
+		NODE_GAMES_AND_UTILS: "Jocs - Aplicacions",
 		GROUP_MENU_TITLE: "Menu Configuraci" + String.fromCharCode(243) + "",
 		GROUP_VIEWER_TITLE: "Visor Configuraci" + String.fromCharCode(243) + " Llibre"
 	},
@@ -480,11 +484,13 @@ return {
 		VALUE_DISABLED: "Desactivat"
 	},
 
-	ReadingList: {
+	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		VALUE_DISABLED: "Un llibre",
-		VALUE_3: "Tres llibres",
-		VALUE_10: "Deu llibres"
+		TITLE: "Book History",
+		VALUE_DISABLED: "Desactivat",
+		OPTION_REPLACE: "History into Continue Reading",
+		VALUE_ON: "On",
+		VALUE_OFF: "Off"
 	},
 
 //ReadMark	ReadMark: {
@@ -502,10 +508,7 @@ return {
 	},
 
 	MenuTuning: {
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		OPTION_OUTER: "Contingut del men" + String.fromCharCode(250) + " superior",
-		NODE_OTHERS: "Multim" + String.fromCharCode(232) + "dia",
-		NODE_GAMES_AND_UTILS: "Jocs - Aplicacions"
+		OPTION_OUTER: "Contingut del men" + String.fromCharCode(250) + " superior"
 	},
 	
 	Dictionary: {

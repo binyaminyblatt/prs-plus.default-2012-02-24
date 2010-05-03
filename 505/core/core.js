@@ -9,6 +9,7 @@
 //	2010-04-27 kravitz - Added "PRS+ Settings" node comment
 //	2010-04-27 kravitz - Creation of addon and setting nodes are moved to Core.settings.init()
 //	2010-04-29 kravitz - Refactored events handling
+//	2010-05-03 kravitz - Code of base nodes creating is moved to createBaseNodes() from MenuTuning.js
 
 var log;
 
@@ -73,18 +74,52 @@ var tmp = function() {
 
 	// Creates addon related nodes
 	//
+	Core.createBaseNodes = function () {
+		// "PRS+ Settings", located in "Settings" menu
+		Core.ui.nodes.addonSettingsNode = Core.ui.createContainerNode({
+			parent: Core.ui.nodes.settings,
+			title: coreL("NODE_PRSP_SETTINGS"),
+			kind: Core.ui.NodeKinds.SETTINGS,
+			comment: function () {
+				return coreL("FUNC_X_SETTINGS", this.nodes.length);
+			}
+		});
+		Core.ui.nodes.settings.nodes.splice(0, 0, Core.ui.nodes.addonSettingsNode);
+
+		// "Multimedia" can contain "Now Playing", "Audio", "Pictures" and "Games & Utilities"
+		Core.ui.nodes.others = Core.ui.createContainerNode({
+			parent: kbook.root,
+			title: coreL("NODE_OTHERS"),
+			kind: Core.ui.NodeKinds.AUDIO,
+			comment: function () {
+				return coreL("FUNC_X_ITEMS", this.nodes.length);
+			}
+		});
+		Core.ui.nodes.others.update = function (model) {
+			for (var i = 0, n = this.nodes.length; i < n; i++) {
+				if (this.nodes[i].update) {
+					this.nodes[i].update.call(this.nodes[i], model);
+				}
+			}
+		};
+
+		// "Games & Utilities" contains addon nodes
+		Core.ui.nodes.gamesAndUtils = Core.ui.createContainerNode({
+			parent: kbook.root,
+			title: coreL("NODE_GAMES_AND_UTILS"),
+			kind: Core.ui.NodeKinds.GAME,
+			comment: function () {
+				return coreL("FUNC_X_ITEMS", this.nodes.length);
+			}
+		});
+		Core.ui.nodes.gamesAndUtils.nodes = [];
+	};
+
+	// Init of settings and addons
+	//
 	Core.init = function () {
 		try {
-			// Root settings node, located "Settings" => "Addon Settings"
-			Core.ui.nodes.addonSettingsNode = Core.ui.createContainerNode({
-				parent: Core.ui.nodes.settings,
-				title: coreL("NODE_PRSP_SETTINGS"),
-				kind: Core.ui.NodeKinds.SETTINGS,
-				comment: function () {
-					return coreL("FUNC_X_SETTINGS", this.nodes.length);
-				}
-			});
-			Core.ui.nodes.settings.nodes.splice(0, 0, Core.ui.nodes.addonSettingsNode);
+			Core.createBaseNodes();
 
 			var addons = this.addons;
 

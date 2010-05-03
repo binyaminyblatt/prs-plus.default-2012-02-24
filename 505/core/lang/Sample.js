@@ -5,7 +5,7 @@
 //	2010-04-30 kravitz - Refactored, added new strings
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-02 kartu - Added dictionary strings
-//	2010-05-02	kartu - Added translations and sizes for a number of strings, including "OK"
+//	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -284,7 +284,10 @@ return {
 	Core: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS:  "PRS+ Settings",
+		NODE_OTHERS: "Multimedia",
+		NODE_GAMES_AND_UTILS: "Games & Utilities",
 		GROUP_MENU_TITLE: "Menu Settings",
 		GROUP_VIEWER_TITLE: "Book Viewer Settings"
 	},
@@ -406,7 +409,7 @@ return {
 		ACTION_PREVIOUS_IN_HISTORY: "Previous in History",
 		ACTION_PREVIOUS_SONG: "Previous Song",
 		ACTION_NEXT_SONG: "Next Song",
-		ACTION_GOTO_LINK: "Enter link"
+		ACTION_GOTO_LINK: "Goto Link"
 	},
 
 	Screenshot: {
@@ -484,11 +487,13 @@ return {
 		VALUE_DISABLED: "Disabled"
 	},
 
-	ReadingList: {
+	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		VALUE_DISABLED: "One book",
-		VALUE_3: "Three books",
-		VALUE_10: "Ten books"
+		TITLE: "Book History",
+		VALUE_DISABLED: "Disabled",
+		OPTION_REPLACE: "History into Continue Reading",
+		VALUE_ON: "On",
+		VALUE_OFF: "Off"
 	},
 
 //ReadMark	ReadMark: {
@@ -506,18 +511,15 @@ return {
 	},
 
 	MenuTuning: {
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		OPTION_OUTER: "Top Level Menu Contains",
-		NODE_OTHERS: "Multimedia",
-		NODE_GAMES_AND_UTILS: "Games & Utilities"
+		OPTION_OUTER: "Top Level Menu Contains"
 	},
-	
+
 	Dictionary: {
 		TITLE: "Dictionary",
 		WARN_DICT_DISABLED: "Dictionary is disabled!",
 		WARN_DICT_DOESNT_EXIST: "Dictionary file doesn't exist!",
-		ACTION_DICTIONARY: "Launch dictionary",
-		OPTION_DICTIONARY: "Dictionary file",
-		VALUE_DISABLED: "disabled"
+		ACTION_DICTIONARY: "Launch Dictionary",
+		OPTION_DICTIONARY: "Dictionary File",
+		VALUE_DISABLED: "Disabled"
 	}
 };
