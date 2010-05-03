@@ -485,11 +485,11 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		TITLE: "Book History",
+		TITLE: "Historial del libro",
 		VALUE_DISABLED: "Desactivado",
-		OPTION_REPLACE: "History into Continue Reading",
-		VALUE_ON: "On",
-		VALUE_OFF: "Off"
+		OPTION_REPLACE: "Historial de continuar leyendo",
+		VALUE_ON: "Activado",
+		VALUE_OFF: "Desactivado"
 	},
 
 //ReadMark	ReadMark: {
@@ -511,11 +511,11 @@ return {
 	},
 	
 	Dictionary: {
-		TITLE: "Dictionary",
-		WARN_DICT_DISABLED: "Dictionary is disabled!",
-		WARN_DICT_DOESNT_EXIST: "Dictionary file doesn't exist!",
-		ACTION_DICTIONARY: "Launch dictionary",
-		OPTION_DICTIONARY: "Dictionary file",
-		VALUE_DISABLED: "disabled"
+		TITLE: "Diccionario",
+		WARN_DICT_DISABLED: "¡Diccionario desactivado!",
+		WARN_DICT_DOESNT_EXIST: "¡No existe el archivo del diccionario!",
+		ACTION_DICTIONARY: "Ejecutar diccionario",
+		OPTION_DICTIONARY: "Archivo diccionario",
+		VALUE_DISABLED: "Desactivado"
 	}
 };
