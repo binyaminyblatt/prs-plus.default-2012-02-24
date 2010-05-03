@@ -10,9 +10,9 @@
 //	2010-04-30 kravitz - Fixed SL_OFF and SL_ON translation
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-01 kravitz - Changed TextScale translation
-//	2010-05-01 kravitz - Added VALUE_HIDDEN
 //	2010-05-02 kartu - Added dictionary strings
-//	2010-05-02	kartu - Added translations and sizes for a number of strings, including "OK"
+//	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
+//	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -157,8 +157,8 @@ return {
 		// In Settings
 		// orientation
 		ORIENTATION: "Ориентация",
-		HORIZONTAL: "Портрет",
-		VERTICAL: "Ландшафт",
+		HORIZONTAL: "Альбомная",
+		VERTICAL: "Книжная",
 		// set date
 		SET_DATE: "Дата и время",
 		YEAR: "Год",
@@ -293,7 +293,10 @@ return {
 	Core: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS: "Настройки PRS+",
+		NODE_OTHERS: "Мультимедиа",
+		NODE_GAMES_AND_UTILS: "Игры и инструменты",
 		GROUP_MENU_TITLE: "Настройки меню",
 		GROUP_VIEWER_TITLE: "Настройки чтения"
 	},
@@ -491,15 +494,16 @@ return {
 	EpubUserStyle: {
 		OPTION_EPUB_CSS_FILE: "Пользовательский стиль EPUB (CSS файл)",
 		MSG_WARNING: "Влияет только на книги, созданные позднее!",
-		VALUE_DISABLED: "Отключено"
+		VALUE_DISABLED: "Отключён"
 	},
 
-	ReadingList: {
+	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		VALUE_DISABLED: "Одна книга",
-		VALUE_3: "Три книги",
-		VALUE_10: "Десять книг",
-		VALUE_HIDDEN: "скрытый, отображается по кнопке"
+		TITLE: "История книг",
+		VALUE_DISABLED: "Отключена",
+		OPTION_REPLACE: "История в Продолжить чтение",
+		VALUE_ON: "Включена",
+		VALUE_OFF: "Отключена"
 	},
 
 //ReadMark	ReadMark: {
@@ -512,17 +516,14 @@ return {
 		VALUE_SMALL: "(S) Мелкий шрифт",
 		VALUE_MEDIUM: "(M) Средний шрифт",
 		VALUE_LARGE: "(L) Крупный шрифт",
-		VALUE_DISABLED: "Отключено",
-		VALUE_ENABLED: "Включено"
+		VALUE_DISABLED: "Отключён",
+		VALUE_ENABLED: "Включён"
 	},
 
 	MenuTuning: {
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		OPTION_OUTER: "В главном меню",
-		NODE_OTHERS: "Мультимедиа",
-		NODE_GAMES_AND_UTILS: "Игры и инструменты"
+		OPTION_OUTER: "В главном меню"
 	},
-	
+
 	Dictionary: {
 		TITLE: "Словарь",
 		WARN_DICT_DISABLED: "Словарь отключён!",

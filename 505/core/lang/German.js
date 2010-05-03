@@ -7,7 +7,8 @@
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-01 Duglum, klawong, Mark Nord - translation is corrected
 //	2010-05-02 kartu - Added dictionary strings
-//	2010-05-02	kartu - Added translations and sizes for a number of strings, including "OK"
+//	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
+//	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -279,7 +280,10 @@ return {
 	Core: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS:  "PRS+ Einstellungen",
+		NODE_OTHERS: "Multimedia",
+		NODE_GAMES_AND_UTILS: "Spiele & Werkzeuge",
 		GROUP_MENU_TITLE: "Menü-Einstellungen",
 		GROUP_VIEWER_TITLE: "Darstellungsoptionen"
 	},
@@ -479,11 +483,13 @@ return {
 		VALUE_DISABLED: "Deaktiviert"
 	},
 
-	ReadingList: {
+	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		VALUE_DISABLED: "Ein Buch",
-		VALUE_3: "Drei Bücher",
-		VALUE_10: "Zehn Bücher"
+		TITLE: "Book History",
+		VALUE_DISABLED: "Deaktiviert",
+		OPTION_REPLACE: "History into Continue Reading",
+		VALUE_ON: "On",
+		VALUE_OFF: "Off"
 	},
 
 //ReadMark	ReadMark: {
@@ -501,10 +507,7 @@ return {
 	},
 
 	MenuTuning: {
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		OPTION_OUTER: "Oberste Menü-Ebene besteht aus",
-		NODE_OTHERS: "Multimedia",
-		NODE_GAMES_AND_UTILS: "Spiele & Werkzeuge",
+		OPTION_OUTER: "Oberste Menü-Ebene besteht aus"
 	},
 	
 	Dictionary: {

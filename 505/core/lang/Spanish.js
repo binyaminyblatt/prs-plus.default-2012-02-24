@@ -7,7 +7,8 @@
 //	2010-05-01 kartu - Added ACTION_GOTO_LINK
 //	2010-05-01 Translation is corrected by VICTORSJG
 //	2010-05-02 kartu - Added dictionary strings
-//	2010-05-02	kartu - Added translations and sizes for a number of strings, including "OK"
+//	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
+//	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -149,13 +150,12 @@ return {
 		SET_DATE: "Fecha y Hora",
 		YEAR: "A" + String.fromCharCode(241) + "o",
 		MONTH: "Mes",
-		DATE: "D" + String.fromCharCode(237) + "a",
+		DATE: "D" + String.fromCharCode(237) + "a", // Day
+		HOUR: "Hora",
+		MINUTE: "Minuto",
 		SETDATE_OK: "OK",
 		// width in pixels = ..._SIZE * 35
 		SETDATE_OK_SIZE: 2,
-		// Day
-		HOUR: "Hora",
-		MINUTE: "Minuto",
 		// slideshow
 		SLIDESHOW: "Modo Diapositivas",
 		SS_ON: "Activado",
@@ -280,7 +280,10 @@ return {
 	Core: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
+		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS: "Ajustes PRS+",
+		NODE_OTHERS: "Multimedia",
+		NODE_GAMES_AND_UTILS: "Juegos - Utilidades",
 		GROUP_MENU_TITLE: "Men" + String.fromCharCode(250) + " Ajustes",
 		GROUP_VIEWER_TITLE: "Ajustes del Visualizador de Libros"
 	},
@@ -480,11 +483,13 @@ return {
 		VALUE_DISABLED: "Desactivado"
 	},
 
-	ReadingList: {
+	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		VALUE_DISABLED: "Un libro",
-		VALUE_3: "Tres libros",
-		VALUE_10: "Diez libros"
+		TITLE: "Book History",
+		VALUE_DISABLED: "Desactivado",
+		OPTION_REPLACE: "History into Continue Reading",
+		VALUE_ON: "On",
+		VALUE_OFF: "Off"
 	},
 
 //ReadMark	ReadMark: {
@@ -502,10 +507,7 @@ return {
 	},
 
 	MenuTuning: {
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		OPTION_OUTER: "Contenido del men" + String.fromCharCode(250) + " superior",
-		NODE_OTHERS: "Multimedia",
-		NODE_GAMES_AND_UTILS: "Juegos - Utilidades"
+		OPTION_OUTER: "Contenido del men" + String.fromCharCode(250) + " superior"
 	},
 	
 	Dictionary: {
