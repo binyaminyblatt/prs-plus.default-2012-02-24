@@ -5,6 +5,7 @@
 // History:
 //	2010-04-29 kravitz - Initial version
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory
+//	2010-05-04 kravitz - Fixed init()
 //
 // TODO:
 //	- onSleep, onResume
@@ -72,7 +73,6 @@ try {
 				createHandler(kbook.model, "doDeleteBook", ["BookHistory"], "BrowseFolders", []);
 
 				// onTerminate
-				var USBDispatcher = Core.system.getSoValue("USBDispatcher");
 				USBDispatcher.prspOnTerminate = function () {
 					try {
 						Core.callMethodForAll(Core.addons, "onTerminate");

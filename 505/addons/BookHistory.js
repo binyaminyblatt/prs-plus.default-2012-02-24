@@ -8,6 +8,7 @@
 //	2010-05-01 kravitz - Fixed onSettingsChanged()
 //	2010-05-01 kravitz - Added Continue Reading action, fixed minor bugs
 //	2010-05-03 kravitz - Renamed from ReadingList, refactored options
+//	2010-05-04 kravitz - Fixed doDeleteBook()
 
 tmp = function() {
 	// Shortcuts
@@ -125,8 +126,8 @@ tmp = function() {
 		for (var i = 0, n = list.nodes.length; i < n; i++) {
 			if (list.nodes[i]._bookPath == bookPath) { // ... found
 				list.nodes.splice(i, 1); // Remove node from history
+				break;
 			}
-			break;
 		}
 	};
 
