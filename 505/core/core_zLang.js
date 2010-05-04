@@ -13,6 +13,7 @@
 //	2010-04-25 kartu - Marked kbook.model.getDateAndClock as constructor
 //	2010-04-25 kartu - Moved default UI localizer into separate file
 //	2010-04-27 kravitz - Localizers are adapted for work with functions
+//	2010-05-04 kravitz - Added French locale
 
 tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -180,11 +181,12 @@ tmp = function() {
 				title: langL("OPTION_LANG"),
 				icon: "LIST",
 				defaultValue: "English.js",
-				values:	["Catalan.js", "German.js", "English.js",  "Spanish.js", "Georgian.js", "Russian.js"],
+				values:	["Catalan.js", "German.js", "English.js", "French.js", "Spanish.js", "Georgian.js", "Russian.js"],
 				valueTitles: {
 					"Catalan.js": "Català",
 					"German.js": "Deutsch",
 					"English.js": "English",
+					"French.js": "Français",
 					"Georgian.js": "ქართული",
 					"Russian.js": "Русский",
 					"Spanish.js": "Español"
