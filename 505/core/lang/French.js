@@ -1,6 +1,6 @@
 // Language: French
 // Description: Localization file
-// Translator:  VICTORSJG
+// Translator: VICTORSJG
 //
 // History:
 //	2010-05-04 Initial version by VICTORSJG
@@ -490,9 +490,9 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		TITLE: "Book History",
-		VALUE_DISABLED: "Disabled",
-		OPTION_REPLACE: "History into Continue Reading",
+		TITLE: "Livre d'histoire",
+		VALUE_DISABLED: "D" + String.fromCharCode(233) + "sactiv" + String.fromCharCode(233) + "",
+		OPTION_REPLACE: "Histoire en continuer la lecture",
 		VALUE_ON: "On",
 		VALUE_OFF: "Off"
 	},
@@ -518,7 +518,7 @@ return {
 	Dictionary: {
 		TITLE: "Dictionnaire",
 		WARN_DICT_DISABLED: "Dictionnaire est d" + String.fromCharCode(233) + "sactiv" + String.fromCharCode(233) + "!",
-		WARN_DICT_DOESNT_EXIST: "Dictionary file doesn't exist!",
+		WARN_DICT_DOESNT_EXIST: "Dictionnaire fichier n'existe pas!",
 		ACTION_DICTIONARY: "Lancement dictionnaire",
 		OPTION_DICTIONARY: "Dictionnaire fichier",
 		VALUE_DISABLED: "Handicap" + String.fromCharCode(233) + ""
