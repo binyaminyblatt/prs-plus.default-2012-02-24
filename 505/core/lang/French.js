@@ -5,6 +5,7 @@
 // History:
 //	2010-05-04 Initial version by VICTORSJG
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
+//	2010-05-06 kartu - Added Duglum's corrections
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -41,7 +42,7 @@ var FUNC_X_SONGS = function (n) {
 };
 
 var FUNC_X_BOOKMARKS = function (n) {
-	return FUNC_X_SOMETHING(n, ["tous les signets", "1 marcador", "Aucun marcador"]);
+	return FUNC_X_SOMETHING(n, ["tous les signets", "1 marque-page", "Aucun marque-pages"]);
 };
 
 var FUNC_X_COLLECTIONS = function (n) {
@@ -227,7 +228,7 @@ return {
 		EARLIER_THIS_QUARTER: "Ant" + String.fromCharCode(233) + "rieures ce trimestre",
 		LAST_QUARTER: "Dernier trimestre",
 		EARLIER_THIS_YEAR: "Plus t" + String.fromCharCode(244) + "t cette année",
-		LAST_YEAR: "El Ann" + String.fromCharCode(233) + "e Pasado",
+		LAST_YEAR: "Ann" + String.fromCharCode(233) + "e dernière",
 		OLDER: "Plus",
 
 		PAGE: "Page",
@@ -302,22 +303,22 @@ return {
 		ddMMMYYYY: "31/Jan/1999",
 		ddMONTHYYYY: "31/Janvier/1999",
 
-		OPTION_DATE_SEPARATOR: "Separador Date",
+		OPTION_DATE_SEPARATOR: "Séparateur de Date",
 		VALUE_SPACE: "Espace",
 		VALUE_NONE: "Aucun",
 
-		MONTH_SHORT_1: "Jan",
-		MONTH_SHORT_2: "F" + String.fromCharCode(233) + "v",
-		MONTH_SHORT_3: "Mar",
-		MONTH_SHORT_4: "Abr",
-		MONTH_SHORT_5: "May",
-		MONTH_SHORT_6: "Jun",
-		MONTH_SHORT_7: "Jul",
-		MONTH_SHORT_8: "Ago",
-		MONTH_SHORT_9: "Sep",
+		MONTH_SHORT_1: "Janv",
+		MONTH_SHORT_2: "F" + String.fromCharCode(233) + "vr",
+		MONTH_SHORT_3: "Mars",
+		MONTH_SHORT_4: "Avr",
+		MONTH_SHORT_5: "Mai",
+		MONTH_SHORT_6: "Juin",
+		MONTH_SHORT_7: "Juil",
+		MONTH_SHORT_8: "Août",
+		MONTH_SHORT_9: "Sept",
 		MONTH_SHORT_10: "Oct",
 		MONTH_SHORT_11: "Nov",
-		MONTH_SHORT_12: "Dic",
+		MONTH_SHORT_12: "Déc",
 
 		MONTH_1: "Janvier",
 		MONTH_2: "F" + String.fromCharCode(233) + "vrier",
@@ -408,7 +409,7 @@ return {
 		ACTION_PREVIOUS_IN_HISTORY: "Pr" + String.fromCharCode(233) + "c" + String.fromCharCode(233) + "dent en el Historique",
 		ACTION_PREVIOUS_SONG: "Chanson pr" + String.fromCharCode(233) + "c" + String.fromCharCode(233) + "dent ",
 		ACTION_NEXT_SONG: "Chanson suivante ",
-		ACTION_GOTO_LINK: "Goto Link"
+		ACTION_GOTO_LINK: "Aller au lien"
 	},
 
 	Screenshot: {
@@ -463,7 +464,7 @@ return {
 		VALUE_SHOWN_ONLY_IN_MENU: "Affiché uniquement dans le menu",
 		VALUE_SHOWN_WHEN_READING: "Affiché uniquement lors de la lecture",
 		VALUE_OFF: "Handicap" + String.fromCharCode(233) + "",
-		ACTION_TOGGLE_CLOCK: "Toggle horloge",
+		ACTION_TOGGLE_CLOCK: "Basculer le Mode",
 		AM: "am",
 		PM: "pm"
 	},
@@ -480,7 +481,10 @@ return {
 		NOT_SHOWN_IF_SINGLE_PAGE: "Ne figure pas sur une seule page",
 		VALUE_STATS0: "5 / 100 (pages par minute)",
 		VALUE_STATS1: "5 / 100 (Le temps de terminer)",
-		VALUE_STATS2: "5 / 100 (ppm / Le temps de terminer)"		
+		VALUE_STATS2: "5 / 100 (ppm / Le temps de terminer)"
+//		PAGES_LEFT: "Autres pages: 95",
+//		PAGES_LEFT_PER: "Autres pages %: 95 (95%)",
+//		Pag_Left: "Aut pag:"
 	},
 
 	EpubUserStyle: {
