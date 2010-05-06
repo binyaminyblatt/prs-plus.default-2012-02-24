@@ -14,6 +14,7 @@
 //	2010-04-25 kartu - Moved default UI localizer into separate file
 //	2010-04-27 kravitz - Localizers are adapted for work with functions
 //	2010-05-04 kravitz - Added French locale
+//	2010-05-06 kartu - Added Czech locale
 
 tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -181,15 +182,16 @@ tmp = function() {
 				title: langL("OPTION_LANG"),
 				icon: "LIST",
 				defaultValue: "English.js",
-				values:	["Catalan.js", "German.js", "English.js", "French.js", "Spanish.js", "Georgian.js", "Russian.js"],
+				values: ["Catalan.js", "Czech.js", "German.js", "English.js", "Spanish.js", "French.js", "Georgian.js", "Russian.js"],
 				valueTitles: {
 					"Catalan.js": "Català",
+					"Czech.js": "Český",
 					"German.js": "Deutsch",
 					"English.js": "English",
+					"Spanish.js": "Español",
 					"French.js": "Français",
 					"Georgian.js": "ქართული",
-					"Russian.js": "Русский",
-					"Spanish.js": "Español"
+					"Russian.js": "Русский"
 				}
 			},
 			{

@@ -10,6 +10,7 @@
 // TODO:
 //	- onSleep, onResume
 
+// FIXME: addons shouldn't need to change core_events to subscribe to events
 try {
 	// dummy function, to avoid introducing global vars
 	tmp = function() {

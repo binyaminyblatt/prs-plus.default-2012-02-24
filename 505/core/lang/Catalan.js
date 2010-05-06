@@ -9,6 +9,7 @@
 //	2010-05-02 kartu - Added dictionary strings
 //	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
+//	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -475,7 +476,10 @@ return {
 		OF: "de",
 		ALWAYS_SHOWN: "Sempre",
 		NEVER_SHOWN: "Mai",
-		NOT_SHOWN_IF_SINGLE_PAGE: "Nom" + String.fromCharCode(233) + "s si hi ha mes d'una p" + String.fromCharCode(224) + "gina"
+		NOT_SHOWN_IF_SINGLE_PAGE: "Nom" + String.fromCharCode(233) + "s si hi ha mes d'una p" + String.fromCharCode(224) + "gina",
+		VALUE_STATS0: "5 / 100 (page per minute)",
+		VALUE_STATS1: "5 / 100 (time to finish)",
+		VALUE_STATS2: "5 / 100 (ppm / time to finish)"		
 	},
 
 	EpubUserStyle: {

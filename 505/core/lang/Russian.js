@@ -13,6 +13,7 @@
 //	2010-05-02 kartu - Added dictionary strings
 //	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
+//	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -462,7 +463,7 @@ return {
 		NODE_MEMORY_STICK_MOUNT: "Memory Stick через монтирование",
 		NODE_SD_CARD: "SD Card",
 		NODE_SD_CARD_MOUNT: "SD Card через монтирование"
-},
+	},
 
 	Clock: {
 		TITLE: "Часы",
@@ -488,7 +489,10 @@ return {
 		OF: "из",
 		ALWAYS_SHOWN: "Всегда показывать",
 		NEVER_SHOWN: "Никогда не показывать",
-		NOT_SHOWN_IF_SINGLE_PAGE: "Не показывать на единственной странице"
+		NOT_SHOWN_IF_SINGLE_PAGE: "Не показывать на единственной странице",
+		VALUE_STATS0: "5 / 100 (страниц в минуту)",
+		VALUE_STATS1: "5 / 100 (оставшееся время)",
+		VALUE_STATS2: "5 / 100 (см / оставшееся время)"
 	},
 
 	EpubUserStyle: {

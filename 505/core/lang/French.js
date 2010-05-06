@@ -4,6 +4,7 @@
 //
 // History:
 //	2010-05-04 Initial version by VICTORSJG
+//	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -476,10 +477,10 @@ return {
 		OF: "de",
 		ALWAYS_SHOWN: "Toujours",
 		NEVER_SHOWN: "Jamais",
-		NOT_SHOWN_IF_SINGLE_PAGE: "Ne figure pas sur une seule page"
-//		PAGES_LEFT: "Autres pages: 95",
-//		PAGES_LEFT_PER: "Autres pages %: 95 (95%)",
-//		Pag_Left: "Aut pag:"
+		NOT_SHOWN_IF_SINGLE_PAGE: "Ne figure pas sur une seule page",
+		VALUE_STATS0: "5 / 100 (pages par minute)",
+		VALUE_STATS1: "5 / 100 (Le temps de terminer)",
+		VALUE_STATS2: "5 / 100 (ppm / Le temps de terminer)"		
 	},
 
 	EpubUserStyle: {
