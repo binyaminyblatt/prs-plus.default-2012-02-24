@@ -15,6 +15,7 @@
 //				Fixed spelling (shutdown message)
 //	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
+//	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 0) {
@@ -478,7 +479,10 @@ return {
 		OF: "-",
 		ALWAYS_SHOWN: "ყოვეთვის ჩართული",
 		NEVER_SHOWN: "ყოვეთვის გათიშული",
-		NOT_SHOWN_IF_SINGLE_PAGE: "გატიშული ერთმაგ გვერდებზე (1 - 1)"
+		NOT_SHOWN_IF_SINGLE_PAGE: "გატიშული ერთმაგ გვერდებზე (1 - 1)",
+		VALUE_STATS0: "5 / 100 (გვერდი წუთში)",
+		VALUE_STATS1: "5 / 100 (დარჩენილი დრო)",
+		VALUE_STATS2: "5 / 100 (გწ / დარჩენილი დრო)"		
 	},
 
 	EpubUserStyle: {

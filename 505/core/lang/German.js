@@ -9,6 +9,7 @@
 //	2010-05-02 kartu - Added dictionary strings
 //	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
+//	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -341,7 +342,7 @@ return {
 		OPTION_TITLE: "TXT- und RTF-Bücher Codierung",
 		MSG_RESTART: "Benötigt Neustart!",
 		LATIN: "Latin",
-		RUSSIAN:  "Russian (Windows-1251)"
+		RUSSIAN:  "Russisch (Windows-1251)"
 	},
 
 	KeyBindings: {
@@ -474,7 +475,10 @@ return {
 		OF: "von",
 		ALWAYS_SHOWN: "Immer anzeigen",
 		NEVER_SHOWN: "Nie anzeigen",
-		NOT_SHOWN_IF_SINGLE_PAGE: "Nicht bei einzelner Seite anzeigen"
+		NOT_SHOWN_IF_SINGLE_PAGE: "Nicht bei einzelner Seite anzeigen",
+		VALUE_STATS0: "5 / 100 (Seiten pro Minute)",
+		VALUE_STATS1: "5 / 100 (Zeit bis Buch-Ende)",
+		VALUE_STATS2: "5 / 100 (SpM / Zeit bis Buch-Ende)"		
 	},
 
 	EpubUserStyle: {
