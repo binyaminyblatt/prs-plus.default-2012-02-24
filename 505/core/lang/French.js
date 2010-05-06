@@ -1,11 +1,12 @@
 // Language: French
 // Description: Localization file
-// Translator: VICTORSJG
+// Translator: VICTORSJG, Duglum
 //
 // History:
 //	2010-05-04 Initial version by VICTORSJG
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 //	2010-05-06 kartu - Added Duglum's corrections
+
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -162,8 +163,8 @@ return {
 		SETDATE_OK_SIZE: 2,
 		// slideshow
 		SLIDESHOW: "Mode Diaporamas",
-		SS_ON: "On",
-		SS_OFF: "Off",
+		SS_ON: "Oui",
+		SS_OFF: "Non",
 		SS_TURN: "Turn",
 		SS_DURATION: "Dur" + String.fromCharCode(233) + "e de la diapositive",
 		// width in pixels = ..._SIZE * 35
@@ -174,8 +175,8 @@ return {
 		SECONDS: "Seconde",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "Mode veille",
-		AS_ON: "On",
-		AS_OFF: "Off",
+		AS_ON: "Oui",
+		AS_OFF: "Non",
 		AS_TURN: "Turn",
 		// width in pixels = ..._SIZE * 35
 		AS_SIZE: 2,
@@ -191,9 +192,9 @@ return {
 		ADVANCED_SETTINGS: "Param" + String.fromCharCode(232) + "tres avanc" + String.fromCharCode(233) + "s",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "Verrouillage de l'appareil",
-		SL_OFF: "Off",
-		SL_ON: "On",
-		SL_CODE: "Code",
+		SL_OFF: "Oui",
+		SL_ON: "Non",
+		SL_CODE: "Entrez le code",
 		SL_TURN: "Turn",
 		// width in pixels = ..._SIZE * 35
 		SL_SIZE: 2,
@@ -206,12 +207,12 @@ return {
 		FORMAT_DEVICE: "Formater M" + String.fromCharCode(233) + "moire Interne",
 
 		// In Book menu
-		BEGIN: "Commencer",
+		BEGIN: "Début",
 		END: "Fin",
 		BOOKMARKS: "Signets",
 		CONTENTS: "Table des mati" + String.fromCharCode(232) + "res",
 		HISTORY: "Historique",
-		INFO: "Information",
+		INFO: "Infos",
 		UTILITIES: "Utilitaires",
 
 		// In Book Utilities
