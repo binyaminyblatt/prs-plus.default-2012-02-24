@@ -6,6 +6,7 @@
 //	2010-05-02 kartu - Added second "unlock screen" localization (shown after sleep/usb connection)
 //				Added support for field sizes
 //				Localized "ok" texts
+//	2010-05-09 kartu - Fixed "All bookmarks" "+ 1" bug
 
 var tmp = function() {
 	//--------------------------------------------------------------------------------------
@@ -333,7 +334,7 @@ var tmp = function() {
 			if (part) {
 				comment = comment + ' - ' + L("PART") + ' ' + part;
 			}
-			comment = comment + ' - ' + L("PAGE") + ' ' + getFastSoValue(bookmark, "page") + 1 + ' ' + L("OF") + ' ' + getFastSoValue(bookmark, "pages");
+			comment = comment + ' - ' + L("PAGE") + ' ' + (getFastSoValue(bookmark, "page") + 1) + ' ' + L("OF") + ' ' + getFastSoValue(bookmark, "pages");
 			return comment;			
 		};
 		
