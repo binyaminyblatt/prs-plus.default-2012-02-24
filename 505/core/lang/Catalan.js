@@ -10,6 +10,8 @@
 //	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
+//	2010-05-07 Translation is corrected by surquizu
+//	2010-05-09 kartu - Added surquizu's corrections
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -25,25 +27,25 @@ var FUNC_X_BOOKS = function (n) {
 	return FUNC_X_SOMETHING(n, ["llibres", "1 llibre", "Cap llibre"]);
 };
 var FUNC_X_SETTINGS = function (n) {
-	return FUNC_X_SOMETHING(n, ["opcions", "1 opci" + String.fromCharCode(243) + "", "Cap opci" + String.fromCharCode(243) + ""]);
+	return FUNC_X_SOMETHING(n, ["opcions", "1 opció", "Cap opció"]);
 };
 var FUNC_X_ITEMS = function (n) {
 	return FUNC_X_SOMETHING(n, ["elements", "1 element", "Cap element"]);
 };
 var FUNC_X_PAGES = function (n) {
-	return FUNC_X_SOMETHING(n, ["p" + String.fromCharCode(224) + "gines", "1 p" + String.fromCharCode(224) + "gina", "Cap p" + String.fromCharCode(224) + "gina"]);
+	return FUNC_X_SOMETHING(n, ["pàgines", "1 pàgina", "Cap pàgina"]);
 };
 var FUNC_X_PICTURES = function (n) {
 	return FUNC_X_SOMETHING(n, ["imatges", "1 imatge", "Cap imatge"]);
 };
 var FUNC_X_SONGS = function (n) {
-	return FUNC_X_SOMETHING(n, ["can" + String.fromCharCode(231) + "ons", "1 can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "", "Cap can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + ""]);
+	return FUNC_X_SOMETHING(n, ["cançons", "1 cançó", "Cap cançó"]);
 };
 var FUNC_X_BOOKMARKS = function (n) {
 	return FUNC_X_SOMETHING(n, ["marcadors", "1 marcador", "Cap marcador"]);
 };
 var FUNC_X_COLLECTIONS = function (n) {
-	return FUNC_X_SOMETHING(n, ["col" + String.fromCharCode(183) + "leccions", "1 col" + String.fromCharCode(183) + "lecci" + String.fromCharCode(243) + "", "Cap col" + String.fromCharCode(183) + "lecci" + String.fromCharCode(243) + ""]);
+	return FUNC_X_SOMETHING(n, ["col·leccions", "1 col·lecció", "Cap col·lecció"]);
 };
 
 // Utility function, no need to localize
@@ -103,80 +105,80 @@ return {
 		EPUB_DOCUMENT: "Document EPUB",
 		BBEB_BOOK: "Llibre BBeB",
 		PLAIN_TEXT: "Text Sense Format",
-		INTERNAL_MEMORY: "Mem" + String.fromCharCode(242) + "ria Interna",
+		INTERNAL_MEMORY: "Memòria Interna",
 		MEMORY_STICK: "Memory Stick",
 		SD_CARD: "Targeta SD",
 
 		// Main.xml & kbook.so stuff
-		INVALID_FORMAT: "Format No V" + String.fromCharCode(224) + "lid!",
+		INVALID_FORMAT: "Format No Vàlid!",
 		FORMATTING: "Formatejant...",
 		LOADING: "Carregant ...",
-		LOW_BATTERY: "Bateria Baixa!",
-		HR_WARNING: "Vols ESBORRAR tot el contingut i restablir la Configuraci" + String.fromCharCode(243) + " inicial i l'estat de l'autoritzaci" + String.fromCharCode(243) + " del DRM?\n\nSi - Clica 5\nNo - Clica MENU",
+		LOW_BATTERY: "Batería Baixa!",
+		HR_WARNING: "Vols ESBORRAR tot el contingut i restablir la Configuració inicial i l'estat de l'autorització del DRM?\n\nSi - Clica 5\nNo - Clica MENU",
 		DEVICE_SHUTDOWN: "Apagar Lector",
 		PRESS_MARK_TO_SHUTDOWN: "Clica MARK per apagar",
 		THIS_DEVICE: "el lector.",
 		PRESS_MARK_TO_DELETE: "Clica MARK per",
 		THIS_BOOK: "esborrar el llibre.",
-		FORMAT_INTERNAL_MEMORY: "Formatejar Mem" + String.fromCharCode(242) + "ria Interna",
+		FORMAT_INTERNAL_MEMORY: "Formatejar Memòria Interna",
 		PRESS_MARK_TO_FORMAT: "Clica MARK per formatejar",
-		MSG_INTERNAL_MEMORY: "la mem" + String.fromCharCode(242) + "ria interna.",
+		MSG_INTERNAL_MEMORY: "la memòria interna.",
 		RESTORE_DEFAULTS: "Restablir Valors Inicials",
 		PRESS_MARK_TO_RESTORE: "Clica MARK per restablir",
 		DEFAULT_SETTINGS: "els valors inicials.",
-		UPPER_PAGE: "P" + String.fromCharCode(192) + "GINA",
+		UPPER_PAGE: "PÀGINA",
 		ONE_OF_ONE: "1 de 1",
-		NO_BATTERY: "Sense Bateria!",
-		FORMATTING_INTERNAL_MEMORY: "Formatejant Mem" + String.fromCharCode(242) + "ria Interna...",
+		NO_BATTERY: "Sense Batería!",
+		FORMATTING_INTERNAL_MEMORY: "Formatejant Memòria Interna...",
 		SHUTTING_DOWN: "Apagant...",
 
 		// Root menu
 		CONTINUE: "Continuar Llegint",
-		BOOKS_BY_TITLE: "Llibres per T" + String.fromCharCode(237) + "tol",
+		BOOKS_BY_TITLE: "Llibres per Títol",
 		BOOKS_BY_AUTHOR: "Llibres per Autor",
 		BOOKS_BY_DATE: "Llibres per Data",
 		COLLECTIONS: "Col·leccions",
 		ALL_BOOKMARKS: "Marcadors",
 		NOW_PLAYING: "Reproduint-se Ara",
-		MUSIC: "" + String.fromCharCode(192) + "udio",
+		MUSIC: "Àudio",
 		PICTURES: "Imatges",
-		SETTINGS: "Configuraci" + String.fromCharCode(243) + "",
+		SETTINGS: "Configuració",
 
 		// In Settings
 		// orientation
-		ORIENTATION: "Orientaci" + String.fromCharCode(243) + "",
+		ORIENTATION: "Orientació",
 		HORIZONTAL: "Horitzontal",
 		VERTICAL: "Vertical",
 		// set date
 		SET_DATE: "Data i Hora",
 		YEAR: "Any",
 		MONTH: "Mes",
-		DATE: "D" + String.fromCharCode(237) + "a", // Day
+		DATE: "Día", // Day
 		HOUR: "Hora",
 		MINUTE: "Minut",
 		SETDATE_OK: "OK",
 		// width in pixels = ..._SIZE * 35
 		SETDATE_OK_SIZE: 2,
 		// slideshow
-		SLIDESHOW: "Presentaci" + String.fromCharCode(243) + " Diapositives",
-		SS_ON: "Si",
-		SS_OFF: "No",
+		SLIDESHOW: "Diapositives",
+		SS_ON: "Activat",
+		SS_OFF: "Desactivat",
 		SS_TURN: "Estat",
 		SS_DURATION: "Durada",
 		// width in pixels = ..._SIZE * 35
-		SS_SIZE: 2,
+		SS_SIZE: 6,
 		SS_OK: "OK",
 		// width in pixels = ..._SIZE * 35
 		SS_OK_SIZE: 2,
 
 		SECONDS: "Segons",
 		// auto standby (aka sleep mode)
-		AUTOSTANDBY: "Mode en Rep" + String.fromCharCode(242) + "s",
-		AS_ON: "Si",
-		AS_OFF: "No",
+		AUTOSTANDBY: "Mode en Repòs",
+		AS_ON: "Activat",
+		AS_OFF: "Desactivat",
 		AS_TURN: "Estat",
 		// width in pixels = ..._SIZE * 35
-		AS_SIZE: 2,
+		AS_SIZE: 6,
 		AS_OK: "OK",
 		// width in pixels = ..._SIZE * 35
 		AS_OK_SIZE: 2,
@@ -186,15 +188,15 @@ return {
 		RESET_TO_FACTORY: "Valors Inicials",
 
 		// In Advanced Settings
-		ADVANCED_SETTINGS: "Configuraci" + String.fromCharCode(243) + " Avan" + String.fromCharCode(231) + "ada",
+		ADVANCED_SETTINGS: "Configuració Avançada",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "Bloquejar Lector",
-		SL_OFF: "No",
-		SL_ON: "Si",
+		SL_OFF: "Desactivat",
+		SL_ON: "Activat",
 		SL_CODE: "Codi",
 		SL_TURN: "Estat",
 		// width in pixels = ..._SIZE * 35
-		SL_SIZE: 2,
+		SL_SIZE: 6,
 		SL_OK: "OK",
 		SL_OK_SIZE: 2,
 		SL_OK_UNLOCK: "OK", // unlock
@@ -209,7 +211,7 @@ return {
 		BOOKMARKS: "Marcadors",
 		CONTENTS: "Index de Continguts",
 		HISTORY: "Historial",
-		INFO: "Informaci" + String.fromCharCode(243) + "",
+		INFO: "Informació",
 		UTILITIES: "Utilitats",
 
 		// In Book Utilities
@@ -229,14 +231,14 @@ return {
 		LAST_YEAR: "Darrer Any",
 		OLDER: "Mes Antics",
 
-		PAGE: "P" + String.fromCharCode(224) + "gina",
+		PAGE: "Pàgina",
 		PART: "Part",
 		OF: "de",
 		NO_BOOK: "Cap llibre",
-		NO_SONG: "Cap can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "",
+		NO_SONG: "Cap cançó",
 
 		// Info title strings, comma separated, no spaces after comma
-		INFO_TITLES: "Portada,T" + String.fromCharCode(237) + "tol,Autor,Editorial,Categor" + String.fromCharCode(237) + "a,eBook ID,Tipus,Data,Mida,Ubicaci" + String.fromCharCode(243) + ",Arxius,Drets Digitals,Caducitat",
+		INFO_TITLES: "Portada,Títol,Autor,Editorial,Categoría,ID eBook,Tipus,Data,Mida,Ubicació,Arxiu,Drets Digitals,Caducitat",
 
 		// Titles and criterions for "Books by Title" and "Books by Folder"
 		// title is displayed, "criterion" is used for sorting.
@@ -283,15 +285,15 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		NODE_PRSP_SETTINGS: "Configuraci" + String.fromCharCode(243) + " PRS+",
-		NODE_OTHERS: "Multim" + String.fromCharCode(232) + "dia",
+		NODE_PRSP_SETTINGS: "Configuració PRS+",
+		NODE_OTHERS: "Multimèdia",
 		NODE_GAMES_AND_UTILS: "Jocs - Aplicacions",
-		GROUP_MENU_TITLE: "Menu Configuraci" + String.fromCharCode(243) + "",
-		GROUP_VIEWER_TITLE: "Visor Configuraci" + String.fromCharCode(243) + " Llibre"
+		GROUP_MENU_TITLE: "Menú Configuració",
+		GROUP_VIEWER_TITLE: "Visor Configuració Llibre"
 	},
 
 	CoreLang: {
-		TITLE: "Localitzaci" + String.fromCharCode(243) + "",
+		TITLE: "Localització",
 		COMMENT: "Cal reiniciar",
 		OPTION_LANG: "Idioma",
 
@@ -320,7 +322,7 @@ return {
 
 		MONTH_1: "Gener",
 		MONTH_2: "Febrer",
-		MONTH_3: "Mar" + String.fromCharCode(231) + "",
+		MONTH_3: "Març",
 		MONTH_4: "Abril",
 		MONTH_5: "Maig",
 		MONTH_6: "Juny",
@@ -333,55 +335,55 @@ return {
 	},
 
 	MenuCaptions: {
-		OPTION_STYLE: "Estil T" + String.fromCharCode(237) + "tols",
+		OPTION_STYLE: "Estil Títols",
 		VALUE_SONY_DEFAULT: "Original Sony",
-		VALUE_ALWAYS_SMALL: "T" + String.fromCharCode(237) + "tols petits",
-		VALUE_ALWAYS_BIG: "T" + String.fromCharCode(237) + "tols grans"
+		VALUE_ALWAYS_SMALL: "Títols petits",
+		VALUE_ALWAYS_BIG: "Títols grans"
 	},
 
 	TextEncoding: {
-		OPTION_TITLE: "Codificaci" + String.fromCharCode(243) + " TXT i RTF",
+		OPTION_TITLE: "Codificació TXT i RTF",
 		MSG_RESTART: "Cal reiniciar!",
-		LATIN: "Car" + String.fromCharCode(224) + "cters llatins",
-		RUSSIAN: "Car" + String.fromCharCode(224) + "cters russos (Windows-1251)"
+		LATIN: "Caràcters llatins",
+		RUSSIAN: "Caràcters russos (W-1251)"
 	},
 
 	KeyBindings: {
-		TITLE: "Configuraci" + String.fromCharCode(243) + " Tecles",
+		TITLE: "Configuració Tecles",
 		DESCRIPTION: "Permet asignar accions a les tecles",
 
 		DEFAULT_VALUE: "Per defecte",
 
 		// Contexts
 		GLOBAL: "En tot moment",
-		IN_MENU: "En els men" + String.fromCharCode(250) + "s",
+		IN_MENU: "En els menús",
 		IN_BOOK: "Durant la lectura",
 
 		// Button groups
-		NUM_BUTTONS: "Tecles num" + String.fromCharCode(232) + "riques",
+		NUM_BUTTONS: "Tecles numèriques",
 		JP_BUTTONS: "Tecles del Joypad",
 		OTHER_BUTTONS: "Altres tecles",
 		VOLUME_BUTTONS: "Tecles del volum",
 
 		// Buttons
 		BN_SIZE: "Zoom",
-		BN_BOOKMARK: "Marca de lectura",
-		BN_BL_NEXT: "Abaix esquerra 'seg" + String.fromCharCode(252) + "ent'",
+		BN_BOOKMARK: "Mark",
+		BN_BL_NEXT: "Abaix esquerra 'següent'",
 		BN_BL_PREVIOUS: "Abaix esquerra 'anterior'",
 		BN_SB_NEXT: "Lateral 'seguent'",
 		BN_SB_PREVIOUS: "Lateral 'anterior'",
-		BN_MENU: "Men" + String.fromCharCode(250) + "",
+		BN_MENU: "Menú",
 		BN_JP_LEFT: "Joypad esquerre",
 		BN_JP_RIGHT: "Joypad dreta",
 		BN_JP_UP: "Joypad amunt",
 		BN_JP_DOWN: "Joypad abaix",
 		BN_JP_CENTER: "Joypad centre",
 		BN_H_SIZE: "Mantenir zoom",
-		BN_H_BOOKMARK: "Mantenir marca de lectura",
-		BN_H_BL_NEXT: "Mantenir abaix esq. 'seg" + String.fromCharCode(252) + "ent'",
+		BN_H_BOOKMARK: "Mantenir Mark",
+		BN_H_BL_NEXT: "Mantenir abaix esq. 'següent'",
 		BN_H_BL_PREVIOUS: "Mantenir abaix esq. 'anterior'",
-		BN_H_MENU: "Mantenir men" + String.fromCharCode(250) + "",
-		BN_H_SB_NEXT: "Mantenir lateral 'seg" + String.fromCharCode(252) + "ent'",
+		BN_H_MENU: "Mantenir menú",
+		BN_H_SB_NEXT: "Mantenir lateral 'següent'",
 		BN_H_SB_PREVIOUS: "Mantenir lateral 'anterior'",
 		BN_H_JP_CENTER: "Mantenir joypad centre",
 		BN_H_1: "Mantenir 1",
@@ -401,13 +403,13 @@ return {
 
 		// Actions
 		ACTION_SHUTDOWN: "Apagar",
-		ACTION_NEXT_PAGE: "P" + String.fromCharCode(224) + "gina Seg" + String.fromCharCode(252) + "ent",
-		ACTION_PREVIOUS_PAGE: "P" + String.fromCharCode(224) + "gina Anterior",
+		ACTION_NEXT_PAGE: "Pàgina Següent",
+		ACTION_PREVIOUS_PAGE: "Pàgina Anterior",
 		ACTION_NEXT_IN_HISTORY: "Proper en l'Historial",
 		ACTION_PREVIOUS_IN_HISTORY: "Anterior en l'Historial",
-		ACTION_PREVIOUS_SONG: "Anterior can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "",
-		ACTION_NEXT_SONG: "Seg" + String.fromCharCode(252) + "ent can" + String.fromCharCode(231) + "" + String.fromCharCode(243) + "",
-		ACTION_GOTO_LINK: "Anar a Enlla" + String.fromCharCode(231) + ""
+		ACTION_PREVIOUS_SONG: "Anterior cançó",
+		ACTION_NEXT_SONG: "Següent cançó",
+		ACTION_GOTO_LINK: "Anar a Enllaç"
 	},
 
 	Screenshot: {
@@ -416,40 +418,40 @@ return {
 		SAVING_TO: "Salvant a ",
 		FAILED_TO_SAVE: "Captura fallida",
 		OPT_SAVETO: "Salvar a ...",
-		OPT_FEEDBACK: "Mostra progr" + String.fromCharCode(233) + "s de salvar",
+		OPT_FEEDBACK: "Mostra progrés de salvar",
 		MEMORY_STICK: "Memory Stick",
 		FEEDBACK_ON: "Activat",
 		FEEDBACK_OFF: "Desactivat",
 		SD_CARD: "Targeta SD",
-		INTERNAL_MEMORY: "Mem" + String.fromCharCode(242) + "ria Interna"
+		INTERNAL_MEMORY: "Memòria Interna"
 	},
 
 	BrowseFolders: {
 		TITLE: "Explorador de Carpetes",
 		OPTION_SORTING_MODE: "Tipus d'Ordre",
-		VALUE_BY_TITLE: "Per t" + String.fromCharCode(237) + "tol",
-		VALUE_BY_AUTHOR_THEN_TITLE: "Per autor i despr" + String.fromCharCode(233) + "s t" + String.fromCharCode(237) + "tol",
-		VALUE_BY_AUTHOR_SWAPPING: "Per autor (cognom)",
+		VALUE_BY_TITLE: "Per títol",
+		VALUE_BY_AUTHOR_THEN_TITLE: "Per autor i després títol",
+		VALUE_BY_AUTHOR_SWAPPING: "Per autor (nom/cognom)",
 		VALUE_BY_FILENAME: "Per nom d'arxiu",
-		OPTION_TITLE_SORTER: "Ordenar amb 'TitleSorter'",
+		OPTION_TITLE_SORTER: "Ordenar per Tipus d'Ordre",
 		ENABLED: "Activat",
 		DISABLED: "Desactivat",
-		OPTION_IM_ROOT: "Arrel de la Mem" + String.fromCharCode(242) + "ria Interna",
+		OPTION_IM_ROOT: "Arrel de la Memòria Interna",
 		OPTION_CARD_SCAN: "Escaneja targetes SD/MS",
 		OPTION_MOUNT: "Montar targetes SD/MS",
-		NODE_RESCAN_INTERNAL_MEMORY: "Escaneja Mem" + String.fromCharCode(242) + "ria Interna",
-		NODE_COPY_TO_INTERNAL_MEMORY: "Copia a Mem" + String.fromCharCode(242) + "ria Interna",
-		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copia arxius a l'arrel de la mem" + String.fromCharCode(242) + "ria interna",
-		NODE_COPY_AND_RESCAN: "Copia i Escaneja mem" + String.fromCharCode(242) + "ria interna",
-		NODE_COPY_AND_RESCAN_COMMENT: "Copia arxius a l'arrel de la Mem" + String.fromCharCode(242) + "ria Interna i escaneja",
-		ERROR_TARGET_EXISTS: "Error, l'arxiu dest" + String.fromCharCode(237) + " existeix",
+		NODE_RESCAN_INTERNAL_MEMORY: "Escaneja Memòria Interna",
+		NODE_COPY_TO_INTERNAL_MEMORY: "Copia a Memòria Interna",
+		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copia arxius a l'arrel de la memòria interna",
+		NODE_COPY_AND_RESCAN: "Copia i Escaneja memòria interna",
+		NODE_COPY_AND_RESCAN_COMMENT: "Copia arxius a l'arrel de la Memòria Interna i escaneja",
+		ERROR_TARGET_EXISTS: "Error, l'arxiu destí existeix",
 		NODE_BROWSE_FOLDERS: "Llibres per Carpetes",
 		NODE_BROWSE_FOLDERS_COMMENT: "Explorar",
-		NODE_INTERNAL_MEMORY: "Mem" + String.fromCharCode(242) + "ria Interna",
+		NODE_INTERNAL_MEMORY: "Memòria Interna",
 		NODE_MEMORY_STICK: "Memory Stick",
-		NODE_MEMORY_STICK_MOUNT: "Memory Stick a trav" + String.fromCharCode(233) + "s de muntatge",
+		NODE_MEMORY_STICK_MOUNT: "Memory Stick a través de muntatge",
 		NODE_SD_CARD: "Targeta SD",
-		NODE_SD_CARD_MOUNT: "Targeta SD a trav" + String.fromCharCode(233) + "s de muntatge"
+		NODE_SD_CARD_MOUNT: "Targeta SD a través de muntatge"
 	},
 
 	Clock: {
@@ -457,10 +459,10 @@ return {
 		OPTION_STYLE: "Estil Rellotge",
 		VALUE_24H: "Format 24 hores",
 		VALUE_12H: "Format 12 hores",
-		OPTION_MODE: "" + String.fromCharCode(218) + "s del Rellotge",
+		OPTION_MODE: "Ús del Rellotge",
 		VALUE_ALWAYS_SHOWN: "Es mostra sempre",
-		VALUE_SHOWN_ONLY_IN_MENU: "Nom" + String.fromCharCode(233) + "s en els men" + String.fromCharCode(250) + "s",
-		VALUE_SHOWN_WHEN_READING: "Nom" + String.fromCharCode(233) + "s en la lectura",
+		VALUE_SHOWN_ONLY_IN_MENU: "Només en els menús",
+		VALUE_SHOWN_WHEN_READING: "Només en la lectura",
 		VALUE_OFF: "Desactivat",
 		ACTION_TOGGLE_CLOCK: "Alternar rellotge",
 		AM: "am",
@@ -468,33 +470,33 @@ return {
 	},
 
 	PageIndex: {
-		TITLE: "Paginaci" + String.fromCharCode(243) + " Llibres i Men" + String.fromCharCode(250) + "s",
-		INDEX_STYLE_BOOK: "Format Paginaci" + String.fromCharCode(243) + " Llibre",
-		INDEX_MODE_BOOK: "Mostra Paginaci" + String.fromCharCode(243) + " Llibre",
-		INDEX_MODE_MENU: "Mostra Paginaci" + String.fromCharCode(243) + " Men" + String.fromCharCode(250) + "s",
-		INDEX_STYLE_MENU: "Format Paginaci" + String.fromCharCode(243) + " Men" + String.fromCharCode(250) + "s",
+		TITLE: "Paginació Llibres i Menús",
+		INDEX_STYLE_BOOK: "Format Paginació Llibre",
+		INDEX_MODE_BOOK: "Mostra Paginació Llibre",
+		INDEX_MODE_MENU: "Mostra Paginació Menús",
+		INDEX_STYLE_MENU: "Format Paginació Menús",
 		OF: "de",
 		ALWAYS_SHOWN: "Sempre",
 		NEVER_SHOWN: "Mai",
-		NOT_SHOWN_IF_SINGLE_PAGE: "Nom" + String.fromCharCode(233) + "s si hi ha mes d'una p" + String.fromCharCode(224) + "gina",
-		VALUE_STATS0: "5 / 100 (page per minute)",
-		VALUE_STATS1: "5 / 100 (time to finish)",
-		VALUE_STATS2: "5 / 100 (ppm / time to finish)"		
+		NOT_SHOWN_IF_SINGLE_PAGE: "Només si hi ha mes d'una pàgina",
+		VALUE_STATS0: "5 / 100 (pàg. per minut)",
+		VALUE_STATS1: "5 / 100 (temps per fi)",
+		VALUE_STATS2: "5 / 100 (ppm / temps per fi)"		
 	},
 
 	EpubUserStyle: {
-		OPTION_EPUB_CSS_FILE: "EPUB Estil d'Usuari (CSS File)",
-		MSG_WARNING: "Nom" + String.fromCharCode(233) + "s s'aplica a llibres oberts despr" + String.fromCharCode(233) + "s!",
+		OPTION_EPUB_CSS_FILE: "EPUB Estil Usuari (CSS)",
+		MSG_WARNING: "Només s'aplica a llibres oberts després!",
 		VALUE_DISABLED: "Desactivat"
 	},
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		TITLE: "Book History",
+		TITLE: "Historial Llibre",
 		VALUE_DISABLED: "Desactivat",
-		OPTION_REPLACE: "History into Continue Reading",
-		VALUE_ON: "On",
-		VALUE_OFF: "Off"
+		OPTION_REPLACE: "Historial Continuar Llegint",
+		VALUE_ON: "Activat",
+		VALUE_OFF: "Desactivat"
 	},
 
 //ReadMark	ReadMark: {
@@ -512,15 +514,15 @@ return {
 	},
 
 	MenuTuning: {
-		OPTION_OUTER: "Contingut del men" + String.fromCharCode(250) + " superior"
+		OPTION_OUTER: "Opció menú principal"
 	},
 	
 	Dictionary: {
-		TITLE: "Dictionary",
-		WARN_DICT_DISABLED: "Dictionary is disabled!",
-		WARN_DICT_DOESNT_EXIST: "Dictionary file doesn't exist!",
-		ACTION_DICTIONARY: "Launch dictionary",
-		OPTION_DICTIONARY: "Dictionary file",
-		VALUE_DISABLED: "disabled"
+		TITLE: "Diccionari",
+		WARN_DICT_DISABLED: "Diccionari desactivat!",
+		WARN_DICT_DOESNT_EXIST: "No hi ha arxiu de Diccionari!",
+		ACTION_DICTIONARY: "Obrir Diccionari",
+		OPTION_DICTIONARY: "Arxiu del Diccionari",
+		VALUE_DISABLED: "Desactivat"
 	}
 };

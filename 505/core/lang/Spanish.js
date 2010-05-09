@@ -11,6 +11,7 @@
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 //	2010-05-06 kartu - Added ppm related translations by VICTORSJG
+//	2010-05-09 kartu - Added surquizu's corrections
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -23,28 +24,28 @@ var FUNC_X_SOMETHING = function (n, s) {
 };
 
 var FUNC_X_BOOKS = function (n) {
-	return FUNC_X_SOMETHING(n, ["libros", "1 libro", "Ning" + String.fromCharCode(250) + "n libro"]);
+	return FUNC_X_SOMETHING(n, ["libros", "1 libro", "Ningún libro"]);
 };
 var FUNC_X_SETTINGS = function (n) {
-	return FUNC_X_SOMETHING(n, ["ajustes", "1 ajuste", "Ning" + String.fromCharCode(250) + "n ajuste"]);
+	return FUNC_X_SOMETHING(n, ["ajustes", "1 ajuste", "Ningún ajuste"]);
 };
 var FUNC_X_ITEMS = function (n) {
-	return FUNC_X_SOMETHING(n, ["elementos", "1 elemento", "Ning" + String.fromCharCode(250) + "n elemento"]);
+	return FUNC_X_SOMETHING(n, ["elementos", "1 elemento", "Ningún elemento"]);
 };
 var FUNC_X_PAGES = function (n) {
-	return FUNC_X_SOMETHING(n, ["p" + String.fromCharCode(225) + "ginas", "1 p" + String.fromCharCode(225) + "gina", "Ninguna p" + String.fromCharCode(225) + "gina"]);
+	return FUNC_X_SOMETHING(n, ["páginas", "1 página", "Ninguna página"]);
 };
 var FUNC_X_PICTURES = function (n) {
-	return FUNC_X_SOMETHING(n, ["im" + String.fromCharCode(225) + "genes", "1 imagen", "Ninguna imagen"]);
+	return FUNC_X_SOMETHING(n, ["imágenes", "1 imagen", "Ninguna imagen"]);
 };
 var FUNC_X_SONGS = function (n) {
-	return FUNC_X_SOMETHING(n, ["canciones", "1 canci" + String.fromCharCode(243) + "n", "Ninguna canci" + String.fromCharCode(243) + "n"]);
+	return FUNC_X_SOMETHING(n, ["canciones", "1 canción", "Ninguna canción"]);
 };
 var FUNC_X_BOOKMARKS = function (n) {
-	return FUNC_X_SOMETHING(n, ["marcadores", "1 marcador", "Ning" + String.fromCharCode(250) + "n marcador"]);
+	return FUNC_X_SOMETHING(n, ["marcadores", "1 marcador", "Ningún marcador"]);
 };
 var FUNC_X_COLLECTIONS = function (n) {
-	return FUNC_X_SOMETHING(n, ["colecciones", "1 colecci" + String.fromCharCode(243) + "n", "Ninguna colecci" + String.fromCharCode(243) + "n"]);
+	return FUNC_X_SOMETHING(n, ["colecciones", "1 colección", "Ninguna colección"]);
 };
 
 // Utility function, no need to localize
@@ -109,50 +110,50 @@ return {
 		SD_CARD: "Tarjeta SD",
 
 		// Main.xml & kbook.so stuff
-		INVALID_FORMAT: "Formato No V" + String.fromCharCode(225) + "lido!",
+		INVALID_FORMAT: "Formato No Válido!",
 		FORMATTING: "Formateando...",
 		LOADING: "Cargando...",
-		LOW_BATTERY: "¡Bater" + String.fromCharCode(237) + "a Baja!",
-		HR_WARNING: "¿Quieres BORRAR todo el contenido y restaurar los ajustes iniciales y el estado de la autorizaci" + String.fromCharCode(243) + "n del DRM?\n\nSi - Pulsa 5\nNo - Pulsa MENU",
+		LOW_BATTERY: "¡Batería Baja!",
+		HR_WARNING: "¿Quieres BORRAR todo el contenido y restaurar los ajustes iniciales y el estado de la autorización del DRM?\n\nSi - Pulsa 5\nNo - Pulsa MENU",
 		DEVICE_SHUTDOWN: "Apagar Dispositivo",
-		PRESS_MARK_TO_SHUTDOWN: "Pulsa MARK para apagar",
-		THIS_DEVICE: "lector.",
+		PRESS_MARK_TO_SHUTDOWN: "Pulsa MARK para",
+		THIS_DEVICE: "apagar lector.",
 		PRESS_MARK_TO_DELETE: "Pulsa MARK para",
 		THIS_BOOK: "borrar libro.",
 		FORMAT_INTERNAL_MEMORY: "Formatear Memoria Interna",
 		PRESS_MARK_TO_FORMAT: "Pulsa MARK para formatear",
 		MSG_INTERNAL_MEMORY: "memoria interna.",
-		RESTORE_DEFAULTS: "Restaurar a ajustes iniciales",
+		RESTORE_DEFAULTS: "Ajustes Iniciales",
 		PRESS_MARK_TO_RESTORE: "Pulsa MARK para restaurar",
-		DEFAULT_SETTINGS: "a ajustes iniciales.",
-		UPPER_PAGE: "P" + String.fromCharCode(181) + "GINA",
+		DEFAULT_SETTINGS: "ajustes iniciales.",
+		UPPER_PAGE: "PÁGINA",
 		ONE_OF_ONE: "1 de 1",
-		NO_BATTERY: "¡Sin Bater" + String.fromCharCode(237) + "a!",
+		NO_BATTERY: "¡Sin Batería!",
 		FORMATTING_INTERNAL_MEMORY: "Formateando Memoria Interna...",
 		SHUTTING_DOWN: "Apagando...",
 
 		// Root menu
 		CONTINUE: "Continuar Leyendo",
-		BOOKS_BY_TITLE: "Libros por T" + String.fromCharCode(237) + "tulo",
+		BOOKS_BY_TITLE: "Libros por Título",
 		BOOKS_BY_AUTHOR: "Libros por Autor",
 		BOOKS_BY_DATE: "Libros por Fecha",
 		COLLECTIONS: "Colecciones",
 		ALL_BOOKMARKS: "Marcadores",
 		NOW_PLAYING: "Reproduciendo Ahora",
 		MUSIC: "Audio",
-		PICTURES: "Im" + String.fromCharCode(225) + "genes",
+		PICTURES: "Imágenes",
 		SETTINGS: "Ajustes",
 
 		// In Settings
 		// orientation
-		ORIENTATION: "Orientaci" + String.fromCharCode(243) + "n",
+		ORIENTATION: "Orientación",
 		HORIZONTAL: "Horizontal",
 		VERTICAL: "Vertical",
 		// set date
 		SET_DATE: "Fecha y Hora",
-		YEAR: "A" + String.fromCharCode(241) + "o",
+		YEAR: "Año",
 		MONTH: "Mes",
-		DATE: "D" + String.fromCharCode(237) + "a", // Day
+		DATE: "Día", // Day
 		HOUR: "Hora",
 		MINUTE: "Minuto",
 		SETDATE_OK: "OK",
@@ -163,9 +164,9 @@ return {
 		SS_ON: "Activado",
 		SS_OFF: "Desactivado",
 		SS_TURN: "Estado",
-		SS_DURATION: "Duraci" + String.fromCharCode(243) + "n",
+		SS_DURATION: "Duración",
 		// width in pixels = ..._SIZE * 35
-		SS_SIZE: 2,
+		SS_SIZE: 6,
 		SS_OK: "OK",
 		// width in pixels = ..._SIZE * 35
 		SS_OK_SIZE: 2,
@@ -176,7 +177,7 @@ return {
 		AS_OFF: "Desactivado",
 		AS_TURN: "Estado",
 		// width in pixels = ..._SIZE * 35
-		AS_SIZE: 2,
+		AS_SIZE: 6,
 		AS_OK: "OK",
 		// width in pixels = ..._SIZE * 35
 		AS_OK_SIZE: 2,
@@ -188,13 +189,13 @@ return {
 		// In Advanced Settings
 		ADVANCED_SETTINGS: "Ajustes Avanzados",
 		// screen lock (aka device lock)
-		SCREEN_LOCK: "Bloquear Dispositivo",
+		SCREEN_LOCK: "Bloqueo Dispositivo",
 		SL_OFF: "Desactivado",
 		SL_ON: "Activado",
-		SL_CODE: "C" + String.fromCharCode(243) + "digo",
+		SL_CODE: "Código",
 		SL_TURN: "Estado",
 		// width in pixels = ..._SIZE * 35
-		SL_SIZE: 2,
+		SL_SIZE: 6,
 		SL_OK: "OK",
 		SL_OK_SIZE: 2,
 		SL_OK_UNLOCK: "OK", // unlock
@@ -209,7 +210,7 @@ return {
 		BOOKMARKS: "Marcadores",
 		CONTENTS: "Tabla de contenidos",
 		HISTORY: "Historial",
-		INFO: "Informaci" + String.fromCharCode(243) + "n",
+		INFO: "Información",
 		UTILITIES: "Utilidades",
 
 		// In Book Utilities
@@ -224,19 +225,19 @@ return {
 		EARLIER_THIS_MONTH: "Primeros de Este Mes",
 		LAST_MONTH: "El Mes Pasado",
 		EARLIER_THIS_QUARTER: "Primeros de Este Trimestre",
-		LAST_QUARTER: String.fromCharCode(218) + "ltimo Trimestre",
-		EARLIER_THIS_YEAR: "Primeros de Este A" + String.fromCharCode(241) + "o",
-		LAST_YEAR: "El A" + String.fromCharCode(241) + "o Pasado",
-		OLDER: "M" + String.fromCharCode(225) + "s Antiguo",
+		LAST_QUARTER: "Último Trimestre",
+		EARLIER_THIS_YEAR: "Primeros de Este Año",
+		LAST_YEAR: "El Año Pasado",
+		OLDER: "Más Antiguo",
 
-		PAGE: "P" + String.fromCharCode(225) + "gina",
+		PAGE: "Página",
 		PART: "Parte",
 		OF: "de",
-		NO_BOOK: "Ning" + String.fromCharCode(250) + "n libro",
-		NO_SONG: "Ninguna canci" + String.fromCharCode(243) + "n",
+		NO_BOOK: "Ningún libro",
+		NO_SONG: "Ninguna canción",
 
 		// Info title strings, comma separated, no spaces after comma
-		INFO_TITLES: "Cubierta,T" + String.fromCharCode(237) + "tulo,Autor,Editorial,Categor" + String.fromCharCode(237) + "a,eBook ID,Tipo,Fecha,Tama" + String.fromCharCode(241) + "o,Ubicaci" + String.fromCharCode(243) + "n,Archivo,Derechos Digitales,Caducidad",
+		INFO_TITLES: "Cubierta,Título,Autor,Editorial,Categoría,ID eBook,Tipo,Fecha,Tamaño,Ubicación,Archivo,Derechos Digitales,Caducidad",
 
 		// Titles and criterions for "Books by Title" and "Books by Folder"
 		// title is displayed, "criterion" is used for sorting.
@@ -286,12 +287,12 @@ return {
 		NODE_PRSP_SETTINGS: "Ajustes PRS+",
 		NODE_OTHERS: "Multimedia",
 		NODE_GAMES_AND_UTILS: "Juegos - Utilidades",
-		GROUP_MENU_TITLE: "Men" + String.fromCharCode(250) + " Ajustes",
-		GROUP_VIEWER_TITLE: "Ajustes del Visualizador de Libros"
+		GROUP_MENU_TITLE: "Menú Ajustes",
+		GROUP_VIEWER_TITLE: "Ajustes Visor de Libros"
 	},
 
 	CoreLang: {
-		TITLE: "Localizaci" + String.fromCharCode(243) + "n",
+		TITLE: "Localización",
 		COMMENT: "Requiere reincio",
 		OPTION_LANG: "Idioma",
 
@@ -333,54 +334,54 @@ return {
 	},
 
 	MenuCaptions: {
-		OPTION_STYLE: "Estilo T" + String.fromCharCode(237) + "tulos",
+		OPTION_STYLE: "Estilo Títulos",
 		VALUE_SONY_DEFAULT: "Original de Sony",
-		VALUE_ALWAYS_SMALL: "Siempre peque" + String.fromCharCode(241) + "os",
+		VALUE_ALWAYS_SMALL: "Siempre pequeños",
 		VALUE_ALWAYS_BIG: "Siempre grandes"
 	},
 
 	TextEncoding: {
-		OPTION_TITLE: "Codificaci" + String.fromCharCode(243) + "n de TXT y RTF libros",
-		MSG_RESTART: "¡Requiere reincio!",
-		LATIN: "Car" + String.fromCharCode(225) + "cteres latinos",
-		RUSSIAN: "Car" + String.fromCharCode(225) + "cteres rusos (Windows-1251)"
+		OPTION_TITLE: "Codificación de TXT y RTF",
+		MSG_RESTART: "¡Requiere reinicio!",
+		LATIN: "Carácteres latinos",
+		RUSSIAN: "Carácteres rusos (W-1251)"
 	},
 
 	KeyBindings: {
-		TITLE: "Configuraci" + String.fromCharCode(243) + "n Teclas",
+		TITLE: "Configuración Teclas",
 		DESCRIPTION: "Permite asignar acciones a las teclas",
 
 		DEFAULT_VALUE: "Por defecto",
 
 		// Contexts
 		GLOBAL: "En todo momento",
-		IN_MENU: "En los men" + String.fromCharCode(250) + "s",
+		IN_MENU: "En los menús",
 		IN_BOOK: "Durante la lectura",
 
 		// Button groups
-		NUM_BUTTONS: "Teclas num" + String.fromCharCode(233) + "ricas",
+		NUM_BUTTONS: "Teclas numéricas",
 		JP_BUTTONS: "Teclas del Joypad",
 		OTHER_BUTTONS: "Otras teclas",
 		VOLUME_BUTTONS: "Teclas de volumen",
 
 		// Buttons
 		BN_SIZE: "Zoom",
-		BN_BOOKMARK: "Marcador",
+		BN_BOOKMARK: "Mark",
 		BN_BL_NEXT: "Abajo izquierda 'siguiente'",
 		BN_BL_PREVIOUS: "Abajo izquierda 'anterior'",
 		BN_SB_NEXT: "Lateral 'siguiente'",
 		BN_SB_PREVIOUS: "Lateral 'anterior'",
-		BN_MENU: "Men" + String.fromCharCode(250) + "",
+		BN_MENU: "Menú",
 		BN_JP_LEFT: "Joypad izquierda",
 		BN_JP_RIGHT: "Joypad derecha",
 		BN_JP_UP: "Joypad arriba",
 		BN_JP_DOWN: "Joypad abajo",
 		BN_JP_CENTER: "Joypad centro",
 		BN_H_SIZE: "Mantener zoom",
-		BN_H_BOOKMARK: "Mantener marcador",
+		BN_H_BOOKMARK: "Mantener mark",
 		BN_H_BL_NEXT: "Mantener abajo izq. 'siguiente'",
 		BN_H_BL_PREVIOUS: "Mantener abajo izq. 'anterior'",
-		BN_H_MENU: "Mantener men" + String.fromCharCode(250) + " ",
+		BN_H_MENU: "Mantener menú ",
 		BN_H_SB_NEXT: "Mantener lateral 'siguiente'",
 		BN_H_SB_PREVIOUS: "Mantener lateral 'anterior'",
 		BN_H_JP_CENTER: "Mantener joypad centro",
@@ -401,12 +402,12 @@ return {
 
 		// Actions
 		ACTION_SHUTDOWN: "Apagar",
-		ACTION_NEXT_PAGE: "Siguiente p" + String.fromCharCode(225) + "gina",
-		ACTION_PREVIOUS_PAGE: "P" + String.fromCharCode(225) + "gina anterior",
+		ACTION_NEXT_PAGE: "Siguiente página",
+		ACTION_PREVIOUS_PAGE: "Página anterior",
 		ACTION_NEXT_IN_HISTORY: "Siguiente en el Historial",
 		ACTION_PREVIOUS_IN_HISTORY: "Anterior en el Historial",
-		ACTION_PREVIOUS_SONG: "Anterior canci" + String.fromCharCode(243) + "n",
-		ACTION_NEXT_SONG: "Siguiente canci" + String.fromCharCode(243) + "n",
+		ACTION_PREVIOUS_SONG: "Anterior canción",
+		ACTION_NEXT_SONG: "Siguiente canción",
 		ACTION_GOTO_LINK: "Ir al enlace"
 	},
 
@@ -427,29 +428,29 @@ return {
 	BrowseFolders: {
 		TITLE: "Explorador de Carpetas",
 		OPTION_SORTING_MODE: "Tipo de Orden",
-		VALUE_BY_TITLE: "Por t" + String.fromCharCode(237) + "tulo",
-		VALUE_BY_AUTHOR_THEN_TITLE: "Por autor y luego t" + String.fromCharCode(237) + "tulo",
-		VALUE_BY_AUTHOR_SWAPPING: "Por autor intercambiando nombre/apellido",
+		VALUE_BY_TITLE: "Por título",
+		VALUE_BY_AUTHOR_THEN_TITLE: "Por autor y luego título",
+		VALUE_BY_AUTHOR_SWAPPING: "Por autor (nombre/apellido)",
 		VALUE_BY_FILENAME: "Por archivo",
 		OPTION_TITLE_SORTER: "Ordenar por tipo de orden",
 		ENABLED: "Activado",
 		DISABLED: "Desactivado",
-		OPTION_IM_ROOT: "Ra" + String.fromCharCode(237) + "z de la Memoria Interna",
+		OPTION_IM_ROOT: "Raíz de la Memoria Interna",
 		OPTION_CARD_SCAN: "Escaneo de tarjetas SD/MS",
 		OPTION_MOUNT: "Montar SD/MS",
 		NODE_RESCAN_INTERNAL_MEMORY: "Escaneo Memoria Interna",
 		NODE_COPY_TO_INTERNAL_MEMORY: "Copiar a Memoria Interna",
-		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copiar a la ra" + String.fromCharCode(237) + "z de la Memoria Interna",
+		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copiar a la raíz de la Memoria Interna",
 		NODE_COPY_AND_RESCAN: "Copiar y escanear la Memoria Interna",
-		NODE_COPY_AND_RESCAN_COMMENT: "Copiar a la ra" + String.fromCharCode(237) + "z de la Memoria Interna y escanear",
+		NODE_COPY_AND_RESCAN_COMMENT: "Copiar a la raíz de la Memoria Interna y escanear",
 		ERROR_TARGET_EXISTS: "Error, el archivo destino existe",
 		NODE_BROWSE_FOLDERS: "Libros por Carpetas",
 		NODE_BROWSE_FOLDERS_COMMENT: "Explorar",
 		NODE_INTERNAL_MEMORY: "Memoria Interna",
 		NODE_MEMORY_STICK: "Memory Stick",
-		NODE_MEMORY_STICK_MOUNT: "Memory Stick a trav" + String.fromCharCode(233) + "s de montaje",
+		NODE_MEMORY_STICK_MOUNT: "Memory Stick a través de montaje",
 		NODE_SD_CARD: "Tarjeta SD",
-		NODE_SD_CARD_MOUNT: "Tarjeta SD a trav" + String.fromCharCode(233) + "s de montaje"
+		NODE_SD_CARD_MOUNT: "Tarjeta SD a través de montaje"
 	},
 
 	Clock: {
@@ -459,8 +460,8 @@ return {
 		VALUE_12H: "Formato 12 horas",
 		OPTION_MODE: "Uso del Reloj",
 		VALUE_ALWAYS_SHOWN: "Se muestra siempre",
-		VALUE_SHOWN_ONLY_IN_MENU: "S" + String.fromCharCode(243) + "lo en los men" + String.fromCharCode(250) + "s",
-		VALUE_SHOWN_WHEN_READING: "S" + String.fromCharCode(243) + "lo en la lectura",
+		VALUE_SHOWN_ONLY_IN_MENU: "Sólo en los menús",
+		VALUE_SHOWN_WHEN_READING: "Sólo en la lectura",
 		VALUE_OFF: "Desactivado",
 		ACTION_TOGGLE_CLOCK: "Alternar Reloj",
 		AM: "am",
@@ -468,23 +469,23 @@ return {
 	},
 
 	PageIndex: {
-		TITLE: "Paginaci" + String.fromCharCode(243) + "n Libros y Men" + String.fromCharCode(250) + "s",
-		INDEX_STYLE_BOOK: "Formato Paginaci" + String.fromCharCode(243) + "n Libro",
-		INDEX_MODE_BOOK: "Muestra Paginaci" + String.fromCharCode(243) + "n Libro",
-		INDEX_MODE_MENU: "Muestra Paginaci" + String.fromCharCode(243) + "n Men" + String.fromCharCode(250) + "s",
-		INDEX_STYLE_MENU: "Formato Paginaci" + String.fromCharCode(243) + "n Men" + String.fromCharCode(250) + "s",
+		TITLE: "Paginación Libros y Menús",
+		INDEX_STYLE_BOOK: "Formato Paginación Libro",
+		INDEX_MODE_BOOK: "Muestra Paginación Libro",
+		INDEX_MODE_MENU: "Muestra Paginación Menús",
+		INDEX_STYLE_MENU: "Formato Paginación Menús",
 		OF: "de",
 		ALWAYS_SHOWN: "Siempre",
 		NEVER_SHOWN: "Nunca",
-		NOT_SHOWN_IF_SINGLE_PAGE: "S" + String.fromCharCode(243) + "lo si hay m" + String.fromCharCode(225) + "s de una p" + String.fromCharCode(225) + "gina",
-		VALUE_STATS0: "5 / 100 (p" + String.fromCharCode(225) + "ginas por minuto)",
-		VALUE_STATS1: "5 / 100 (tiempo para finalizar)",
-		VALUE_STATS2: "5 / 100 (ppm / tiempo para finalizar)"	
+		NOT_SHOWN_IF_SINGLE_PAGE: "Sólo si hay más de una página",
+		VALUE_STATS0: "5 / 100 (páginas/minuto)",
+		VALUE_STATS1: "5 / 100 (tiempo a final)",
+		VALUE_STATS2: "5 / 100 (ppm / tiempo fin)"	
 	},
 
 	EpubUserStyle: {
-		OPTION_EPUB_CSS_FILE: "Archivo usario EPUB css",
-		MSG_WARNING: "¡S" + String.fromCharCode(243) + "lo se aplica a libros abiertos despu" + String.fromCharCode(233) + "s!",
+		OPTION_EPUB_CSS_FILE: "EPUB Archivo usario (css)",
+		MSG_WARNING: "¡Sólo se aplica a libros abiertos después!",
 		VALUE_DISABLED: "Desactivado"
 	},
 
@@ -492,27 +493,27 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		TITLE: "Historial del libro",
 		VALUE_DISABLED: "Desactivado",
-		OPTION_REPLACE: "Historial de continuar leyendo",
+		OPTION_REPLACE: "Historial continuar leyendo",
 		VALUE_ON: "Activado",
 		VALUE_OFF: "Desactivado"
 	},
 
 //ReadMark	ReadMark: {
-//		TITLE_UNREAD: "Marcadores - Ya le" + String.fromCharCode(237) + "dos",
-//		TITLE_READ: "Marcadores - No le" + String.fromCharCode(237) + "dos todav" + String.fromCharCode(237) + "a",
+//		TITLE_UNREAD: "Marcadores - Ya leídos",
+//		TITLE_READ: "Marcadores - No leídos todavía",
 //	},
 
 	TextScale: {
-		OPTION_SCALE_DEFAULT: "Escala por defecto",
-		VALUE_SMALL: "(S)Tama" + String.fromCharCode(241) + "o peque" + String.fromCharCode(241) + "o",
-		VALUE_MEDIUM: "(M)Tama" + String.fromCharCode(241) + "o mediano",
-		VALUE_LARGE: "(L)Tama" + String.fromCharCode(241) + "o grande",
+		OPTION_SCALE_DEFAULT: "Tamaño por defecto",
+		VALUE_SMALL: "(S)Tamaño pequeño",
+		VALUE_MEDIUM: "(M)Tamaño mediano",
+		VALUE_LARGE: "(L)Tamaño grande",
 		VALUE_DISABLED: "Desactivado",
 		VALUE_ENABLED: "Activado"
 	},
 
 	MenuTuning: {
-		OPTION_OUTER: "Contenido del men" + String.fromCharCode(250) + " superior"
+		OPTION_OUTER: "Opciones menú principal"
 	},
 	
 	Dictionary: {
