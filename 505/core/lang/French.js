@@ -6,6 +6,7 @@
 //	2010-05-04 Initial version by VICTORSJG
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 //	2010-05-06 kartu - Added Duglum's corrections
+//	2010-05-10 kartu - Added VICTORSJG's corrections
 
 
 var FUNC_X_SOMETHING = function (n, s) {
@@ -23,11 +24,11 @@ var FUNC_X_BOOKS = function (n) {
 };
 
 var FUNC_X_SETTINGS = function (n) {
-	return FUNC_X_SOMETHING(n, ["param" + String.fromCharCode(232) + "tres", "1 param" + String.fromCharCode(232) + "tres", "Aucun param" + String.fromCharCode(232) + "tres"]);
+	return FUNC_X_SOMETHING(n, ["paramètres", "1 paramètres", "Aucun paramètres"]);
 };
 
 var FUNC_X_ITEMS = function (n) {
-	return FUNC_X_SOMETHING(n, [String.fromCharCode(233) + "l" + String.fromCharCode(233) + "ments", "1" + String.fromCharCode(233) + "l" + String.fromCharCode(233) + "ment", "Aucun param" + String.fromCharCode(232) + "tres"]);
+	return FUNC_X_SOMETHING(n, ["éléments", "1 élément", "Aucun paramètres"]);
 };
 
 var FUNC_X_PAGES = function (n) {
@@ -81,8 +82,8 @@ return {
 	// Standard stuff
 	Sony: {
 		// USB connected
-		DO_NOT_DISCONNECT: "Ne d" + String.fromCharCode(233) + "branchez pas!",
-		USB_CONNECTED: "USB connect" + String.fromCharCode(233) + "",
+		DO_NOT_DISCONNECT: "Ne débranchez pas!",
+		USB_CONNECTED: "USB connecté",
 		DEVICE_LOCKED: "Dispositif de verrouillage",
 
 		// About, translate either all or none
@@ -116,23 +117,23 @@ return {
 		FORMATTING: "Formatage en cours...",
 		LOADING: "Chargement en cours...",
 		LOW_BATTERY: "Batterie faible!",
-		HR_WARNING: "Vous voulez effacer tout le contenu et restaurer les param" + String.fromCharCode(232) + "tres initiaux et le statut de la DRM Auteurizaci" + String.fromCharCode(243) + "n?\n\nOui - Presse 5\nAucun - Presse MENU",
-		DEVICE_SHUTDOWN: String.fromCharCode(201) + "teindre l'appareil",
-		PRESS_MARK_TO_SHUTDOWN: "Marque de presse pour " + String.fromCharCode(233) + "teindre",
+		HR_WARNING: "Vous voulez effacer tout le contenu et restaurer les paramètres initiaux et le statut de la DRM Auteurización?\n\nOui - Presse 5\nAucun - Presse MENU",
+		DEVICE_SHUTDOWN: "Éteindre l'appareil",
+		PRESS_MARK_TO_SHUTDOWN: "Marque de presse pour éteindre",
 		THIS_DEVICE: "dispositif.",
 		PRESS_MARK_TO_DELETE: "Marque de presse pour",
 		THIS_BOOK: "supprimer le livre.",
 		FORMAT_INTERNAL_MEMORY: "Formater Mémoire Interne",
 		PRESS_MARK_TO_FORMAT: "Marque de presse pour formater",
-		MSG_INTERNAL_MEMORY: "m" + String.fromCharCode(233) + "moire Interne.",
-		RESTORE_DEFAULTS: "Restaurer les param" + String.fromCharCode(232) + "tres par d" + String.fromCharCode(233) + "faut",
+		MSG_INTERNAL_MEMORY: "mémoire Interne.",
+		RESTORE_DEFAULTS: "Restaurer les paramètres par défaut",
 		PRESS_MARK_TO_RESTORE: "Marque de presse pour restaurer",
-		DEFAULT_SETTINGS: "param" + String.fromCharCode(232) + "tres par d" + String.fromCharCode(233) + "faut.",
+		DEFAULT_SETTINGS: "paramètres par défaut.",
 		UPPER_PAGE: "PAGE",
 		ONE_OF_ONE: "1 de 1",
 		NO_BATTERY: "Batterie faible!",
-		FORMATTING_INTERNAL_MEMORY: "Formatage M" + String.fromCharCode(233) + "moire Interne en cours...",
-		SHUTTING_DOWN: String.fromCharCode(201) + "teindre l'appareil",
+		FORMATTING_INTERNAL_MEMORY: "Formatage Mémoire Interne en cours...",
+		SHUTTING_DOWN: "Éteindre l'appareil",
 
 		// Root menu
 		CONTINUE: "Continuer la lecture",
@@ -144,7 +145,7 @@ return {
 		NOW_PLAYING: "Lecture en cours",
 		MUSIC: "Audio",
 		PICTURES: "Images",
-		SETTINGS: "Param" + String.fromCharCode(232) + "tres",
+		SETTINGS: "Paramètres",
 
 		// In Settings
 		// orientation
@@ -153,7 +154,7 @@ return {
 		VERTICAL: "Vertical",
 		// set date
 		SET_DATE: "Date et heure",
-		YEAR: "Ann" + String.fromCharCode(233) + "e",
+		YEAR: "Année",
 		MONTH: "Mois",
 		DATE: "Jour", // Day
 		HOUR: "Heure",
@@ -166,7 +167,7 @@ return {
 		SS_ON: "Oui",
 		SS_OFF: "Non",
 		SS_TURN: "Turn",
-		SS_DURATION: "Dur" + String.fromCharCode(233) + "e de la diapositive",
+		SS_DURATION: "Durée de la diapositive",
 		// width in pixels = ..._SIZE * 35
 		SS_SIZE: 2,
 		SS_OK: "OK",
@@ -186,10 +187,10 @@ return {
 		// about
 		ABOUT: "À propos de Reader",
 		// reset to factory settings
-		RESET_TO_FACTORY: "Restaurer les param" + String.fromCharCode(232) + "tres par d" + String.fromCharCode(233) + "faut",
+		RESET_TO_FACTORY: "Restaurer les paramètres par défaut",
 
 		// In Advanced Settings
-		ADVANCED_SETTINGS: "Param" + String.fromCharCode(232) + "tres avanc" + String.fromCharCode(233) + "s",
+		ADVANCED_SETTINGS: "Paramètres avancés",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "Verrouillage de l'appareil",
 		SL_OFF: "Oui",
@@ -204,13 +205,13 @@ return {
 		// width in pixels = ..._SIZE * 35
 		SL_OK_UNLOCK_SIZE: 2,
 		// format device
-		FORMAT_DEVICE: "Formater M" + String.fromCharCode(233) + "moire Interne",
+		FORMAT_DEVICE: "Formater Mémoire Interne",
 
 		// In Book menu
 		BEGIN: "Début",
 		END: "Fin",
 		BOOKMARKS: "Signets",
-		CONTENTS: "Table des mati" + String.fromCharCode(232) + "res",
+		CONTENTS: "Table des matières",
 		HISTORY: "Historique",
 		INFO: "Infos",
 		UTILITIES: "Utilitaires",
@@ -222,14 +223,14 @@ return {
 
 		// In Books by Date
 		TODAY: "Hoy",
-		EARLIER_THIS_WEEK: "Plus t" + String.fromCharCode(234) + "t cette semaine",
-		LAST_WEEK: "La semaine derni" + String.fromCharCode(232) + "re",
-		EARLIER_THIS_MONTH: "Plus t" + String.fromCharCode(244) + "t ce mois-ci",
+		EARLIER_THIS_WEEK: "Plus têt cette semaine",
+		LAST_WEEK: "La semaine dernière",
+		EARLIER_THIS_MONTH: "Plus tôt ce mois-ci",
 		LAST_MONTH: "Mois dernier",
-		EARLIER_THIS_QUARTER: "Ant" + String.fromCharCode(233) + "rieures ce trimestre",
+		EARLIER_THIS_QUARTER: "Antérieures ce trimestre",
 		LAST_QUARTER: "Dernier trimestre",
-		EARLIER_THIS_YEAR: "Plus t" + String.fromCharCode(244) + "t cette année",
-		LAST_YEAR: "Ann" + String.fromCharCode(233) + "e dernière",
+		EARLIER_THIS_YEAR: "Plus tôt cette année",
+		LAST_YEAR: "Année dernière",
 		OLDER: "Plus",
 
 		PAGE: "Page",
@@ -286,16 +287,16 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		NODE_PRSP_SETTINGS: "PRS+ param" + String.fromCharCode(232) + "tres",
-		NODE_OTHERS: "Multim" + String.fromCharCode(233) + "dia",
+		NODE_PRSP_SETTINGS: "PRS+ paramètres",
+		NODE_OTHERS: "Multimédia",
 		NODE_GAMES_AND_UTILS: "Jeux - Utilitaires",
-		GROUP_MENU_TITLE: "R" + String.fromCharCode(233) + "glages de menu",
-		GROUP_VIEWER_TITLE: "Param" + String.fromCharCode(232) + "tres Viewer"
+		GROUP_MENU_TITLE: "Réglages de menu",
+		GROUP_VIEWER_TITLE: "Paramètres Viewer"
 	},
 
 	CoreLang: {
 		TITLE: "Emplacement",
-		COMMENT: "N" + String.fromCharCode(233) + "cessite un red" + String.fromCharCode(233) + "marrage",
+		COMMENT: "Nécessite un redémarrage",
 		OPTION_LANG: "Langue",
 
 		OPTION_DATE_FORMAT: "Format Date",
@@ -309,7 +310,7 @@ return {
 		VALUE_NONE: "Aucun",
 
 		MONTH_SHORT_1: "Janv",
-		MONTH_SHORT_2: "F" + String.fromCharCode(233) + "vr",
+		MONTH_SHORT_2: "Févr",
 		MONTH_SHORT_3: "Mars",
 		MONTH_SHORT_4: "Avr",
 		MONTH_SHORT_5: "Mai",
@@ -322,13 +323,13 @@ return {
 		MONTH_SHORT_12: "Déc",
 
 		MONTH_1: "Janvier",
-		MONTH_2: "F" + String.fromCharCode(233) + "vrier",
+		MONTH_2: "Février",
 		MONTH_3: "Mars",
 		MONTH_4: "Avril",
 		MONTH_5: "Mai",
 		MONTH_6: "Juin",
 		MONTH_7: "Juillet",
-		MONTH_8: "Ao" + String.fromCharCode(251) + "t",
+		MONTH_8: "Août",
 		MONTH_9: "Septembre",
 		MONTH_10: "Octobre",
 		MONTH_11: "Novembre",
@@ -336,7 +337,7 @@ return {
 	},
 
 	MenuCaptions: {
-		OPTION_STYLE: "Menu L" + String.fromCharCode(233) + "gendes Style",
+		OPTION_STYLE: "Menu Légendes Style",
 		VALUE_SONY_DEFAULT: "Original Sony",
 		VALUE_ALWAYS_SMALL: "Toujours petits",
 		VALUE_ALWAYS_BIG: "Toujours grandes"
@@ -344,24 +345,24 @@ return {
 
 	TextEncoding: {
 		OPTION_TITLE: "TXT et RTF Livres Encoding",
-		MSG_RESTART: "N" + String.fromCharCode(233) + "cessite un red" + String.fromCharCode(233) + "marrage!",
+		MSG_RESTART: "Nécessite un redémarrage!",
 		LATIN: "Latin",
 		RUSSIAN: "Russe(Windows-1251)"
 	},
 
 	KeyBindings: {
-		TITLE: "Cl" + String.fromCharCode(233) + "s de configuration",
+		TITLE: "Clés de configuration",
 		DESCRIPTION: "Permet d'actions aux touches",
 
-		DEFAULT_VALUE: "Par d" + String.fromCharCode(233) + "faut",
+		DEFAULT_VALUE: "Par défaut",
 
 		// Contexts
-		GLOBAL: String.fromCharCode(192) + " tout moment",
+		GLOBAL: "À tout moment",
 		IN_MENU: "Lorsque dans le menu",
 		IN_BOOK: "Lorsque la lecture de livres",
 
 		// Button groups
-		NUM_BUTTONS: "Touches num" + String.fromCharCode(233) + "riques",
+		NUM_BUTTONS: "Touches numériques",
 		JP_BUTTONS: "Touches Joypad",
 		OTHER_BUTTONS: "Autres boutons",
 		VOLUME_BUTTONS: "Touches de volume",
@@ -369,23 +370,23 @@ return {
 		// Buttons
 		BN_SIZE: "Zoom",
 		BN_BOOKMARK: "Signet",
-		BN_BL_NEXT: "Vers le bas " + String.fromCharCode(224) + " gauche 'suivante'",
-		BN_BL_PREVIOUS: "Vers le bas " + String.fromCharCode(224) + " gauche 'précédent'",
+		BN_BL_NEXT: "Vers le bas à gauche 'suivante'",
+		BN_BL_PREVIOUS: "Vers le bas à gauche 'précédent'",
 		BN_SB_NEXT: "Sidebar 'suivante'",
-		BN_SB_PREVIOUS: "Sidebar 'pr" + String.fromCharCode(233) + "c" + String.fromCharCode(233) + "dent'",
+		BN_SB_PREVIOUS: "Sidebar 'précédent'",
 		BN_MENU: "Menu",
-		BN_JP_LEFT: "Joypad " + String.fromCharCode(224) + "  gauche",
+		BN_JP_LEFT: "Joypad à  gauche",
 		BN_JP_RIGHT: "Joypad droit",
-		BN_JP_UP: "Joypad jusqu'" + String.fromCharCode(224) + " ",
+		BN_JP_UP: "Joypad jusqu'à ",
 		BN_JP_DOWN: "Joypad vers le bas",
 		BN_JP_CENTER: "Joypad centre",
 		BN_H_SIZE: "Garder zoom",
 		BN_H_BOOKMARK: "Garder marque",
-		BN_H_BL_NEXT: "Garder vers le bas " + String.fromCharCode(224) + "  ga. 'suivante'",
-		BN_H_BL_PREVIOUS: "Garder vers le bas " + String.fromCharCode(224) + "  ga. 'pr" + String.fromCharCode(233) + "c" + String.fromCharCode(233) + "dent'",
+		BN_H_BL_NEXT: "Garder vers le bas à  ga. 'suivante'",
+		BN_H_BL_PREVIOUS: "Garder vers le bas à  ga. 'précédent'",
 		BN_H_MENU: "Garder menu",
 		BN_H_SB_NEXT: "Garder sidebar 'suivante'",
-		BN_H_SB_PREVIOUS: "Garder sidebar 'pr" + String.fromCharCode(233) + "c" + String.fromCharCode(233) + "dent''",
+		BN_H_SB_PREVIOUS: "Garder sidebar 'précédent''",
 		BN_H_JP_CENTER: "Garder joypad centre",
 		BN_H_1: "Garder 1",
 		BN_H_2: "Garder 2",
@@ -403,28 +404,28 @@ return {
 		BN_H_VOLUME_UP: "Garder Volume +",
 
 		// Actions
-		ACTION_SHUTDOWN: String.fromCharCode(201) + "teindre l'appareil",
+		ACTION_SHUTDOWN: "Éteindre l'appareil",
 		ACTION_NEXT_PAGE: "Page suivante",
-		ACTION_PREVIOUS_PAGE: "Page pr" + String.fromCharCode(233) + "c" + String.fromCharCode(233) + "dent",
+		ACTION_PREVIOUS_PAGE: "Page précédent",
 		ACTION_NEXT_IN_HISTORY: "Suivante en el Historique",
-		ACTION_PREVIOUS_IN_HISTORY: "Pr" + String.fromCharCode(233) + "c" + String.fromCharCode(233) + "dent en el Historique",
-		ACTION_PREVIOUS_SONG: "Chanson pr" + String.fromCharCode(233) + "c" + String.fromCharCode(233) + "dent ",
+		ACTION_PREVIOUS_IN_HISTORY: "Précédent en el Historique",
+		ACTION_PREVIOUS_SONG: "Chanson précédent ",
 		ACTION_NEXT_SONG: "Chanson suivante ",
 		ACTION_GOTO_LINK: "Aller au lien"
 	},
 
 	Screenshot: {
-		TITLE: "Capture d'" + String.fromCharCode(233) + "cran",
-		ACTION_TITLE: "Prendre une capture d'" + String.fromCharCode(233) + "cran",
-		SAVING_TO: "Enregistrement " + String.fromCharCode(224) + "",
+		TITLE: "Capture d'écran",
+		ACTION_TITLE: "Prendre une capture d'écran",
+		SAVING_TO: "Enregistrement à",
 		FAILED_TO_SAVE: "Impossible d'enregistrer",
 		OPT_SAVETO: "Enregistrer...",
-		OPT_FEEDBACK: "Afficher Enregistrer progr" + String.fromCharCode(232) + "s",
+		OPT_FEEDBACK: "Afficher Enregistrer progrès",
 		MEMORY_STICK: "Memory Stick",
 		FEEDBACK_ON: "On",
 		FEEDBACK_OFF: "Off",
 		SD_CARD: "Carte SD",
-		INTERNAL_MEMORY: "M" + String.fromCharCode(233) + "moire Interne"
+		INTERNAL_MEMORY: "Mémoire Interne"
 	},
 
 	BrowseFolders: {
@@ -432,23 +433,23 @@ return {
 		OPTION_SORTING_MODE: "Tri Mode",
 		VALUE_BY_TITLE: "Par Titre",
 		VALUE_BY_AUTHOR_THEN_TITLE: "Par auteur, puis le titre",
-		VALUE_BY_AUTHOR_SWAPPING: "Par auteur " + String.fromCharCode(233) + "change Nom / Pr" + String.fromCharCode(233) + "nom",
+		VALUE_BY_AUTHOR_SWAPPING: "Par auteur échange Nom / Prénom",
 		VALUE_BY_FILENAME: "Par nom de fichier",
 		OPTION_TITLE_SORTER: "Trier par type d'ordre",
 		ENABLED: "Permettre",
-		DISABLED: "Handicap" + String.fromCharCode(233) + "",
+		DISABLED: "Handicapé",
 		OPTION_IM_ROOT: "Mémoire interne dossier Root",
 		OPTION_CARD_SCAN: "Carte SD / MS Scan",
 		OPTION_MOUNT: "Utilisez mount avec les cartes SD / MS",
-		NODE_RESCAN_INTERNAL_MEMORY: "Rescan m" + String.fromCharCode(233) + "moire interne",
-		NODE_COPY_TO_INTERNAL_MEMORY: "Copier sur la m" + String.fromCharCode(233) + "moire interne",
-		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Des copies de fichiers " + String.fromCharCode(224) + " la racine de la m" + String.fromCharCode(233) + "moire interne",
-		NODE_COPY_AND_RESCAN: "Copy & Rescan m" + String.fromCharCode(233) + "moire interne",
+		NODE_RESCAN_INTERNAL_MEMORY: "Rescan mémoire interne",
+		NODE_COPY_TO_INTERNAL_MEMORY: "Copier sur la mémoire interne",
+		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Des copies de fichiers à la racine de la mémoire interne",
+		NODE_COPY_AND_RESCAN: "Copy & Rescan mémoire interne",
 		NODE_COPY_AND_RESCAN_COMMENT: "Des copies de fichiers à la racine de la mémoire interne et livres rescans",
 		ERROR_TARGET_EXISTS: "Fichier d'erreur cible, il existe",
 		NODE_BROWSE_FOLDERS: "Parcourir les dossiers",
-		NODE_BROWSE_FOLDERS_COMMENT: "Parcourir le syst" + String.fromCharCode(232) + "me de fichiers",
-		NODE_INTERNAL_MEMORY: "M" + String.fromCharCode(233) + "moire interne",
+		NODE_BROWSE_FOLDERS_COMMENT: "Parcourir le système de fichiers",
+		NODE_INTERNAL_MEMORY: "Mémoire interne",
 		NODE_MEMORY_STICK: "Memory Stick",
 		NODE_MEMORY_STICK_MOUNT: "Memory Stick via le mont",
 		NODE_SD_CARD: "Carte SD",
@@ -464,7 +465,7 @@ return {
 		VALUE_ALWAYS_SHOWN: "Affiche toujours",
 		VALUE_SHOWN_ONLY_IN_MENU: "Affiché uniquement dans le menu",
 		VALUE_SHOWN_WHEN_READING: "Affiché uniquement lors de la lecture",
-		VALUE_OFF: "Handicap" + String.fromCharCode(233) + "",
+		VALUE_OFF: "Handicapé",
 		ACTION_TOGGLE_CLOCK: "Basculer le Mode",
 		AM: "am",
 		PM: "pm"
@@ -483,50 +484,48 @@ return {
 		VALUE_STATS0: "5 / 100 (pages par minute)",
 		VALUE_STATS1: "5 / 100 (Le temps de terminer)",
 		VALUE_STATS2: "5 / 100 (ppm / Le temps de terminer)"
-//		PAGES_LEFT: "Autres pages: 95",
-//		PAGES_LEFT_PER: "Autres pages %: 95 (95%)",
-//		Pag_Left: "Aut pag:"
+	
 	},
 
 	EpubUserStyle: {
 		OPTION_EPUB_CSS_FILE: "Style EPUB utilisateur (Fichier CSS)",
-		MSG_WARNING: "Affecte uniquement les livres ouverts apr" + String.fromCharCode(232) + "s!",
-		VALUE_DISABLED: "Handicap" + String.fromCharCode(233) + ""
+		MSG_WARNING: "Affecte uniquement les livres ouverts après!",
+		VALUE_DISABLED: "Handicapé"
 	},
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		TITLE: "Livre d'histoire",
-		VALUE_DISABLED: "D" + String.fromCharCode(233) + "sactiv" + String.fromCharCode(233) + "",
+		VALUE_DISABLED: "Désactivé",
 		OPTION_REPLACE: "Histoire en continuer la lecture",
 		VALUE_ON: "On",
 		VALUE_OFF: "Off"
 	},
 
 //ReadMark	ReadMark: {
-//		TITLE_UNREAD: "Signets - D" + String.fromCharCode(233) + "j" + String.fromCharCode(224) + " lu",
+//		TITLE_UNREAD: "Signets - Déjà lu",
 //		TITLE_READ: "Signets - Pas encore lu",
 //	},
 
 	TextScale: {
-		OPTION_SCALE_DEFAULT: String.fromCharCode(233) + "chelle par d" + String.fromCharCode(201) + "faut",
+		OPTION_SCALE_DEFAULT: "Échelle par défaut",
 		VALUE_SMALL: "(S)Petite taille",
 		VALUE_MEDIUM: "(M)Taille moyenne",
 		VALUE_LARGE: "(L)Grande taille",
-		VALUE_DISABLED: "Handicap" + String.fromCharCode(233) + "",
-		VALUE_ENABLED: "Permettre" + String.fromCharCode(233) + "e"
+		VALUE_DISABLED: "Handicapé",
+		VALUE_ENABLED: "Permettreée"
 	},
 
 	MenuTuning: {
-		OPTION_OUTER: "Menu niveau sup" + String.fromCharCode(233) + "rieur ne contient"
+		OPTION_OUTER: "Menu niveau supérieur ne contient"
 	},
 
 	Dictionary: {
 		TITLE: "Dictionnaire",
-		WARN_DICT_DISABLED: "Dictionnaire est d" + String.fromCharCode(233) + "sactiv" + String.fromCharCode(233) + "!",
+		WARN_DICT_DISABLED: "Dictionnaire est désactivé!",
 		WARN_DICT_DOESNT_EXIST: "Dictionnaire fichier n'existe pas!",
 		ACTION_DICTIONARY: "Lancement dictionnaire",
 		OPTION_DICTIONARY: "Dictionnaire fichier",
-		VALUE_DISABLED: "Handicap" + String.fromCharCode(233) + ""
+		VALUE_DISABLED: "Handicapé"
 	}
 };
