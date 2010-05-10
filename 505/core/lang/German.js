@@ -10,6 +10,7 @@
 //	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
+//	2010-05-10 kartu - Added German corrections by Duglum/Mark Nord/klawong
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -110,7 +111,7 @@ return {
 		// Main.xml & kbook.so stuff
 		INVALID_FORMAT: "Ungültiges Format!",
 		FORMATTING: "Formatiere...",
-		LOADING: "Lade auf...",
+		LOADING: "Lade...",
 		LOW_BATTERY: "Batterie schwach!",
 		HR_WARNING: "Willst Du alle Inhalte LÖSCHEN, auf Werkseinstellungen zurücksetzen und die DRM-Authorisierung zurücksetzen?\n\nJa - Drücke 5\nNein - Drücke MENÜ",
 		DEVICE_SHUTDOWN: "Gerät ausschalten",
@@ -489,23 +490,23 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		TITLE: "Book History",
+		TITLE: "Buch-Verlauf",
 		VALUE_DISABLED: "Deaktiviert",
-		OPTION_REPLACE: "History into Continue Reading",
-		VALUE_ON: "On",
-		VALUE_OFF: "Off"
+		OPTION_REPLACE: "Weiterlesen durch Verlauf ersetzen",
+		VALUE_ON: "Ja",
+		VALUE_OFF: "Nein"
 	},
 
 //ReadMark	ReadMark: {
-//		TITLE_UNREAD: "Mark Book - Already Read",
-//		TITLE_READ: "Mark Book - Not Yet Read",
+//		TITLE_UNREAD: "Buch als gelesen markieren",
+//		TITLE_READ: "Buch als nicht gelesen markieren",
 //	},
 
 	TextScale: {
 		OPTION_SCALE_DEFAULT: "Standardgröße",
-		VALUE_SMALL: "(S) Kleine Schrift",
-		VALUE_MEDIUM: "(M) Mittlere Schrift",
-		VALUE_LARGE: "(L) Große Schrift",
+		VALUE_SMALL: "Kleine Schrift (S)",
+		VALUE_MEDIUM: "Mittlere Schrift (M)",
+		VALUE_LARGE: "Große Schrift (L)",
 		VALUE_DISABLED: "Deaktiviert",
 		VALUE_ENABLED: "Aktiviert"
 	},
@@ -515,11 +516,11 @@ return {
 	},
 	
 	Dictionary: {
-		TITLE: "Dictionary",
-		WARN_DICT_DISABLED: "Dictionary is disabled!",
-		WARN_DICT_DOESNT_EXIST: "Dictionary file doesn't exist!",
-		ACTION_DICTIONARY: "Launch dictionary",
-		OPTION_DICTIONARY: "Dictionary file",
-		VALUE_DISABLED: "disabled"
+		TITLE: "Wörterbuch",
+		WARN_DICT_DISABLED: "Wörterbuch ist deaktiviert!",
+		WARN_DICT_DOESNT_EXIST: "Wörterbuch-Datei existiert nicht!",
+		ACTION_DICTIONARY: "Wörterbuch öffnen",
+		OPTION_DICTIONARY: "Wörterbuch-Datei",
+		VALUE_DISABLED: "Deaktiviert"
 	}	
 };
