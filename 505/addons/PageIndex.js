@@ -12,6 +12,7 @@
 //	2010-04-22 kartu - Fixed minor bug: "1 of 1" menu was visible even when menu mode was "not shown on single pages"
 //	2010-04-24 kartu - Prepared for merging into single JS
 //	2010-05-05 kartu - Added ppm, time to left, "pages remaning"
+//	2010-05-10 kartu - Fixed ppm bug: "undefined" shown after long delays
 
 tmp = function() {
 	var log = Core.log.getLogger("Index");
@@ -37,7 +38,7 @@ tmp = function() {
 					XremYperRem: "5 + 95 (95%)",
 					XdivYstats0: L("VALUE_STATS0"),
 					XdivYstats1: L("VALUE_STATS1"), 
-					XdivYstats2: L("VALUE_STATS2"), 
+					XdivYstats2: L("VALUE_STATS2") 
 				}
 			},
 			{
@@ -86,10 +87,6 @@ tmp = function() {
 	var MAX_DELAY = 30 * 60 * 1000; 
 	var NA = "*";
 	
-	var resetCounter = function () {
-		lastTime = undefined;
-	};
-	
 	// Calculates ppm based on page changes history. 
 	// Takes into account MAX_PPM_HISTORY pages.
 	// Resets the counter if there was a delay longar than MAX_DELAY milliseconds
@@ -97,8 +94,10 @@ tmp = function() {
 	var getPpm = function (currentPage) {
 		try {
 			var i;
-			if (lastTime === undefined) {
-				lastTime = (new Date()).getTime();
+			var currentTime = (new Date()).getTime();
+			// If first time, or if took  too long, reset the counter
+			if (lastTime === undefined || currentTime - lastTime > MAX_DELAY) {
+				lastTime = currentTime;
 				lastPage = currentPage;
 				ppmIdx = 0;
 				ppmHistory = new Array(MAX_PPM_HISTORY);
@@ -106,14 +105,7 @@ tmp = function() {
 					ppmHistory[i] = 0;
 				}
 				return NA;
-			}
-			
-			// It took tooo long, resetting the counter
-			var currentTime = (new Date()).getTime();
-			if (currentTime - lastTime > MAX_DELAY) {
-				resetCounter();
-				return;
-			}
+			}			
 			
 			if (currentPage !== lastPage) {
 				if (ppmIdx >= MAX_PPM_HISTORY) {
