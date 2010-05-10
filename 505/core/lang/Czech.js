@@ -1,5 +1,6 @@
 // Language: Czech
 // Description: Localization file
+// Translator: Hobogen
 //
 // History:
 //	2010-05-06 kartu - Initial version by Hobogen @ mobileread
