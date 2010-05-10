@@ -15,6 +15,7 @@
 //	2010-04-27 kravitz - Localizers are adapted for work with functions
 //	2010-05-04 kravitz - Added French locale
 //	2010-05-06 kartu - Added Czech locale
+//	2010-05-10 kartu - Added Simplified Chineze locale
 
 tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -182,7 +183,7 @@ tmp = function() {
 				title: langL("OPTION_LANG"),
 				icon: "LIST",
 				defaultValue: "English.js",
-				values: ["Catalan.js", "Czech.js", "German.js", "English.js", "Spanish.js", "French.js", "Georgian.js", "Russian.js"],
+				values: ["Catalan.js", "Czech.js", "German.js", "English.js", "Spanish.js", "French.js", "Georgian.js", "Russian.js", "SimplifiedChinese.js"],
 				valueTitles: {
 					"Catalan.js": "Català",
 					"Czech.js": "Český",
@@ -191,7 +192,8 @@ tmp = function() {
 					"Spanish.js": "Español",
 					"French.js": "Français",
 					"Georgian.js": "ქართული",
-					"Russian.js": "Русский"
+					"Russian.js": "Русский",
+					"SimplifiedChinese.js": "中文"
 				}
 			},
 			{
