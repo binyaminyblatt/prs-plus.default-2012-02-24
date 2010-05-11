@@ -13,6 +13,7 @@
 //	2010-04-24 kartu - Prepared for merging into single JS
 //	2010-05-05 kartu - Added ppm, time to left, "pages remaning"
 //	2010-05-11 kartu - Fixed NaN bug in ppm
+//	2010-05-11 kartu - Fixed time left bug (time to read entire book was shown instead of remaining). Noticed by Duglum.
 
 tmp = function() {
 	var log = Core.log.getLogger("Index");
@@ -210,12 +211,12 @@ tmp = function() {
 					show = ii + " / " + c +  " (" + getPpm(i) + ")";
 					break;
 				case "XdivYstats1":
-					timeLeft = getTimeLeft(getPpm(i), c);
+					timeLeft = getTimeLeft(getPpm(i), c - i);
 					show = ii + " / " + c +  " (" + timeLeft + ")";
 					break;
 				case "XdivYstats2":
 					var ppm = getPpm(i);
-					timeLeft = getTimeLeft(ppm, c);
+					timeLeft = getTimeLeft(ppm, c - i);
 					show = ii + " / " + c +  " (" + ppm + " / " + timeLeft + ")";
 					break;
 				default:
