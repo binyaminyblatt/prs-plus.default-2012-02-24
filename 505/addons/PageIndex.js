@@ -12,7 +12,7 @@
 //	2010-04-22 kartu - Fixed minor bug: "1 of 1" menu was visible even when menu mode was "not shown on single pages"
 //	2010-04-24 kartu - Prepared for merging into single JS
 //	2010-05-05 kartu - Added ppm, time to left, "pages remaning"
-//	2010-05-10 kartu - Fixed ppm bug: "undefined" shown after long delays
+//	2010-05-11 kartu - Fixed NaN bug in ppm
 
 tmp = function() {
 	var log = Core.log.getLogger("Index");
@@ -87,6 +87,10 @@ tmp = function() {
 	var MAX_DELAY = 30 * 60 * 1000; 
 	var NA = "*";
 	
+	var resetCounter = function () {
+		lastTime = undefined;
+	};
+	
 	// Calculates ppm based on page changes history. 
 	// Takes into account MAX_PPM_HISTORY pages.
 	// Resets the counter if there was a delay longar than MAX_DELAY milliseconds
@@ -94,10 +98,8 @@ tmp = function() {
 	var getPpm = function (currentPage) {
 		try {
 			var i;
-			var currentTime = (new Date()).getTime();
-			// If first time, or if took  too long, reset the counter
-			if (lastTime === undefined || currentTime - lastTime > MAX_DELAY) {
-				lastTime = currentTime;
+			if (lastTime === undefined) {
+				lastTime = (new Date()).getTime();
 				lastPage = currentPage;
 				ppmIdx = 0;
 				ppmHistory = new Array(MAX_PPM_HISTORY);
@@ -105,7 +107,14 @@ tmp = function() {
 					ppmHistory[i] = 0;
 				}
 				return NA;
-			}			
+			}
+			
+			// It took tooo long, resetting the counter
+			var currentTime = (new Date()).getTime();
+			if (currentTime - lastTime > MAX_DELAY) {
+				resetCounter();
+				return;
+			}
 			
 			if (currentPage !== lastPage) {
 				if (ppmIdx >= MAX_PPM_HISTORY) {
@@ -125,10 +134,12 @@ tmp = function() {
 					result = result + ppmHistory[i]; 
 				}
 			}
-			return Math.round(result / n * 10) / 10;
+			result = Math.round(result / n * 10) / 10; 
+			return (isNaN(result) || result === undefined) ? NA : result;
 		} catch (e) {
-			log.error("in getPpm: ", e); 
+			log.error("ppmIdx = " + ppmIdx + " ppmHistory =  " + ppmHistory + " in getPpm: ", e); 
 		}
+		return NA;
 	};
 	
 	// Returns time left to finish the book
