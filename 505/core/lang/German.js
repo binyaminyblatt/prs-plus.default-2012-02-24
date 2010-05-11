@@ -11,6 +11,7 @@
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 //	2010-05-10 kartu - Added German corrections by Duglum/Mark Nord/klawong
+//	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -296,6 +297,7 @@ return {
 		OPTION_LANG: "Sprache",
 
 		OPTION_DATE_FORMAT: "Datums-Format",
+		VALUE_DEFAULT_DATE: "Standardwert",
 		ddMMMYY: "31/Jan/99",
 		ddMONTHYY: "31/Januar/99",
 		ddMMMYYYY: "31/Jan/1999",

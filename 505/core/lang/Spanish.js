@@ -12,6 +12,7 @@
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 //	2010-05-06 kartu - Added ppm related translations by VICTORSJG
 //	2010-05-09 kartu - Added surquizu's corrections
+//	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -297,6 +298,7 @@ return {
 		OPTION_LANG: "Idioma",
 
 		OPTION_DATE_FORMAT: "Formato fecha",
+		VALUE_DEFAULT_DATE: "Por defecto",
 		ddMMMYY: "31/Ene/99",
 		ddMONTHYY: "31/Enero/99",
 		ddMMMYYYY: "31/Ene/1999",
