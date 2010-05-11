@@ -16,6 +16,7 @@
 //	2010-05-04 kravitz - Added French locale
 //	2010-05-06 kartu - Added Czech locale
 //	2010-05-10 kartu - Added Simplified Chineze locale
+//	2010-05-11 kartu - Renamed Chinese to "Simplified Chinese"
 
 tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -193,7 +194,7 @@ tmp = function() {
 					"French.js": "Français",
 					"Georgian.js": "ქართული",
 					"Russian.js": "Русский",
-					"SimplifiedChinese.js": "中文"
+					"SimplifiedChinese.js": "简体中文"
 				}
 			},
 			{
