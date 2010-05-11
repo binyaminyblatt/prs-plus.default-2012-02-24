@@ -5,6 +5,8 @@
 // History:
 //	2010-04-27 kravitz - Initial version
 //	2010-05-11 kartu - Fixed EPUB zoom. Still has side effects: utils -> clear history resets zoom
+//	2010-05-11 kartu - Changed it, so that addon doesn't hook unless needed. 
+//				Fixed === 0 bugs introduced in previous commit.
 //
 // Note(s):
 //	- Reassigns original kbook.model.onChangeBookCallback()
@@ -12,7 +14,6 @@
 //
 // TODO:
 //	- Add TEXT_SCALE icon (ex. magnifier)
-//	- Don't hook anyting in case of default settings
 
 tmp = function() {
 	// Shortcuts
@@ -89,7 +90,7 @@ tmp = function() {
 	};
 
 	var oldOnChangeBookCallback = kbook.model.onChangeBookCallback;
-	kbook.model.onChangeBookCallback = function () {
+	var onChangeBookCallback = function () {
 		try {
 			if (this.currentBook) {
 				var media = getFastBookMedia(this.currentBook);
@@ -105,18 +106,17 @@ tmp = function() {
 		}
 		oldOnChangeBookCallback.apply(this, arguments);
 	};
-
-	var kbookPage = getSoValue("Fskin.kbookPage");
-	kbookPage.doSize = function () {
+	
+	var doSize = function () {
 		try {
 			var media = getFastBookMedia(kbook.model.currentBook);
 			//NOTE Original handler used kbook.bookData.textScale but it looks like the same
 			var current = getSoValue(media, "scale");
 			// Find next enabled scale...
 			var next = (current == 2) ? 0 : current + 1; // get next
-			if (TextScale.options[next] === "0") { // next is disabled
+			if (TextScale.options[next] == 0) { // next is disabled
 				next = (next == 2) ? 0 : next + 1; // get next
-				if (TextScale.options[next] === "0") { // next is disabled
+				if (TextScale.options[next] == 0) { // next is disabled
 					// No more enabled scales
 					return;
 				}
@@ -128,7 +128,27 @@ tmp = function() {
 			log.error("doSize(): " + e);
 		}
 	};
+	
+	// Hooks doSize and onChangeBookCallback
+	// Is safe to call more than once
+	var doHook = function() {
+		var kbookPage = getSoValue("Fskin.kbookPage");
+		kbookPage.doSize = doSize;
+		kbook.model.onChangeBookCallback = onChangeBookCallback;
+	};
+	
+	var areSettingsDefault = function() {
+		var options = TextScale.options;
+		return options !== undefined && options.scaleDefault == SCALE_SMALL && 
+			options[0] == 1 && options[1] == 1 && options[2] == 1;
+	};
 
+	TextScale.onInit = function() {
+		if (!areSettingsDefault()) {
+			doHook();
+		}
+	};
+	
 	TextScale.onSettingsChanged = function (propertyName, oldValue, newValue) {
 		if (oldValue === newValue) {
 			return;
@@ -141,7 +161,7 @@ tmp = function() {
 			if (!newValue) { // current is disabled
 				// Check up at least one scale is enabled and default scale is enabled...
 				var current = Number(propertyName);
-				if (this.options["0"] === "0" && this.options["1"] === "0" && this.options["2"] === "0") {
+				if (this.options[0] == 0 && this.options[1] == 0 && this.options[2] == 0) {
 					// all are disabled
 					next = (current == 2) ? 0 : current + 1; // get next
 					this.options[next] = 1; // enable next
@@ -149,13 +169,17 @@ tmp = function() {
 				} else {
 					if (this.options.scaleDefault == current) { // current is default
 						next = (current == 2) ? 0 : current + 1;  // get next
-						if (this.options[next] === "0") { // next is disabled
+						if (this.options[next] == 0) { // next is disabled
 							next = (next == 2) ? 0 : next + 1; // get next
 						}
 						this.options.scaleDefault = next; // default it
 					}
 				}
 			}
+		}
+		
+		if (!areSettingsDefault()) {
+			doHook();
 		}
 	};
 
