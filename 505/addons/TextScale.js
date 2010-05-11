@@ -4,13 +4,15 @@
 //
 // History:
 //	2010-04-27 kravitz - Initial version
+//	2010-05-11 kartu - Fixed EPUB zoom. Still has side effects: utils -> clear history resets zoom
 //
 // Note(s):
-// 	- Reassigns original kbook.model.onChangeBookCallback()
-// 	- Reassigns original Fskin.kbookPage.doSize()
+//	- Reassigns original kbook.model.onChangeBookCallback()
+//	- Reassigns original Fskin.kbookPage.doSize()
 //
 // TODO:
 //	- Add TEXT_SCALE icon (ex. magnifier)
+//	- Don't hook anyting in case of default settings
 
 tmp = function() {
 	// Shortcuts
@@ -91,9 +93,11 @@ tmp = function() {
 		try {
 			if (this.currentBook) {
 				var media = getFastBookMedia(this.currentBook);
-				if (getSoValue(media, "layouts").length == 0) {
+				// EPUBs don't have layouts, so we have to check history
+				// as a side effect, utils -> clear history will also reset zoom 
+				if (getSoValue(media, "layouts").length === 0 && getSoValue(media, "history").length === 0) {
 					// Book is opened for the first time - set default scale
-					Core.system.setSoValue(media, "scale", TextScale.options.scaleDefault);
+					setSoValue(media, "scale", TextScale.options.scaleDefault);
 				}
 			}
 		} catch (e) {
@@ -104,16 +108,15 @@ tmp = function() {
 
 	var kbookPage = getSoValue("Fskin.kbookPage");
 	kbookPage.doSize = function () {
-
 		try {
 			var media = getFastBookMedia(kbook.model.currentBook);
 			//NOTE Original handler used kbook.bookData.textScale but it looks like the same
 			var current = getSoValue(media, "scale");
 			// Find next enabled scale...
 			var next = (current == 2) ? 0 : current + 1; // get next
-			if (TextScale.options[next] == 0) { // next is disabled
+			if (TextScale.options[next] === "0") { // next is disabled
 				next = (next == 2) ? 0 : next + 1; // get next
-				if (TextScale.options[next] == 0) { // next is disabled
+				if (TextScale.options[next] === "0") { // next is disabled
 					// No more enabled scales
 					return;
 				}
@@ -134,18 +137,19 @@ tmp = function() {
 			this.options[newValue] = 1;
 		} else {
 			// "0" | "1" | "2"
+			var next;
 			if (!newValue) { // current is disabled
 				// Check up at least one scale is enabled and default scale is enabled...
 				var current = Number(propertyName);
-				if (this.options["0"] == 0 && this.options["1"] == 0 && this.options["2"] == 0) {
+				if (this.options["0"] === "0" && this.options["1"] === "0" && this.options["2"] === "0") {
 					// all are disabled
-					var next = (current == 2) ? 0 : current + 1; // get next
+					next = (current == 2) ? 0 : current + 1; // get next
 					this.options[next] = 1; // enable next
 					this.options.scaleDefault = next; // default next
 				} else {
 					if (this.options.scaleDefault == current) { // current is default
-						var next = (current == 2) ? 0 : current + 1;  // get next
-						if (this.options[next] == 0) { // next is disabled
+						next = (current == 2) ? 0 : current + 1;  // get next
+						if (this.options[next] === "0") { // next is disabled
 							next = (next == 2) ? 0 : next + 1; // get next
 						}
 						this.options.scaleDefault = next; // default it
