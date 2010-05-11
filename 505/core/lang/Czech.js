@@ -4,6 +4,7 @@
 //
 // History:
 //	2010-05-06 kartu - Initial version by Hobogen @ mobileread
+//	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 4) {
@@ -300,6 +301,7 @@ return {
 		OPTION_LANG: "Jazyk",
 
 		OPTION_DATE_FORMAT: "Formát data",
+		VALUE_DEFAULT_DATE: "Základní",
 		ddMMMYY: "31/Led/99",
 		ddMONTHYY: "31/Leden/99",
 		ddMMMYYYY: "31/Led/1999",

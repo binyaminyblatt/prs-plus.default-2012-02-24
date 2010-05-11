@@ -17,6 +17,7 @@
 //	2010-05-06 kartu - Added Czech locale
 //	2010-05-10 kartu - Added Simplified Chineze locale
 //	2010-05-11 kartu - Renamed Chinese to "Simplified Chinese"
+//				Added "VALUE_DEFAULT_DATE" translation (CoreLang)
 
 tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -203,6 +204,7 @@ tmp = function() {
 				defaultValue: "default",
 				values: ["default", "ddMMYY", "MMddYY", "YYMMdd", "ddMMMYY", "ddMONTHYY", "ddMMYYYY", "MMddYYYY", "YYYYMMdd", "ddMMMYYYY", "ddMONTHYYYY"],
 				valueTitles: {
+					"default": langL("VALUE_DEFAULT_DATE"),
 					ddMMYY: "31/01/99",
 					MMddYY: "01/31/99",
 					YYMMdd: "99/01/31",

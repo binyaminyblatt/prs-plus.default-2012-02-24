@@ -14,6 +14,7 @@
 //	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
+//	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -308,6 +309,7 @@ return {
 		OPTION_LANG: "Язык",
 
 		OPTION_DATE_FORMAT: "Формат даты",
+		VALUE_DEFAULT_DATE: "По умолчанию",
 		ddMMMYY: "31/янв/99",
 		ddMONTHYY: "31/января/99",
 		ddMMMYYYY: "31/янв/1999",

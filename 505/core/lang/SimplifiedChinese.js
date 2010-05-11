@@ -4,6 +4,7 @@
 //
 // History:
 //	2010-05-06 kartu - Initial version by thawk
+//	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -297,6 +298,7 @@ return {
 		OPTION_LANG: "界面语言",
 
 		OPTION_DATE_FORMAT: "日期格式",
+		VALUE_DEFAULT_DATE: "缺省",
 		ddMMMYY: "31/Jan/99",
 		ddMONTHYY: "31/January/99",
 		ddMMMYYYY: "31/Jan/1999",
