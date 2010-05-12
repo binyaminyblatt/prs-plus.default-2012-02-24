@@ -9,11 +9,12 @@
 //	2010-05-01 kravitz - Added Continue Reading action, fixed minor bugs
 //	2010-05-03 kravitz - Renamed from ReadingList, refactored options
 //	2010-05-04 kravitz - Fixed doDeleteBook()
+//	2010-05-12 kartu - Renamed "Continue Reading" action to "Book History"
+//				Changed: books are opened immediatelly, instead of showing book menu
 
 tmp = function() {
 	// Shortcuts
 	var log = Core.log.getLogger("BookHistory");
-	var getSoValue = Core.system.getSoValue;
 	var getFastBookMedia = Core.system.getFastBookMedia;
 
 	// Localize
@@ -22,8 +23,8 @@ tmp = function() {
 	// Default Book History length
 	var BH_DEFAULT = 1;
 
-	var CR_TITLE = Core.ui.nodes["continue"].title;
 	var BH_TITLE = L("TITLE");
+	var CR_TITLE = BH_TITLE;
 	var BH_FILE = "book.history";
 
 	// This addon
@@ -61,7 +62,7 @@ tmp = function() {
 		}],
 
 		actions: [{
-			name: "ContinueReading",
+			name: "BookHistory",
 			title: CR_TITLE,
 			group: "Utils",
 			icon: "CONTINUE",
@@ -75,16 +76,19 @@ tmp = function() {
 		}]
 	};
 
+	// TODO: Initialize the list lazily
 	BookHistory.onChangeBook = function (owner) {
 		if (this.options.size == BH_DEFAULT) {
 			// Book History is disabled
 			return;
 		}
+		
 		var book = owner.currentBook;
 		if (book == null) {
 			// No book
 			return;
 		}
+		
 		var media = getFastBookMedia(book);
 		var source = media.source;
 		var bookPath = source.path + media.path;
@@ -93,7 +97,7 @@ tmp = function() {
 		// Search current book in history
 		for (var i = 0, n = list.nodes.length; i < n; i++) {
 			if (list.nodes[i]._bookPath == bookPath) { // ... found
-				if (i) {
+				if (i !== 0) {
 					list.nodes.unshift(list.nodes.splice(i, 1)[0]); // Move book on top
 				}
 				return;
@@ -219,7 +223,7 @@ tmp = function() {
 				return;
 			}
 			// Load saved history
-			saved = Core.io.getFileContent(listFile, "");
+			var saved = Core.io.getFileContent(listFile, "");
 			if (saved == current) {
 				// Lists are equal
 				return;
@@ -230,7 +234,34 @@ tmp = function() {
 			log.error("saveToFile(): " + e);
 		}
 	};
+	
+	// Since there is no direct way to determine in "enter" whether we are going from child to parent or not
+	// this little hack is needed
+	var myGotoParent = function () {
+		this.exit(kbook.model);
+		this.parent.enter(kbook.model, true);
+	};
+	var enterBook = function (model, fromChild) {
+		try {
+			if (fromChild === true) {
+				model.onEnterDefault(this); 
+			} else {
+				// skip to child's first node
+				var nodes = this.nodes;
+				for (var i = 0, n = nodes.length; i < n; i++) {
+					nodes[i].gotoParent = myGotoParent;
+				}
+				kbook.model.onEnterBook(this);
+				// Jump to the book
+				nodes[0].enter(model);
+			}
+		} catch (e) {
+			log.error("enterBook", e);
+		}
+	};
 
+	// Loads saved book list from addon's private file
+	//	
 	BookHistory.loadFromFile = function () {
 		try {
 			var list = Core.ui.nodes.bookHistory;
@@ -246,6 +277,7 @@ tmp = function() {
 							if (node) {
 								// Add to history
 								node._bookPath = path;
+								node.enter = enterBook; 
 								list.nodes.push(node);
 							}
 						}
