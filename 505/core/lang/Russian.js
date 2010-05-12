@@ -15,6 +15,7 @@
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
+//	2010-05-12 kartu - Uploaded SLL's corrections
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -96,7 +97,7 @@ return {
 		DEVICE_LOCKED: "Устройство заблокировано",
 
 		// About, translate either all or none
-		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" + "PRS+ Firmware: @@@firmware@@@\n" + "Автор: Михаил Сухиашвили или kartu (kartu3@gmail.com) с использованием работ: " + "igorsk, boroda, obelix, pepak, llasram и других.\n" + "© GNU Lesser General Public License.",
+		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" + "PRS+ Firmware: @@@firmware@@@\n" + "Автор: Михаил Сухиашвили или kartu (kartu3@gmail.com) с использованием работ: " + "igorsk, boroda, obelix, pepak, llasram и других.\n" + "© GNU Lesser General Public License.\n",
 		ABOUT_1: "Copyright ©2006-2008 Sony Corporation",
 		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + " trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
 		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + " MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
@@ -104,10 +105,10 @@ return {
 		ABOUT_5: "Bitstream is a registered trademark, and Dutch, Font Fusion, and Swiss are trademarks, of Bitstream, Inc.",
 		ABOUT_6: "Portions of this software are Copyright ©2005 The FreeType Project (www.freetype.org). All rights reserved.",
 		ABOUT_7: "This software is based in part on the work of the Independent JPEG Group.",
-		AUTHORIZED_SONY: "Авторизован для eBook Store.",
-		NOT_AUTHORIZED_SONY: "Не авторизован для eBook Store.",
-		AUTHORIZED_ADOBE: "Авторизован для защищенных материалов Adobe DRM.",
-		NOT_AUTHORIZED_ADOBE: "Не авторизован для защищенных материалов Adobe DRM.",
+		AUTHORIZED_SONY: "\nАвторизован для eBook Store.",
+		NOT_AUTHORIZED_SONY: "\nНе авторизован для eBook Store.",
+		AUTHORIZED_ADOBE: "\nАвторизован для защищенных материалов Adobe DRM.",
+		NOT_AUTHORIZED_ADOBE: "\nНе авторизован для защищенных материалов Adobe DRM.",
 		SONY_FW_VERSION: "Версия",
 		DEVICE_ID: "Устройство",
 
@@ -168,31 +169,31 @@ return {
 		DATE: "День", // Day
 		HOUR: "Часы",
 		MINUTE: "Минуты",
-		SETDATE_OK: "Сохранить",
+		SETDATE_OK: "Применить",
 		// width in pixels = ..._SIZE * 35
-		SETDATE_OK_SIZE: 5,
+		SETDATE_OK_SIZE: 7,
 		// slideshow
 		SLIDESHOW: "Показ слайдов",
-		SS_ON: "Вкл",
-		SS_OFF: "Откл",
-		SS_TURN: "Активировать",
-		SS_DURATION: "Продолжительность",
+		SS_ON: "Включён",
+		SS_OFF: "Отключён",
+		SS_TURN: "Состояние",
+		SS_DURATION: "Длительность",
 		// width in pixels = ..._SIZE * 35
-		SS_SIZE: 3,
-		SS_OK: "Сохранить",
+		SS_SIZE: 7,
+		SS_OK: "Применить",
 		// width in pixels = ..._SIZE * 35
-		SS_OK_SIZE: 5,
-		SECONDS: "Секунд",
+		SS_OK_SIZE: 7,
+		SECONDS: "секунд",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "Спящий режим",
-		AS_ON: "Вкл",
-		AS_OFF: "Откл",
-		AS_TURN: "Активировать",
+		AS_ON: "Включён",
+		AS_OFF: "Отключён",
+		AS_TURN: "Состояние",
 		// width in pixels = ..._SIZE * 35
-		AS_SIZE: 3,
-		AS_OK: "Сохранить",
+		AS_SIZE: 7,
+		AS_OK: "Применить",
 		// width in pixels = ..._SIZE * 35
-		AS_OK_SIZE: 5,
+		AS_OK_SIZE: 7,
 		// about
 		ABOUT: "О Ридере",
 		// reset to factory settings
@@ -202,17 +203,17 @@ return {
 		ADVANCED_SETTINGS: "Дополнительные настройки",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "Защитить паролем",
-		SL_OFF: "Откл",
-		SL_ON: "Вкл",
+		SL_OFF: "Отключено",
+		SL_ON: "Включено",
 		SL_CODE: "Пароль",
-		SL_TURN: "Активировать",
+		SL_TURN: "Состояние",
 		// width in pixels = ..._SIZE * 35
-		SL_SIZE: 3,
-		SL_OK: "Сохранить",
-		SL_OK_SIZE: 5,
+		SL_SIZE: 7,
+		SL_OK: "Применить",
+		SL_OK_SIZE: 7,
 		SL_OK_UNLOCK: "Открыть", // unlock
 		// width in pixels = ..._SIZE * 35
-		SL_OK_UNLOCK_SIZE: 5,
+		SL_OK_UNLOCK_SIZE: 7,
 		// format device
 		FORMAT_DEVICE: "Форматировать внутреннюю память",
 
@@ -249,7 +250,7 @@ return {
 		NO_SONG: "Нет аудио",
 
 		// Info title strings, comma separated, no spaces after comma
-		INFO_TITLES: "Обожка,Название,Автор,Издатель,Категория,eBook ID,Тип,Дата,Размер,Источник,Файл,Права,Истекает",
+		INFO_TITLES: "Обложка,Название,Автор,Издатель,Жанр,eBook ID,Тип,Дата,Размер,Источник,Файл,Права,Истекают",
 
 		// Titles and criterions for "Books by Title" and "Books by Folder"
 		// title is displayed, "criterion" is used for sorting.
@@ -298,15 +299,15 @@ return {
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS: "Настройки PRS+",
 		NODE_OTHERS: "Мультимедиа",
-		NODE_GAMES_AND_UTILS: "Игры и инструменты",
-		GROUP_MENU_TITLE: "Настройки меню",
-		GROUP_VIEWER_TITLE: "Настройки чтения"
+		NODE_GAMES_AND_UTILS: "Игры и приложения",
+		GROUP_MENU_TITLE: "Стиль и функции меню",
+		GROUP_VIEWER_TITLE: "Шрифты и кодировки"
 	},
 
 	CoreLang: {
-		TITLE: "Локализация",
-		COMMENT: "Требует перезагрузку",
-		OPTION_LANG: "Язык",
+		TITLE: "Региональные установки",
+		COMMENT: "Требуется перезагрузка",
+		OPTION_LANG: "Язык меню",
 
 		OPTION_DATE_FORMAT: "Формат даты",
 		VALUE_DEFAULT_DATE: "По умолчанию",
@@ -354,15 +355,15 @@ return {
 	},
 
 	TextEncoding: {
-		OPTION_TITLE: "Кодировка книг в формате TXT и RTF",
-		MSG_RESTART: "Требуется перезагрузка!",
+		OPTION_TITLE: "Кодировка книг в форматах TXT/RTF",
+		MSG_RESTART: "Требуется перезагрузка",
 
 		LATIN: "Latin",
 		RUSSIAN: "Русская (Windows-1251)"
 	},
 
 	KeyBindings: {
-		TITLE: "Привязка кнопок",
+		TITLE: "Назначить действия кнопкам",
 		DESCRIPTION: "Позволяет задавать действия кнопкам ридера",
 
 		DEFAULT_VALUE: "По умолчанию",
@@ -379,40 +380,40 @@ return {
 		VOLUME_BUTTONS: "Клавиша громкости",
 
 		// Buttons
-		BN_SIZE: "Кнопка масштаба",
-		BN_BOOKMARK: "Кнопка закладки",
-		BN_BL_NEXT: "Нижняя левая 'вперёд'",
-		BN_BL_PREVIOUS: "Нижняя левая 'назад'",
-		BN_SB_NEXT: "Боковая 'вперёд'",
-		BN_SB_PREVIOUS: "Боковая 'назад'",
-		BN_MENU: "Кнопка меню",
-		BN_JP_LEFT: "Джойстик влево",
-		BN_JP_RIGHT: "Джойстик вправо",
-		BN_JP_UP: "Джойстик вверх",
-		BN_JP_DOWN: "Джойстик вниз",
-		BN_JP_CENTER: "Джойстик центр",
-		BN_H_SIZE: "Удерживать кнопку масштаба",
-		BN_H_BOOKMARK: "Удерживать кнопку закладки",
-		BN_H_BL_NEXT: "Удерживать нижнюю левую 'вперёд'",
-		BN_H_BL_PREVIOUS: "Удерживать нижнюю левую 'назад'",
-		BN_H_MENU: "Удерживать кнопку меню",
-		BN_H_SB_NEXT: "Удерживать боковую 'вперёд'",
-		BN_H_SB_PREVIOUS: "Удерживать боковую 'назад'",
-		BN_H_JP_CENTER: "Удерживать джойстик центр",
-		BN_H_1: "Удерживать 1",
-		BN_H_2: "Удерживать 2",
-		BN_H_3: "Удерживать 3",
-		BN_H_4: "Удерживать 4",
-		BN_H_5: "Удерживать 5",
-		BN_H_6: "Удерживать 6",
-		BN_H_7: "Удерживать 7",
-		BN_H_8: "Удерживать 8",
-		BN_H_9: "Удерживать 9",
-		BN_H_0: "Удерживать 0",
-		BN_VOLUME_DOWN: "Громкость -",
-		BN_H_VOLUME_DOWN: "Удерживать громкость -",
-		BN_VOLUME_UP: "Громкость +",
-		BN_H_VOLUME_UP: "Удерживать громкость +",
+                BN_SIZE: "Кнопка «масштаб»",
+                BN_BOOKMARK: "Кнопка «закладки»",
+                BN_BL_NEXT: "Нижняя левая «вперёд»",
+                BN_BL_PREVIOUS: "Нижняя левая «назад»",
+                BN_SB_NEXT: "Боковая «вперёд»",
+                BN_SB_PREVIOUS: "Боковая «назад»",
+                BN_MENU: "Кнопка «меню»",
+                BN_JP_LEFT: "Джойстик влево",
+                BN_JP_RIGHT: "Джойстик вправо",
+                BN_JP_UP: "Джойстик вверх",
+                BN_JP_DOWN: "Джойстик вниз",
+                BN_JP_CENTER: "Джойстик центр",
+                BN_H_SIZE: "Удерживать кнопку «масштаб»",
+                BN_H_BOOKMARK: "Удерживать кнопку «закладки»",
+                BN_H_BL_NEXT: "Удерживать нижнюю левую «вперёд»",
+                BN_H_BL_PREVIOUS: "Удерживать нижнюю левую «назад»",
+                BN_H_MENU: "Удерживать кнопку «меню»",
+                BN_H_SB_NEXT: "Удерживать боковую «вперёд»",
+                BN_H_SB_PREVIOUS: "Удерживать боковую «назад»",
+                BN_H_JP_CENTER: "Удерживать джойстик центр",
+                BN_H_1: "Удерживать 1",
+                BN_H_2: "Удерживать 2",
+                BN_H_3: "Удерживать 3",
+                BN_H_4: "Удерживать 4",
+                BN_H_5: "Удерживать 5",
+                BN_H_6: "Удерживать 6",
+                BN_H_7: "Удерживать 7",
+                BN_H_8: "Удерживать 8",
+                BN_H_9: "Удерживать 9",
+                BN_H_0: "Удерживать 0",
+                BN_VOLUME_DOWN: "Громкость -",
+                BN_H_VOLUME_DOWN: "Удерживать громкость -",
+                BN_VOLUME_UP: "Громкость +",
+                BN_H_VOLUME_UP: "Удерживать громкость +",
 
 		// Actions
 		ACTION_SHUTDOWN: "Отключить",
@@ -433,25 +434,25 @@ return {
 		OPT_SAVETO: "Сохранить в",
 		OPT_FEEDBACK: "Показывать прогресс сохранения",
 		MEMORY_STICK: "Memory stick",
-		FEEDBACK_ON: "Вкл",
-		FEEDBACK_OFF: "Откл",
+		FEEDBACK_ON: "Включён",
+		FEEDBACK_OFF: "Отключён",
 		SD_CARD: "SD card",
 		INTERNAL_MEMORY: "Внутренняя память"
 	},
 
 	BrowseFolders: {
-		TITLE: "Просмотр папок",
+		TITLE: "Функции просмотра папок",
 		OPTION_SORTING_MODE: "Тип сортировки",
 		VALUE_BY_TITLE: "По названию",
 		VALUE_BY_AUTHOR_THEN_TITLE: "По автору и по названию",
 		VALUE_BY_AUTHOR_SWAPPING: "По автору с заменой имени/фамилии",
 		VALUE_BY_FILENAME: "По имени файла",
-		OPTION_TITLE_SORTER: "Использовать поле 'titleSorter' для сортировки",
+		OPTION_TITLE_SORTER: "Использ. «titleSorter» в сортировке",
 		ENABLED: "Включено",
 		DISABLED: "Отключено",
-		OPTION_IM_ROOT: "Верхний уровень внутренней памяти",
+		OPTION_IM_ROOT: "Начинать просмотр папок с...",
 		OPTION_CARD_SCAN: "Сканировать карты SD/MS",
-		OPTION_MOUNT: "Использовать монтирование SD/MS (экспериментально)",
+		OPTION_MOUNT: "Монтирование SD/MS (экспериментально)",
 		NODE_RESCAN_INTERNAL_MEMORY: "Просканировать внутреннюю память",
 		NODE_COPY_TO_INTERNAL_MEMORY: "Копировать во внутреннюю память",
 		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Копирует файл на верхний уровень внутренней памяти",
@@ -476,7 +477,7 @@ return {
 		VALUE_ALWAYS_SHOWN: "Всегда показывать",
 		VALUE_SHOWN_ONLY_IN_MENU: "Показывать только в меню",
 		VALUE_SHOWN_WHEN_READING: "Показывать только при чтении",
-		VALUE_OFF: "Откл",
+		VALUE_OFF: "Отключены",
 		ACTION_TOGGLE_CLOCK: "Переключить часы",
 		AM: "am",
 		PM: "pm"
@@ -498,7 +499,7 @@ return {
 	},
 
 	EpubUserStyle: {
-		OPTION_EPUB_CSS_FILE: "Пользовательский стиль EPUB (CSS файл)",
+		OPTION_EPUB_CSS_FILE: "Свой стиль EPUB (CSS файл)",
 		MSG_WARNING: "Влияет только на книги, созданные позднее!",
 		VALUE_DISABLED: "Отключён"
 	},
@@ -507,7 +508,7 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		TITLE: "История книг",
 		VALUE_DISABLED: "Отключена",
-		OPTION_REPLACE: "История в Продолжить чтение",
+		OPTION_REPLACE: "История в «Продолжить чтение»",
 		VALUE_ON: "Включена",
 		VALUE_OFF: "Отключена"
 	},

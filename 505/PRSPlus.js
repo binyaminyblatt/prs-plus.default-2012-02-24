@@ -5,13 +5,13 @@
 //	2010-05-10 kartu - Added userDictionaryPath to config
 //				Moved prspCoreFile and prspAddonsFile to allow modifications via userconfig
 //				If prspCoreFile/prspAddonsFile is a folder, .js files inside it will be combined into one and called 
+//	2010-05-23 kartu - Removed unused debugMode variable
 
 // If not in safe mode  (USB was connected during startup) not initializing PRS+
 if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 	var bootLog;
 	var tmp = function() {
 		var config = {
-			debugMode: false,
 			defaultLogLevel: "none",
 			logFile: "b:/prsp.log",
 			corePath: System.applyEnvironment("[prspCorePath]"),
