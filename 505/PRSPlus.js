@@ -6,7 +6,7 @@
 //				Moved prspCoreFile and prspAddonsFile to allow modifications via userconfig
 //				If prspCoreFile/prspAddonsFile is a folder, .js files inside it will be combined into one and called 
 //	2010-05-23 kartu - Removed unused debugMode variable
-//	2010-05-13 kartu - Fixed: coreFile/addonsFile wouldn't work if pointed to a folder.
+//	2010-05-13 kartu - Fixed: coreFile/addonsFile wouldn't work if pointed to a folder
 
 // If not in safe mode  (USB was connected during startup) not initializing PRS+
 if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
