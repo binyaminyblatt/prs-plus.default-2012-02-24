@@ -9,12 +9,15 @@
 //	2010-05-01 kravitz - Added Continue Reading action, fixed minor bugs
 //	2010-05-03 kravitz - Renamed from ReadingList, refactored options
 //	2010-05-04 kravitz - Fixed doDeleteBook()
-//	2010-05-12 kartu - Renamed "Continue Reading" action to "Book History"
-//				Changed: books are opened immediatelly, instead of showing book menu
+//	2010-05-12 kartu - Renamed Continue Reading action to Book History
+//	2010-05-14 kravitz - Fixed Book History loading
+//	2010-05-14 kravitz - Added Continue Reading action
+//	2010-05-14 kravitz - Added option to open the text immediately
 
-tmp = function() {
+tmp = function () {
 	// Shortcuts
 	var log = Core.log.getLogger("BookHistory");
+	var getSoValue = Core.system.getSoValue;
 	var getFastBookMedia = Core.system.getFastBookMedia;
 
 	// Localize
@@ -23,8 +26,8 @@ tmp = function() {
 	// Default Book History length
 	var BH_DEFAULT = 1;
 
+	var CR_TITLE = Core.ui.nodes["continue"].title;
 	var BH_TITLE = L("TITLE");
-	var CR_TITLE = BH_TITLE;
 	var BH_FILE = "book.history";
 
 	// This addon
@@ -52,43 +55,113 @@ tmp = function() {
 		{
 			name: "replace",
 			title: L("OPTION_REPLACE"),
-			icon: "LIST",
+			icon: "CONTINUE",
 			defaultValue: 1,
 			values:	[0, 1],
 			valueTitles: {
 				0: L("VALUE_OFF"),
 				1: L("VALUE_ON")
 			}
+		},
+		{
+			name: "through",
+			title: L("OPTION_THROUGH"),
+			icon: "CONTINUE",
+			defaultValue: 1,
+			values:	[0, 1],
+			valueTitles: {
+				0: L("VALUE_MENU"),
+				1: L("VALUE_TEXT")
+			}
 		}],
 
 		actions: [{
 			name: "BookHistory",
+			title: BH_TITLE,
+			group: "Utils",
+			icon: "CONTINUE",
+			action: function () {
+				if (BookHistory.options.size == BH_DEFAULT) {
+					// Show current book
+					kbook.model.onEnterContinue();
+				} else {
+					var list = Core.ui.nodes.bookHistory;
+					if (list._myconstruct !== undefined) {
+						list._myconstruct.apply(list);
+					}
+					// Show Book History
+					kbook.model.onEnterDefault(list);
+				}
+			}
+		},
+		{
+			name: "ContinueReading",
 			title: CR_TITLE,
 			group: "Utils",
 			icon: "CONTINUE",
 			action: function () {
-				try {
-					BookHistory.show();
-				} catch (e) {
-					log.error("show(): " + e);
-				}
+				// Show current book
+				kbook.model.onEnterContinue();
 			}
 		}]
 	};
 
-	// TODO: Initialize the list lazily
+	/**
+	 *  @constructor
+	 */
+	var HistoryBook = function (path, parent) {
+		FskCache.tree.xdbNode.construct.call(this);
+		this.parent = parent;
+
+		this.enter = function (model, fromParent) {
+			try {
+				if (fromParent === true) {
+					model.onEnterBook(this);
+					if (BookHistory.options.through == 1) {
+						// Goto the text immediately
+						this.nodes[0].enter(model);
+					}
+				} else {
+					model.onEnterDefault(this);
+					if (BookHistory.options.through == 1) {
+						// Return to Book History
+						this.gotoParent(model);
+					}
+				}
+			} catch (e) {
+				log.error("enter(): " + e);
+			}
+		};
+
+		this._nativecomment = (this._myclass) ? this._mycomment : getSoValue(this, "comment");
+		this._mycomment = function () {
+			if (BookHistory.options.through == 1) {
+				return L("PAGE") + " " + (getSoValue(getFastBookMedia(this), "page") + 1);
+			} else {
+				return this._nativecomment;
+			}
+		};
+
+		this._bookPath = path;
+	};
+
+	/**
+	 *  @constructor
+	 */
+	var HistoryStub = function (path) {
+		this._bookPath = path;
+	};
+
 	BookHistory.onChangeBook = function (owner) {
 		if (this.options.size == BH_DEFAULT) {
 			// Book History is disabled
 			return;
 		}
-		
 		var book = owner.currentBook;
 		if (book == null) {
 			// No book
 			return;
 		}
-		
 		var media = getFastBookMedia(book);
 		var source = media.source;
 		var bookPath = source.path + media.path;
@@ -98,16 +171,20 @@ tmp = function() {
 		for (var i = 0, n = list.nodes.length; i < n; i++) {
 			if (list.nodes[i]._bookPath == bookPath) { // ... found
 				if (i !== 0) {
-					list.nodes.unshift(list.nodes.splice(i, 1)[0]); // Move book on top
+					// Move book on top
+					list.nodes.unshift(list.nodes.splice(i, 1)[0]);
 				}
 				return;
 			}
 		}
 		// ... not found - add to history
-		book._bookPath = bookPath;
-		list.nodes.unshift(book);
+		HistoryBook.prototype = book;
+		var node = new HistoryBook(bookPath, list);
+		list.nodes.unshift(node);
 		if (list.nodes.length > this.options.size) {
-			list.nodes.pop(); // Remove last node from history
+			// Remove last node from history
+			node = list.nodes.pop();
+			delete node;
 		}
 	};
 
@@ -129,20 +206,10 @@ tmp = function() {
 		// Search current book in history
 		for (var i = 0, n = list.nodes.length; i < n; i++) {
 			if (list.nodes[i]._bookPath == bookPath) { // ... found
-				list.nodes.splice(i, 1); // Remove node from history
+				// Remove node from history
+				delete list.nodes.splice(i, 1)[0];
 				break;
 			}
-		}
-	};
-
-	// Shows Book History
-	BookHistory.show = function () {
-		if (this.options.size == BH_DEFAULT) {
-			// Show book
-			kbook.model.onEnterContinue();
-		} else {
-			// Show Book History
-			kbook.model.onEnterDefault(Core.ui.nodes.bookHistory);
 		}
 	};
 
@@ -179,9 +246,10 @@ tmp = function() {
 				this.locate();
 			} else {
 				var list = Core.ui.nodes.bookHistory;
+				var node;
 				if (this.options.size == BH_DEFAULT) {
 					// Change currentBook parent
-					var node = kbook.model.currentBook;
+					node = kbook.model.currentBook;
 					if (node && node.parent == list) {
 						node.parent = kbook.root;
 					}
@@ -192,7 +260,8 @@ tmp = function() {
 				} else {
 					// Adjust history length
 					for (var i = 0, n = list.nodes.length - this.options.size; i < n; i++) {
-						list.nodes.pop();
+						node = list.nodes.pop();
+						delete node;
 					}
 				}
 			}
@@ -206,6 +275,7 @@ tmp = function() {
 		}
 	};
 
+	// Saves Book History to addon's private file
 	BookHistory.saveToFile = function () {
 		try {
 			FileSystem.ensureDirectory(Core.config.settingsPath);
@@ -234,34 +304,9 @@ tmp = function() {
 			log.error("saveToFile(): " + e);
 		}
 	};
-	
-	// Since there is no direct way to determine in "enter" whether we are going from child to parent or not
-	// this little hack is needed
-	var myGotoParent = function () {
-		this.exit(kbook.model);
-		this.parent.enter(kbook.model, true);
-	};
-	var enterBook = function (model, fromChild) {
-		try {
-			if (fromChild === true) {
-				model.onEnterDefault(this); 
-			} else {
-				// skip to child's first node
-				var nodes = this.nodes;
-				for (var i = 0, n = nodes.length; i < n; i++) {
-					nodes[i].gotoParent = myGotoParent;
-				}
-				kbook.model.onEnterBook(this);
-				// Jump to the book
-				nodes[0].enter(model);
-			}
-		} catch (e) {
-			log.error("enterBook", e);
-		}
-	};
 
-	// Loads saved book list from addon's private file
-	//	
+
+	// Loads saved Book History from addon's private file
 	BookHistory.loadFromFile = function () {
 		try {
 			var list = Core.ui.nodes.bookHistory;
@@ -270,17 +315,10 @@ tmp = function() {
 				var stream = new Stream.File(listFile); //FIXME use getFileContent()
 				try {
 					while (stream.bytesAvailable) {
-						var path = stream.readLine();
-						if (FileSystem.getFileInfo(path)) {
-							// Create book node
-							var node = _BF_pathToBookNode(path, list);
-							if (node) {
-								// Add to history
-								node._bookPath = path;
-								node.enter = enterBook; 
-								list.nodes.push(node);
-							}
-						}
+						// Create stub node
+						var node = new HistoryStub(stream.readLine());
+						// Add to history
+						list.nodes.push(node);
 					}
 				} finally {
 					stream.close();
@@ -303,7 +341,7 @@ tmp = function() {
 			kind: Core.ui.NodeKinds.CONTINUE
 		});
 
-		bookHistoryNode.update = function(model) {
+		bookHistoryNode.update = function (model) {
 			for (var i = 0, n = this.nodes.length; i < n; i++) {
 				if (this.nodes[i].update) {
 					this.nodes[i].update.call(this.nodes[i], model);
@@ -311,15 +349,56 @@ tmp = function() {
 			}
 		};
 
+		/**
+		 *  @constructor
+		 */
+		bookHistoryNode._myconstruct = function () {
+			var i = 0;
+			while (i < this.nodes.length) {
+				if (this.nodes[i].parent === undefined) { // Foreach stub ...
+					var stub = this.nodes[i];
+					var path = stub._bookPath;
+					var found = false;
+					if (FileSystem.getFileInfo(path)) {
+						// Create book node
+						var node = _BF_pathToBookNode(path, this);
+						if (node) {
+							HistoryBook.prototype = node;
+							// Replace stub with book
+							this.nodes[i] = new HistoryBook(path, this);
+							found = true;
+						}
+					}
+					delete stub;
+					if (!found) {
+						// Book not found - remove node
+						delete this.nodes.splice(i, 1)[0];
+						continue; // Don't increase counter
+					}
+				}
+				i++;
+			}
+			delete this._myconstruct; // Called only once
+		};
+
 		bookHistoryNode._mycomment = function () {
 			return L("FUNC_X_BOOKS", this.length);
+		};
+
+		bookHistoryNode.gotoNode = function (node, model) {
+			this.exit(model);
+			node.lockPath();
+			this.unlockPath();
+			node.enter(model, true); // Added direction flag
 		};
 
 		Core.ui.nodes.bookHistory = bookHistoryNode;
 
 		if (this.options.size != BH_DEFAULT) {
-			this.loadFromFile(); // Load history
-			this.locate(); // Locate histoty
+			// Load history
+			this.loadFromFile();
+			// Locate histoty
+			this.locate();
 		}
 	};
 
