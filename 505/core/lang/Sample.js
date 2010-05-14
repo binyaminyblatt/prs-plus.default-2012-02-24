@@ -8,6 +8,7 @@
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
+//	2010-05-14 kravitz - Added BookHistory strings
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -496,10 +497,14 @@ return {
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		TITLE: "Book History",
+		PAGE: "Page",
 		VALUE_DISABLED: "Disabled",
 		OPTION_REPLACE: "History into Continue Reading",
 		VALUE_ON: "On",
-		VALUE_OFF: "Off"
+		VALUE_OFF: "Off",
+		OPTION_THROUGH: "History Leads to",
+		VALUE_MENU: "Book menu",
+		VALUE_TEXT: "Book text"
 	},
 
 //ReadMark	ReadMark: {
