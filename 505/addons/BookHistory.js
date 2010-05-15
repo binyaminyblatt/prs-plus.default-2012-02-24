@@ -13,6 +13,9 @@
 //	2010-05-14 kravitz - Fixed Book History loading
 //	2010-05-14 kravitz - Added Continue Reading action
 //	2010-05-14 kravitz - Added option to open the text immediately
+//	2010-05-15 kartu - Renamed "through" to "skipBookMenu"
+//				Replaced numeric option values with string equivalents (as core-settings supports only strings), implicit type conversion wiht explicit
+//				Put history into it's own settings group.
 
 tmp = function () {
 	// Shortcuts
@@ -24,7 +27,7 @@ tmp = function () {
 	var L = Core.lang.getLocalizer("BookHistory");
 
 	// Default Book History length
-	var BH_DEFAULT = 1;
+	var BH_DEFAULT = "1";
 
 	var CR_TITLE = Core.ui.nodes["continue"].title;
 	var BH_TITLE = L("TITLE");
@@ -34,12 +37,12 @@ tmp = function () {
 	var BookHistory = {
 		name: "BookHistory",
 		title: BH_TITLE,
-		settingsGroup: "menu",
+		icon: "LIST",
 		optionDefs: [{
 			name: "size",
 			title: BH_TITLE,
 			icon: "CONTINUE",
-			defaultValue: String(BH_DEFAULT),
+			defaultValue: BH_DEFAULT,
 			values:	["1", "3", "5", "10", "20", "30", "40", "50"],
 			valueTitles: {
 				"1": L("VALUE_DISABLED"),
@@ -56,22 +59,22 @@ tmp = function () {
 			name: "replace",
 			title: L("OPTION_REPLACE"),
 			icon: "CONTINUE",
-			defaultValue: 1,
-			values:	[0, 1],
+			defaultValue: "off",
+			values:	["off", "on"],
 			valueTitles: {
-				0: L("VALUE_OFF"),
-				1: L("VALUE_ON")
+				"off": L("VALUE_OFF"),
+				"on": L("VALUE_ON")
 			}
 		},
 		{
-			name: "through",
-			title: L("OPTION_THROUGH"),
+			name: "skipBookMenu",
+			title: L("OPTION_SKIP_BOOK_MENU"),
 			icon: "CONTINUE",
-			defaultValue: 1,
-			values:	[0, 1],
+			defaultValue: "on",
+			values:	["off", "on"],
 			valueTitles: {
-				0: L("VALUE_MENU"),
-				1: L("VALUE_TEXT")
+				"off": L("VALUE_OFF"),
+				"on": L("VALUE_ON")
 			}
 		}],
 
@@ -81,7 +84,7 @@ tmp = function () {
 			group: "Utils",
 			icon: "CONTINUE",
 			action: function () {
-				if (BookHistory.options.size == BH_DEFAULT) {
+				if (BookHistory.options.size === BH_DEFAULT) {
 					// Show current book
 					kbook.model.onEnterContinue();
 				} else {
@@ -117,13 +120,13 @@ tmp = function () {
 			try {
 				if (fromParent === true) {
 					model.onEnterBook(this);
-					if (BookHistory.options.through == 1) {
+					if (BookHistory.options.skipBookMenu === "on") {
 						// Goto the text immediately
 						this.nodes[0].enter(model);
 					}
 				} else {
 					model.onEnterDefault(this);
-					if (BookHistory.options.through == 1) {
+					if (BookHistory.options.skipBookMenu === "on") {
 						// Return to Book History
 						this.gotoParent(model);
 					}
@@ -135,8 +138,8 @@ tmp = function () {
 
 		this._nativecomment = (this._myclass) ? this._mycomment : getSoValue(this, "comment");
 		this._mycomment = function () {
-			if (BookHistory.options.through == 1) {
-				return L("PAGE") + " " + (getSoValue(getFastBookMedia(this), "page") + 1);
+			if (BookHistory.options.skipBookMenu === "on") {
+				return  L("FUNC_X_PAGES", getSoValue(getFastBookMedia(this), "page") + 1);
 			} else {
 				return this._nativecomment;
 			}
@@ -153,12 +156,12 @@ tmp = function () {
 	};
 
 	BookHistory.onChangeBook = function (owner) {
-		if (this.options.size == BH_DEFAULT) {
+		if (this.options.size === BH_DEFAULT) {
 			// Book History is disabled
 			return;
 		}
 		var book = owner.currentBook;
-		if (book == null) {
+		if (book === null) {
 			// No book
 			return;
 		}
@@ -181,7 +184,7 @@ tmp = function () {
 		HistoryBook.prototype = book;
 		var node = new HistoryBook(bookPath, list);
 		list.nodes.unshift(node);
-		if (list.nodes.length > this.options.size) {
+		if (list.nodes.length > Number(this.options.size)) {
 			// Remove last node from history
 			node = list.nodes.pop();
 			delete node;
@@ -189,12 +192,12 @@ tmp = function () {
 	};
 
 	BookHistory.doDeleteBook = function (owner) {
-		if (this.options.size == BH_DEFAULT) {
+		if (this.options.size === BH_DEFAULT) {
 			// Book History is disabled
 			return;
 		}
 		var book = owner.currentBook;
-		if (book == null) {
+		if (book === null) {
 			// No book
 			return;
 		}
@@ -216,7 +219,7 @@ tmp = function () {
 	// Locates Book History into Continue Reading or into Games & Utilities
 	BookHistory.locate = function () {
 		var list = Core.ui.nodes.bookHistory;
-		if (this.options.replace == 0) {
+		if (this.options.replace !== "on") {
 			list._myname = BH_TITLE;
 			Core.settings.insertAddonNode(list);
 			kbook.root.nodes[0] = Core.ui.nodes["continue"];
@@ -239,7 +242,7 @@ tmp = function () {
 		}
 
 		if (propertyName === "size") {
-			if (oldValue == BH_DEFAULT) {
+			if (oldValue === BH_DEFAULT) {
 				// Add current book history
 				this.onChangeBook(kbook.model);
 				// Locate histoty
@@ -247,7 +250,7 @@ tmp = function () {
 			} else {
 				var list = Core.ui.nodes.bookHistory;
 				var node;
-				if (this.options.size == BH_DEFAULT) {
+				if (this.options.size === BH_DEFAULT) {
 					// Change currentBook parent
 					node = kbook.model.currentBook;
 					if (node && node.parent == list) {
@@ -259,7 +262,7 @@ tmp = function () {
 					this.dislocate();
 				} else {
 					// Adjust history length
-					for (var i = 0, n = list.nodes.length - this.options.size; i < n; i++) {
+					for (var i = 0, n = list.nodes.length - Number(this.options.size); i < n; i++) {
 						node = list.nodes.pop();
 						delete node;
 					}
@@ -268,7 +271,7 @@ tmp = function () {
 		}
 
 		if (propertyName === "replace") {
-			if (this.options.size != BH_DEFAULT) {
+			if (this.options.size !== BH_DEFAULT) {
 				// Locate histoty
 				this.locate();
 			}
@@ -287,7 +290,7 @@ tmp = function () {
 			for (var i = 0; i < len; i++) {
 				current += list.nodes[i]._bookPath + "\r\n";
 			}
-			if (current.length == 0) {
+			if (current.length === 0) {
 				// History is empty - delete
 				FileSystem.deleteFile(listFile);
 				return;
@@ -394,7 +397,7 @@ tmp = function () {
 
 		Core.ui.nodes.bookHistory = bookHistoryNode;
 
-		if (this.options.size != BH_DEFAULT) {
+		if (this.options.size !== BH_DEFAULT) {
 			// Load history
 			this.loadFromFile();
 			// Locate histoty

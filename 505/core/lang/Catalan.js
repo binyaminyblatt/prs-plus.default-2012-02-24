@@ -13,6 +13,7 @@
 //	2010-05-07 Translation is corrected by surquizu
 //	2010-05-09 kartu - Added surquizu's corrections
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
+//	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -494,11 +495,13 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_PAGES: FUNC_X_PAGES,
 		TITLE: "Historial Llibre",
 		VALUE_DISABLED: "Desactivat",
 		OPTION_REPLACE: "Historial Continuar Llegint",
 		VALUE_ON: "Activat",
-		VALUE_OFF: "Desactivat"
+		VALUE_OFF: "Desactivat",
+		OPTION_SKIP_BOOK_MENU: "Skip Book Menu" // TRANSLATE ME
 	},
 
 //ReadMark	ReadMark: {

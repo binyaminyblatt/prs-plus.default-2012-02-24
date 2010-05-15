@@ -16,6 +16,8 @@
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-12 kartu - Uploaded SLL's corrections
+//	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
+
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -506,11 +508,13 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_PAGES: FUNC_X_PAGES,
 		TITLE: "История книг",
 		VALUE_DISABLED: "Отключена",
 		OPTION_REPLACE: "История в «Продолжить чтение»",
 		VALUE_ON: "Включена",
-		VALUE_OFF: "Отключена"
+		VALUE_OFF: "Отключена",
+		OPTION_SKIP_BOOK_MENU: "Пропускать меню книги" 
 	},
 
 //ReadMark	ReadMark: {

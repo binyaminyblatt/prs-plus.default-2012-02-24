@@ -12,6 +12,7 @@
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 //	2010-05-10 kartu - Added German corrections by Duglum/Mark Nord/klawong
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
+//	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -492,11 +493,13 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_PAGES: FUNC_X_PAGES,
 		TITLE: "Buch-Verlauf",
 		VALUE_DISABLED: "Deaktiviert",
 		OPTION_REPLACE: "Weiterlesen durch Verlauf ersetzen",
-		VALUE_ON: "Ja",
-		VALUE_OFF: "Nein"
+		VALUE_ON: "Aktiviert",
+		VALUE_OFF: "Deaktiviert",
+		OPTION_SKIP_BOOK_MENU: "Skip Book Menu" // TRANSLATE ME
 	},
 
 //ReadMark	ReadMark: {
