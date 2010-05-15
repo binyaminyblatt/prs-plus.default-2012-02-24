@@ -17,6 +17,7 @@
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-12 kartu - Uploaded SLL's corrections
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
+//	2010-05-15 kartu - Added SLL's fixes
 
 
 var _x_cache = [];
@@ -124,28 +125,28 @@ return {
 		MEMORY_STICK: "Memory Stick",
 		SD_CARD: "SD Memory",
 
-		// Main.xml & kbook.so stuff
-		INVALID_FORMAT: "Неверный формат!",
-		FORMATTING: "Форматирую...",
-		LOADING: "Загружаю...",
-		LOW_BATTERY: "Батарея разряжена!",
-		HR_WARNING: "Вы готовы УДАЛИТЬ всё содержимое ридера, восстановить заводские настройки, и очистить состояние защищенного содержимого?\n\nДа - нажмите 5\nНет - нажмите MENU",
-		DEVICE_SHUTDOWN: "Отключение устройства",
-		PRESS_MARK_TO_SHUTDOWN: "Нажмите MARK для отключения",
-		THIS_DEVICE: "этого устройства.",
-		PRESS_MARK_TO_DELETE: "Нажмите MARK чтобы",
-		THIS_BOOK: "удалить книгу.",
-		FORMAT_INTERNAL_MEMORY: "Форматировать внутреннюю память",
-		PRESS_MARK_TO_FORMAT: "Нажмите MARK для форматирования",
-		MSG_INTERNAL_MEMORY: "внутренней памяти.",
-		RESTORE_DEFAULTS: "Восстановить заводские настройки",
-		PRESS_MARK_TO_RESTORE: "Нажмите MARK чтобы восстановить",
-		DEFAULT_SETTINGS: "заводские настройки.",
-		UPPER_PAGE: "СТР.",
-		ONE_OF_ONE: "1 из 1",
-		NO_BATTERY: "Батарея разряжена!",
-		FORMATTING_INTERNAL_MEMORY: "Форматирую внутреннюю память...",
-		SHUTTING_DOWN: "Отключаюсь...",
+		// Main.xml & kbook.so stuff 
+		INVALID_FORMAT: "Неверный формат!", 
+		FORMATTING: "Форматирую...", 
+		LOADING: "Загружаю...", 
+		LOW_BATTERY: "Батарея разряжена!", 
+		HR_WARNING: "Вы готовы УДАЛИТЬ всё содержимое ридера, восстановить заводские настройки, и очистить состояние защищенного содержимого?\n\nДа - нажмите 5\nНет - нажмите «меню»", 
+		DEVICE_SHUTDOWN: "Отключение ридера", 
+		PRESS_MARK_TO_SHUTDOWN: "Нажмите кнопку «закладки»", 
+		THIS_DEVICE: "для полного\nотключения ридера.", 
+		PRESS_MARK_TO_DELETE: "Нажмите кнопку «закладки»", 
+		THIS_BOOK: "чтобы удалить книгу.", 
+		FORMAT_INTERNAL_MEMORY: "Форматировать внутреннюю память", 
+		PRESS_MARK_TO_FORMAT: "Нажмите кнопку «закладки»", 
+		MSG_INTERNAL_MEMORY: "для форматирования\nвнутренней памяти.", 
+		RESTORE_DEFAULTS: "Восстановить заводские настройки", 
+		PRESS_MARK_TO_RESTORE: "Нажмите кнопку «закладки»", 
+		DEFAULT_SETTINGS: "чтобы восстановить\nзаводские настройки.", 
+		UPPER_PAGE: "СТР.", 
+		ONE_OF_ONE: "1 из 1", 
+		NO_BATTERY: "Батарея разряжена!", 
+		FORMATTING_INTERNAL_MEMORY: "Форматирую внутреннюю память...", 
+		SHUTTING_DOWN: "Отключаюсь...",		
 
 		// Root menu
 		CONTINUE: "Продолжить чтение",
