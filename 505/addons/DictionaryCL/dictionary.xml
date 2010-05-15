@@ -128,25 +128,32 @@
 		<function id="doCenter">
 			this.centerKey();	
 		</function>
+		<function id="doMark">
+		  this.clearInput();
+		  this.clearLines();
+		</function>
 		<function id="doNext">
-			this.findNeighbour(1);
+		  this.moveCursor("right");
 		</function>
 		<function id="doPrevious">
-			this.findNeighbour(-1);
+		  this.moveCursor("left");
 		</function>
 		<function id="doLeft">
-			this.arrowKey("left");
+		  this.arrowKey("left");
 		</function>
 		<function id="doRight">
-			this.arrowKey("right");
+		  this.arrowKey("right");
 		</function>
 		<function id="doUp">
-			 this.arrowKey("up");
+		  this.arrowKey("up");
 		</function>
 		<function id="doDown">
-			this.arrowKey("down");
+		  this.arrowKey("down");
 		</function>
-        </code>
+		<!--<function id="doSize">
+		  this.version();
+		</function>-->
+		  </code>
 
         <kbookLabel id="inputLine" skin="sometext" left="30" right="150" top="75" height="60" align="left" text=""/>
         <kbookLabel id="line1" skin="textkl" left="30" right="150" top="215" height="60" align="left" text=""/>
