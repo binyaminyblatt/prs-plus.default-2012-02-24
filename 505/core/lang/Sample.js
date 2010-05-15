@@ -496,15 +496,13 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_PAGES: FUNC_X_PAGES,
 		TITLE: "Book History",
-		PAGE: "Page",
 		VALUE_DISABLED: "Disabled",
 		OPTION_REPLACE: "History into Continue Reading",
 		VALUE_ON: "On",
 		VALUE_OFF: "Off",
-		OPTION_THROUGH: "History Leads to",
-		VALUE_MENU: "Book menu",
-		VALUE_TEXT: "Book text"
+		OPTION_SKIP_BOOK_MENU: "Skip Book Menu"
 	},
 
 //ReadMark	ReadMark: {

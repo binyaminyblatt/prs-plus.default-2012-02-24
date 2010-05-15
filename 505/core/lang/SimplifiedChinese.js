@@ -5,6 +5,7 @@
 // History:
 //	2010-05-06 kartu - Initial version by thawk
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
+//	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -493,11 +494,13 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_PAGES: FUNC_X_PAGES,
 		TITLE: "最近看过的书",
 		VALUE_DISABLED: "禁用",
 		OPTION_REPLACE: "在继续阅读中列出最近看过的书",
 		VALUE_ON: "打开",
-		VALUE_OFF: "关闭"
+		VALUE_OFF: "关闭",
+		OPTION_SKIP_BOOK_MENU: "Skip Book Menu" // TRANSLATE ME
 	},
 
 //ReadMark	ReadMark: {

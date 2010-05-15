@@ -11,6 +11,7 @@
 //	2010-05-06 kartu - Added ppm related translations for PageIndex addon
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-14 kravitz - Added BookHistory strings
+//	2010-05-15 kartu - Renamed BookHistory strings, removed unused, added FUNC_X_PAGES
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -20,6 +21,10 @@ var FUNC_X_SOMETHING = function (n, s) {
 		return s[1];
 	}
 	return s[2];
+};
+
+var FUNC_X_PAGES = function (n) {
+	return FUNC_X_SOMETHING(n, ["pages", "1 page", "No page"]);
 };
 
 var FUNC_X_BOOKS = function (n) {
@@ -248,15 +253,13 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_X_PAGES: FUNC_X_PAGES,
 		TITLE: "Book History",
-		PAGE: "Page",
 		VALUE_DISABLED: "Disabled",
 		OPTION_REPLACE: "History into Continue Reading",
 		VALUE_ON: "On",
 		VALUE_OFF: "Off",
-		OPTION_THROUGH: "History Leads to",
-		VALUE_MENU: "Book menu",
-		VALUE_TEXT: "Book text"
+		OPTION_SKIP_BOOK_MENU: "Skip Book Menu"
 	},
 
 //ReadMark	ReadMark: {
