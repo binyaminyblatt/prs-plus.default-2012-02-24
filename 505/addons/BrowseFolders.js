@@ -12,6 +12,7 @@
 //	2010-04-27 kravitz - Exported pathToBookNode() (fixing required)
 //	2010-04-27 kravitz - Code of main menu forming is moved to MenuTuning.js
 //	2010-04-29 kravitz - Refactored events handling
+//	2010-05-15 kartu -  Fixed: book list was initialized once and never updated
 
 tmp = function() {
 	// Shortcuts
@@ -106,7 +107,12 @@ tmp = function() {
 		} catch (ee) {
 			log.error("error " + ee);
 		}
-		return originalHandler(volume);
+		var result = originalHandler(volume)
+		if (result) {
+			// New stuff was scanned, reset pathToBook
+			pathToBook = null;
+		}
+		return result;
 	};
 
 	// Resolves "delete book" problem in custom booknodes. Functions body is mostly copy paste from the original doDeleteBook.
