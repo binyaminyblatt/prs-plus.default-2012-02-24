@@ -10,6 +10,7 @@
 //	2010-05-11 kartu- Changed file encoding to UTF-8 from UTF-8Y
 //				Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
+//	2010-05-15 kartu - Added PAGE (BookHistory)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -498,7 +499,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		FUNC_X_PAGES: FUNC_X_PAGES,
+		PAGE: "page",
 		TITLE: "Livre d'histoire",
 		VALUE_DISABLED: "Désactivé",
 		OPTION_REPLACE: "Histoire en continuer la lecture",

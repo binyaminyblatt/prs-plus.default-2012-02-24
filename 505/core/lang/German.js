@@ -13,6 +13,7 @@
 //	2010-05-10 kartu - Added German corrections by Duglum/Mark Nord/klawong
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
+//	2010-05-15 kartu - Added PAGE (BookHistory)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -493,7 +494,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		FUNC_X_PAGES: FUNC_X_PAGES,
+		PAGE: "Seite",
 		TITLE: "Buch-Verlauf",
 		VALUE_DISABLED: "Deaktiviert",
 		OPTION_REPLACE: "Weiterlesen durch Verlauf ersetzen",

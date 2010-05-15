@@ -16,6 +16,7 @@
 //	2010-05-15 kartu - Renamed "through" to "skipBookMenu"
 //				Replaced numeric option values with string equivalents (as core-settings supports only strings), implicit type conversion wiht explicit
 //				Put history into it's own settings group.
+//	2010-05-15 kartu - Reverted back to "PAGE" translation
 
 tmp = function () {
 	// Shortcuts
@@ -139,7 +140,7 @@ tmp = function () {
 		this._nativecomment = (this._myclass) ? this._mycomment : getSoValue(this, "comment");
 		this._mycomment = function () {
 			if (BookHistory.options.skipBookMenu === "on") {
-				return  L("FUNC_X_PAGES", getSoValue(getFastBookMedia(this), "page") + 1);
+				return  L("PAGE") + " " + (getSoValue(getFastBookMedia(this), "page") + 1);
 			} else {
 				return this._nativecomment;
 			}
