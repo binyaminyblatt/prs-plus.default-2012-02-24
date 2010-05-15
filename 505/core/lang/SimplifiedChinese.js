@@ -494,7 +494,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		FUNC_X_PAGES: FUNC_X_PAGES,
+		PAGE: "页",
 		TITLE: "最近看过的书",
 		VALUE_DISABLED: "禁用",
 		OPTION_REPLACE: "在继续阅读中列出最近看过的书",

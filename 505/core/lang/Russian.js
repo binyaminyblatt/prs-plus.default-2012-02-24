@@ -18,7 +18,7 @@
 //	2010-05-12 kartu - Uploaded SLL's corrections
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added SLL's fixes
-
+//	2010-05-15 kartu - Added PAGE (BookHistory)
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -509,7 +509,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		FUNC_X_PAGES: FUNC_X_PAGES,
+		PAGE: "страница",
 		TITLE: "История книг",
 		VALUE_DISABLED: "Отключена",
 		OPTION_REPLACE: "История в «Продолжить чтение»",
