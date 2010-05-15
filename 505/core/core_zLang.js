@@ -18,10 +18,25 @@
 //	2010-05-10 kartu - Added Simplified Chineze locale
 //	2010-05-11 kartu - Renamed Chinese to "Simplified Chinese"
 //				Added "VALUE_DEFAULT_DATE" translation (CoreLang)
+//	2010-05-15 kartu - Fixed date bug (when switching from any to English translation)
+//				Fixed English locales date bug (wasn't possible to save date since kbook.model.getDateAndClock wasn't overriden 
 
 tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
 	var langL;
+	
+	// Fix for for kbook.model.getDateAndClock
+	var getDateAndClockFix = function () {
+		this.getDateTimeStr();
+		var date = new Date();
+		this.dateYY = date.getFullYear();
+		this.dateMM = date.getMonth() + 1;
+		this.dateDD = date.getDate();
+		this.clockH = date.getHours();
+		this.clockM = date.getMinutes();
+		this.clockS = 0;
+	};
+	
 	var getDateFunc = function(format, separator) {
 		var toDoubleDigit = function (num) {
 					if (num < 10) {
@@ -96,10 +111,18 @@ tmp = function() {
 				} catch (e0) {
 					log.error("Failed to load strings: ", e0);
 				}
+				
+				var isDateCustom = false;
 
 				// If locale is English, there is nothing to localize
 				if ("English.js" !== this.options.lang) {
+					isDateCustom = true;
 					try {
+						// Save default toLocaleDateString (needed when switching from non-English to English locale
+						if (Date.prototype.defaultToLocaleDateString === undefined)  {
+							Date.prototype.defaultToLocaleDateString = Date.prototype.toLocaleDateString;
+						}
+						
 						// localize default ui
 						var code = Core.io.getFileContent(Core.config.corePath + "lang/defaultUILocalizer.js");
 						var localizeDefaultUI = new Function("_strings,Core", code);
@@ -108,10 +131,16 @@ tmp = function() {
 					} catch (e1) {
 						log.error("Failed to localize default UI", e1);
 					}
+				} else {
+					// Restore date format
+					if (Date.prototype.defaultToLocaleDateString !== undefined)  {
+						Date.prototype.toLocaleDateString = Date.prototype.defualtToLocaleDateString;
+					}					
 				}
 
 				// Date
 				if ("default" !== this.options.dateFormat) {
+					isDateCustom = true;
 					var separator = "/";
 					switch (this.options.dateSeparator) {
 						case "minus":
@@ -128,6 +157,12 @@ tmp = function() {
 							break;
 					}
 					Date.prototype.toLocaleDateString = getDateFunc(this.options.dateFormat, separator);
+				}
+				
+				// If locale isn't English or dateFormat isn't default, we need to fix this
+				// since original version of the function made assumptions about date/time format 
+				if (isDateCustom) {
+					kbook.model.getDateAndClock = getDateAndClockFix;
 				}
 
 				coreL = this.getLocalizer("Core"); // defined in core

@@ -7,6 +7,8 @@
 //				Added support for field sizes
 //				Localized "ok" texts
 //	2010-05-09 kartu - Fixed "All bookmarks" "+ 1" bug
+//	2010-05-15 kartu - Fixed "set date" bug ("mAX" typo)
+//	2010-05-15 kartu - Moved getDateAndClock function to core lang (since English locale might also need it)
 
 var tmp = function() {
 	//--------------------------------------------------------------------------------------
@@ -27,22 +29,7 @@ var tmp = function() {
 			Date.prototype.toLocaleDateString = function() {
 				return sony.FUNC_GET_DATE(this);
 			};
-		}
-		/**
-		* @constructor
-		*/
-		// Need to fix this, since original version of the function made assumptions about date/time format 
-		kbook.model.getDateAndClock = function () {
-			this.getDateTimeStr();
-			var date = new Date();
-			this.dateYY = date.getFullYear();
-			this.dateMM = date.getMonth() + 1;
-			this.dateDD = date.getDate();
-			this.clockH = date.getHours();
-			this.clockM = date.getMinutes();
-			this.clockS = 0;
-		};
-		
+		}		
 	};
 	
 	var localizeRoot = function() {
@@ -122,7 +109,7 @@ var tmp = function() {
 		setDateNodes[2].name = L("DATE"); // day
 		setDateNodes[3].name = L("HOUR"); // hour
 		setDateNodes[4].name = L("MINUTE"); // minute
-		setDateNodes[5].min = setDateNodes[5].mAX = L("SETDATE_OK");
+		setDateNodes[5].min = setDateNodes[5].max = L("SETDATE_OK");
 		setDateNodes[5].kind = -parseFloat(L("SETDATE_OK_SIZE", 2));
 		
 		// Settings - Slideshow
