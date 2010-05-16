@@ -19,6 +19,7 @@
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added SLL's fixes
 //	2010-05-15 kartu - Added PAGE (BookHistory)
+//	2010-05-17 kravitz - Fixed VALUE_ON, VALUE_OFF (BookHistory)
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -125,28 +126,28 @@ return {
 		MEMORY_STICK: "Memory Stick",
 		SD_CARD: "SD Memory",
 
-		// Main.xml & kbook.so stuff 
-		INVALID_FORMAT: "Неверный формат!", 
-		FORMATTING: "Форматирую...", 
-		LOADING: "Загружаю...", 
-		LOW_BATTERY: "Батарея разряжена!", 
-		HR_WARNING: "Вы готовы УДАЛИТЬ всё содержимое ридера, восстановить заводские настройки, и очистить состояние защищенного содержимого?\n\nДа - нажмите 5\nНет - нажмите «меню»", 
-		DEVICE_SHUTDOWN: "Отключение ридера", 
-		PRESS_MARK_TO_SHUTDOWN: "Нажмите кнопку «закладки»", 
-		THIS_DEVICE: "для полного\nотключения ридера.", 
-		PRESS_MARK_TO_DELETE: "Нажмите кнопку «закладки»", 
-		THIS_BOOK: "чтобы удалить книгу.", 
-		FORMAT_INTERNAL_MEMORY: "Форматировать внутреннюю память", 
-		PRESS_MARK_TO_FORMAT: "Нажмите кнопку «закладки»", 
-		MSG_INTERNAL_MEMORY: "для форматирования\nвнутренней памяти.", 
-		RESTORE_DEFAULTS: "Восстановить заводские настройки", 
-		PRESS_MARK_TO_RESTORE: "Нажмите кнопку «закладки»", 
-		DEFAULT_SETTINGS: "чтобы восстановить\nзаводские настройки.", 
-		UPPER_PAGE: "СТР.", 
-		ONE_OF_ONE: "1 из 1", 
-		NO_BATTERY: "Батарея разряжена!", 
-		FORMATTING_INTERNAL_MEMORY: "Форматирую внутреннюю память...", 
-		SHUTTING_DOWN: "Отключаюсь...",		
+		// Main.xml & kbook.so stuff
+		INVALID_FORMAT: "Неверный формат!",
+		FORMATTING: "Форматирую...",
+		LOADING: "Загружаю...",
+		LOW_BATTERY: "Батарея разряжена!",
+		HR_WARNING: "Вы готовы УДАЛИТЬ всё содержимое ридера, восстановить заводские настройки, и очистить состояние защищенного содержимого?\n\nДа - нажмите 5\nНет - нажмите «меню»",
+		DEVICE_SHUTDOWN: "Отключение ридера",
+		PRESS_MARK_TO_SHUTDOWN: "Нажмите кнопку «закладки»",
+		THIS_DEVICE: "для полного\nотключения ридера.",
+		PRESS_MARK_TO_DELETE: "Нажмите кнопку «закладки»",
+		THIS_BOOK: "чтобы удалить книгу.",
+		FORMAT_INTERNAL_MEMORY: "Форматировать внутреннюю память",
+		PRESS_MARK_TO_FORMAT: "Нажмите кнопку «закладки»",
+		MSG_INTERNAL_MEMORY: "для форматирования\nвнутренней памяти.",
+		RESTORE_DEFAULTS: "Восстановить заводские настройки",
+		PRESS_MARK_TO_RESTORE: "Нажмите кнопку «закладки»",
+		DEFAULT_SETTINGS: "чтобы восстановить\nзаводские настройки.",
+		UPPER_PAGE: "СТР.",
+		ONE_OF_ONE: "1 из 1",
+		NO_BATTERY: "Батарея разряжена!",
+		FORMATTING_INTERNAL_MEMORY: "Форматирую внутреннюю память...",
+		SHUTTING_DOWN: "Отключаюсь...",
 
 		// Root menu
 		CONTINUE: "Продолжить чтение",
@@ -513,9 +514,9 @@ return {
 		TITLE: "История книг",
 		VALUE_DISABLED: "Отключена",
 		OPTION_REPLACE: "История в «Продолжить чтение»",
-		VALUE_ON: "Включена",
-		VALUE_OFF: "Отключена",
-		OPTION_SKIP_BOOK_MENU: "Пропускать меню книги" 
+		VALUE_ON: "Включено",
+		VALUE_OFF: "Отключено",
+		OPTION_SKIP_BOOK_MENU: "Пропускать меню книги"
 	},
 
 //ReadMark	ReadMark: {
