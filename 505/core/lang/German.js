@@ -14,6 +14,7 @@
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added PAGE (BookHistory)
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -48,6 +49,10 @@ var FUNC_X_BOOKMARKS = function (n) {
 };
 var FUNC_X_COLLECTIONS = function (n) {
 	return FUNC_X_SOMETHING(n, ["Sammlungen", "1 Sammlung", "Keine Sammlung"]);
+};
+
+var FUNC_PAGE_X = function (n) {
+	return "Seite " + n;
 };
 
 // Utility function, no need to localize
@@ -483,7 +488,7 @@ return {
 		NOT_SHOWN_IF_SINGLE_PAGE: "Nicht bei einzelner Seite anzeigen",
 		VALUE_STATS0: "5 / 100 (Seiten pro Minute)",
 		VALUE_STATS1: "5 / 100 (Zeit bis Buch-Ende)",
-		VALUE_STATS2: "5 / 100 (SpM / Zeit bis Buch-Ende)"		
+		VALUE_STATS2: "5 / 100 (SpM / Zeit bis Buch-Ende)"
 	},
 
 	EpubUserStyle: {
@@ -494,7 +499,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		PAGE: "Seite",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Buch-Verlauf",
 		VALUE_DISABLED: "Deaktiviert",
 		OPTION_REPLACE: "Weiterlesen durch Verlauf ersetzen",
@@ -520,7 +525,7 @@ return {
 	MenuTuning: {
 		OPTION_OUTER: "Oberste Menü-Ebene besteht aus"
 	},
-	
+
 	Dictionary: {
 		TITLE: "Wörterbuch",
 		WARN_DICT_DISABLED: "Wörterbuch ist deaktiviert!",
@@ -528,5 +533,5 @@ return {
 		ACTION_DICTIONARY: "Wörterbuch öffnen",
 		OPTION_DICTIONARY: "Wörterbuch-Datei",
 		VALUE_DISABLED: "Deaktiviert"
-	}	
+	}
 };

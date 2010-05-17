@@ -20,6 +20,7 @@
 //	2010-05-15 kartu - Added SLL's fixes
 //	2010-05-15 kartu - Added PAGE (BookHistory)
 //	2010-05-17 kravitz - Fixed VALUE_ON, VALUE_OFF (BookHistory)
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -63,6 +64,10 @@ var FUNC_X_BOOKMARKS = function (n) {
 
 var FUNC_X_COLLECTIONS = function (n) {
 	return FUNC_X_SOMETHING(n, ["коллекция", "коллекции", "коллекций", "Пусто"]);
+};
+
+var FUNC_PAGE_X = function (n) {
+	return "Страница " + n;
 };
 
 // Utility function, no need to localize
@@ -510,6 +515,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		PAGE: "страница",
 		TITLE: "История книг",
 		VALUE_DISABLED: "Отключена",

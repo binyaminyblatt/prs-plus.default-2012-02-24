@@ -6,6 +6,7 @@
 //	2010-05-06 kartu - Initial version by thawk
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -47,6 +48,10 @@ var FUNC_X_BOOKMARKS = function (n) {
 
 var FUNC_X_COLLECTIONS = function (n) {
 	return FUNC_X_SOMETHING(n, ["项", "1 项", "无"]);
+};
+
+var FUNC_PAGE_X = function (n) {
+	return "第" + n + "页";
 };
 
 // Utility function, no need to localize
@@ -494,7 +499,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		PAGE: "页",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "最近看过的书",
 		VALUE_DISABLED: "禁用",
 		OPTION_REPLACE: "在继续阅读中列出最近看过的书",

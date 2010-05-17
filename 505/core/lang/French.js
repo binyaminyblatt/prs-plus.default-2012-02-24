@@ -11,6 +11,7 @@
 //				Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added PAGE (BookHistory)
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -52,6 +53,10 @@ var FUNC_X_BOOKMARKS = function (n) {
 
 var FUNC_X_COLLECTIONS = function (n) {
 	return FUNC_X_SOMETHING(n, ["collections", "1 collections", "Pas de collections"]);
+};
+
+var FUNC_PAGE_X = function (n) {
+	return "Page " + n;
 };
 
 // Utility function, no need to localize
@@ -488,7 +493,7 @@ return {
 		VALUE_STATS0: "5 / 100 (pages par minute)",
 		VALUE_STATS1: "5 / 100 (Le temps de terminer)",
 		VALUE_STATS2: "5 / 100 (ppm / Le temps de terminer)"
-	
+
 	},
 
 	EpubUserStyle: {
@@ -499,7 +504,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		PAGE: "page",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Livre d'histoire",
 		VALUE_DISABLED: "Désactivé",
 		OPTION_REPLACE: "Histoire en continuer la lecture",

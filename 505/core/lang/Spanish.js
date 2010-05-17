@@ -15,6 +15,7 @@
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added PAGE (BookHistory)
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -49,6 +50,10 @@ var FUNC_X_BOOKMARKS = function (n) {
 };
 var FUNC_X_COLLECTIONS = function (n) {
 	return FUNC_X_SOMETHING(n, ["colecciones", "1 colección", "Ninguna colección"]);
+};
+
+var FUNC_PAGE_X = function (n) {
+	return "Página " + n;
 };
 
 // Utility function, no need to localize
@@ -484,7 +489,7 @@ return {
 		NOT_SHOWN_IF_SINGLE_PAGE: "Sólo si hay más de una página",
 		VALUE_STATS0: "5 / 100 (páginas/minuto)",
 		VALUE_STATS1: "5 / 100 (tiempo a final)",
-		VALUE_STATS2: "5 / 100 (ppm / tiempo fin)"	
+		VALUE_STATS2: "5 / 100 (ppm / tiempo fin)"
 	},
 
 	EpubUserStyle: {
@@ -495,7 +500,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		PAGE: "página",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Historial del libro",
 		VALUE_DISABLED: "Desactivado",
 		OPTION_REPLACE: "Historial continuar leyendo",
@@ -521,7 +526,7 @@ return {
 	MenuTuning: {
 		OPTION_OUTER: "Opciones menú principal"
 	},
-	
+
 	Dictionary: {
 		TITLE: "Diccionario",
 		WARN_DICT_DISABLED: "¡Diccionario desactivado!",

@@ -13,6 +13,7 @@
 //	2010-05-14 kravitz - Added BookHistory strings
 //	2010-05-15 kartu - Renamed BookHistory strings, removed unused, added FUNC_X_PAGES
 //	2010-05-15 kartu - Removed FUNC_X_PAGES
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -34,6 +35,10 @@ var FUNC_X_SETTINGS = function (n) {
 
 var FUNC_X_ITEMS = function (n) {
 	return FUNC_X_SOMETHING(n, ["items", "1 item", "No item"]);
+};
+
+var FUNC_PAGE_X = function (n) {
+	return "Page " + n;
 };
 
 return {
@@ -250,7 +255,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		PAGE: "page",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Book History",
 		VALUE_DISABLED: "Disabled",
 		OPTION_REPLACE: "History into Continue Reading",
