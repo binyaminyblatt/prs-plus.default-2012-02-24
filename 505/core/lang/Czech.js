@@ -7,6 +7,7 @@
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added PAGE (BookHistory)
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 4) {
@@ -51,6 +52,10 @@ var FUNC_X_BOOKMARKS = function (n) {
 
 var FUNC_X_COLLECTIONS = function (n) {
 	return FUNC_X_SOMETHING(n, ["kolekcí", "kolekce", "1 kolekce", "Žádná kolekce"]);
+};
+
+var FUNC_PAGE_X = function (n) {
+	return "Strana " + n;
 };
 
 // Utility function, no need to localize
@@ -487,7 +492,7 @@ return {
 		NOT_SHOWN_IF_SINGLE_PAGE: "Nezobrazovat na samostatných stránkách",
 		VALUE_STATS0: "5 / 100 (stran za minutu)",
 		VALUE_STATS1: "5 / 100 (čas do konce knihy)",
-		VALUE_STATS2: "5 / 100 (str. min. / čas do konce)"		
+		VALUE_STATS2: "5 / 100 (str. min. / čas do konce)"
 	},
 
 	EpubUserStyle: {
@@ -498,13 +503,13 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		PAGE: "strana",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Historie",
 		VALUE_DISABLED: "Zakázáno",
 		OPTION_REPLACE: "Historie místo Pokračuj ve čtení",
 		VALUE_ON: "Zap",
 		VALUE_OFF: "Vyp",
-		OPTION_SKIP_BOOK_MENU: "Skip Book Menu" // TRANSLATE ME		
+		OPTION_SKIP_BOOK_MENU: "Skip Book Menu" // TRANSLATE ME
 	},
 
 //ReadMark	ReadMark: {

@@ -15,6 +15,7 @@
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added PAGE (BookHistory)
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -49,6 +50,10 @@ var FUNC_X_BOOKMARKS = function (n) {
 };
 var FUNC_X_COLLECTIONS = function (n) {
 	return FUNC_X_SOMETHING(n, ["col·leccions", "1 col·lecció", "Cap col·lecció"]);
+};
+
+var FUNC_PAGE_X = function (n) {
+	return "Pàgina " + n;
 };
 
 // Utility function, no need to localize
@@ -485,7 +490,7 @@ return {
 		NOT_SHOWN_IF_SINGLE_PAGE: "Només si hi ha mes d'una pàgina",
 		VALUE_STATS0: "5 / 100 (pàg. per minut)",
 		VALUE_STATS1: "5 / 100 (temps per fi)",
-		VALUE_STATS2: "5 / 100 (ppm / temps per fi)"		
+		VALUE_STATS2: "5 / 100 (ppm / temps per fi)"
 	},
 
 	EpubUserStyle: {
@@ -496,7 +501,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		PAGE: "pàgina",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Historial Llibre",
 		VALUE_DISABLED: "Desactivat",
 		OPTION_REPLACE: "Historial Continuar Llegint",
@@ -522,7 +527,7 @@ return {
 	MenuTuning: {
 		OPTION_OUTER: "Opció menú principal"
 	},
-	
+
 	Dictionary: {
 		TITLE: "Diccionari",
 		WARN_DICT_DISABLED: "Diccionari desactivat!",

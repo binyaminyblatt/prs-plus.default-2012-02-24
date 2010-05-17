@@ -10,6 +10,8 @@
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-14 kravitz - Added BookHistory strings
 //	2010-05-15 kartu - Added PAGE (BookHistory)
+//	2010-05-15 kravitz - Added PAGE (BookHistory)
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -51,6 +53,10 @@ var FUNC_X_BOOKMARKS = function (n) {
 
 var FUNC_X_COLLECTIONS = function (n) {
 	return FUNC_X_SOMETHING(n, ["collections", "1 collection", "No collection"]);
+};
+
+var FUNC_PAGE_X = function (n) {
+	return "Page " + n;
 };
 
 // Utility function, no need to localize
@@ -497,7 +503,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		PAGE: "page",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Book History",
 		VALUE_DISABLED: "Disabled",
 		OPTION_REPLACE: "History into Continue Reading",

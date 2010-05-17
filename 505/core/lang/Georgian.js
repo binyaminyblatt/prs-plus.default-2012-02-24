@@ -19,6 +19,7 @@
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added PAGE (BookHistory)
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 0) {
@@ -49,6 +50,10 @@ var FUNC_X_BOOKMARKS = function (n) {
 };
 var FUNC_X_COLLECTIONS = function (n) {
 	return FUNC_X_SOMETHING(n, ["კოლქკცია", "ცარიელი"]);
+};
+
+var FUNC_PAGE_X = function (n) {
+	return "გვერდი " + n;
 };
 
 // Utility function, no need to localize
@@ -179,7 +184,7 @@ return {
 		SS_OK: okText,
 		SS_OK_SIZE: okSize,
 		SECONDS: "წამი",
-		
+
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "ძილის რეჟიმი",
 		AS_ON: onText,
@@ -486,7 +491,7 @@ return {
 		NOT_SHOWN_IF_SINGLE_PAGE: "გატიშული ერთმაგ გვერდებზე (1 - 1)",
 		VALUE_STATS0: "5 / 100 (გვერდი წუთში)",
 		VALUE_STATS1: "5 / 100 (დარჩენილი დრო)",
-		VALUE_STATS2: "5 / 100 (გწ / დარჩენილი დრო)"		
+		VALUE_STATS2: "5 / 100 (გწ / დარჩენილი დრო)"
 	},
 
 	EpubUserStyle: {
@@ -497,7 +502,7 @@ return {
 
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		PAGE: "გვერდი",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Book History",
 		VALUE_DISABLED: "გამორთულია",
 		OPTION_REPLACE: "History into Continue Reading",
@@ -523,7 +528,7 @@ return {
 	MenuTuning: {
 		OPTION_OUTER: "მენიუს სათაური შეიცავს"
 	},
-	
+
 	Dictionary: {
 		TITLE: "ლექსიკონი",
 		WARN_DICT_DISABLED: "ლექსიკონი გამორთულია!!",
