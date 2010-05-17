@@ -7,6 +7,7 @@
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//	2010-05-17 kravitz - Corrected by thawk
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -162,9 +163,9 @@ return {
 		DATE: "日", // Day
 		HOUR: "时",
 		MINUTE: "分",
-		SETDATE_OK: "成功",
+		SETDATE_OK: "确认",
 		// width in pixels = ..._SIZE * 35
-		SETDATE_OK_SIZE: 2,
+		SETDATE_OK_SIZE: 3,
 		// slideshow
 		SLIDESHOW: "幻灯片",
 		SS_ON: "开",
@@ -173,9 +174,9 @@ return {
 		SS_DURATION: "每张图片显示",
 		// width in pixels = ..._SIZE * 35
 		SS_SIZE: 2,
-		SS_OK: "成功",
+		SS_OK: "确认",
 		// width in pixels = ..._SIZE * 35
-		SS_OK_SIZE: 2,
+		SS_OK_SIZE: 3,
 		SECONDS: "秒",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "休眠模式",
@@ -184,9 +185,9 @@ return {
 		AS_TURN: "开关",
 		// width in pixels = ..._SIZE * 35
 		AS_SIZE: 2,
-		AS_OK: "成功",
+		AS_OK: "确认",
 		// width in pixels = ..._SIZE * 35
-		AS_OK_SIZE: 2,
+		AS_OK_SIZE: 3,
 		// about
 		ABOUT: "关于",
 		// reset to factory settings
@@ -202,11 +203,11 @@ return {
 		SL_TURN: "开关",
 		// width in pixels = ..._SIZE * 35
 		SL_SIZE: 2,
-		SL_OK: "成功",
-		SL_OK_SIZE: 2,
-		SL_OK_UNLOCK: "成功", // unlock
+		SL_OK: "确认",
+		SL_OK_SIZE: 3,
+		SL_OK_UNLOCK: "解锁", // unlock
 		// width in pixels = ..._SIZE * 35
-		SL_OK_UNLOCK_SIZE: 2,
+		SL_OK_UNLOCK_SIZE: 3,
 		// format device
 		FORMAT_DEVICE: "格式化内部存储",
 
@@ -421,7 +422,7 @@ return {
 
 	Screenshot: {
 		TITLE: "截屏",
-		ACTION_TITLE: "载屏",
+		ACTION_TITLE: "截屏",
 		SAVING_TO: "正在保存 ",
 		FAILED_TO_SAVE: "保存失败",
 		OPT_SAVETO: "保存到",
@@ -441,8 +442,8 @@ return {
 		VALUE_BY_AUTHOR_SWAPPING: "按作者排序，但调换的姓和名的顺序",
 		VALUE_BY_FILENAME: "按文件名排序",
 		OPTION_TITLE_SORTER: "排序时参考'titleSorter'字段",
-		ENABLED: "允许",
-		DISABLED: "禁止",
+		ENABLED: "启用",
+		DISABLED: "禁用",
 		OPTION_IM_ROOT: "内部存储的根目录",
 		OPTION_CARD_SCAN: "扫描SD/MS卡上的新书",
 		OPTION_MOUNT: "通过Mount访问SD/MS卡（实验功能）",
@@ -500,17 +501,17 @@ return {
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_PAGE_X: FUNC_PAGE_X,
-		TITLE: "最近看过的书",
+		TITLE: "阅读历史",
 		VALUE_DISABLED: "禁用",
 		OPTION_REPLACE: "在继续阅读中列出最近看过的书",
 		VALUE_ON: "打开",
 		VALUE_OFF: "关闭",
-		OPTION_SKIP_BOOK_MENU: "Skip Book Menu" // TRANSLATE ME
+		OPTION_SKIP_BOOK_MENU: "跳过书本菜单，直接到上次阅读位置"
 	},
 
 //ReadMark	ReadMark: {
-//		TITLE_UNREAD: "Mark Book - Already Read",
-//		TITLE_READ: "Mark Book - Not Yet Read",
+//		TITLE_UNREAD: "标记书本为已读",
+//		TITLE_READ: "标记书本为未读",
 //	},
 
 	TextScale: {
@@ -523,7 +524,7 @@ return {
 	},
 
 	MenuTuning: {
-		OPTION_OUTER: "顶层菜单包含"
+		OPTION_OUTER: "根菜单包含"
 	},
 
 	Dictionary: {
