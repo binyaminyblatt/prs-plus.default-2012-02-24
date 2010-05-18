@@ -16,6 +16,7 @@
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added PAGE (BookHistory)
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//	2010-05-18 kartu - Merged with surquizu corrections
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -506,7 +507,7 @@ return {
 		OPTION_REPLACE: "Historial continuar leyendo",
 		VALUE_ON: "Activado",
 		VALUE_OFF: "Desactivado",
-		OPTION_SKIP_BOOK_MENU: "Skip Book Menu" // TRANSLATE ME
+		OPTION_SKIP_BOOK_MENU: "Saltarse Menú Libro"
 	},
 
 //ReadMark	ReadMark: {
