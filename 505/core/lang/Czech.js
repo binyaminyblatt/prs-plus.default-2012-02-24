@@ -8,6 +8,7 @@
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added PAGE (BookHistory)
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//	2010-05-18 kartu - Merged with Hobogen's fixes
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 4) {
@@ -35,6 +36,9 @@ var FUNC_X_ITEMS = function (n) {
 };
 
 var FUNC_X_PAGES = function (n) {
+	if (n === 0) {
+		return "0 stran";
+	}
 	return "strana " + n;
 };
 
@@ -55,7 +59,7 @@ var FUNC_X_COLLECTIONS = function (n) {
 };
 
 var FUNC_PAGE_X = function (n) {
-	return "Strana " + n;
+	return "strana " + n;
 };
 
 // Utility function, no need to localize
@@ -126,17 +130,17 @@ return {
 		LOW_BATTERY: "Slabá baterie!",
 		HR_WARNING: "Chcete VYMAZAT všechen obsah, obnovit tovární nastavení a vymazat nastavení DRM?\n\nAno - Stiskni 5\nNe - Stiskni 'Menu'",
 		DEVICE_SHUTDOWN: "Vypnout zařízení",
-		PRESS_MARK_TO_SHUTDOWN: "Pro vypnutí zmáčkněte 'Záložku'",
-		THIS_DEVICE: "toto zařízení.",
+		PRESS_MARK_TO_SHUTDOWN: "Pro vypnutí zařízení",
+		THIS_DEVICE: "zmáčkněte 'Záložku'.",
 		PRESS_MARK_TO_DELETE: "Zmáčkněte 'Záložku' pro",
 		THIS_BOOK: "vymazání této knihy.",
 		FORMAT_INTERNAL_MEMORY: "Vymazat vnitřní paměť",
 		PRESS_MARK_TO_FORMAT: "Zmáčkněte 'Záložku' pro",
 		MSG_INTERNAL_MEMORY: "vymazání vnitřní paměti.",
 		RESTORE_DEFAULTS: "Obnovit tovární nastavení",
-		PRESS_MARK_TO_RESTORE: "Zmáčkněte 'Záložku' pro obnovení",
-		DEFAULT_SETTINGS: "továrního nastavení.",
-		UPPER_PAGE: "Stránka",
+		PRESS_MARK_TO_RESTORE: "Pro obnovu nastavení",
+		DEFAULT_SETTINGS: "zmáčkněte 'Záložku'.",
+		UPPER_PAGE: "strana",
 		ONE_OF_ONE: "1 z 1",
 		NO_BATTERY: "Vybitá baterie!",
 		FORMATTING_INTERNAL_MEMORY: "Mazání vnitřní paměti...",
@@ -201,17 +205,17 @@ return {
 		ADVANCED_SETTINGS: "Pokročilé nastavení",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "Zamčít zařízení",
-		SL_OFF: "Zap",
-		SL_ON: "Vyp",
+		SL_OFF: "Odemčeno",
+		SL_ON: "Zamčeno",
 		SL_CODE: "Kód",
 		SL_TURN: "Stav",
 		// width in pixels = ..._SIZE * 35
-		SL_SIZE: 3,
+		SL_SIZE: 6,
 		SL_OK: "OK",
 		SL_OK_SIZE: 2,
-		SL_OK_UNLOCK: "OK", // unlock
+		SL_OK_UNLOCK: "Odemčít", // unlock
 		// width in pixels = ..._SIZE * 35
-		SL_OK_UNLOCK_SIZE: 2,
+		SL_OK_UNLOCK_SIZE: 6,
 		// format device
 		FORMAT_DEVICE: "Vymazat vnitřní paměť",
 
@@ -241,8 +245,8 @@ return {
 		LAST_YEAR: "Minulý rok",
 		OLDER: "Starší",
 
-		PAGE: "Stránka",
-		PART: "Část",
+		PAGE: "strana",
+		PART: "část",
 		OF: "z",
 		NO_BOOK: "Žádná kniha",
 		NO_SONG: "Žádná nahrávka ",
@@ -379,10 +383,10 @@ return {
 		// Buttons
 		BN_SIZE: "Tlačítko 'Velikost'",
 		BN_BOOKMARK: "Tlačítko 'Záložka'",
-		BN_BL_NEXT: "Levé spodní 'Další stránka'",
-		BN_BL_PREVIOUS: "Levé spodní 'Předchozí stránka'",
-		BN_SB_NEXT: "Boční 'Další stránka'",
-		BN_SB_PREVIOUS:  "Boční 'Předchozí stránka'",
+		BN_BL_NEXT: "Levé spodní 'Další strana'",
+		BN_BL_PREVIOUS: "Levé spodní 'Předchozí strana'",
+		BN_SB_NEXT: "Boční 'Další strana'",
+		BN_SB_PREVIOUS:  "Boční 'Předchozí strana'",
 		BN_MENU: "Tlačítko 'Menu'",
 		BN_JP_LEFT: "Vlevo",
 		BN_JP_RIGHT: "Vpravo",
@@ -391,11 +395,11 @@ return {
 		BN_JP_CENTER: "Potvrdit",
 		BN_H_SIZE: "Podržení tlačítka 'Velikost'",
 		BN_H_BOOKMARK: "Podržení tlačítka 'Záložka'",
-		BN_H_BL_NEXT: "Podržení levého spodního 'Další stránka'",
-		BN_H_BL_PREVIOUS: "Podržení levého spodního 'Předchozí stránka'",
+		BN_H_BL_NEXT: "Podržení levého spodního 'Další strana'",
+		BN_H_BL_PREVIOUS: "Podržení levého spodního 'Předchozí strana'",
 		BN_H_MENU: "Podržení tlačítka 'Menu'",
-		BN_H_SB_NEXT: "Podržení bočního 'Další stránka'",
-		BN_H_SB_PREVIOUS: "Podržení bočního 'Předchozí stránka'",
+		BN_H_SB_NEXT: "Podržení bočního 'Další strana'",
+		BN_H_SB_PREVIOUS: "Podržení bočního 'Předchozí strana'",
 		BN_H_JP_CENTER: "Podržení tlačítka 'Potvrdit'",
 		BN_H_1: "Podržení 1",
 		BN_H_2: "Podržení 2",
@@ -414,8 +418,8 @@ return {
 
 		// Actions
 		ACTION_SHUTDOWN: "Vypnout",
-		ACTION_NEXT_PAGE: "Další stránka",
-		ACTION_PREVIOUS_PAGE: "Předchozí stránka",
+		ACTION_NEXT_PAGE: "Další strana",
+		ACTION_PREVIOUS_PAGE: "Předchozí strana",
 		ACTION_NEXT_IN_HISTORY: "Další v historii",
 		ACTION_PREVIOUS_IN_HISTORY: "Předchozí v historii",
 		ACTION_PREVIOUS_SONG: "Předchozí nahrávka",
@@ -426,14 +430,14 @@ return {
 	Screenshot: {
 		TITLE: "Snímek obrazovky",
 		ACTION_TITLE: "Uložit snímek obrazovky",
-		SAVING_TO: "Ukládám do ",
+		SAVING_TO: "Ukládám na ",
 		FAILED_TO_SAVE: "Uložení se nezdařilo",
-		OPT_SAVETO: "Uložit do",
+		OPT_SAVETO: "Uložit na",
 		OPT_FEEDBACK: "Ukázat postup ukládání",
 		MEMORY_STICK: "Memory stick",
 		FEEDBACK_ON: "Zap",
 		FEEDBACK_OFF: "Vyp",
-		SD_CARD: "SD karta",
+		SD_CARD: "SD kartu",
 		INTERNAL_MEMORY: "Vnitřní paměť"
 	},
 
@@ -442,7 +446,7 @@ return {
 		OPTION_SORTING_MODE: "Seřadit",
 		VALUE_BY_TITLE: "Podle názvu",
 		VALUE_BY_AUTHOR_THEN_TITLE: "Podle autora pak názvu",
-		VALUE_BY_AUTHOR_SWAPPING: "Podle autora přehozením jména/příjmení",
+		VALUE_BY_AUTHOR_SWAPPING: "Podle jména/příjmení autora",
 		VALUE_BY_FILENAME: "Podle jména souboru",
 		OPTION_TITLE_SORTER: "Použít 'titleSorter' pole při řazení",
 		ENABLED: "Povoleno",
@@ -481,7 +485,7 @@ return {
 	},
 
 	PageIndex: {
-		TITLE: "Číslování stránek",
+		TITLE: "Číslování stran",
 		INDEX_STYLE_BOOK: "Vzhled číslování v knihách",
 		INDEX_MODE_BOOK: "Zobrazení číslování v knihách",
 		INDEX_MODE_MENU: "Vzhled číslování v menu",
@@ -489,7 +493,7 @@ return {
 		OF: "z",
 		ALWAYS_SHOWN: "Vždy zobrazovat",
 		NEVER_SHOWN: "Nikdy nazobrazovat",
-		NOT_SHOWN_IF_SINGLE_PAGE: "Nezobrazovat na samostatných stránkách",
+		NOT_SHOWN_IF_SINGLE_PAGE: "Nezobrazovat na samostatných stranách",
 		VALUE_STATS0: "5 / 100 (stran za minutu)",
 		VALUE_STATS1: "5 / 100 (čas do konce knihy)",
 		VALUE_STATS2: "5 / 100 (str. min. / čas do konce)"
@@ -497,7 +501,7 @@ return {
 
 	EpubUserStyle: {
 		OPTION_EPUB_CSS_FILE: "Vlastní styl pro EPUB (CSS soubor)",
-		MSG_WARNING: "Funguje jenom na nově otevřené knihy!",
+		MSG_WARNING: "Funguje jenom pro nově otevřené knihy!",
 		VALUE_DISABLED: "Zakázáno"
 	},
 
@@ -505,11 +509,11 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Historie",
-		VALUE_DISABLED: "Zakázáno",
+		VALUE_DISABLED: "Zakázána",
 		OPTION_REPLACE: "Historie místo Pokračuj ve čtení",
 		VALUE_ON: "Zap",
 		VALUE_OFF: "Vyp",
-		OPTION_SKIP_BOOK_MENU: "Skip Book Menu" // TRANSLATE ME
+		OPTION_SKIP_BOOK_MENU: "Přeskočit menu knihy"
 	},
 
 //ReadMark	ReadMark: {
@@ -522,8 +526,8 @@ return {
 		VALUE_SMALL: "(S) Malá velikost",
 		VALUE_MEDIUM: "(M) Střední velikost",
 		VALUE_LARGE: "(L) Velká velikost",
-		VALUE_DISABLED: "Zakázáno",
-		VALUE_ENABLED: "Povoleno"
+		VALUE_DISABLED: "Zakázána",
+		VALUE_ENABLED: "Povolena"
 	},
 
 	MenuTuning: {

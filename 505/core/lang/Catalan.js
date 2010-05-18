@@ -16,6 +16,7 @@
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added PAGE (BookHistory)
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//	2010-05-18 kartu - Merged with surquizu corrections
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -487,7 +488,7 @@ return {
 		OF: "de",
 		ALWAYS_SHOWN: "Sempre",
 		NEVER_SHOWN: "Mai",
-		NOT_SHOWN_IF_SINGLE_PAGE: "Només si hi ha mes d'una pàgina",
+		NOT_SHOWN_IF_SINGLE_PAGE: "Més d'una pàgina",
 		VALUE_STATS0: "5 / 100 (pàg. per minut)",
 		VALUE_STATS1: "5 / 100 (temps per fi)",
 		VALUE_STATS2: "5 / 100 (ppm / temps per fi)"
@@ -507,7 +508,7 @@ return {
 		OPTION_REPLACE: "Historial Continuar Llegint",
 		VALUE_ON: "Activat",
 		VALUE_OFF: "Desactivat",
-		OPTION_SKIP_BOOK_MENU: "Skip Book Menu" // TRANSLATE ME
+		OPTION_SKIP_BOOK_MENU: "Saltar-se Menú Llibre" 
 	},
 
 //ReadMark	ReadMark: {
