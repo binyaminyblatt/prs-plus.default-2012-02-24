@@ -21,6 +21,7 @@
 //	2010-05-15 kartu - Added PAGE (BookHistory)
 //	2010-05-17 kravitz - Fixed VALUE_ON, VALUE_OFF (BookHistory)
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -252,7 +253,7 @@ return {
 		LAST_YEAR: "За прошлый год",
 		OLDER: "Ещё ранее",
 
-		PAGE: "Страница",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		PART: "Часть",
 		OF: "из",
 		NO_BOOK: "Пусто",
@@ -516,7 +517,6 @@ return {
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_PAGE_X: FUNC_PAGE_X,
-		PAGE: "страница",
 		TITLE: "История книг",
 		VALUE_DISABLED: "Отключена",
 		OPTION_REPLACE: "История в «Продолжить чтение»",

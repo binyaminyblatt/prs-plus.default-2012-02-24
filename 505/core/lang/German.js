@@ -15,6 +15,7 @@
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added PAGE (BookHistory)
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -237,7 +238,7 @@ return {
 		LAST_YEAR: "Letztes Jahr",
 		OLDER: "Älter",
 
-		PAGE: "Seite",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		PART: "Teil",
 		OF: "von",
 		NO_BOOK: "Kein Buch",

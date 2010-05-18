@@ -12,6 +12,8 @@
 //	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
 //	2010-05-15 kartu - Added PAGE (BookHistory)
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
+//				Added VICTORSJG's corrections
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -241,7 +243,7 @@ return {
 		LAST_YEAR: "Année dernière",
 		OLDER: "Plus",
 
-		PAGE: "Page",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		PART: "Parte",
 		OF: "de",
 		NO_BOOK: "Aucun livre",
@@ -510,7 +512,7 @@ return {
 		OPTION_REPLACE: "Histoire en continuer la lecture",
 		VALUE_ON: "On",
 		VALUE_OFF: "Off",
-		OPTION_SKIP_BOOK_MENU: "Skip Book Menu" // TRANSLATE ME
+		OPTION_SKIP_BOOK_MENU: "Passer livre menu"
 	},
 
 //ReadMark	ReadMark: {

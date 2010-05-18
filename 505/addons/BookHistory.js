@@ -141,7 +141,7 @@ tmp = function () {
 		this._nativecomment = (this._myclass) ? this._mycomment : getSoValue(this, "comment");
 		this._mycomment = function () {
 			if (BookHistory.options.skipBookMenu === "on") {
-				return  L("FUNC_PAGE_X", getSoValue(getFastBookMedia(this), "page") + 1);
+				return L("FUNC_PAGE_X", getSoValue(getFastBookMedia(this), "page") + 1);
 			} else {
 				return this._nativecomment;
 			}
