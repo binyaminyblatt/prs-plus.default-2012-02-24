@@ -16,6 +16,7 @@
 //	2010-05-15 kartu - Added PAGE (BookHistory)
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 //	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
+//	2010-05-18 kravitz - Added Duglum's translation of OPTION_SKIP_BOOK_MENU
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -506,7 +507,7 @@ return {
 		OPTION_REPLACE: "Weiterlesen durch Verlauf ersetzen",
 		VALUE_ON: "Aktiviert",
 		VALUE_OFF: "Deaktiviert",
-		OPTION_SKIP_BOOK_MENU: "Skip Book Menu" // TRANSLATE ME
+		OPTION_SKIP_BOOK_MENU: "Buch-Menü überspringen"
 	},
 
 //ReadMark	ReadMark: {
