@@ -1,3 +1,8 @@
+// Description: Dictionary by Celemenseken & Lisak & m-land
+// History:
+//	2010-05-18 kartu - Uploaded scrolling fixes by m-land
+//
+
 var Core = params.Core;
 log = params.log;
 //dictionary files
@@ -6,7 +11,7 @@ var lineNo = 0; //a line number with the result of the last search
 var lineLength = 30; //length of line when displaying definition
 var xCol = 1; //starting position of the cursor - at the middle column
 var scrollingOffset = 0; //which line of definition is "1st" due to scrolling?
-var formatedDefinition = new Array(); //array with formated definition
+var formatedDefinition = []; //array with formated definition
 //Three button selection mode: if true, left arrow: left column, up arrow: up column, right arrow: right column
 //otherwise: up arrow: previous term, left arrow - move cursor to left, right arrow - move cursor to the right
 //target.threeButton = true;
@@ -96,7 +101,7 @@ target.printLines = function (aLines) {
 
 //formats definition for Result area
 target.txtFormat = function (def) {
-	var aLines = new Array();
+	var aLines = [];
 	var strPos = 0;
 	var arrIdx = 0;
 	var spaceIdx = 0;
@@ -134,24 +139,28 @@ target.txtFormat = function (def) {
 //scrolling of resultset
 target.doScroll = function () {
 	//scroll scrollingOffset of lines (9: # of lines)
-	var tmpBuff = new Array();
+	var tmpBuff = [];
 	for (var i = 0; i < 9; i++) {
 		tmpBuff[i] = formatedDefinition[i + scrollingOffset];
 	}
 	this.printLines(tmpBuff);
-}
+};
 
 //move cursor in columns (xCol: 0, 1 or 2)
 target.moveCursor = function (direction) {
 	if (direction == "left") {
-		if (--xCol < 0) xCol = 2;
+		if (--xCol < 0) {
+			xCol = 2;
+		}
 	}
 	if (direction == "right") {
-		if (++xCol > 2) xCol = 0;
+		if (++xCol > 2) {
+			xCol = 0;
+		}
 	}
 
 	this.lineCursor.changeLayout(457 + xCol * 48, undefined, undefined, 627, undefined, undefined);
-}
+};
 //move cursor in columns (xCol: 0, 1 or 2)
 target.arrowKey = function (button) {
 	if (button == "left") {
@@ -173,14 +182,14 @@ target.arrowKey = function (button) {
 
 	if (button == "up") {
 		if (scrollingOffset > 0) {
-			scrollingOffset -= 10;
+			scrollingOffset -= 9;
 			this.doScroll();
 		}
 	}
 
 	if (button == "down") {
-		if (scrollingOffset < formatedDefinition.length - 10) {
-			scrollingOffset += 10;
+		if (scrollingOffset < formatedDefinition.length - 9) {
+			scrollingOffset += 9;
 			this.doScroll();
 		}
 	}
