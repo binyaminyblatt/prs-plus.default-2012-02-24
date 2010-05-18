@@ -10,8 +10,8 @@
 //	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
 //	2010-05-14 kravitz - Added BookHistory strings
 //	2010-05-15 kartu - Added PAGE (BookHistory)
-//	2010-05-15 kravitz - Added PAGE (BookHistory)
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -241,7 +241,7 @@ return {
 		LAST_YEAR: "Last Year",
 		OLDER: "Older",
 
-		PAGE: "Page",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		PART: "Part",
 		OF: "of",
 		NO_BOOK: "No book",

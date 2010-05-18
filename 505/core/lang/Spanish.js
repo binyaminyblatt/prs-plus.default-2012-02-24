@@ -17,6 +17,7 @@
 //	2010-05-15 kartu - Added PAGE (BookHistory)
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 //	2010-05-18 kartu - Merged with surquizu corrections
+//	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -239,7 +240,7 @@ return {
 		LAST_YEAR: "El Año Pasado",
 		OLDER: "Más Antiguo",
 
-		PAGE: "Página",
+		FUNC_PAGE_X: FUNC_PAGE_X,
 		PART: "Parte",
 		OF: "de",
 		NO_BOOK: "Ningún libro",
