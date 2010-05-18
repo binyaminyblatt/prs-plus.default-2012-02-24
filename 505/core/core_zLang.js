@@ -19,7 +19,8 @@
 //	2010-05-11 kartu - Renamed Chinese to "Simplified Chinese"
 //				Added "VALUE_DEFAULT_DATE" translation (CoreLang)
 //	2010-05-15 kartu - Fixed date bug (when switching from any to English translation)
-//				Fixed English locales date bug (wasn't possible to save date since kbook.model.getDateAndClock wasn't overriden 
+//				Fixed English locales date bug (wasn't possible to save date since kbook.model.getDateAndClock wasn't overriden
+//	2010-05-18 kartu - Fixed dateSeparator's default value (spotted by VICTORSJG)
 
 tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -255,7 +256,7 @@ tmp = function() {
 			{
 				name: "dateSeparator",
 				title: langL("OPTION_DATE_SEPARATOR"),
-				defaultValue: "backslash",
+				defaultValue: "default",
 				values: ["default", "minus", "dot", "space", "none"],
 				valueTitles: {
 					"default": "/",
