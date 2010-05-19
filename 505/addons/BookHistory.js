@@ -20,6 +20,7 @@
 //	2010-05-17 kravitz - Replaced "PAGE" with "FUNC_PAGE_X"
 //	2010-05-19 kravitz - Fixed Book History menu title
 //				Added return from menu in previous state
+//	2010-05-19 kravitz - Forbidden enter into Book History not from MENU state
 
 tmp = function () {
 	// Shortcuts
@@ -408,12 +409,12 @@ tmp = function () {
 		var oldenter = bookHistoryNode.enter;
 		bookHistoryNode.enter = function (model, direct) {
 			if (direct !== FROM_CHILD) {
-				if (model.current === this) {
-					// Called from itself
+				if (model.STATE !== "MENU" || model.current === this) {
+					// Don't call Book History
 					return;
 				}
 				// Set parent
-				this.parent = (model.current && model.STATE !== "PAGE") ? model.current : kbook.root;
+				this.parent = (model.current) ? model.current : kbook.root;
 			}
 			oldenter.apply(this, arguments);
 		};
