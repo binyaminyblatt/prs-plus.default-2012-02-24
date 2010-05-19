@@ -18,6 +18,8 @@
 //				Put history into it's own settings group.
 //	2010-05-15 kartu - Reverted back to "PAGE" translation
 //	2010-05-17 kravitz - Replaced "PAGE" with "FUNC_PAGE_X"
+//	2010-05-19 kravitz - Fixed Book History menu title
+//				Added return from menu in previous state
 
 tmp = function () {
 	// Shortcuts
@@ -34,6 +36,10 @@ tmp = function () {
 	var CR_TITLE = Core.ui.nodes["continue"].title;
 	var BH_TITLE = L("TITLE");
 	var BH_FILE = "book.history";
+
+	// Direction flags
+	var FROM_PARENT = 1;
+	var FROM_CHILD = 2;
 
 	// This addon
 	var BookHistory = {
@@ -90,12 +96,8 @@ tmp = function () {
 					// Show current book
 					kbook.model.onEnterContinue();
 				} else {
-					var list = Core.ui.nodes.bookHistory;
-					if (list._myconstruct !== undefined) {
-						list._myconstruct.apply(list);
-					}
 					// Show Book History
-					kbook.model.onEnterDefault(list);
+					Core.ui.nodes.bookHistory.enter(kbook.model);
 				}
 			}
 		},
@@ -118,9 +120,9 @@ tmp = function () {
 		FskCache.tree.xdbNode.construct.call(this);
 		this.parent = parent;
 
-		this.enter = function (model, fromParent) {
+		this.enter = function (model, direct) {
 			try {
-				if (fromParent === true) {
+				if (direct === FROM_PARENT) {
 					model.onEnterBook(this);
 					if (BookHistory.options.skipBookMenu === "on") {
 						// Goto the text immediately
@@ -136,6 +138,12 @@ tmp = function () {
 			} catch (e) {
 				log.error("enter(): " + e);
 			}
+		};
+
+		this.gotoParent = function (model) {
+			this.exit(model);
+			this.unlock();
+			this.parent.enter(model, FROM_CHILD); // Added direction flag
 		};
 
 		this._nativecomment = (this._myclass) ? this._mycomment : getSoValue(this, "comment");
@@ -222,11 +230,11 @@ tmp = function () {
 	BookHistory.locate = function () {
 		var list = Core.ui.nodes.bookHistory;
 		if (this.options.replace !== "on") {
-			list._myname = BH_TITLE;
+			list._myname = list.title = BH_TITLE;
 			Core.settings.insertAddonNode(list);
 			kbook.root.nodes[0] = Core.ui.nodes["continue"];
 		} else {
-			list._myname = CR_TITLE;
+			list._myname = list.title = CR_TITLE;
 			Core.settings.removeAddonNode(list);
 			kbook.root.nodes[0] = list;
 		}
@@ -394,7 +402,20 @@ tmp = function () {
 			this.exit(model);
 			node.lockPath();
 			this.unlockPath();
-			node.enter(model, true); // Added direction flag
+			node.enter(model, FROM_PARENT); // Added direction flag
+		};
+
+		var oldenter = bookHistoryNode.enter;
+		bookHistoryNode.enter = function (model, direct) {
+			if (direct !== FROM_CHILD) {
+				if (model.current === this) {
+					// Called from itself
+					return;
+				}
+				// Set parent
+				this.parent = (model.current && model.STATE !== "PAGE") ? model.current : kbook.root;
+			}
+			oldenter.apply(this, arguments);
 		};
 
 		Core.ui.nodes.bookHistory = bookHistoryNode;
