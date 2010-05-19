@@ -9,6 +9,7 @@
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 //	2010-05-17 kravitz - Corrected by thawk
 //	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
+//	2010-05-19 kravitz - Corrected by thawk
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -239,8 +240,8 @@ return {
 		OLDER: "更早",
 
 		FUNC_PAGE_X: FUNC_PAGE_X,
-		PART: "部分",
-		OF: "of",
+		PART: "段",
+		OF: "共",
 		NO_BOOK: "无",
 		NO_SONG: "无",
 
