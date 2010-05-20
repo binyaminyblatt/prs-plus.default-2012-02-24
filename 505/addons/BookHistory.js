@@ -21,6 +21,7 @@
 //	2010-05-19 kravitz - Fixed Book History menu title
 //				Added return from menu in previous state
 //	2010-05-19 kravitz - Forbidden enter into Book History not from MENU state
+//	2010-05-20 kravitz - Allowed enter into Book History from PAGE state
 
 tmp = function () {
 	// Shortcuts
@@ -137,7 +138,7 @@ tmp = function () {
 					}
 				}
 			} catch (e) {
-				log.error("enter(): " + e);
+				log.error("HistoryBook.enter(): " + e);
 			}
 		};
 
@@ -264,7 +265,7 @@ tmp = function () {
 				if (this.options.size === BH_DEFAULT) {
 					// Change currentBook parent
 					node = kbook.model.currentBook;
-					if (node && node.parent == list) {
+					if (node && node.parent === list) {
 						node.parent = kbook.root;
 					}
 					// Clean history
@@ -400,6 +401,11 @@ tmp = function () {
 		};
 
 		bookHistoryNode.gotoNode = function (node, model) {
+			if (this.parentState === "PAGE") {
+				// Book History has been called from PAGE and goes to PAGE
+				this.parent = kbook.root;
+				this.parentState = "MENU";
+			}
 			this.exit(model);
 			node.lockPath();
 			this.unlockPath();
@@ -408,15 +414,35 @@ tmp = function () {
 
 		var oldenter = bookHistoryNode.enter;
 		bookHistoryNode.enter = function (model, direct) {
-			if (direct !== FROM_CHILD) {
-				if (model.STATE !== "MENU" || model.current === this) {
-					// Don't call Book History
-					return;
+			try {
+				if (direct !== FROM_CHILD) {
+					if (model.current === this) {
+						// Already into Book Hisrory
+						return;
+					}
+					if (model.STATE !== "MENU" && model.STATE !== "PAGE") {
+						// Not into MENU or PAGE
+						return;
+					}
+					if (model.container.GOTO_GROUP.isShown()) {
+						// Into GOTO
+						return;
+					}
+					// Set parent
+					if (model.current && model.current.parent && model.current.parent.parent !== this) {
+						// Allow to return to current position
+						this.parent = model.current;
+						this.parentState = model.STATE;
+					} else {
+						// Avoid cycling
+						this.parent = kbook.root;
+						this.parentState = "MENU";
+					}
 				}
-				// Set parent
-				this.parent = (model.current) ? model.current : kbook.root;
+				oldenter.apply(this, arguments);
+			} catch (e) {
+				log.error("bookHistory.enter(): " + e);
 			}
-			oldenter.apply(this, arguments);
 		};
 
 		Core.ui.nodes.bookHistory = bookHistoryNode;
