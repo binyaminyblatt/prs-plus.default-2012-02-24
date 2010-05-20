@@ -10,6 +10,7 @@
 //	2010-05-17 kravitz - Corrected by thawk
 //	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
 //	2010-05-19 kravitz - Corrected by thawk
+//	2010-05-20 kartu - Removed script reference from about string
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -93,7 +94,7 @@ return {
 		DEVICE_LOCKED: "设备被锁定",
 
 		// About, translate either all or none
-		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" + "PRS+ Firmware: @@@firmware@@@\n" + "Author: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + "igorsk, boroda, obelix, pepak, llasram and others.\n" + "© GNU Lesser General Public License.",
+		ABOUT_PRSP: "PRS+ @@@firmware@@@\n" + "Author: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + "igorsk, boroda, obelix, pepak, kravitz and others.\n" + "© GNU Lesser General Public License.",
 		ABOUT_1: "Copyright ©2006-2008 Sony Corporation",
 		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + " trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
 		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + " MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",

@@ -22,6 +22,7 @@
 //	2010-05-17 kravitz - Fixed VALUE_ON, VALUE_OFF (BookHistory)
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 //	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
+//	2010-05-20 kartu - Removed script reference from about string
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -107,7 +108,7 @@ return {
 		DEVICE_LOCKED: "Устройство заблокировано",
 
 		// About, translate either all or none
-		ABOUT_PRSP: "PRS+ Script: @@@script@@@\n" + "PRS+ Firmware: @@@firmware@@@\n" + "Автор: Михаил Сухиашвили или kartu (kartu3@gmail.com) с использованием работ: " + "igorsk, boroda, obelix, pepak, llasram и других.\n" + "© GNU Lesser General Public License.\n",
+		ABOUT_PRSP: "PRS+ @@@firmware@@@\n" + "Автор: Михаил Сухиашвили или kartu (kartu3@gmail.com) с использованием работ: " + "igorsk, boroda, obelix, pepak, kravitz и других.\n" + "© GNU Lesser General Public License.\n",
 		ABOUT_1: "Copyright ©2006-2008 Sony Corporation",
 		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + " trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
 		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + " MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
