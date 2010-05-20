@@ -10,6 +10,7 @@
 //	2010-05-15 kartu - Fixed "set date" bug ("mAX" typo)
 //	2010-05-15 kartu - Moved getDateAndClock function to core lang (since English locale might also need it)
 //	2010-05-18 kravitz - Replaced "PAGE" with "FUNC_PAGE_X"
+//	2010-05-20 kartu - Removed script reference from about string
 
 var tmp = function() {
 	//--------------------------------------------------------------------------------------
@@ -516,7 +517,6 @@ var tmp = function() {
 				// translate PRSP entry
 				key = "ABOUT_PRSP";
 				text = L(key);
-				text = text.replace("@@@script@@@", Core.version.script);
 				text = text.replace("@@@firmware@@@", Core.version.firmware);
 			} else {
 				key = "ABOUT_" + i;

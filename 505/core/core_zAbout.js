@@ -6,6 +6,7 @@
 //	2010-03-14 kartu - Initial version, refactored from Utils
 //	2010-04-05 kartu - Added Core.version object.
 //	2010-04-17 kartu - Moved global vars into local functions context
+//	2010-05-20 kartu - Removed script reference from about string
 
 try {
 	// dummy function, to avoid introducing global vars
@@ -19,19 +20,16 @@ try {
 		var store = getSoValue(this, "Fskin.tableField.store");
 		
 		var record = duplicate.call(this, records[1]);
-		var prspScriptVersion = Core.io.getFileContent("/Data/database/system/PRSPlus/prsp.ver", "n/a");
 		var prspFirmwareVersion = Core.io.getFileContent("/opt/prspfw.ver", "n/a");
-		store.call(this, record, "text", "PRS+ Script: " + prspScriptVersion +
-			"\nPRS+ Firmware: " + prspFirmwareVersion +
+		store.call(this, record, "text", "PRS+ " + prspFirmwareVersion +
 			"\nAuthor: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + 
-			"igorsk, boroda, obelix, pepak, llasram and others.\n" +
+			"igorsk, boroda, obelix, pepak, kravitz and others.\n" +
 			"© GNU Lesser General Public License.");
 		store.call(this, record, "kind", 4);
 		records.splice(0, 0, record);
 		
 		about.dataChanged();
 		Core.version = {
-			script: prspScriptVersion,
 			firmware: prspFirmwareVersion
 		};
 	};
