@@ -1,8 +1,8 @@
 // Description: Dictionary by Celemenseken & Lisak & m-land
 // History:
 //	2010-05-18 kartu - Uploaded scrolling fixes by m-land
+//	2010-05-20 kartu - Fixed flickering caused by hourglass
 //
-
 var Core = params.Core;
 log = params.log;
 //dictionary files
@@ -75,8 +75,11 @@ target.clearLines = function () {
 //shows/hides hourglass
 target.showHourGlass = function (show) {
 	this.hourGlass.show(show);
-	this.hourGlass.changeLayout(230, undefined, undefined, 300, undefined, undefined);
-	FskUI.Window.update.call(kbook.model.container.getWindow());
+	this.hourGlass.invalidate();
+	if (show ) {
+		// Force screen update
+		FskUI.Window.update.call(kbook.model.container.getWindow());
+	}
 };
 
 //TODO: dynamic change of line font size according to # of lines in definition? (at least two sizes...)
