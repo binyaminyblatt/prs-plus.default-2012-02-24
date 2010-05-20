@@ -14,6 +14,9 @@
 //	2010-05-05 kartu - Added ppm, time to left, "pages remaning"
 //	2010-05-11 kartu - Fixed NaN bug in ppm
 //	2010-05-11 kartu - Fixed time left bug (time to read entire book was shown instead of remaining). Noticed by Duglum.
+//	2010-05-20 kartu - Fixed timeout bug
+//				Scrolling back resets the counter
+//				last 3 page changes will be taken into account instead of 5
 
 tmp = function() {
 	var log = Core.log.getLogger("Index");
@@ -83,9 +86,9 @@ tmp = function() {
 	var lastPage;
 	var ppmHistory;
 	var ppmIdx;
-	var MAX_PPM_HISTORY = 5;
+	var MAX_PPM_HISTORY = 3;
 	// Maximum delay between pages, to consider it the same session, in milliseconds
-	var MAX_DELAY = 30 * 60 * 1000; 
+	var MAX_DELAY = 30 * 60 * 1000;
 	var NA = "*";
 	
 	var resetCounter = function () {
@@ -110,18 +113,18 @@ tmp = function() {
 				return NA;
 			}
 			
-			// It took tooo long, resetting the counter
+			// It took tooo long, or if user scrolled back, resetting the counter
 			var currentTime = (new Date()).getTime();
-			if (currentTime - lastTime > MAX_DELAY) {
+			if (currentTime - lastTime > MAX_DELAY || currentPage < lastPage) {
 				resetCounter();
-				return;
+				return NA;
 			}
 			
 			if (currentPage !== lastPage) {
 				if (ppmIdx >= MAX_PPM_HISTORY) {
 					ppmIdx = 0;
 				}
-				ppmHistory[ppmIdx] = Math.abs(currentPage - lastPage) * 1000 * 60 / (currentTime - lastTime);
+				ppmHistory[ppmIdx] = (currentPage - lastPage) * 1000 * 60 / (currentTime - lastTime);
 				ppmIdx++;
 				lastTime = currentTime;
 				lastPage = currentPage;
@@ -135,7 +138,8 @@ tmp = function() {
 					result = result + ppmHistory[i]; 
 				}
 			}
-			result = Math.round(result / n * 10) / 10; 
+			result = Math.round(result / n * 10) / 10;
+			
 			return (isNaN(result) || result === undefined) ? NA : result;
 		} catch (e) {
 			log.error("ppmIdx = " + ppmIdx + " ppmHistory =  " + ppmHistory + " in getPpm: ", e); 
