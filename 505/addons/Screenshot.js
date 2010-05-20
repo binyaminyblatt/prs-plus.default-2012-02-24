@@ -40,7 +40,7 @@ tmp = function() {
 	};
 	
 	var Screenshot = {
-		name: "PageIndex",
+		name: "Screenshot",
 		title: L("TITLE"),
 		icon: "PICTURE",
 		optionDefs: [
