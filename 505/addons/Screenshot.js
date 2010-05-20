@@ -10,6 +10,7 @@
 //	2010-04-23 kartu - Fixed: tmp() function wasn't called
 //	2010-04-24 kartu - Prepared for merging into single JS
 //	2010-04-25 kartu - Made timer a local variable
+//	2010-05-20 kartu - Fixed addon name (affects settings)
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
