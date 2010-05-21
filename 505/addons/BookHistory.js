@@ -22,6 +22,7 @@
 //				Added return from menu in previous state
 //	2010-05-19 kravitz - Forbidden enter into Book History not from MENU state
 //	2010-05-20 kravitz - Allowed enter into Book History from PAGE state
+//	2010-05-21 kravitz - Allowed enter into Book History from AUTORUN state
 
 tmp = function () {
 	// Shortcuts
@@ -420,7 +421,7 @@ tmp = function () {
 						// Already into Book Hisrory
 						return;
 					}
-					if (model.STATE !== "MENU" && model.STATE !== "PAGE") {
+					if (model.STATE !== "MENU" && model.STATE !== "PAGE" && model.STATE !== "AUTORUN") {
 						// Not into MENU or PAGE
 						return;
 					}
