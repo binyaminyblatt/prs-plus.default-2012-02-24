@@ -13,6 +13,7 @@
 //	2010-04-27 kravitz - Code of main menu forming is moved to MenuTuning.js
 //	2010-04-29 kravitz - Refactored events handling
 //	2010-05-15 kartu -  Fixed: book list was initialized once and never updated
+//	2010-05-24 kartu - Fixed weird bug "after deleting collection reader jumps to main menu, instead of collection" (fix by kravitz) that occured only if there was no SD card
 
 tmp = function() {
 	// Shortcuts
@@ -135,11 +136,10 @@ tmp = function() {
 				} catch (e) {
 					log.error("Failed to delete my node: " + e);
 				}
-
-				book.gotoParent(kbook.model);
 			} else {
 				oldDeleteBook.apply(owner, args);
 			}
+			book.gotoParent(kbook.model);
 		} catch (ee) {
 			log.error("doDeleteBook(): " + ee);
 		}
