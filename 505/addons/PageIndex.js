@@ -17,11 +17,12 @@
 //	2010-05-20 kartu - Fixed timeout bug
 //				Scrolling back resets the counter
 //				last 3 page changes will be taken into account instead of 5
+//	2010-05-24 kravitz - Fixed getPpm() result checking
 
 tmp = function() {
 	var log = Core.log.getLogger("Index");
 	var L = Core.lang.getLocalizer("PageIndex");
-	
+
 	var Index = {
 		name: "PageIndex",
 		title: L("TITLE"),
@@ -41,8 +42,8 @@ tmp = function() {
 					XremYper: "5 + 95 (5%)",
 					XremYperRem: "5 + 95 (95%)",
 					XdivYstats0: L("VALUE_STATS0"),
-					XdivYstats1: L("VALUE_STATS1"), 
-					XdivYstats2: L("VALUE_STATS2") 
+					XdivYstats1: L("VALUE_STATS1"),
+					XdivYstats2: L("VALUE_STATS2")
 				}
 			},
 			{
@@ -81,7 +82,7 @@ tmp = function() {
 			}
 		]
 	};
-	
+
 	var lastTime;
 	var lastPage;
 	var ppmHistory;
@@ -90,12 +91,12 @@ tmp = function() {
 	// Maximum delay between pages, to consider it the same session, in milliseconds
 	var MAX_DELAY = 30 * 60 * 1000;
 	var NA = "*";
-	
+
 	var resetCounter = function () {
 		lastTime = undefined;
 	};
-	
-	// Calculates ppm based on page changes history. 
+
+	// Calculates ppm based on page changes history.
 	// Takes into account MAX_PPM_HISTORY pages.
 	// Resets the counter if there was a delay longar than MAX_DELAY milliseconds
 	//
@@ -112,14 +113,14 @@ tmp = function() {
 				}
 				return NA;
 			}
-			
+
 			// It took tooo long, or if user scrolled back, resetting the counter
 			var currentTime = (new Date()).getTime();
 			if (currentTime - lastTime > MAX_DELAY || currentPage < lastPage) {
 				resetCounter();
 				return NA;
 			}
-			
+
 			if (currentPage !== lastPage) {
 				if (ppmIdx >= MAX_PPM_HISTORY) {
 					ppmIdx = 0;
@@ -129,24 +130,24 @@ tmp = function() {
 				lastTime = currentTime;
 				lastPage = currentPage;
 			}
-			
+
 			var result = 0;
 			var n = 0;
 			for (i = 0; i < MAX_PPM_HISTORY; i++) {
 				if (ppmHistory[i] !== 0) {
 					n++;
-					result = result + ppmHistory[i]; 
+					result = result + ppmHistory[i];
 				}
 			}
 			result = Math.round(result / n * 10) / 10;
-			
-			return (isNaN(result) || result === undefined) ? NA : result;
+
+			return (isNaN(result) || result === 0) ? NA : result;
 		} catch (e) {
-			log.error("ppmIdx = " + ppmIdx + " ppmHistory =  " + ppmHistory + " in getPpm: ", e); 
+			log.error("ppmIdx = " + ppmIdx + " ppmHistory =  " + ppmHistory + " in getPpm: ", e);
 		}
 		return NA;
 	};
-	
+
 	// Returns time left to finish the book
 	//
 	var getTimeLeft = function (ppm, pages) {
@@ -165,7 +166,7 @@ tmp = function() {
 			return minutes;
 		}
 	};
-	
+
 	var updateIndexBook = function (args, oldFunc, tag) {
 		try {
 			switch (Index.options.mode) {
@@ -175,7 +176,7 @@ tmp = function() {
 					this.setVariable("BOOK_INDEX_COUNT", "");
 					return;
 			}
-	
+
 			// get pages
 			this.setVariable("BOOK_SIZE", this.getScale());
 			this.setVariable("BOOK_HALF_PAGE", this.getHalfPage());
@@ -186,10 +187,10 @@ tmp = function() {
 				c++;
 			}
 			var per = Math.floor((i / c) * 100);
-		
+
 			var show = "";
 			var timeLeft;
-	
+
 			switch(Index.options.style) {
 				case "XofY":
 					show = ii + " " + L("OF") + " " + c;
@@ -227,13 +228,13 @@ tmp = function() {
 					show = ii + " " + L("OF") + " " + c;
 					break;
 			}
-	
+
 			this.setVariable("BOOK_INDEX_COUNT", show);
 		} catch (e) {
 			log.error("in updateIndexBook: " + e);
 		}
 	};
-	
+
 	var updateIndexMenu = function (args, oldFunc, tag) {
 		try {
 			// get pages
@@ -243,7 +244,7 @@ tmp = function() {
 				c++;
 			}
 			var show = "";
-	
+
 			switch (Index.options.menuMode) {
 				case "always":
 					break;
@@ -259,7 +260,7 @@ tmp = function() {
 					this.setVariable("MENU_INDEX_COUNT", "");
 					return;
 			}
-	
+
 			switch(Index.options.menuStyle) {
 				case "MenuXofY":
 					show = i + " " + L("OF") + " " + c;
@@ -271,19 +272,19 @@ tmp = function() {
 					show = i + " " + L("OF") + " " + c;
 					break;
 			}
-	
+
 			this.setVariable("MENU_INDEX_COUNT", show);
 		} catch (e) {
 			log.error("in updateIndexMenu: " + e);
 		}
 	};
-	
+
 	Index.onInit = function () {
 		Core.hook.hookAfter(kbook.model.container.PAGE_GROUP.PAGE, "pageChanged", updateIndexBook, "book");
 		Core.hook.hookAfter(kbook.model.container.MENU_GROUP.MENU, "pageChanged", updateIndexMenu, "menu");
 		kbook.model.container.MENU_GROUP.MENU.pageChanged();
 	};
-	
+
 	Core.addAddon(Index);
 };
 try {

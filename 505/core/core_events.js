@@ -6,6 +6,7 @@
 //	2010-04-29 kravitz - Initial version
 //	2010-05-03 kravitz - Renamed ReadingList to BookHistory
 //	2010-05-04 kravitz - Fixed init()
+//	2010-05-24 kravitz - Removed BookHistory.doDeleteBook handler
 //
 // TODO:
 //	- onSleep, onResume
@@ -71,7 +72,7 @@ try {
 				createHandler(kbook.model, "onChangeBook", [], undefined, ["BookHistory"]); //ReadMark , "ReadMark"]);
 
 				// doDeleteBook
-				createHandler(kbook.model, "doDeleteBook", ["BookHistory"], "BrowseFolders", []);
+				createHandler(kbook.model, "doDeleteBook", [], "BrowseFolders", []);
 
 				// onTerminate
 				USBDispatcher.prspOnTerminate = function () {

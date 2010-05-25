@@ -19,10 +19,12 @@
 //	2010-05-15 kartu - Reverted back to "PAGE" translation
 //	2010-05-17 kravitz - Replaced "PAGE" with "FUNC_PAGE_X"
 //	2010-05-19 kravitz - Fixed Book History menu title
-//				Added return from menu in previous state
+//				Added return from menu to previous state
 //	2010-05-19 kravitz - Forbidden enter into Book History not from MENU state
 //	2010-05-20 kravitz - Allowed enter into Book History from PAGE state
 //	2010-05-21 kravitz - Allowed enter into Book History from AUTORUN state
+//	2010-05-24 kravitz - Changed logic of return, fixed minor bugs
+//				Removed doDeleteBook() event handler, added audit() instead
 
 tmp = function () {
 	// Shortcuts
@@ -40,9 +42,12 @@ tmp = function () {
 	var BH_TITLE = L("TITLE");
 	var BH_FILE = "book.history";
 
+	var BH_STACK_SIZE = 4;
+
 	// Direction flags
 	var FROM_PARENT = 1;
 	var FROM_CHILD = 2;
+	var FROM_HOTKEY = 3;
 
 	// This addon
 	var BookHistory = {
@@ -100,7 +105,7 @@ tmp = function () {
 					kbook.model.onEnterContinue();
 				} else {
 					// Show Book History
-					Core.ui.nodes.bookHistory.enter(kbook.model);
+					Core.ui.nodes.bookHistory.enter(kbook.model, FROM_HOTKEY);
 				}
 			}
 		},
@@ -185,7 +190,7 @@ tmp = function () {
 
 		// Search current book in history
 		for (var i = 0, n = list.nodes.length; i < n; i++) {
-			if (list.nodes[i]._bookPath == bookPath) { // ... found
+			if (list.nodes[i]._bookPath === bookPath) { // ... found
 				if (i !== 0) {
 					// Move book on top
 					list.nodes.unshift(list.nodes.splice(i, 1)[0]);
@@ -204,29 +209,32 @@ tmp = function () {
 		}
 	};
 
-	BookHistory.doDeleteBook = function (owner) {
+	// Removes non-existent books
+	BookHistory.audit = function () {
 		if (this.options.size === BH_DEFAULT) {
 			// Book History is disabled
 			return;
 		}
-		var book = owner.currentBook;
-		if (book === null) {
-			// No book
-			return;
-		}
-		var media = getFastBookMedia(book);
-		var source = media.source;
-		var bookPath = source.path + media.path;
 		var list = Core.ui.nodes.bookHistory;
-
-		// Search current book in history
-		for (var i = 0, n = list.nodes.length; i < n; i++) {
-			if (list.nodes[i]._bookPath == bookPath) { // ... found
+		var i = 0;
+		while (i < list.nodes.length) {
+			if (!FileSystem.getFileInfo(list.nodes[i]._bookPath)) {
 				// Remove node from history
 				delete list.nodes.splice(i, 1)[0];
-				break;
+				continue;
 			}
+			i++;
 		}
+	};
+
+	// Tests book file existence
+	BookHistory.bookFileExists = function (book) {
+		var path = book._bookPath;
+		if (path === undefined) {
+			var media = getFastBookMedia(book);
+			path = media.source.path + media.path;
+		}
+		return FileSystem.getFileInfo(path);
 	};
 
 	// Locates Book History into Continue Reading or into Games & Utilities
@@ -321,7 +329,6 @@ tmp = function () {
 		}
 	};
 
-
 	// Loads saved Book History from addon's private file
 	BookHistory.loadFromFile = function () {
 		try {
@@ -402,45 +409,127 @@ tmp = function () {
 		};
 
 		bookHistoryNode.gotoNode = function (node, model) {
-			if (this.parentState === "PAGE") {
-				// Book History has been called from PAGE and goes to PAGE
-				this.parent = kbook.root;
-				this.parentState = "MENU";
-			}
 			this.exit(model);
 			node.lockPath();
 			this.unlockPath();
 			node.enter(model, FROM_PARENT); // Added direction flag
 		};
 
-		var oldenter = bookHistoryNode.enter;
+		bookHistoryNode.gotoBook = function (node, topage, model) {
+			this.exit(model);
+			node.lockPath();
+			this.unlockPath();
+			model.onEnterBook(node);
+			if (topage) {
+				node.nodes[0].enter(model);
+			}
+		};
+
+		/* Calls stack */
+		bookHistoryNode.stack = [];
+
+		bookHistoryNode.stackPop = function () {
+			while (this.stack.length) {
+				var pt = this.stack.pop();
+				switch (pt.STATE) {
+					case "BOOK":
+					case "PAGE":
+						if (!BookHistory.bookFileExists(pt.node)) {
+							continue;
+						}
+						/* fallthrough */
+					default:
+						return pt;
+				}
+			}
+			return null;
+		};
+
+		bookHistoryNode.gotoParent = function (model) {
+			try {
+				this.parent = kbook.root;
+				// Get return point
+				var pt = this.stackPop();
+				// Return ...
+				if (pt) {
+					if (pt.STATE === "BOOK" || pt.STATE === "PAGE") {
+						// ... into book or page
+						bookHistoryNode.gotoBook(pt.node, pt.STATE === "PAGE", model);
+						return;
+					}
+					this.parent = pt.node;
+				}
+				// ... into menu
+				this.exit(model);
+				this.unlock();
+				this.parent.enter(model);
+			} catch (e) {
+				log.error("bookHistory.gotoParent(): " + e);
+			}
+		};
+
+		bookHistoryNode.oldEnter = bookHistoryNode.enter;
 		bookHistoryNode.enter = function (model, direct) {
 			try {
+				// Remove non-existent books
+				BookHistory.audit();
+
 				if (direct !== FROM_CHILD) {
-					if (model.current === this) {
-						// Already into Book Hisrory
-						return;
+					// We are ...
+					switch (model.STATE) {
+						case "MENU":
+							if (model.current === this) {
+								// ... already into Book Hisrory
+								return;
+							}
+							if (model.current === model.currentBook) {
+								// ... into book menu
+								this.stack.push({
+									STATE: "BOOK",
+									node: model.current
+								});
+							} else {
+								if (model.current) {
+									// ... into menu
+									this.stack.push({
+										STATE: "MENU",
+										node: model.current
+									});
+								}
+							}
+							break;
+
+						case "PAGE":
+							if (model.container.GOTO_GROUP.isShown()) {
+								// ... into GOTO
+								return;
+							}
+							// ... into book
+							this.stack.push(								{
+								STATE: "PAGE",
+								node: model.current.parent
+							});
+							break;
+
+						case "AUTORUN":
+							if (direct === FROM_HOTKEY) {
+								// ... into e.g. dict
+								return;
+							}
+							// ... going from e.g. dict
+							break;
+
+						default:
+							// ... into ignorable STATE
+							return;
 					}
-					if (model.STATE !== "MENU" && model.STATE !== "PAGE" && model.STATE !== "AUTORUN") {
-						// Not into MENU or PAGE
-						return;
-					}
-					if (model.container.GOTO_GROUP.isShown()) {
-						// Into GOTO
-						return;
-					}
-					// Set parent
-					if (model.current && model.current.parent && model.current.parent.parent !== this) {
-						// Allow to return to current position
-						this.parent = model.current;
-						this.parentState = model.STATE;
-					} else {
-						// Avoid cycling
-						this.parent = kbook.root;
-						this.parentState = "MENU";
+					// Stack trimming
+					if (this.stack.length > BH_STACK_SIZE) {
+						// Delete point on bottom
+						this.stack.shift();
 					}
 				}
-				oldenter.apply(this, arguments);
+				this.oldEnter.apply(this, arguments);
 			} catch (e) {
 				log.error("bookHistory.enter(): " + e);
 			}
