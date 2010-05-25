@@ -9,6 +9,7 @@
 //	2010-03-14 kartu - Localized
 //	2010-04-24 kartu - Prepared for merging into single JS
 //	2010-04-25 kartu - Marked onPreInit as constructor
+//	2010-05-25 kravitz - Removed unused "description"
 
 tmp = function() {
 	var getSoValue = Core.system.getSoValue;
@@ -195,7 +196,6 @@ tmp = function() {
 	KeyBindings = {
 		name: "KeyBindings",
 		title: L("TITLE"),
-		description: L("DESCRIPTION"),
 		icon: "SETTINGS",
 		onInit: function () {
 			try {
