@@ -18,6 +18,7 @@
 //				Scrolling back resets the counter
 //				last 3 page changes will be taken into account instead of 5
 //	2010-05-24 kravitz - Fixed getPpm() result checking
+//	2010-06-04 kravitz - Added stats reset if book changed
 
 tmp = function() {
 	var log = Core.log.getLogger("Index");
@@ -84,6 +85,7 @@ tmp = function() {
 	};
 
 	var lastTime;
+	var lastId;
 	var lastPage;
 	var ppmHistory;
 	var ppmIdx;
@@ -103,6 +105,14 @@ tmp = function() {
 	var getPpm = function (currentPage) {
 		try {
 			var i;
+
+			// Check it's the same book
+			var id = Core.system.getFastBookMedia(kbook.model.currentBook).id;
+			if (lastId !== id) {
+				resetCounter();
+				lastId = id;
+			}
+
 			if (lastTime === undefined) {
 				lastTime = (new Date()).getTime();
 				lastPage = currentPage;
