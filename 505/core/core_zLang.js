@@ -21,6 +21,7 @@
 //	2010-05-15 kartu - Fixed date bug (when switching from any to English translation)
 //				Fixed English locales date bug (wasn't possible to save date since kbook.model.getDateAndClock wasn't overriden
 //	2010-05-18 kartu - Fixed dateSeparator's default value (spotted by VICTORSJG)
+//	2010-06-27 kartu - Fixed error log message (was refering to core-hook2, instead of about)
 
 tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -275,5 +276,5 @@ tmp = function() {
 try {
 	tmp();
 } catch (e) {
-	log.error("initializing core-lang", e);
+	log.error("initializing core-about", e);
 }
