@@ -7,6 +7,7 @@
 //	2010-04-05 kartu - Added Core.version object.
 //	2010-04-17 kartu - Moved global vars into local functions context
 //	2010-05-20 kartu - Removed script reference from about string
+//	2010-06-27 kartu - Fixed error log message (was refering to core-hook2, instead of lang)
 
 try {
 	// dummy function, to avoid introducing global vars
@@ -35,5 +36,5 @@ try {
 	};
 	tmp();
 } catch (e) {
-	log.error("initializing core-hook2", e);
+	log.error("initializing core-about", e);
 }
