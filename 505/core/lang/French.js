@@ -3,19 +3,20 @@
 // Translator: VICTORSJG, Duglum, ronnn
 //
 // History:
-//      2010-05-04 Initial version by VICTORSJG
-//      2010-05-06 kartu - Added ppm related translations for PageIndex addon
-//      2010-05-06 kartu - Added Duglum's corrections
-//      2010-05-10 kartu - Added VICTORSJG's corrections
-//      2010-05-11 kartu- Changed file encoding to UTF-8 from UTF-8Y
-//                              Added VALUE_DEFAULT_DATE (CoreLang)
-//      2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
-//      2010-05-15 kartu - Added PAGE (BookHistory)
-//      2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
-//      2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
-//                              Added VICTORSJG's corrections
-//      2010-05-20 kartu - Removed script reference from about string
-//      2010-06-14 ronnn - Minor translation correction
+//	2010-05-04 Initial version by VICTORSJG
+//	2010-05-06 kartu - Added ppm related translations for PageIndex addon
+//	2010-05-06 kartu - Added Duglum's corrections
+//	2010-05-10 kartu - Added VICTORSJG's corrections
+//	2010-05-11 kartu- Changed file encoding to UTF-8 from UTF-8Y
+//				Added VALUE_DEFAULT_DATE (CoreLang)
+//	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
+//	2010-05-15 kartu - Added PAGE (BookHistory)
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
+//				Added VICTORSJG's corrections
+//	2010-05-20 kartu - Removed script reference from about string
+//	2010-06-14 ronnn - Minor translation correction
+//	2010-06-29 kartu - Changed encoding to UTF-8 from win1250
 
 var FUNC_X_SOMETHING = function (n, s) {
         if (n > 1) {
