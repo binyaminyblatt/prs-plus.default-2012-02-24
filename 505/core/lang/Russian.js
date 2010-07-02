@@ -3,26 +3,27 @@
 // Translator: SLL
 //
 // History:
-//	2010-04-24 kartu - Fixed epub styles translation
-//	2010-04-25 kartu - Fixed "turn on/off" translation
-//	2010-04-30 kravitz - Refactored, added new strings
-//	2010-04-30 kravitz - Fixed and optimized FUNC_X_SOMETHING()
-//	2010-04-30 kravitz - Fixed SL_OFF and SL_ON translation
-//	2010-05-01 kartu - Added ACTION_GOTO_LINK
-//	2010-05-01 kravitz - Changed TextScale translation
-//	2010-05-02 kartu - Added dictionary strings
-//	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
-//	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
-//	2010-05-06 kartu - Added ppm related translations for PageIndex addon
-//	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
-//	2010-05-12 kartu - Uploaded SLL's corrections
-//	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
-//	2010-05-15 kartu - Added SLL's fixes
-//	2010-05-15 kartu - Added PAGE (BookHistory)
-//	2010-05-17 kravitz - Fixed VALUE_ON, VALUE_OFF (BookHistory)
-//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
-//	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
-//	2010-05-20 kartu - Removed script reference from about string
+//      2010-04-24 kartu - Fixed epub styles translation
+//      2010-04-25 kartu - Fixed "turn on/off" translation
+//      2010-04-30 kravitz - Refactored, added new strings
+//      2010-04-30 kravitz - Fixed and optimized FUNC_X_SOMETHING()
+//      2010-04-30 kravitz - Fixed SL_OFF and SL_ON translation
+//      2010-05-01 kartu - Added ACTION_GOTO_LINK
+//      2010-05-01 kravitz - Changed TextScale translation
+//      2010-05-02 kartu - Added dictionary strings
+//      2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
+//      2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
+//      2010-05-06 kartu - Added ppm related translations for PageIndex addon
+//      2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
+//      2010-05-12 kartu - Uploaded SLL's corrections
+//      2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
+//      2010-05-15 kartu - Added SLL's fixes
+//      2010-05-15 kartu - Added PAGE (BookHistory)
+//      2010-05-17 kravitz - Fixed VALUE_ON, VALUE_OFF (BookHistory)
+//      2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//      2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
+//      2010-05-20 kartu - Removed script reference from about string
+//	2010-07-02 kartu - Added SLL's fixes
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -108,7 +109,7 @@ return {
 		DEVICE_LOCKED: "Устройство заблокировано",
 
 		// About, translate either all or none
-		ABOUT_PRSP: "PRS+ @@@firmware@@@\n" + "Автор: Михаил Сухиашвили или kartu (kartu3@gmail.com) с использованием работ: " + "igorsk, boroda, obelix, pepak, kravitz и других.\n" + "© GNU Lesser General Public License.\n",
+		ABOUT_PRSP: "PRS+ @@@firmware@@@\n" + "Автор: Михаил Сухиашвили или kartu (kartu3@gmail.com) с использованием работ: " + "igorsk, boroda, obelix, pepak, kravitz и других. Русский перевод: SLL.\n" + "© GNU Lesser General Public License.\n",
 		ABOUT_1: "Авторские права ©2006-2008 Sony Corporation",
 		ABOUT_2: "Adobe, логотип Adobe, Reader и PDF являются зарегистрированными торговыми" + " марками или торговыми марками Adobe Systems Incorporated в США и/или других странах.",
 		ABOUT_3: "Технология аудио-кодирования MPEG Layer-3 и патенты лицензированы Fraunhofer IIS и Thomson." + " Технология аудио-кодирования MPEG-4 AAC лицензирована Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
@@ -177,7 +178,7 @@ return {
 		SET_DATE: "Дата и время",
 		YEAR: "Год",
 		MONTH: "Месяц",
-		DATE: "День", // Day
+		DATE: "День",	// Day
 		HOUR: "Часы",
 		MINUTE: "Минуты",
 		SETDATE_OK: "Применить",
@@ -209,6 +210,7 @@ return {
 		ABOUT: "О Ридере",
 		// reset to factory settings
 		RESET_TO_FACTORY: "Сброс на заводские настройки",
+
 
 		// In Advanced Settings
 		ADVANCED_SETTINGS: "Дополнительные настройки",
@@ -426,6 +428,7 @@ return {
 		BN_VOLUME_UP: "Громкость +",
 		BN_H_VOLUME_UP: "Удерживать громкость +",
 
+
 		// Actions
 		ACTION_SHUTDOWN: "Отключить",
 		ACTION_NEXT_PAGE: "Следующая страница",
@@ -465,10 +468,10 @@ return {
 		OPTION_CARD_SCAN: "Сканировать карты SD/MS",
 		OPTION_MOUNT: "Монтировать SD/MS (экспериментально)",
 		NODE_RESCAN_INTERNAL_MEMORY: "Просканировать внутреннюю память",
-		NODE_COPY_TO_INTERNAL_MEMORY: "Копировать во внутреннюю память",
-		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Копирует файл на верхний уровень внутренней памяти",
-		NODE_COPY_AND_RESCAN: "Копировать и просканировать внутреннюю память",
-		NODE_COPY_AND_RESCAN_COMMENT: "Копирует файл на верхний уровень внутренней памяти и сканирует книги в памяти",
+		NODE_COPY_TO_INTERNAL_MEMORY: "Скопировать во внутреннюю память",
+		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Скопировать на верхний уровень внутренней памяти",
+		NODE_COPY_AND_RESCAN: "Скопировать + сканировать память",
+		NODE_COPY_AND_RESCAN_COMMENT: "Скопировать файл и просканировать всю память",
 		ERROR_TARGET_EXISTS: "Ошибка, файл уже существует",
 		NODE_BROWSE_FOLDERS: "Просмотр папок",
 		NODE_BROWSE_FOLDERS_COMMENT: "Просмотр файловой системы",
@@ -526,10 +529,10 @@ return {
 		OPTION_SKIP_BOOK_MENU: "Пропускать меню книги"
 	},
 
-//ReadMark	ReadMark: {
-//		TITLE_UNREAD: "Пометить книгу - Уже прочитана",
-//		TITLE_READ: "Пометить книгу - Еще не прочитана",
-//	},
+	//ReadMark      ReadMark: {
+	//              TITLE_UNREAD: "Пометить книгу - Уже прочитана",
+	//              TITLE_READ: "Пометить книгу - Еще не прочитана",
+	//      },
 
 	TextScale: {
 		OPTION_SCALE_DEFAULT: "Размер шрифта по умолчанию",
