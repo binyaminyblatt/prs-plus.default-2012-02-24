@@ -25,6 +25,7 @@
 //	2010-05-21 kravitz - Allowed enter into Book History from AUTORUN state
 //	2010-05-24 kravitz - Changed logic of return, fixed minor bugs
 //				Removed doDeleteBook() event handler, added audit() instead
+//	2010-06-15 kravitz - Fixed STATE detection into bookHistory.enter()
 
 tmp = function () {
 	// Shortcuts
@@ -482,20 +483,19 @@ tmp = function () {
 								// ... already into Book Hisrory
 								return;
 							}
-							if (model.current === model.currentBook) {
-								// ... into book menu
+							var book = model.currentBook;
+							if (book && (book === model.current || book === model.current.parent)) {
+								// ... into or under book menu
 								this.stack.push({
 									STATE: "BOOK",
-									node: model.current
+									node: book
 								});
 							} else {
-								if (model.current) {
-									// ... into menu
-									this.stack.push({
-										STATE: "MENU",
-										node: model.current
-									});
-								}
+								// ... into menu
+								this.stack.push({
+									STATE: "MENU",
+									node: model.current
+								});
 							}
 							break;
 
@@ -505,9 +505,9 @@ tmp = function () {
 								return;
 							}
 							// ... into book
-							this.stack.push(								{
+							this.stack.push({
 								STATE: "PAGE",
-								node: model.current.parent
+								node: model.currentBook
 							});
 							break;
 
