@@ -1,0 +1,199 @@
+<project default="build">
+<loadproperties srcfile="prsp.properties"/>
+<property name="TMP" value="tmp"/>	
+<property name="FW" value="firmware"/>
+<property name="SC" value="script"/>
+<property name="INSTALLER" value="installer" />
+<property name="DIST" value="dist"/>
+<property name="PRSPInst" value="${DIST}/PRSPInstaller/Sony Reader/software"/>
+<property name="FW_DIR" value="${PRSPInst}/${FW}" />
+<property name="SC_DIR" value="${PRSPInst}/${SC}" />
+<property name="TOOLS_DIR" value="${PRSPInst}/tools" />
+<property name="FW_VER_FILE" value="${TMP}/${FW}/opt/prspfw.ver" />
+<property name="PRSP_DIR" value="${TMP}/${FW}/${MODEL}/opt/sony/ebook/application/resources/prsp" />
+
+<target name="build" description="build" depends="prepare,dobuild"/>
+
+<target name="prepare" description="copies files to a temporary folder">
+	<delete dir="${TMP}" failonerror="true"/>
+	<mkdir dir="${TMP}"/>
+	
+	<copy todir="${TMP}">
+		<fileset dir="../">
+			<include name="${SC}/**/*"/>
+			<include name="${FW}/**/*"/>
+			<include name="${INSTALLER}/**/*"/>
+		</fileset>
+	</copy>
+</target>
+	
+<taskdef name="yui-compressor" classname="net.noha.tools.ant.yuicompressor.tasks.YuiCompressorTask">
+	<classpath>
+		<pathelement location="tools/yuicompressor-2.4.2.jar" />
+		<pathelement location="tools/yui-compressor-ant-task-0.5.jar" />
+	</classpath>
+</taskdef>
+<taskdef name="jsmin" classname="net.matthaynes.jsmin.JSMin_Task" classpath="tools/jsmin.0.2.4.jar"/>
+	
+<macrodef name="create-firmware">
+	<attribute name="readerVersion" />
+	<sequential>
+		<!-- Firmware -->
+		<echo>Creating firmware image</echo>
+		<mkdir dir="${FW_DIR}/@{readerVersion}" />
+		<echo file="${TMP}/${FW}/@{readerVersion}/opt/prspfw.ver">${PRSP_VER}</echo>
+		<echo file="${FW_DIR}/@{readerVersion}/prspfw.ver">${PRSP_VER}</echo>
+		
+		<copy tofile="${FW_DIR}/@{readerVersion}/fw.ver" file="${TMP}/${FW}/@{readerVersion}/opt/fw.ver"/>
+		
+		<!-- Links **must** have readonly flag, or crams fails -->
+		<attrib readonly="true">
+			<fileset dir="${TMP}/${FW}/@{readerVersion}/opt">
+				<include name="prsp.lnk" />
+				<include name="sony/ebook/application/libfreetype.so.lnk" />
+				<include name="sony/ebook/application/libfreetype.so.6.lnk" />
+			</fileset>
+		</attrib>
+		
+		<!-- Mercurial doesn't support empty directories... Not to have unused .dummy files in firmware -->
+		<delete>
+			<fileset dir="${TMP}/${FW}/@{readerVersion}/opt">
+				<include name="**/.dummy"/>
+			</fileset>
+		</delete>
+		
+		<exec executable="tools/mkcramfs">
+			<arg value="-D"/>
+			<arg value="${TMP}/${FW}/@{readerVersion}/opt.dt"/>
+			<arg value="${TMP}/${FW}/@{readerVersion}/opt"/>
+			<arg value="${FW_DIR}/@{readerVersion}/Fsk.img"/>
+		</exec>
+			
+		<!-- Test the firmware cramfsck -v -x opt -d opt.dt %1  -->
+		<echo>Testing the image</echo>
+		<delete dir="testopt" failonerror="true"/>
+		<exec executable="tools/cramfsck">
+			<arg value="-x"/>
+			<arg value="testopt"/>
+			<arg value="${FW_DIR}/@{readerVersion}/Fsk.img"/>
+		</exec>
+		
+		<resourcecount property="NUM_ORIGINAL">
+			<fileset dir="${TMP}/${FW}/@{readerVersion}/opt"/>
+		</resourcecount>
+		<resourcecount property="NUM_EXTRACTED">
+			<fileset dir="testopt" />
+		</resourcecount>
+		<fail message="Number of files extracted from cramfs image doesn't equal number of the original files: ${NUM_EXTRACTED} instead of ${NUM_ORIGINAL}.">
+			<condition>
+				<not>
+					<resourcecount count="${NUM_ORIGINAL}">
+						<fileset dir="testopt" />
+					</resourcecount>
+				</not>
+			</condition>
+		</fail>
+		
+		<delete dir="testopt" failonerror="true"/>		
+		
+		<checksum file="${FW_DIR}/@{readerVersion}/Fsk.img" property="CHECKSUM"/>
+		<echo file="${FW_DIR}/@{readerVersion}/Fsk.img.md5">${CHECKSUM}</echo>
+		
+		<copy todir="${FW_DIR}/@{readerVersion}">
+			<fileset dir="${TMP}/${FW}/@{readerVersion}">
+				<include name="*.root"/>
+				<include name="*.md5"/>
+			</fileset>
+		</copy>
+	</sequential>
+</macrodef>
+
+<target name="dobuild" description="dobuild">
+	<delete dir="${DIST}" failonerror="true"/>
+	<mkdir dir="${PRSPInst}" />
+	<mkdir dir="${FW_DIR}" />
+
+	<!-- Script -->
+	<concat encoding="UTF-8" destfile="${TMP}/tmp-core.js">
+		<fileset dir="${TMP}/${SC}">
+			<include name="**/core/*.js"/>
+		</fileset>
+	</concat>
+	<concat encoding="UTF-8" destfile="${TMP}/tmp-addons.js">
+		<fileset dir="${TMP}/${SC}">
+			<include name="**/addons/*.js"/>
+			<exclude name="**/sandbox_*.js"/>
+		</fileset>
+	</concat>
+	
+	<!-- Minify Javascript -->
+	<yui-compressor munge="true" warn="false" charset="UTF-8" fromdir="${TMP}" todir="${TMP}">
+		<include name="tmp-core.js"/>
+	</yui-compressor>
+	<yui-compressor munge="true" warn="false" charset="UTF-8" fromdir="${TMP}" todir="${TMP}">
+		<include name="tmp-addons.js"/>
+	</yui-compressor>
+	<yui-compressor munge="true" warn="false" charset="UTF-8" fromdir="${TMP}" todir="${TMP}">
+		<include name="${SC}/prsp.js"/>
+	</yui-compressor>
+
+	<!-- YUI compressor is superior to jsmin, but it fails to minify this... (anonymous block with return statement) -->
+	<jsmin force="true" destdir="${TMP}/lang">
+		<fileset dir="${TMP}/${SC}/core/lang">
+			<include name="**/*.js"/>
+			<exclude name="**/Sample.js"/>
+		</fileset>
+	</jsmin>	
+	<jsmin force="true" destdir="${TMP}/compat">
+		<fileset dir="${TMP}/${SC}/core/compat">
+			<include name="**/${MODEL}*.js"/>
+		</fileset>
+	</jsmin>	
+	
+	<!-- Copy script stuff to firmware folder -->
+	<mkdir dir="${PRSP_DIR}"/>
+	<copy file="${TMP}/tmp-core-min.js" tofile="${PRSP_DIR}/core.js" />
+	<copy file="${TMP}/tmp-addons-min.js" tofile="${PRSP_DIR}/addons.js" />
+	<copy file="${TMP}/${SC}/prsp-min.js" tofile="${PRSP_DIR}/prsp.js" />
+	<copy todir="${PRSP_DIR}">
+		<fileset dir="${TMP}">
+			<include name="lang/*.js" />
+			<include name="compat/*.js" />
+		</fileset>
+	</copy>
+	<copy todir="${PRSP_DIR}/addons">
+		<fileset dir="${TMP}/${SC}/addons">
+			<exclude name="*.js" />
+			<include name="**/*.*" />
+		</fileset>
+	</copy>
+
+	<!-- Firmware -->
+	<create-firmware readerVersion="${MODEL}"/>
+	
+	<!-- Installer -->
+	<copy todir="${PRSPInst}">
+		<fileset dir="${TMP}/${INSTALLER}">
+			<exclude name=".*"/>
+			<exclude name="**/.hg/**"/>
+		</fileset>
+	</copy>
+
+	<!-- Insert version info -->	
+	<replace encoding="UTF-8" file="${PRSPInst}/autorun.xml" token="@@@" value="${PRSP_VER}" />	
+	
+	<attrib archive="false">
+		<fileset dir="${DIST}"/>
+	</attrib>
+	
+	<!-- Release archive -->
+	<zip destfile="${DIST}/PRSP_${MODEL}_${PRSP_VER}_Installer.zip">
+		<fileset dir="${DIST}" />
+	</zip>
+	
+	<!-- Delete temporary folder -->
+	<delete dir="${TMP}" failonerror="false"/>
+	
+</target>
+
+</project>
