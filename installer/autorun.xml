@@ -9,7 +9,7 @@ History:
 					    Removed script version labels (as there is no "PRS+ script" any more)
 					    Removed "set into upgrade mode" (useless and confusing)
 	2010-09-07 kartu - Reduced piTextBig size to 26
-
+	2010-09-07 kartu - Fixed frozen UI on startup problem
 
 -->
 
@@ -125,6 +125,8 @@ History:
 					}
 					this.AUTORUN_GROUP.show(true);
 					target = this.AUTORUN_GROUP.AUTORUN.INFO;
+					// Fixes stale UI on startup problem
+					this.updateWindow();
 					break;
 			}
 			this.state = state;
