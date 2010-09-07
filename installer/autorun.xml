@@ -8,6 +8,9 @@ History:
 	2010-04-27 kartu - Added "system is up to date" screen
 					    Removed script version labels (as there is no "PRS+ script" any more)
 					    Removed "set into upgrade mode" (useless and confusing)
+	2010-09-07 kartu - Reduced piTextBig size to 26
+
+
 -->
 
 <assets>
@@ -15,7 +18,7 @@ History:
 		<style id="piLabel" size="24" style="bold" halign="left" valign="bottom" />
 		<style id="piLabelBig" size="30" style="bold" halign="right" valign="bottom" />
 		<style id="piText" size="22" halign="left" valign="center"/>
-		<style id="piTextBig" size="28" halign="left" valign="bottom"/>
+		<style id="piTextBig" size="26" halign="left" valign="bottom"/>
 		<style id="piRow" size="30" style="" halign="left" valign="center" />
 		<style id="piRowNum" size="30" style="bold" halign="center" valign="center" />
 		<style id="piConfirm" size="30" valign="center" halign="left" />
