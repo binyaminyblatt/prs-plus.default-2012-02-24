@@ -12,10 +12,12 @@
 //					    Removed "enter firmware upgrade mode" item
 //					    Added move settings action (settings folder was changed to /opt0/prsp)
 //	2010-09-03 kartu - Added support for 300
+//	2010-09-07 kartu - Changed 1.1.00.18160 to 1.0.00.18160
+//			disabled flashing root in "flash anyway"
 
 var SUPPORTED = {
 		"505": {"1.1.00.18040": true},
-		"300": {"1.0.00.24180": true, "1.1.00.18160":true}
+		"300": {"1.0.00.24180": true, "1.0.00.18160": true}
 };
 var MAX_FLASH_SIZE = {
 		"505": {"Fsk": 8650752, "Rootfs": 9961472},
@@ -525,7 +527,8 @@ target.actions.installAnyway = {
 		WORKING.reset();
 		target.actions.flashFsk.perform();
 		WORKING.reset();
-		target.actions.flashRoot.perform();
+		// kartu: removed it for a while, was only causing problems
+		//target.actions.flashRoot.perform();
 		target.actions.reboot.perform();
 	}
 };

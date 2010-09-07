@@ -26,6 +26,7 @@
 			<variable name="kFskPlatformGrayEffectiveBit" value="3"/>
 
 			<!-- PRS+ stuff -->
+			<variable name="prspModel" value="300" />
 			<variable name="prspPath" value="/opt/sony/ebook/application/resources/prsp/" />
 			<variable name="prspCoreFile" value="[prspPath]core.js" />
 			<variable name="prspAddonsFile" value="[prspPath]addons.js" />

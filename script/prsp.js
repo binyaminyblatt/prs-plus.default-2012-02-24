@@ -9,7 +9,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 	var path, code, f, endsWith, listFiles, getFileContent, getFileContentEx, userConfig, Core, loadCore, loadAddons;
 	var tmp = function() {
 		var config = {
-			model: "300",
+			model: System.applyEnvironment("[prspModel]"),
 			defaultLogLevel: "none",
 			logFile: System.applyEnvironment("[prspLogFile]"),
 			corePath: System.applyEnvironment("[prspCorePath]"),
