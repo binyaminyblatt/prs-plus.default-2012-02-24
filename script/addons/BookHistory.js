@@ -28,33 +28,45 @@
 //	2010-07-22 kartu - Adapted for 300
 //				removed "BH into continue", as menu is now configurable using other means
 //				changed skipBookMenu options to: never, always, when entering book, when exiting book
-//			
+//	2010-09-16 kartu - Fixed: new books weren't added to BH until restart
 
 tmp = function() {
-	var L = Core.lang.getLocalizer("BookHistory");
-	var log = Core.log.getLogger("BookHistory");
-	var trim = Core.string.trim;
-	var model = kbook.model;
+	var L, log, trim, model, BH_TITLE, BH_FILE, BookHistory, bookList, mustSave, bookHistoryNode,
+		fromParentFlag, createBookNode, enterBook, constructNodes, destructNodes, loadFromFile,
+		doSave, save, bookChanged, bookDeleted;
+		
+	L = Core.lang.getLocalizer("BookHistory");
+	log = Core.log.getLogger("BookHistory");
+	trim = Core.string.trim;
+	model = kbook.model;
 	
-	var BH_TITLE = L("TITLE");
-	var BH_FILE = Core.config.settingsPath + "book.history";
+	BH_TITLE = L("TITLE");
+	BH_FILE = Core.config.settingsPath + "book.history";
 	
-	// Addon variable
-	var BookHistory;
 	// List of history books
-	var bookList = [];
+	bookList = [];
 	// Flag showing whether book list has to be persisted
-	var mustSave = false;
+	mustSave = false;
 
-	var bookHistoryNode = null;
+	bookHistoryNode = null;
 	// Set /unset in gotoNode hook of the book history node
-	var fromParentFlag = false;
+	fromParentFlag = false;
+	
+	// Creates book node attached to BH node
+	createBookNode = function(path) {
+		var node = Core.media.createMediaNode(path, bookHistoryNode);
+		if (node !== null) {
+			node.enter = enterBook;
+		}
+		return node;
+	};
 	
 	// Takes care of "skip book menu" option
-	var enterBook = function() {
+	enterBook = function() {
+		var skipOption;
 		try {
 			model[this.onEnter](this);
-			var skipOption = BookHistory.options.skipBookMenu;
+			skipOption = BookHistory.options.skipBookMenu;
 			
 			if (fromParentFlag && (skipOption === "opening" || skipOption === "always")) {
 				// skip menu (jump to "continue")
@@ -69,16 +81,16 @@ tmp = function() {
 	};
 	
 	// Creates book nodes (once)
-	var constructNodes = function () {
+	constructNodes = function () {
+		var i, node;
 		if (this.nodes) {
 			return;
 		}
 		this.nodes = [];
 		
-		for (var i = bookList.length-1; i >= 0; i--) {
-			var node = Core.media.createMediaNode(bookList[i], this);
+		for (i = bookList.length-1; i >= 0; i--) {
+			node = createBookNode(bookList[i]);
 			if (node !== null) {
-				node.enter = enterBook;
 				this.nodes.unshift(node);
 			} else {
 				bookList.splice(i, 1);
@@ -87,18 +99,19 @@ tmp = function() {
 		}
 	};
 	
-	var destructNodes = function () {
+	destructNodes = function () {
 		// do nothing
 	};
 	
 	// Loads saved Book History from addon's private file
-	var loadFromFile = function () {
+	loadFromFile = function () {
+		var stream, s;
 		try {
 			if (FileSystem.getFileInfo(BH_FILE)) {
-				var stream = new Stream.File(BH_FILE);
+				stream = new Stream.File(BH_FILE);
 				try {
 					while (stream.bytesAvailable) {
-						var s = trim(stream.readLine());
+						s = trim(stream.readLine());
 						bookList.push(s);
 					}
 				} finally {
@@ -111,12 +124,13 @@ tmp = function() {
 	};	
 	
 	// Saves book history
-	var saveToFile = function () {
+	doSave = function () {
+		var current, i, len;
 		try {
 			FileSystem.ensureDirectory(Core.config.settingsPath);
 
-			var current = "";
-			for (var i = 0, len = bookList.length; i < len; i++) {
+			current = "";
+			for (i = 0, len = bookList.length; i < len; i++) {
 				current += bookList[i] + "\r\n";
 			}
 			if (current.length === 0) {
@@ -132,20 +146,21 @@ tmp = function() {
 	};
 	
 	
-	var save = function () {
+	save = function () {
 		if (mustSave) {
-			saveToFile();
+			doSave();
 			mustSave = false;
 		}
 	};
 	
-	var bookChanged = function (bookNode) {
+	bookChanged = function (bookNode) {
+		var media, path, i, n, node;
 		try {
-			var media = bookNode.media;
-			var path = media.source.path + media.path;
+			media = bookNode.media;
+			path = media.source.path + media.path;
 			
 			// Check, if path is already in the list
-			for (var i = 0, n = bookList.length; i < n; i++) {
+			for (i = 0, n = bookList.length; i < n; i++) {
 				if (path === bookList[i]) {
 					if (i !== 0) {
 						// move book to the top of the list
@@ -164,6 +179,15 @@ tmp = function() {
 			
 			// new book, adding it to the top of the list 
 			bookList.unshift(path);
+			
+			// also add the book node
+			if (bookHistoryNode && bookHistoryNode.nodes) {
+				node = createBookNode(path);
+				if (node !== null) {
+					bookHistoryNode.nodes.unshift(node);
+				}
+			}
+			
 			if (Number(BookHistory.options.size) < bookList.length) {
 				// remove the last item, since history list is full
 				bookList.pop();
@@ -180,11 +204,12 @@ tmp = function() {
 	};
 	
 	// Called when book is deleted. Removes book from history node and from book list
-	var bookDeleted = function () {
+	bookDeleted = function () {
+		var media, path, i, n;
 		try {
-			var media = kbook.model.currentBook.media;
-			var path = media.source.path + media.path;
-			for (var i = 0, n = bookList.length; i < n; i++) {
+			media = kbook.model.currentBook.media;
+			path = media.source.path + media.path;
+			for (i = 0, n = bookList.length; i < n; i++) {
 				if (path === bookList[i]) {
 					bookList.splice(i, 1);
 					// if nodes are initialized, also pop book node
@@ -239,11 +264,12 @@ tmp = function() {
 			return bookHistoryNode;
 		},
 		onSettingsChanged: function(propertyName, oldValue, newValue) {
+			var size, i, n;
 			if (oldValue === newValue || propertyName !== "size") {
 				return;
 			}
-			var size = Number(newValue);
-			for (var i = 0, n = bookList.length - size; i < n; i++) {
+			size = Number(newValue);
+			for (i = 0, n = bookList.length - size; i < n; i++) {
 				bookList.pop();
 				// if nodes are initialized, also move book nodes
 				if (bookHistoryNode && bookHistoryNode.nodes) {
