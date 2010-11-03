@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<logdef xmlns="http://www.sony.com/xmlns/product/prs/device/1">
+	<module name="log" id="0">
+		<entry name="start" id="1"/>
+		<entry name="loop flush" id="2"/>
+		<entry name="pm flush" id="3"/>
+	</module>
+	<module name="appDevice" id="1">
+		<entry name="reset" id="1"/>
+		<entry name="processing" id="2"/>
+		<entry name="processed" id="3"/>
+	</module>
+	<module name="card" id="2">
+		<entry name="MS" id="1"/>
+		<entry name="SD" id="2"/>
+	</module>
+	<module name="AC" id="3">
+		<entry name="state" id="1"/>
+	</module>
+	<module name="pm" id="4">
+		<entry name="stateChangeReq" id="1">
+			<entry name="state" do="convertPowerState"/>
+		</entry>
+		<entry name="stateChangeLockReq" id="2">
+			<entry name="state" do="convertPowerState"/>
+		</entry>
+		<entry name="stateChangeWait" id="3">
+			<entry name="Start" id="1">
+				<entry name="state" do="convertPowerState"/>
+			</entry>
+			<entry name="Finish" id="2">
+				<entry name="state" do="convertPowerState"/>
+			</entry>
+		</entry>
+		<entry name="cannotStateChange" id="4">
+			<entry name="state" do="convertPowerState"/>
+		</entry>
+		<entry name="cannotStateChangeManyTimes" id="5">
+			<entry name="state" do="convertPowerState"/>
+		</entry>
+		<entry name="doStateChange" id="6">
+			<entry name="state" do="convertPowerState">
+				<entry name="state" do="convertPowerState"/>
+			</entry>
+		</entry>
+		<entry name="doneStateChange" id="7">
+			<entry name="state" do="convertPowerState">
+				<entry name="state" do="convertPowerState">
+					<entry name="state" do="convertPowerState"/>
+				</entry>
+			</entry>
+		</entry>
+		<entry name="deviceStateChange" id="8">
+			<entry name="Start" id="1">
+				<entry name="state" do="convertPowerState"/>
+			</entry>
+			<entry name="Finish" id="2">
+				<entry name="state" do="convertPowerState"/>
+			</entry>
+		</entry>
+	</module>
+	<module name="USB" id="5">
+		<entry name="charge" id="1"/>
+		<entry name="connectInStandby" id="2"/>
+		<entry name="toUSBDoze" id="3"/>
+		<entry name="fromUSBDoze" id="4"/>
+		<entry name="massStrage" id="5"/>
+	</module>
+	<module name="key" id="6">
+		<entry name="down" id="1"/>
+		<entry name="up" id="2"/>
+		<entry name="count" id="3"/>
+	</module>
+	<module name="battery" id="7">
+		<entry name="level" id="1"/>
+	</module>
+	<module name="touchpanel" id="8">
+		<entry name="down" id="1"/>
+		<entry name="up" id="1"/>
+	</module>
+	<module name="audio" id="9">
+		<entry name="open" id="1"/>
+		<entry name="start" id="2"/>
+		<entry name="stop" id="3"/>
+		<entry name="volumet" id="4"/>
+	</module>
+	<module name="framebuffer" id="10">
+		<entry name="initState" id="1"/>
+		<entry name="termState" id="2"/>
+		<entry name="EInkInit" id="3"/>
+	</module>
+	<module name="NAND" id="11">
+		<entry name="mount" id="1"/>
+		<entry name="umount" id="2"/>
+		<entry name="alreadyMount" id="3"/>
+		<entry name="cannotMount" id="4"/>
+		<entry name="cannotUmount" id="5"/>
+		<entry name="dataError" id="6"/>
+	</module>
+	<module name="RTC" id="12">
+		<entry name="initialize" id="1"/>
+		<entry name="tzLoad" id="2"/>
+		<entry name="tzSave" id="3"/>
+		<entry name="iMX31Read" id="4"/>
+		<entry name="iMX31Write" id="5"/>
+		<entry name="wm8350Read" id="6"/>
+		<entry name="wm8350Write" id="7"/>
+		<entry name="setMinTime" id="8"/>
+		<entry name="setAlarm" id="9"/>
+		<entry name="clockLoad" id="10"/>
+		<entry name="clockSave" id="11"/>
+	</module>
+	<module name="subCPU" id="13">
+		<entry name="send" id="1">
+			<entry name="system" id="1">
+				<entry name="lowBattery" id="1"/>
+				<entry name="sleepRequest" id="2"/>
+				<entry name="powerOff" id="3"/>
+				<entry name="bootFinish" id="4"/>
+			</entry>
+			<entry name="status" id="2">
+				<entry name="getStatus" id="1"/>
+			</entry>
+			<entry name="key" id="3">
+				<entry name="data" id="1"/>
+				<entry name="onOff" id="2"/>
+			</entry>
+			<entry name="battery" id="4">
+				<entry name="level" id="1"/>
+				<entry name="queryLevel" id="2"/>
+			</entry>
+			<entry name="LED" id="5">
+				<entry name="LED" id="1"/>
+			</entry>
+			<entry name="touchpanel" id="6">
+				<entry name="sampling" id="1"/>
+				<entry name="breaktime" id="2"/>
+				<entry name="onOff" id="3"/>
+				<entry name="data" id="4"/>
+				<entry name="penOff" id="5"/>
+				<entry name="pressure" id="6"/>
+			</entry>
+			<entry name="GSensor" id="7">
+				<entry name="sampling" id="1"/>
+				<entry name="onOff" id="2"/>
+				<entry name="data" id="3"/>
+			</entry>
+		</entry>
+		<entry name="receive" id="2">
+			<entry name="system" id="1">
+				<entry name="lowBattery" id="1"/>
+				<entry name="sleepRequest" id="2"/>
+				<entry name="powerOff" id="3"/>
+				<entry name="bootFinish" id="4"/>
+			</entry>
+			<entry name="status" id="2">
+				<entry name="getStatus" id="1"/>
+			</entry>
+			<entry name="key" id="3">
+				<entry name="data" id="1"/>
+				<entry name="onOff" id="2"/>
+			</entry>
+			<entry name="battery" id="4">
+				<entry name="level" id="1"/>
+				<entry name="queryLevel" id="2"/>
+			</entry>
+			<entry name="LED" id="5">
+				<entry name="LED" id="1"/>
+			</entry>
+			<entry name="touchpanel" id="6">
+				<entry name="sampling" id="1"/>
+				<entry name="breaktime" id="2"/>
+				<entry name="onOff" id="3"/>
+				<entry name="data" id="4"/>
+				<entry name="penOff" id="5"/>
+				<entry name="pressure" id="6"/>
+			</entry>
+			<entry name="GSensor" id="7">
+				<entry name="sampling" id="1"/>
+				<entry name="onOff" id="2"/>
+				<entry name="data" id="3"/>
+			</entry>
+		</entry>		
+		<entry name="ackRecieveWithoutSend" id="3"/>
+		<entry name="invalidPacket" id="4"/>
+		<entry name="sendWait" id="5"/>
+	</module>
+	<module name="kbook" id="100"/>
+</logdef>
