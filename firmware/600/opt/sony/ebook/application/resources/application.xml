@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<fsk xmlns="http://www.kinoma.com/Fsk/1">
+	<vm name="application">
+
+		<extension href="[applicationPath]WindowsMediaPlayer" platform="win"/>
+		<extension href="[applicationPath]QTMLMediaPlayer" platform="win,mac"/>
+		<extension href="[applicationPath]FskFhGAACIntDec"/>
+		<extension href="[applicationPath]FskFhGMP3IntDec"/>
+		
+		<extension href="[applicationPath]fileserialize"/>
+		<extension href="[applicationPath]xdbLite"/>
+		<bytecode href="[applicationPath]FskCache"/>
+		<extension href="[applicationPath]FskVectorGraphics"/>
+		<extension href="[applicationPath]FskBookUtil"/>
+
+		<!--bytecode href="[schemaPath]cacheExtSchema"/-->
+		<extension href="[applicationPath]kbook"/>
+		<bytecode href="[applicationPath]application"/>
+		
+		<bytecode href="[applicationPath]svgEdit.xsb"/>
+		<extension href="[applicationPath]FskBBeBDictionary"/>
+		
+		<document href="applicationStart.xml"/>
+	</vm>
+</fsk>

@@ -1,0 +1,4 @@
+syntax:glob
+dist/*
+tmp/*
+build/prsp.properties 
