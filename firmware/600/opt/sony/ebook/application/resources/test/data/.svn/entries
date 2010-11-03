@@ -1,0 +1,54 @@
+8
+
+dir
+7729
+svn+ssh://build@prs2.prspj.net/home/svn/repos/prs/branches/oslo/initial/device/luge/tests/testMode/data
+svn+ssh://build@prs2.prspj.net/home/svn/repos/prs
+
+
+
+2009-02-03T01:50:05.692265Z
+4647
+miyoshi
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+441a100c-330b-0410-8fb1-943e3c229bdf
+
+cmd.bin
+file
+
+
+
+
+2009-08-04T07:09:02.000000Z
+8628e066b9318314406922a76e7e3c5f
+2009-02-03T01:50:05.692265Z
+4647
+miyoshi
+has-props
+
+lut.bin
+file
+
+
+
+
+2009-08-04T07:09:02.000000Z
+7dcbcbca4b8b0e7ca4655d4c497ef18a
+2009-02-03T01:50:05.692265Z
+4647
+miyoshi
+has-props
+
