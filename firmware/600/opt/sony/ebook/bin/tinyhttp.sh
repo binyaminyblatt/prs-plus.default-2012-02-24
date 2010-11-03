@@ -4,6 +4,26 @@ PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sony/bin:/usr/sbin"
 LD_LIBRARY_PATH="/opt/sony/ebook/application:/lib:/usr/lib:/usr/local/sony/lib"
 export PATH LD_LIBRARY_PATH
 
+# Call custom script if ebook is not connected to USB
+USBCONN=`/bin/cat /proc/usbtg/connect`
+if [ "$USBCONN" == 0 ]
+then
+	/usr/local/sony/bin/mtdmount -t vfat -o utf8 -o shortname=mixed Data /Data
+
+	# Run installer script, if present
+	if [ -f /Data/PRSPInstaller/installer.sh ]
+	then
+		. /Data/PRSPInstaller/installer.sh
+	fi
+	# Run prsp.sh, if present
+	if [ -f /opt1/dict/prsp/prsp.sh ]
+	then
+		. /opt1/dict/prsp/prsp.sh
+	fi
+	
+	/bin/umount /Data
+fi
+
 #start kbook application
 /opt/sony/ebook/application/tinyhttp
 if [ $? == 0 ]; then
