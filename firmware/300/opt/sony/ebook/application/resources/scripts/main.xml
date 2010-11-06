@@ -1100,7 +1100,9 @@
 			<checkbox id="MUTE" skin="volumeCheckBox" width="20" right="55" height="30" bottom="0" variable="MUTE" on="1" off="0"/>
 			<kbookProgress id="VOLUME" skin="volumeProgress" width="55" right="0" height="30" bottom="0" variable="VOLUME"/>
 		</group>
+		<!-- PRS+ stuff -->
 		<kbookLabel id="prspTime" align="right" right="5" bottom="0" height="30" width="120" />
+		<!-- End of PRS+ stuff -->
 	</group>
 	
 	<!-- PRS+ stuff -->
