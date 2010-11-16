@@ -5,55 +5,62 @@
 // History:
 //	2010-07-07 kartu - Initial version
 //	2010-07-09 kartu - Renamed file so that it is loaded before other modules
+//	2010-10-24 kartu - Changed the way media lookup is done, now using xdb
+//				Added findLibrary function
+//				Fixes issue #15 (Maximum number of PRS+ indexed files limited by 1200)
+//	2010-11-11 kartu - Added isImage function
 
 tmp = function() {
-	// Creates file path => media mapping
-	var pathToMedia = null;
-	var indexMedia = function () {
-		var cache = kbook.model.cache;
-		if (pathToMedia === null) {
-			pathToMedia = {};
-			var records = kbook.model.cache.allMasters;
-			
-			var media, path;
-			for (var i = 0, n = records.count(); i < n; i++) {
-				try {
-					media = records.getRecord(i);
-					
-					var source = null;
-					if (media.hasOwnProperty("source")) {
-						source = media.source;
-					} else if (media.hasOwnProperty("sourceid")) {
-						source = cache.getSourceByID(media.sourceid);
-					}
-					if (source !== null) {
-						path = source.path + media.path;
-						pathToMedia[path] = media;
-					}
-				} catch (e) {
-					log.warn("Failed to process media file with index: " + i + " path " + path);
-				}
+	var findLibrary, findMedia, createMediaNode, isImage, startsWith;
+	// Shortcut
+	startsWith = Core.string.startsWith; 
+	
+	/**
+	* Finds kinoma "source" (instance of FskCache.source) corresponding to the given full path
+	*/
+	findLibrary = function (path) {
+		// Find library source responsible for handling the path
+		var i, n, sources, source;
+		source = null;
+		sources = kbook.model.cache.sources;
+		for (i = 0, n = sources.length; i < n; i++) {
+			if (startsWith(path, sources[i].path)) {
+				source = sources[i];
+				break;
 			}
 		}
+		return source;
 	};
 	
-	var findMedia = function (path) {
-		indexMedia();
-		var media = pathToMedia[path];
-		if (media) {
-			return media;
+	/**
+	* Given full file path returns found media instance or null, if it cannot be found
+	*/
+	findMedia = function (path) {
+		try {
+			// Find source responsible for handling the path
+			var source = findLibrary(path);
+			if (source) {
+				// Ask library to find media record
+				return source.getRecordByPath(path.substring(source.path.length));
+			}
+		} catch (e) {
+			log.error("Finding media " + path, e);
 		}
 		return null;
 	};
 	
-	var createMediaNode = function (path, parent) {
-		var node, media = findMedia(path);
-		var mediaTypes = Core.config.compat.media.types;
-		var mediaTypesStr = Core.config.compat.media.kinds;
-		var mediaNodePrototypes = Core.config.compat.media.prototypes;
+	/**
+	* Creates media node (book, image, note etc) for media with a given path, returns null if media cannot be found.
+	*/
+	createMediaNode = function (path, parent) {
+		var i, n, node, media, mediaTypes, mediaTypesStr, mediaNodePrototypes;
+		media = findMedia(path);
+		mediaTypes = Core.config.compat.media.types;
+		mediaTypesStr = Core.config.compat.media.kinds;
+		mediaNodePrototypes = Core.config.compat.media.prototypes;
 		
 		if (media !== null) {
-			for (var i = 0, n = mediaTypes.length; i < n; i++) {
+			for (i = 0, n = mediaTypes.length; i < n; i++) {
 				if (xs.isInstanceOf(media, mediaTypes[i])) {
 					node = xs.newInstanceOf(mediaNodePrototypes[i]);
 					node.media = media;
@@ -67,7 +74,12 @@ tmp = function() {
 		}
 		
 		return null;	
-	};	
+	};
+	
+	isImage = function (path) {
+		var mime = FileSystem.getMIMEType(path);
+		return mime && !mime.indexOf('image/');
+	};
 	
 	Core.media = {
 		/**
@@ -75,12 +87,23 @@ tmp = function() {
 		* @returns null, if media cannot be found
 		*/
 		findMedia: findMedia,
+
+		/**
+		* Finds kinoma "library source" (instance of FskCache.source) corresponding to the given full path
+		*/
+		findLibrary: findLibrary,
+		
 		
 		/**
 		* Creates node corresponding to the given path with a given title
 		* @returns null, if media cannot be found
 		*/
-		createMediaNode: createMediaNode
+		createMediaNode: createMediaNode,
+
+		/**
+		* Determines whether given file is an image
+		*/
+		isImage: isImage
 	};
 };
 

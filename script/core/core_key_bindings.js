@@ -4,6 +4,8 @@
 //
 // History:
 //	2010-06-29 kartu - Initial version
+//	2010-09-24 kartu - Added hasJoypadButtons / hasOtherButtons
+//				Added support for 600 (new event system, handleEvent is called for UP and DOWN and HOLD events)
 
 tmp = function() {
 	var KeyBindings;
@@ -36,7 +38,7 @@ tmp = function() {
 		}
 	};
 	
-	// Handles key events, calling corresponding handler, if set
+	// Handles key events, calling corresponding handler, if set (300/505)
 	var handleEvent = function (target, event) {
 		try {
 			var key = event.getKey();
@@ -54,7 +56,36 @@ tmp = function() {
 			} catch (ignore) {
 			}
 		}
-		// FIXME exclude autorun from global
+		oldHandleEvent.apply(this, arguments);
+	};	
+
+	// Handles key events, calling corresponding handler, if set (version that supports 600 and, hopefully, the newer versions)
+	var handleEvent2 = function (target, event, a, b) {
+		try {
+			// Only next / previous keys of 600 (and probably later versions) respond to this, not worth the hussle
+			// -1 press, 2 hold, 1 release
+			//var type = Fskin.customHoldTimePart.getEventValue(event);
+			
+			var key = this.getEventKey(event);
+			var state = kbook.model.STATE;
+			if (state == "MENU_HOME") {
+				state = "MENU";
+			}
+			var action = getBoundAction(key, state);
+			
+			if (action !== undefined) {
+				action.action();
+				return;
+			} else if (getBoundAction(key + "State", state)) {
+				// Ignore "state" messages since there is a bound key
+				return;
+			}
+		} catch (e) {
+			try {
+				log.error("in handleEvent: " + e);
+			} catch (ignore) {
+			}
+		}
 		oldHandleEvent.apply(this, arguments);
 	};	
 	
@@ -131,14 +162,16 @@ tmp = function() {
 	};
 	
 	var createJoypadButtonOptions = function() {
-		// Joypad buttons
-		var joypadGroup = {
-			groupTitle: L("JP_BUTTONS"),
-			groupIcon: "FOLDER",
-			optionDefs: []
-		};
-		KeyBindings.optionDefs.push(joypadGroup);
-		createButtonOptions(["jp_left", "jp_right", "jp_up", "jp_down", "jp_center"], joypadGroup.optionDefs);
+		if (compat.hasJoypadButtons) {
+			// Joypad buttons
+			var joypadGroup = {
+				groupTitle: L("JP_BUTTONS"),
+				groupIcon: "FOLDER",
+				optionDefs: []
+			};
+			KeyBindings.optionDefs.push(joypadGroup);
+			createButtonOptions(["jp_left", "jp_right", "jp_up", "jp_down", "jp_center"], joypadGroup.optionDefs);
+		}
 	};
 	
 	var createVolumeButtonOptions = function() {
@@ -155,17 +188,18 @@ tmp = function() {
 	};
 	
 	var createOtherButtonOptions = function() {
-		var otherGroup = {
-			groupTitle: L("OTHER_BUTTONS"),
-			groupIcon: "FOLDER",
-			optionDefs: []
-		};
-		KeyBindings.optionDefs.push(otherGroup);
-		createButtonOptions(["home", "menu", "bookmark", "size"],otherGroup.optionDefs);
-		if (compat.hasPagingButtons) {
-			createButtonOptions(["bl_next", "bl_previous", "sb_next", "sb_previous"],otherGroup.optionDefs);
+		if (compat.hasOtherButtons) {
+			var otherGroup = {
+				groupTitle: L("OTHER_BUTTONS"),
+				groupIcon: "FOLDER",
+				optionDefs: []
+			};
+			KeyBindings.optionDefs.push(otherGroup);
+			createButtonOptions(["home", "menu", "bookmark", "size"],otherGroup.optionDefs);
+			if (compat.hasPagingButtons) {
+				createButtonOptions(["bl_next", "bl_previous", "sb_next", "sb_previous"],otherGroup.optionDefs);
+			}
 		}
-				
 	};
 	
 	KeyBindings = {
@@ -190,7 +224,13 @@ tmp = function() {
 		
 		onInit: function() {
 			options = this.options;
-			Fskin.device.handleEvent = handleEvent;
+			if (Fskin.deviceBooleanPart) {
+				// 600+
+				Fskin.device.handleEvent = handleEvent2;
+			} else {
+				// 300/500
+				Fskin.device.handleEvent = handleEvent;
+			}
 		}
 	};
 	Core.addAddon(KeyBindings);

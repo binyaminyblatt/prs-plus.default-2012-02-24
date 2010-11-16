@@ -50,10 +50,12 @@ return {
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS:  "PRS+ Settings",
+		NODE_PRSP_SETTINGS_SHORT: "PRS+ Sett.",
 		NODE_OTHERS: "Multimedia",
 		NODE_GAMES_AND_UTILS: "Games & Utilities",
 		GROUP_MENU_TITLE: "Menu Settings",
-		GROUP_VIEWER_TITLE: "Book Viewer Settings"
+		GROUP_VIEWER_TITLE: "Book Viewer Settings",
+		MSG_RESTART: "Restart for changes to take effect"
 	},
 
 	CoreLang: {
@@ -211,6 +213,7 @@ return {
 		VALUE_BY_AUTHOR_SWAPPING: "By author swapping name/surname",
 		VALUE_BY_FILENAME: "By filename",
 		OPTION_TITLE_SORTER: "Use 'titleSorter' Field, when Sorting",
+		OPTION_FAVOURITE_FOLDERS: "Favourite folders",
 		ENABLED: "Enabled",
 		DISABLED: "Disabled",
 		OPTION_IM_ROOT: "Internal Memory Root Folder",
@@ -223,6 +226,7 @@ return {
 		NODE_COPY_AND_RESCAN_COMMENT: "Copies file to the internal memory root and rescans books",
 		ERROR_TARGET_EXISTS: "Error, target file exists",
 		NODE_BROWSE_FOLDERS: "Browse Folders",
+		NODE_BROWSE_FOLDERS_SHORT: "Folders",
 		NODE_BROWSE_FOLDERS_COMMENT: "Browse the file system",
 		NODE_INTERNAL_MEMORY: "Internal Memory",
 		NODE_MEMORY_STICK: "Memory Stick",
@@ -231,7 +235,11 @@ return {
 		NODE_SD_CARD_MOUNT: "SD Card via Mount"
 	},
 
-	Clock: {
+	StatusBar: {
+		TITLE: "Status Bar"
+	},
+
+	StatusBar_Clock: {
 		TITLE: "Clock",
 		OPTION_STYLE: "Clock Style",
 		VALUE_24H: "24 hours",
@@ -246,7 +254,7 @@ return {
 		PM: "pm"
 	},
 
-	PageIndex: {
+	StatusBar_PageIndex: {
 		TITLE: "Page Index",
 		INDEX_STYLE_BOOK: "Index Style in Books",
 		INDEX_MODE_BOOK: "Index Mode in Books",
@@ -271,6 +279,11 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Book History",
+		SHORT_TITLE: "History",
+		VALUE_WHEN_ENTERING_BOOK: "Entering book",
+		VALUE_WHEN_EXITING_BOOK: "Exiting book",
+		VALUE_ALWAYS: "Always",
+		VALUE_NEVER: "Never",
 		VALUE_DISABLED: "Disabled",
 		OPTION_REPLACE: "History into Continue Reading",
 		VALUE_ON: "On",
@@ -292,8 +305,14 @@ return {
 		VALUE_ENABLED: "Enabled"
 	},
 
-	MenuTuning: {
-		OPTION_OUTER: "Top Level Menu Contains"
+	MenuCustomizer: {
+		TITLE: "Menu Customizer",
+		VALUE_YES: "yes",
+		VALUE_NO: "no",
+		VALUE_DEFAULT: "default",
+		SLOT: "Slot",
+		MENU_ITEM: "Menu Item",
+		MENU_SEPARATOR: "Separator"
 	},
 
 	Dictionary: {
@@ -302,6 +321,7 @@ return {
 		WARN_DICT_DOESNT_EXIST: "Dictionary file doesn't exist!",
 		ACTION_DICTIONARY: "Launch Dictionary",
 		OPTION_DICTIONARY: "Dictionary File",
-		VALUE_DISABLED: "Disabled"
+		VALUE_DISABLED: "Disabled",
+		VALUE_DEFAULT: "default",
 	}
 };

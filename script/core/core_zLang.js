@@ -24,6 +24,9 @@
 //	2010-06-27 kartu - Fixed error log message (was refering to core-hook2, instead of lang)
 //	2010-09-02 kartu - Removed date related code
 //			removed lang.init call (should be called from model specific compat module)
+//	2010-11-10 kartu - Changed the way missing translations are handled:
+//					1) if debug is enabled it will be loged
+//					2) key is returned instead of prefix + key (didn't fit on the screen most of the time anyway)
 
 tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -65,7 +68,10 @@ tmp = function() {
 
 		getLocalizer: function (category) {
 			var createLocalizer = function(str, prefix) {
-				var f = function(key, param) {
+				var isDebug, f;
+				isDebug = Core.log.isDebugEnabled();
+				
+				f = function(key, param) {
 					if (str.hasOwnProperty(key)) {
 						try {
 							if (typeof str[key] == "function") {
@@ -75,7 +81,10 @@ tmp = function() {
 						} catch (e) {
 						}
 					}
-					return prefix + key;
+					if (isDebug) {
+						log.trace("Missing translation " + prefix + key);
+					}
+					return key;                                                           
 				};
 				return f;
 			};

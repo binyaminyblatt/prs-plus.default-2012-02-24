@@ -88,11 +88,11 @@ try {
 		// Same as setSoValue but slightly faster, doesn't support nested properties
 		//
 		getFastSoValue: function (obj, propName) {
-			// TODO replace with custom code from prsp.xsb
+			// FIXME obsolete, replace with custom code from prsp.xsb
 			return Core.system.getSoValue(obj, propName);
 		},
 
-		// TODO is this needed?
+		// FIXME is this needed?
 		// Accelerates book media access
 		getFastBookMedia: function (book)  {
 			if (book._myclass) {

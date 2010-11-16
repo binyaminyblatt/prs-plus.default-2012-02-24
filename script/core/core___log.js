@@ -8,9 +8,13 @@
 //	2010-04-21 kartu - Added "exception" parameter to log.error
 //	2010-04-25 kartu - Marked setLevel as constructor for closure compiler to shut up
 //	2010-07-09 kartu - Renamed to core___log.js, so that it is the first module that is loaded
+//	2010-11-10 kartu - Added isDebugEnabled function
 
 Core.log = {
 	loggers: {},
+	isDebugEnabled: function () {
+		return Core.config.defaultLogLevel === "trace";
+	},
 	createLogger: function (cls, level) {
 		if (typeof level === "undefined") {
 			level = Core.config.defaultLogLevel;

@@ -6,9 +6,47 @@
 //	2010-03-14 kartu - Initial version, refactored from Utils
 //	2010-04-21 kartu - Reformatted
 //	2010-07-09 kartu - Renamed file so that it is loaded before other modules
-
+//	2010-11-11 kartu - Added listFiles function
 try {
 	Core.io = {
+		// Returns list of files in the directory. Accepts 0..*  extension arguments.
+		//
+		// Returns array of files with given extension sorted by name
+		//
+		listFiles : function(path, ext) {
+			var iterator, items, item, p, i, n, endsWith;
+			endsWith = Core.string.endsWith;
+			items = [];
+			try {
+				if (FileSystem.getFileInfo(path)) {
+					iterator = new FileSystem.Iterator(path);
+					try {
+						while (item = iterator.getNext()) {
+							if (item.type == "file") {
+								p = item.path;
+								if (arguments.length > 1) {
+									for (i = 1, n = arguments.length; i < n; i++) {
+										if (endsWith(p, arguments[i])) {
+											items.push(p);
+											break;
+										}
+									}
+								} else {
+									items.push(p);
+								}
+							}
+						}
+						items.sort();
+					} finally {
+						iterator.close();
+					}
+				}
+			} catch (e) {
+				log.error("Error in list files, listing folder " + path, e);
+			}
+			return items;
+		},
+		
 		// Returns content of the file <path> as a string.
 		// If any kind of error happens (file doesn't exist, or is not readable etc) returns <defVal>
 		//

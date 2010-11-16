@@ -1,4 +1,4 @@
-// Description: PRS+ 300 bootstrap script
+// Description: PRS+ bootstrap script
 // Author: kartu
 //
 // History:
@@ -29,9 +29,12 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 				return;
 			}
 			var s = new Stream.File(config.logFile, 3);
-			s.seek(s.bytesAvailable);
-			s.writeLine(msg);
-			s.close();
+			try {
+				s.seek(s.bytesAvailable);
+				s.writeLine(msg);
+			} finally {
+				s.close();
+			}
 		};
 
 		// Checks if string ends with given postfix
@@ -44,10 +47,10 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 		//
 		listFiles = function(path, ext) {
 			var iterator, items, item, p;
+			items = [];
 			try {
 				iterator = new FileSystem.Iterator(path);
 				try {
-					items = [];
 					while (item = iterator.getNext()) {
 						if (item.type == "file") {
 							p = item.path;
@@ -57,14 +60,13 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 						}
 					}
 					items.sort();
-					return items;
 				} finally {
 					iterator.close();
 				}
 			} catch (e) {
 				bootLog("Error in list files, listing folder " + path + ": " + e);
 			}
-			return [];
+			return items;
 		};
 		
 		// Loads file contents
@@ -73,8 +75,11 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 			var f, result;
 			try {
 				f = new Stream.File(path, 2);
-				result = f.toString();
-				f.close();
+				try {
+					result = f.toString();
+				} finally {
+					f.close();
+				}
 				return result;
 			} catch (e) {
 				bootLog("Error reading file " + path + ": " + e);
@@ -107,7 +112,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 
 		Core = {config: config};
 
-		// Init function, called by bootstrap function 
+		// Init function, called by model specific bootstrap 
 		loadCore = function() {
 			try {
 				// Call core (there seems to be 100k limitation on javascript size, that's why it's split from addons)
@@ -116,9 +121,12 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 				core = new Function("Core", coreCode);
 				core(Core);
 			} catch (e) {
-				bootLog("Failed to load core");
+				bootLog("Failed to load core "  + e);
+				bootLog("core file was " + config.coreFile);
 			}
 		};
+		
+		// Load addons, called by model specific bootstrap
 		loadAddons = function() {
 			var addonCode, log, addons;
 			// Call addons
@@ -153,11 +161,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 		}
 	};
 	try {
-		var from, to;
-		from = new Date();
 		tmp();
-		to = new Date();
-		bootLog("PRS+ started in "  + (to - from)/1000);
 	} catch (e) {
 		bootLog("Error initializing: " + e);
 	}

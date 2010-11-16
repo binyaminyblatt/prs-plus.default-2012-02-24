@@ -1,6 +1,7 @@
 // Name: Book History
 // Description: History of book reading (opening)
 // Author: kravitz
+// Contributors: kartu
 //
 // History:
 //	2010-04-27 kravitz - Initial version
@@ -29,9 +30,13 @@
 //				removed "BH into continue", as menu is now configurable using other means
 //				changed skipBookMenu options to: never, always, when entering book, when exiting book
 //	2010-09-16 kartu - Fixed: new books weren't added to BH until restart
+//	2010-09-25 kartu - Adapted for 600 (removed direct reference to model.current)
+//	2010-11-10 kartu - Renamed menu node icon from LIST to BOOK_HISTORY (TODO fix it for 300)
+//				added "short title" (for small buttons of touch readers etc)
+//				renamed "opening" book to "entering" book
 
 tmp = function() {
-	var L, log, trim, model, BH_TITLE, BH_FILE, BookHistory, bookList, mustSave, bookHistoryNode,
+	var L, log, trim, model, BH_TITLE, BH_SHORT_TITLE, BH_FILE, BookHistory, bookList, mustSave, bookHistoryNode,
 		fromParentFlag, createBookNode, enterBook, constructNodes, destructNodes, loadFromFile,
 		doSave, save, bookChanged, bookDeleted;
 		
@@ -41,6 +46,7 @@ tmp = function() {
 	model = kbook.model;
 	
 	BH_TITLE = L("TITLE");
+	BH_SHORT_TITLE = L("SHORT_TITLE");
 	BH_FILE = Core.config.settingsPath + "book.history";
 	
 	// List of history books
@@ -68,7 +74,7 @@ tmp = function() {
 			model[this.onEnter](this);
 			skipOption = BookHistory.options.skipBookMenu;
 			
-			if (fromParentFlag && (skipOption === "opening" || skipOption === "always")) {
+			if (fromParentFlag && (skipOption === "entering" || skipOption === "always")) {
 				// skip menu (jump to "continue")
 				this.gotoChild(0, model);
 			} else if (!fromParentFlag && (skipOption === "exiting" || skipOption === "always")) {
@@ -230,6 +236,8 @@ tmp = function() {
 		title: BH_TITLE,
 		icon: "LIST",
 		onInit: function() {
+			// FIXME do nothing if disabled
+			
 			loadFromFile();
 			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, bookChanged);
 			Core.events.subscribe(Core.events.EVENTS.BOOK_DELETED, bookDeleted);
@@ -240,11 +248,13 @@ tmp = function() {
 			if (bookHistoryNode === null) {
 				bookHistoryNode = Core.ui.createContainerNode({
 					title: BH_TITLE,
-					icon: "LIST",
+					shortName: BH_SHORT_TITLE,
+					icon: "BOOK_HISTORY",
 					comment: function () {return L("FUNC_X_BOOKS", bookList.length); },
 					construct: constructNodes,
 					destruct: destructNodes
 				});
+
 				// null value of the nodes is used by the contructor to detect uninitialized state
 				bookHistoryNode.nodes = null;
 				
@@ -298,10 +308,10 @@ tmp = function() {
 			name: "skipBookMenu",
 			title: L("OPTION_SKIP_BOOK_MENU"),
 			icon: "CONTINUE",
-			defaultValue: "opening",
-			values:	["opening", "exiting", "always", "never"],
+			defaultValue: "entering",
+			values:	["entering", "exiting", "always", "never"],
 			valueTitles: {
-				"opening": L("VALUE_WHEN_OPENING_BOOK"),
+				"entering": L("VALUE_WHEN_ENTERING_BOOK"),
 				"exiting": L("VALUE_WHEN_EXITING_BOOK"),
 				"always": L("VALUE_ALWAYS"),
 				"never": L("VALUE_NEVER")
@@ -314,7 +324,12 @@ tmp = function() {
 			group: "Utils",
 			icon: "CONTINUE",
 			action: function () {
-				model.current.gotoNode(bookHistoryNode, model);
+				var current = Core.ui.getCurrentNode();
+				if (current) {
+					current.gotoNode(bookHistoryNode, model);
+				} else {
+					log.trace("can't find current node");
+				}
 			}
 		}]
 		

@@ -9,24 +9,14 @@
 <property name="FW_DIR" value="${PRSPInst}/${FW}" />
 <property name="SC_DIR" value="${PRSPInst}/${SC}" />
 <property name="TOOLS_DIR" value="${PRSPInst}/tools" />
+<!-- CRAMFS specific -->
 <property name="FW_VER_FILE" value="${TMP}/${FW}/opt/prspfw.ver" />
-<property name="PRSP_DIR" value="${TMP}/${FW}/${MODEL}/opt/sony/ebook/application/resources/prsp" />
-
-<target name="build" description="build" depends="prepare,dobuild"/>
-
-<target name="prepare" description="copies files to a temporary folder">
-	<delete dir="${TMP}" failonerror="true"/>
-	<mkdir dir="${TMP}"/>
+<property name="PRSP_DIR_CRAMFS" value="${TMP}/${FW}/${MODEL}/opt/sony/ebook/application/resources/prsp" />
+<!-- ISO specific -->
+<property name="PRSP_DIR_ISO" value="${TMP}/${FW}/${MODEL}/resources/prsp" />
 	
-	<copy todir="${TMP}">
-		<fileset dir="../">
-			<include name="${SC}/**/*"/>
-			<include name="${FW}/**/*"/>
-			<include name="${INSTALLER}/**/*"/>
-		</fileset>
-	</copy>
-</target>
-	
+<!-- =================== Task Defs ================================= -->
+<!-- Tasks for compressing the script. Need two, since jsmin doesn't do advanced compression, but yui fails on some scripts. --> 
 <taskdef name="yui-compressor" classname="net.noha.tools.ant.yuicompressor.tasks.YuiCompressorTask">
 	<classpath>
 		<pathelement location="tools/yuicompressor-2.4.2.jar" />
@@ -34,85 +24,209 @@
 	</classpath>
 </taskdef>
 <taskdef name="jsmin" classname="net.matthaynes.jsmin.JSMin_Task" classpath="tools/jsmin.0.2.4.jar"/>
+<!-- Task for creating iso files -->
+<taskdef name="iso"
+	classname="de.tu_darmstadt.informatik.rbg.hatlak.iso9660.ISOTask"
+	classpath="tools/iso/sabre.jar:tools/iso/iso9660.jar"
+/>	
 	
-<macrodef name="create-firmware">
-	<attribute name="readerVersion" />
-	<sequential>
-		<!-- Firmware -->
-		<echo>Creating firmware image</echo>
-		<mkdir dir="${FW_DIR}/@{readerVersion}" />
-		<echo file="${TMP}/${FW}/@{readerVersion}/opt/prspfw.ver">${PRSP_VER}</echo>
-		<echo file="${FW_DIR}/@{readerVersion}/prspfw.ver">${PRSP_VER}</echo>
-		
-		<copy tofile="${FW_DIR}/@{readerVersion}/fw.ver" file="${TMP}/${FW}/@{readerVersion}/opt/fw.ver"/>
-		
-		<!-- Links **must** have readonly flag, or crams fails -->
-		<attrib readonly="true">
-			<fileset dir="${TMP}/${FW}/@{readerVersion}/opt">
-				<include name="prsp.lnk" />
-				<include name="sony/ebook/application/libfreetype.so.lnk" />
-				<include name="sony/ebook/application/libfreetype.so.6.lnk" />
-			</fileset>
-		</attrib>
-		
-		<!-- Mercurial doesn't support empty directories... Not to have unused .dummy files in firmware -->
-		<delete>
-			<fileset dir="${TMP}/${FW}/@{readerVersion}/opt">
-				<include name="**/.dummy"/>
-			</fileset>
-		</delete>
-		
-		<exec executable="tools/mkcramfs">
-			<arg value="-D"/>
-			<arg value="${TMP}/${FW}/@{readerVersion}/opt.dt"/>
-			<arg value="${TMP}/${FW}/@{readerVersion}/opt"/>
-			<arg value="${FW_DIR}/@{readerVersion}/Fsk.img"/>
-		</exec>
-			
-		<!-- Test the firmware cramfsck -v -x opt -d opt.dt %1  -->
-		<echo>Testing the image</echo>
-		<delete dir="testopt" failonerror="true"/>
-		<exec executable="tools/cramfsck">
-			<arg value="-x"/>
-			<arg value="testopt"/>
-			<arg value="${FW_DIR}/@{readerVersion}/Fsk.img"/>
-		</exec>
-		
-		<resourcecount property="NUM_ORIGINAL">
-			<fileset dir="${TMP}/${FW}/@{readerVersion}/opt"/>
-		</resourcecount>
-		<resourcecount property="NUM_EXTRACTED">
-			<fileset dir="testopt" />
-		</resourcecount>
-		<fail message="Number of files extracted from cramfs image doesn't equal number of the original files: ${NUM_EXTRACTED} instead of ${NUM_ORIGINAL}.">
-			<condition>
-				<not>
-					<resourcecount count="${NUM_ORIGINAL}">
-						<fileset dir="testopt" />
-					</resourcecount>
-				</not>
-			</condition>
-		</fail>
-		
-		<delete dir="testopt" failonerror="true"/>		
-		
-		<checksum file="${FW_DIR}/@{readerVersion}/Fsk.img" property="CHECKSUM"/>
-		<echo file="${FW_DIR}/@{readerVersion}/Fsk.img.md5">${CHECKSUM}</echo>
-		
-		<copy todir="${FW_DIR}/@{readerVersion}">
-			<fileset dir="${TMP}/${FW}/@{readerVersion}">
-				<include name="*.root"/>
-				<include name="*.md5"/>
-			</fileset>
-		</copy>
-	</sequential>
-</macrodef>
+<!-- ======================== Settings ================================= -->	
+<!-- Distinguish between cramfs builds (flashable cramfs) and iso builds (bunch of iso files mounted on the fly) -->
+<condition property="build.ISO">
+	<or>
+		<equals arg1="${MODEL}" arg2="600"/>
+	</or>
+</condition>
+<condition property="build.CRAMFS">
+	<or>
+		<equals arg1="${MODEL}" arg2="300"/>
+		<equals arg1="${MODEL}" arg2="505"/>
+	</or>
+</condition>
 
-<target name="dobuild" description="dobuild">
-	<delete dir="${DIST}" failonerror="true"/>
-	<mkdir dir="${PRSPInst}" />
+<!-- Files to copy for the particular reader model (allows to disable certain addons) -->
+<fileset id="include_common" dir="../">
+	<include name="${SC}/*"/>
+	<include name="${SC}/core/*"/>
+	<include name="${SC}/core/lang/*"/>
+	<include name="${SC}/core/compat/${MODEL}*"/>	
+	<include name="${FW}/${MODEL}/**/*"/>
+	<include name="${INSTALLER}/**/*"/>	
+</fileset>
+<fileset id="include_300" dir="../">
+	<include name="${SC}/addons/**/*"/>
+</fileset>
+<fileset id="include_505" dir="../">
+	<include name="${SC}/addons/**/*"/>
+</fileset>
+<fileset id="include_600" dir="../">
+	<include name="${SC}/addons/Calc/**/*"/>
+	<include name="${SC}/addons/Calc.js"/>
+	<include name="${SC}/addons/BookHistory.js"/>
+	<include name="${SC}/addons/BrowseFolders.js"/>
+	<include name="${SC}/addons/EpubUserStyle.js"/>
+	<include name="${SC}/addons/Screenshot.js"/>
+	<include name="${SC}/addons/StatusBar.js"/>
+	<include name="${SC}/addons/StatusBar_Clock.js"/>
+	<include name="${SC}/addons/StatusBar_PageIndex.js"/>		
+	<include name="${SC}/addons/TextEncoding.js"/>		
+</fileset>
+	
+<!-- ======================== ISO ================================= -->
+<!-- Creates ISO for "on the fly mountable" installs -->
+<target name="create-firmware.iso" if="build.ISO">
+	<!-- Copy script stuff to firmware folder -->
+	<copy file="${TMP}/tmp-core-min.js" tofile="${PRSP_DIR_ISO}/core.js" />
+	<copy file="${TMP}/tmp-addons-min.js" tofile="${PRSP_DIR_ISO}/addons.js" />
+	<copy file="${TMP}/${SC}/prsp-min.js" tofile="${PRSP_DIR_ISO}/prsp.js" />
+	<copy todir="${PRSP_DIR_ISO}">
+		<fileset dir="${TMP}">
+			<include name="lang/*.js" />
+			<include name="compat/*.js" />
+		</fileset>
+	</copy>
+	<copy todir="${PRSP_DIR_CRAMFS}/addons">
+		<fileset dir="${TMP}/${SC}/addons">
+			<exclude name="*.js" />
+			<include name="**/*.*" />
+		</fileset>
+	</copy>
+	
+	<!-- Firmware -->
+	<echo>Creating firmware image</echo>
+	<mkdir dir="${DIST}/PRSPInstaller/prsp"/>
+	<!-- Resources iso (haven't found a way to mount this :() -->
+	<!-- iso basedir="${TMP}/${FW}/${MODEL}/resources" casesensitive="true" destfile="${DIST}/PRSPInstaller/resources.iso"/ -->
+	<!-- Resources cramfs -->
+	<exec executable="tools/mkcramfs">
+		<arg value="-D"/>
+		<arg value="${TMP}/${FW}/${MODEL}/resources.dt"/>
+		<arg value="${TMP}/${FW}/${MODEL}/resources"/>
+		<arg value="${DIST}/PRSPInstaller/prsp/resources.img"/>
+	</exec>
+	
+	<copy file="${TMP}/${FW}/${MODEL}/prsp.sh" todir="${DIST}/PRSPInstaller/prsp" />
+	<copy file="${TMP}/${INSTALLER}/installer.sh" todir="${DIST}/PRSPInstaller" />	
+</target>
+
+<!-- ======================== CRAMFS ================================= -->
+<!-- Creates firmware for CRAMFS flashable installs --> 
+<target name="create-firmware.cramfs" if="build.CRAMFS">
+	<!-- Copy script stuff to firmware folder -->
 	<mkdir dir="${FW_DIR}" />
+	<mkdir dir="${PRSP_DIR_CRAMFS}"/>
+	<copy file="${TMP}/tmp-core-min.js" tofile="${PRSP_DIR_CRAMFS}/core.js" />
+	<copy file="${TMP}/tmp-addons-min.js" tofile="${PRSP_DIR_CRAMFS}/addons.js" />
+	<copy file="${TMP}/${SC}/prsp-min.js" tofile="${PRSP_DIR_CRAMFS}/prsp.js" />
+	<copy todir="${PRSP_DIR_CRAMFS}">
+		<fileset dir="${TMP}">
+			<include name="lang/*.js" />
+			<include name="compat/*.js" />
+		</fileset>
+	</copy>
+	<copy todir="${PRSP_DIR_CRAMFS}/addons">
+		<fileset dir="${TMP}/${SC}/addons">
+			<exclude name="*.js" />
+			<include name="**/*.*" />
+		</fileset>
+	</copy>		
+	
+	<!-- Firmware -->
+	<echo>Creating firmware image</echo>
+	<mkdir dir="${FW_DIR}/${MODEL}" />
+	<echo file="${TMP}/${FW}/${MODEL}/opt/prspfw.ver">${PRSP_VER}</echo>
+	<echo file="${FW_DIR}/${MODEL}/prspfw.ver">${PRSP_VER}</echo>
+	
+	<copy tofile="${FW_DIR}/${MODEL}/fw.ver" file="${TMP}/${FW}/${MODEL}/opt/fw.ver"/>
+			
+	<!-- Links **must** have readonly flag, or crams fails -->
+	<attrib readonly="true" verbose="true">
+		<fileset dir="${TMP}/${FW}/${MODEL}/opt">
+			<include name="**/*.lnk" />
+		</fileset>
+	</attrib>
+	
+	<!-- Mercurial doesn't support empty directories... Not to have unused .dummy files in firmware -->
+	<delete>
+		<fileset dir="${TMP}/${FW}/${MODEL}/opt">
+			<include name="**/.dummy"/>
+		</fileset>
+	</delete>
+	
+	<exec executable="tools/mkcramfs">
+		<arg value="-D"/>
+		<arg value="${TMP}/${FW}/${MODEL}/opt.dt"/>
+		<arg value="${TMP}/${FW}/${MODEL}/opt"/>
+		<arg value="${FW_DIR}/${MODEL}/Fsk.img"/>
+	</exec>
+		
+	<!-- Test the firmware cramfsck -v -x opt -d opt.dt %1  -->
+	<echo>Testing the image</echo>
+	<delete dir="testopt" failonerror="true"/>
+	<exec executable="tools/cramfsck">
+		<arg value="-x"/>
+		<arg value="testopt"/>
+		<arg value="${FW_DIR}/${MODEL}/Fsk.img"/>
+	</exec>
+	
+	<resourcecount property="NUM_ORIGINAL">
+		<fileset dir="${TMP}/${FW}/${MODEL}/opt"/>
+	</resourcecount>
+	<resourcecount property="NUM_EXTRACTED">
+		<fileset dir="testopt" />
+	</resourcecount>
+	<fail message="Number of files extracted from cramfs image doesn't equal number of the original files: ${NUM_EXTRACTED} instead of ${NUM_ORIGINAL}.">
+		<condition>
+			<not>
+				<resourcecount count="${NUM_ORIGINAL}">
+					<fileset dir="testopt" />
+				</resourcecount>
+			</not>
+		</condition>
+	</fail>
+	
+	<delete dir="testopt" failonerror="true"/>		
+	
+	<checksum file="${FW_DIR}/${MODEL}/Fsk.img" property="CHECKSUM"/>
+	<echo file="${FW_DIR}/${MODEL}/Fsk.img.md5">${CHECKSUM}</echo>
+	
+	<copy todir="${FW_DIR}/${MODEL}">
+		<fileset dir="${TMP}/${FW}/${MODEL}">
+			<include name="*.root"/>
+			<include name="*.md5"/>
+		</fileset>
+	</copy>
+	
+	<!-- create installer -->
+	<antcall target="installer.cramfs"/>	
+</target>
 
+<target name="installer.cramfs" if="build.CRAMFS">
+	<mkdir dir="${PRSPInst}" />
+	<!-- Installer -->
+	<copy todir="${PRSPInst}">
+		<fileset dir="${TMP}/${INSTALLER}">
+			<exclude name=".*"/>
+			<exclude name="**/.hg/**"/>
+		</fileset>
+	</copy>
+
+	<!-- Insert version info -->	
+	<replace encoding="UTF-8" file="${PRSPInst}/autorun.xml" token="@@@" value="${PRSP_VER}" />	
+</target>
+
+<!-- ======================== Common ================================= -->
+<target name="build" description="Builds PRS+ installer">
+	<!-- Prepare -->
+	<delete dir="${TMP}" failonerror="true"/>
+	<mkdir dir="${TMP}"/>	
+	<copy todir="${TMP}">
+		<fileset refid="include_common"/>
+		<fileset refid="include_${MODEL}"/>
+	</copy>
+	<delete dir="${DIST}" failonerror="true"/>
+	<mkdir dir="${DIST}"/>
+	
 	<!-- Script -->
 	<concat encoding="UTF-8" destfile="${TMP}/tmp-core.js">
 		<fileset dir="${TMP}/${SC}">
@@ -149,38 +263,10 @@
 			<include name="**/${MODEL}*.js"/>
 		</fileset>
 	</jsmin>	
-	
-	<!-- Copy script stuff to firmware folder -->
-	<mkdir dir="${PRSP_DIR}"/>
-	<copy file="${TMP}/tmp-core-min.js" tofile="${PRSP_DIR}/core.js" />
-	<copy file="${TMP}/tmp-addons-min.js" tofile="${PRSP_DIR}/addons.js" />
-	<copy file="${TMP}/${SC}/prsp-min.js" tofile="${PRSP_DIR}/prsp.js" />
-	<copy todir="${PRSP_DIR}">
-		<fileset dir="${TMP}">
-			<include name="lang/*.js" />
-			<include name="compat/*.js" />
-		</fileset>
-	</copy>
-	<copy todir="${PRSP_DIR}/addons">
-		<fileset dir="${TMP}/${SC}/addons">
-			<exclude name="*.js" />
-			<include name="**/*.*" />
-		</fileset>
-	</copy>
 
 	<!-- Firmware -->
-	<create-firmware readerVersion="${MODEL}"/>
-	
-	<!-- Installer -->
-	<copy todir="${PRSPInst}">
-		<fileset dir="${TMP}/${INSTALLER}">
-			<exclude name=".*"/>
-			<exclude name="**/.hg/**"/>
-		</fileset>
-	</copy>
-
-	<!-- Insert version info -->	
-	<replace encoding="UTF-8" file="${PRSPInst}/autorun.xml" token="@@@" value="${PRSP_VER}" />	
+	<antcall target="create-firmware.cramfs"/>
+	<antcall target="create-firmware.iso"/>
 	
 	<attrib archive="false">
 		<fileset dir="${DIST}"/>
@@ -193,7 +279,6 @@
 	
 	<!-- Delete temporary folder -->
 	<delete dir="${TMP}" failonerror="false"/>
-	
 </target>
 
 </project>

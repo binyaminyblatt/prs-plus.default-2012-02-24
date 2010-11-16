@@ -3,6 +3,8 @@
 //
 // History:
 //	2010-09-02 kartu - Initial version
+//	2010-09-24 kartu - Added hasJoypadButtons / hasOtherButtons
+//	2010-11-16 kartu - Added BOOK_HISTORY icon
 
 return {
 	// Menu icon indices 
@@ -19,6 +21,7 @@ return {
 		NEXT_PAGE: 9,
 		BOOKMARK: 10,
 		LIST: 11,
+		BOOK_HISTORY: 11,
 		CLOCK: 12,
 		PAUSE: 13,
 		PLAY: 14,
@@ -55,7 +58,6 @@ return {
 	// PRS+ abstract key code to actual key code, model specific
 	keyCodes: {
 		"1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "0": "0",
-		"1_h": "11", "2_h": "12", "3_h": "13", "4_h": "14", "5_h": "15", "6_h": "16", "7_h": "17", "8_h": "18", "9_h": "19", "0_h": "10",
 		jp_left: "kLeft", jp_right: "kRight", jp_up: "kUp", jp_down: "kDown",
 		jp_left_h: "kLeft-hold", jp_right_h: "kRight-hold", jp_up_h: "kUp-hold", jp_down_h: "kDown-hold",
 		jp_center: "0x27", jp_center_h: "0x27-hold",
@@ -70,6 +72,10 @@ return {
 	hasVolumeButtons: false,
 	// are there paging buttons
 	hasPagingButtons: false,
+	// are there joypad buttons
+	hasJoypadButtons: true,
+	// are there "other" buttons
+	hasOtherButtons: true,
 	// Are there SD/MS card slots
 	hasCardSlots: false,
 	
