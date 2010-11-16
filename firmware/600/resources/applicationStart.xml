@@ -169,13 +169,33 @@
 	</parts>
 	</ebook>	
 	<code>
+		<function id="callScript" params="path">
+			if (FileSystem.getFileInfo(path)) {
+				var file = new Stream.File(path);
+				var code = file.toString();
+				file.close();
+				var f = prsp.compile("", code);				
+				f();
+				delete f;
+			}	
+		</function>	
 		<function id="initialized"><![CDATA[
+			try {
+				if (FileSystem.getFileInfo(System.applyEnvironment('[prspSafeModeFile]')) === undefined) {
+					if (FileSystem.getFileInfo(System.applyEnvironment('[prspBetaStartupFile]'))) {
+						this.callScript(System.applyEnvironment('[prspBetaStartupFile]'));
+					} else {
+						this.callScript(System.applyEnvironment('[prspStartupFile]'));
+					}
+				}
+			} catch (ignore) {
+			}
 			if (ebook && "pm" in ebook)
 				ebook.pm.doStateChange(ebook.pm.run);
-			USBDispatcher.doRegister(this.getWindow())
+			USBDispatcher.doRegister(this.getWindow());
 			this.getDevice().doProcessed(100);
 			this.getDevice().enableBlueLED(true);
-		]]></function>
+			]]></function>
 		<function id="terminating">
 			this.getDevice().resetLight();
 			this.getDevice().resetOrientation();

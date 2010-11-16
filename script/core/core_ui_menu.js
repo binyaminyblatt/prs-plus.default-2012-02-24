@@ -3,21 +3,21 @@
 // Author: kartu
 //
 // History:
+//	2010-11-10 kartu - renamed from MenuCustomizer to "Menu Customizer" (used as settings file name)
 
 var MenuCustomizer;
 tmp = function() {
-	var defVal = "default";
+	var defVal, nodeMap, emptyNode, getEmptyNode, createActivateNode, 
+		createListOfStandardNodes, createListOfAddonNodes;
+	defVal = "default";
 	// Name => node or getNode function map
-	var nodeMap = {};
+	nodeMap = {};
 	// Used by default UI localizer
 	Core.ui.nodes = nodeMap;
-	var STANDARD_NODES = ["continue", "booksByTitle", "booksByAuthor", "booksByDate", "collections", "bookmarks", 
-		"nowPlaying", "music","pictures", "settings", "advancedSettings"];
 	
 	//-------------------------------------------------------------------------------------------------------------
 	// Returns node that has no title / action associated with it, just a placeholder (might be usefull to users who want specific menu layout)
-	var emptyNode;
-	var getEmptyNode = function() {
+	getEmptyNode = function() {
 		if (emptyNode === undefined) {
 			emptyNode = Core.ui.createContainerNode({
 				title: "",
@@ -31,8 +31,9 @@ tmp = function() {
 		return emptyNode;
 	};
 
-	var createActivateNode = function (addon) {
-		var node = Core.ui.createContainerNode({
+	createActivateNode = function (addon) {
+		var node;
+		node = Core.ui.createContainerNode({
 				title: addon.title,
 				icon: addon.icon,
 				comment: addon.comment ? addon.comment : ""
@@ -45,8 +46,9 @@ tmp = function() {
 	
 	//-------------------------------------------------------------------------------------------------------------
 	// Initializes node map
-	var createListOfStandardNodes = function(nodeMap, values, valueTitles) {
-		var standardMenuLayout = Core.config.compat.standardMenuLayout;
+	createListOfStandardNodes = function(nodeMap, values, valueTitles) {
+		var standardMenuLayout, key, path, node, j, m;
+		standardMenuLayout = Core.config.compat.standardMenuLayout;
 		// Root node
 		nodeMap.root = kbook.root;
 		
@@ -56,14 +58,12 @@ tmp = function() {
 		valueTitles.empty = nodeMap.empty.title;
 		
 		// Standard nodes
-		var key, path, node;
-		for (var i = 0, n = STANDARD_NODES.length; i < n; i++) {
+		for (key in  standardMenuLayout) {
 			try {
-				key = STANDARD_NODES[i];
 				path = standardMenuLayout[key];
 				if (path !== undefined) {
 					node = kbook.root;
-					for (var j = 0, m = path.length; j < m; j++) {
+					for (j = 0, m = path.length; j < m; j++) {
 						node = node.nodes[path[j]];
 					}
 					nodeMap[key] = node;
@@ -74,14 +74,15 @@ tmp = function() {
 				log.error("Failed to find node: " + key + " " + e);
 			}
 		}
+		
 	};
 	
 	/** Creates addon nodes,addon can either provide "activate" function, 
 	 * or getAddonNode function, returning node to show
 	 */
-	var createListOfAddonNodes = function(addons, addonNodes, values, valueTitles) {
-		var addon, node;
-		for (var i = 0, n = addons.length; i < n; i++) {
+	createListOfAddonNodes = function(addons, addonNodes, values, valueTitles) {
+		var addon, node, i, n;
+		for (i = 0, n = addons.length; i < n; i++) {
 			addon = addons[i];
 			if (typeof addon.activate == "function") {
 				node = createActivateNode(addon);
@@ -97,9 +98,9 @@ tmp = function() {
 	};
 	
 	MenuCustomizer = {
-		name: "Menu Customizer",
+		name: "MenuCustomizer",
 		onPreInit: function() {
-			var L, movableNodes, optionValues, optionValueTitles, menuOptionValues, menuOptionValueTitles, values;
+			var L, i, movableNodes, optionValues, optionValueTitles, menuOptionValues, menuOptionValueTitles, values;
 			L = Core.lang.getLocalizer("MenuCustomizer");
 			this.title = L("TITLE");
 			this.optionDefs = [];
@@ -108,7 +109,7 @@ tmp = function() {
 			// which node
 			optionValues = [defVal];
 			optionValueTitles = {};
-			optionValueTitles[defVal] = L(defVal);
+			optionValueTitles[defVal] = L("VALUE_DEFAULT");
 			// whether to show separator
 			menuOptionValues = [defVal, "yes", "no"];
 			menuOptionValueTitles = {
@@ -123,12 +124,12 @@ tmp = function() {
 			createListOfAddonNodes(Core.addons, nodeMap, optionValues, optionValueTitles);
 			
 			this.optionDefs = [];
-			for (var i = 0; i < 10; i++) {
+			for (i = 0; i < movableNodes.length; i++) {
 				// Don't show impossible values on unmovable nodes
 				values = movableNodes[i] === 0 ?  [defVal] : optionValues;
 				
 				this.optionDefs.push({
-						groupTitle: L("SLOT_" + (i + 1)),
+						groupTitle: (L("SLOT") + " " + (i + 1)),
 						groupIcon: "FOLDER",
 						optionDefs: [
 							{
@@ -153,7 +154,7 @@ tmp = function() {
 		onInit: function() {
 			try {
 				var i, n, options, root, prspMenu, customContainers, customNodes, movableNodes, defaultLayout, placedNodes,
-					nodeName, node, container, isSeparator, customNode, parentNode, stillEmpty;
+					nodeName, node, container, isSeparator, isShortName, customNode, parentNode, stillEmpty;
 				
 				options = this.options;
 				root = nodeMap.root;
@@ -183,9 +184,10 @@ tmp = function() {
 				// Set root menu nodes, remembering which were placed and which were not
 				// was a non empty node inserted
 				stillEmpty = true; 
-				for (i  = 9; i >= 0; i--) {
+				for (i  = defaultLayout.length - 1; i >= 0; i--) {
 					nodeName = options["slot_" + i];
 					isSeparator = options["slot_sep_" + i] === "true";
+					isShortName = Boolean(defaultLayout[i].shortName);
 					// If slot set to default or node is unmovable
 					if (nodeName === defVal || movableNodes[i] === 0) {
 						if (defaultLayout[i] === undefined) {
@@ -211,6 +213,12 @@ tmp = function() {
 					}
 					// set separator state
 					node.separator = isSeparator ? 1 : 0;
+					
+					// whether to use short name (small buttons where full name doesn't fit)
+					if (isShortName) {
+						node.name = node.shortName;
+					}
+					
 					// attach to root
 					root.nodes[i] = node;
 					node.parent = root;

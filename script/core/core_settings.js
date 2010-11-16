@@ -11,6 +11,7 @@
 //	2010-04-27 kravitz - Added "N Settings" comment (if not preset anything else)
 //	2010-05-03 kravitz - Added insertAddonNode(), removeAddonNode()
 //	2010-07-01 kartu - Adapted for 300
+//	2010-11-16 kartu - Added short title to the node (for small buttons on readers with touchscreen)
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -99,7 +100,7 @@ tmp = function() {
 	 * @constructor
 	 */
 	var lazyCreateSettings = function(parent, optionDefs, addon) {
-		// TODO maybe replace with legit "construct" initialization
+		// FIXME maybe replace with legit "construct" initialization
 		parent._uncreated = (parent._uncreated) ? parent._uncreated + 1 : 1;
 		Core.hook.hookBefore(parent, "enter", function(args, oldFunc) {
 			if (this._uncreated) {
@@ -385,6 +386,7 @@ tmp = function() {
 		onPreInit: function() {
 			prspSettingsNode = Core.ui.createContainerNode({
 				title: coreL("NODE_PRSP_SETTINGS"),
+				shortTitle: coreL("NODE_PRSP_SETTINGS_SHORT"),
 				icon: "SETTINGS",
 				comment: function () {
 					return coreL("FUNC_X_SETTINGS", this.nodes.length);

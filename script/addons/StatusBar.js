@@ -4,6 +4,7 @@
 //
 // History:
 //	2010-07-21 kartu - Initial version
+//	2010-09-28 kartu - Adapted for 600 (MENU_GROUP => MENU_DETAILS_GROUP)
 
 // Available to sub-addons
 var StatusBar;
@@ -13,9 +14,16 @@ tmp = function() {
 	var log = Core.log.getLogger("StatusBar");
 	
 	// not to type this gazillion times
-	var TIME = kbook.model.container.sandbox.STATUS_GROUP.sandbox.prspTime;
-	var MENU = kbook.model.container.sandbox.MENU_GROUP.sandbox.MENU;
-	var BOOK = kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
+	var sandbox = kbook.model.container.sandbox;
+	var TIME = sandbox.STATUS_GROUP.sandbox.prspTime;
+	var BOOK = sandbox.PAGE_GROUP.sandbox.PAGE;
+	var MENU;
+	if (sandbox.MENU_GROUP) {
+		MENU = sandbox.MENU_GROUP.sandbox.MENU;
+	} else if (sandbox.MENU_DETAILS_GROUP) {
+		// FIXME move such code to compat
+		MENU = sandbox.MENU_DETAILS_GROUP.sandbox.MENU;
+	}
 
 	// Statusbar widgets
 	var widgets = [];

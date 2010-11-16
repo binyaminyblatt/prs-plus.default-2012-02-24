@@ -8,6 +8,7 @@
 //	2010-05-04 kravitz - Fixed init()
 //	2010-05-24 kravitz - Removed BookHistory.doDeleteBook handler
 //	2010-05-20 kartu - Adapted for 300
+//	2010-09-28 kartu - Adapted for 600
 
 tmp = function() {
 	var TERMINATE = 0,
@@ -39,7 +40,12 @@ tmp = function() {
 				funcName = "resume";
 				break;
 			case MENU_PAGE_CHANGED:
-				object = kbook.model.container.sandbox.MENU_GROUP.sandbox.MENU;
+				// FIXME move this to compat
+				if (kbook.model.container.sandbox.MENU_GROUP) {
+					object = kbook.model.container.sandbox.MENU_GROUP.sandbox.MENU;
+				} else if (kbook.model.container.sandbox.MENU_DETAILS_GROUP) {
+					object = kbook.model.container.sandbox.MENU_DETAILS_GROUP.sandbox.MENU;
+				}				
 				funcName = "pageChanged";
 				break;
 			case BOOK_PAGE_CHANGED:

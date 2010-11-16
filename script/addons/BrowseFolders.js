@@ -15,15 +15,25 @@
 //	2010-05-15 kartu - Fixed: book list was initialized once and never updated
 //	2010-05-24 kartu - Fixed weird bug "after deleting collection reader jumps to main menu, instead of collection" (fix by kravitz) that occured only if there was no SD card
 //	2010-07-06 kartu - Rewritten from scratch, added "favourite folders" and picture,music,notes support
+//	2010-09-29 kartu - Fixed: only existing roots will be shown in BrowseFolders (i.e. SD card won't be shown, if it is not inserted) 
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
-		compareFields;
+		compareFields, supportedMIMEs, createLazyInitNode, constructLazyNode, ACTION_ICON,
+		doOpenHere, doCopyAndOpen;
 	log = Core.log.getLogger("BrowseFolders");
 	L = Core.lang.getLocalizer("BrowseFolders");
 	startsWith = Core.string.startsWith;
 	trim = Core.string.trim;
+	supportedMIMEs = {
+		"application/rtf": true,
+		"application/pdf": true,
+		"application/epub+zip": true,
+		"application/x-sony-bbeb": true,
+		"text/plain": true
+	};
+	ACTION_ICON = "BACK";
 
 	//-----------------------------------------------------------------------------------------------------------------------------
 	// Sorting
@@ -82,6 +92,7 @@ tmp = function() {
 			if (icon === undefined) {
 				icon = "FOLDER";
 			}
+			// FIXME rename to createNode
 			var node = Core.ui.createContainerNode({
 					title: title,
 					icon: icon,
@@ -96,13 +107,86 @@ tmp = function() {
 		}
 	};
 	
+	createLazyInitNode = function (path, title, parent) {
+		var node;
+		node = Core.ui.createContainerNode({
+				title: title,
+				icon: "BOOK",
+				parent: parent,
+				construct: constructLazyNode
+		});
+		node.path = path;
+		return node;
+	};
+	
 	createMediaNode = function (path, title, parent) {
-		return Core.media.createMediaNode(path, parent);
+		var node, mime;
+		node = Core.media.createMediaNode(path, parent);
+		if (node === null) {
+			// Either file that is not a media, or unscanned
+			mime = FileSystem.getMIMEType(path);
+			if (supportedMIMEs[mime]) {
+				node = createLazyInitNode(path, title, parent);
+			}
+			
+		}
+		return node;
 	};
 
 	//-----------------------------------------------------------------------------------------------------------------------------
-	// Folder constructors
+	// "Lazy" opening for disabled scanning case
+	//-----------------------------------------------------------------------------------------------------------------------------	
+	doOpenHere = function() {
+		var i, n, library, path, item, parent, mediaNode, nodes;
+		
+		// create media
+		parent = this.parent;
+		path = parent.path;
+		library = Core.media.findLibrary(path);
+		item = library.makeItemFromFile(path);
+		item.path = path.substring(library.path.length);
+		library.insertRecord(item);
+		
+		// create node
+		mediaNode = Core.media.createMediaNode(path, parent.parent);
+
+		// replace parent with media node
+		nodes = parent.parent.nodes;
+		for (i = 0, n = nodes.length; i < n; i++) {
+			if (nodes[i] === parent) {
+				nodes[i] = mediaNode;
+			}
+		}
+		
+		this.gotoNode(mediaNode, kbook.model);
+	};
+	
+	doCopyAndOpen = function() {
+		// TODO
+		Core.ui.showMsg("Not implemented");
+	};
 	//-----------------------------------------------------------------------------------------------------------------------------
+	// Node constructors
+	//-----------------------------------------------------------------------------------------------------------------------------
+	// Construct "open here", "copy to IM and open" node
+	constructLazyNode = function() {
+		var openHereNode, copyAndOpenNode;
+		// FIXME with "via mount" option, open here should not be available
+		openHereNode = Core.ui.createContainerNode({
+				title: L("OPEN_HERE"),
+				parent: this,
+				icon: ACTION_ICON
+		});
+		copyAndOpenNode = Core.ui.createContainerNode({
+				title: L("COPY_TO_IM"),
+				parent: this,
+				icon: ACTION_ICON
+		});
+		openHereNode.enter = doOpenHere;
+		copyAndOpenNode.enter = doCopyAndOpen;
+		this.nodes = [openHereNode, copyAndOpenNode];		
+	};
+	
 	// Constructs folder node
 	folderConstruct = function() {
 		var path, nodes, iterator, item, factory, node;
@@ -215,7 +299,9 @@ tmp = function() {
 				return;
 			} else {
 				for (i = 0, n = roots.length; i < n; i++) {
-					nodes.push(createFolderNode(roots[i], rootTitles[i], this, rootIcons[i]));
+					if (FileSystem.getFileInfo(roots[i])) {
+						nodes.push(createFolderNode(roots[i], rootTitles[i], this, rootIcons[i]));
+					}
 				}
 			}
 
@@ -234,8 +320,10 @@ tmp = function() {
 		title: L("TITLE"),
 		icon: "FOLDER",				
 		getAddonNode: function() {
+			// FIXME is there any guarantee that getAddonNode is called only once?
 			return Core.ui.createContainerNode({
 					title: L("NODE_BROWSE_FOLDERS"),
+					shortName: L("NODE_BROWSE_FOLDERS_SHORT"),
 					icon: "FOLDER",
 					comment: L("NODE_BROWSE_FOLDERS_COMMENT"),
 					parent: kbook.root,
@@ -267,7 +355,7 @@ tmp = function() {
 			},
 			{
 				name: "favFoldersFile",
-				title: "FAVOURITE_FOLDERS_FILE",
+				title: L("OPTION_FAVOURITE_FOLDERS"),
 				icon: "FOLDER",
 				defaultValue: "disabled",
 				values: ["enabled", "disabled"],
@@ -303,6 +391,12 @@ tmp = function() {
 						disabled: L("DISABLED")
 					}
 				});
+			}
+		},
+		onInit: function() {
+			// FIXME test if this works at all
+			if (BrowseFolders.options.cardScan === "disabled") {
+				Core.config.disableCardScan = true;
 			}
 		}
 	};
