@@ -1,7 +1,8 @@
 // Description: js functions for calculator; borrowed/lend from http://www.motionnet.com/calculator/
 // History: 
-//      2010-06-05 Mark Nord - initial release - public beta
-
+//	2010-06-05 Mark Nord - initial release - public beta
+//	2010-08-23 Mark Nord - Buttons enabled, should work on PRS 600 too
+//	2010-11-21 kartu - Fixed getSoValue related bugs, removed stale code, reformatted in line with the rest of PRS+
 
 // GLOBAL VARIABLES
 var digitsMaximum = 16; 
@@ -26,7 +27,11 @@ var curDX = 60;
 var curDY = 50;
 var posX = 8;
 var posY = 8;
+var digits;
 
+// forward declaration
+var clearAll, clear, mathOp, equals, freshstart, sign, 
+	period, evalx, exp, func, angleConvert; 
 
 var trigmeth  = [
 	[{checked:true}],
@@ -82,86 +87,119 @@ var buttons = [
 ];	
 // END GLOBAL VARIABLES */
 
-target.init = function () {
+var trace = function (msg) {
+	var s = new Stream.File("b:/calc.log", 3);
+	try {
+		s.seek(s.bytesAvailable);
+		s.writeLine(msg);
+	} finally {
+		s.close();
+	}
+};
 
+target.init = function () {
 	this.showTime();
 	freshstart();
+	if(!_Core || !_Core.system || !_Core.system.getSoValue){
+		_Core = { 
+			system: {
+				getSoValue: function (obj, propName) {
+					return FskCache.mediaMaster.getInstance.call(obj, propName);
+				}
+			}
+		};
+	}		
 	this.gridCursor.show(true);
-}
+};
 
-target.exitApp = function () {
-	kbook.autoRunRoot.exitIf(kbook.model);
+target.exitApp = function() {
+    kbook.autoRunRoot.exitIf(kbook.model);
 };
-/*
-target.doMenuF = function () {
-	this.bubble("tracelog",""+this.dumpToString(this.container.container.container.container.container,"this.",2));
-	this.bubble("tracelog",""+this.dumpToString(this.container.container.container.container.container,"this.",2));
-	this.bubble("tracelog",this.dumpToString(Core));
-	this.bubble("tracelog","this."+this.dumpToString(this,"",3));
+
+target.doMenuF = function (obj) { /* Test-Function */
+	//this.bubble("tracelog","appPath"+System.applyEnvironment("[applicationPath]"));
+	//this.bubble("tracelog","myPath"+System.applyEnvironment("[myPath]"));
+	//this.bubble("tracelog",""+_Core.debug.dumpToString(this,"this.",2));
+	//this.bubble("tracelog",""+_Core.debug.dumpToString(this.container.container.container.container.container.NUM_BUTTON1.mouseContextual,"this.",2));
+	//this.bubble("tracelog","TRACER.scrollBy: "+_Core.debug.dumpToString(this.container.container.container.container.container.TRACER.scrollBy,"",2));
+	this.bubble("tracelog","testoutput ");
+	this.bubble("tracelog","prsp.setSoValue "+_Core.debug.dumpToString(prsp.setSoValue,"prsp.",2));
+	this.bubble("tracelog","_Core.system.cloneObj "+_Core.debug.dumpToString(_Core.system.cloneObj,"_Core.system.cloneObj.",1));
+	this.bubble("tracelog","Fsk.Error.native.code "+_Core.debug.dumpToString(Fsk.Error.base,"Fsk.Error.native.code",2));
+	var base = _Core.system.getSoValue(Fsk,"Error.native.code");
+	this.bubble("tracelog","native.code="+base);
+
+	var fnPageScroll = _Core.system.getSoValue(this.container.container.container.container.container.TRACER, 'enabled');
+	this.bubble("tracelog","var "+_Core.debug.dumpToString(fnPageScroll,"var",2));
 };
-*/
+
 var format = function (val) {
-	//	target.bubble("tracelog","FORMAT");   //debug
- 	//	return;   	//debug
 	if (base == 10){
-	 	var valStr = "" + value; //value.toString(base);
- 	
-	 	if (valStr.indexOf("N")>=0 || (value == 2*value && value == 1+value))
+		var valStr = "" + value;
+ 
+		if (valStr.indexOf("N") >=0 || (value == 2*value && value == 1+value)) {
 			return "Error ";
-		var i = valStr.indexOf("e")
-		if (i>=0)
-		{
+		}
+		var i = valStr.indexOf("e");
+		if (i>=0) {
 			var expStr = valStr.substring(i+1,valStr.length);
-			if (i>11) i=11;  // max 11 digits
+			// max 11 digits
+			if (i>11) {
+				i=11;
+			}
 			valStr = valStr.substring(0,i);
-			if (valStr.indexOf(".")<0) valStr += ".";
-	 		valStr += " " + expStr;
-	 	}
-	 	else
-	 	{
-	 		var valNeg = false;
-	 		if (value < 0)
-	 			{ value = -value; valNeg = true; }
-	 		var valInt = Math.floor(value);
-	 		var valFrac = value - valInt;
-	 		var prec = digitsMaximum - (""+valInt).length - 1;	// how many digits available after period
-	 		if (!isItThere && fixed>0)
+			if (valStr.indexOf(".")<0) {
+				valStr += ".";
+			}
+			valStr += " " + expStr;
+		} else {
+			var valNeg = false;
+			if (value < 0){ 
+				value = -value; valNeg = true; 
+			}
+			var valInt = Math.floor(value);
+			var valFrac = value - valInt;
+			var prec = digitsMaximum - (""+valInt).length - 1;	// how many digits available after period
+			if (!isItThere && fixed>0) {
 				prec = fixed;
-			var mult = " 1000000000000000000".substring(1,prec+2);
+			}
+			var mult = " 1000000000000000000".substring(1, prec+2);
 			var frac = Math.floor(valFrac * mult + 0.5);
-			valInt = Math.floor(Math.floor(value * mult + .5) / mult);
-			if (valNeg){
+			valInt = Math.floor(Math.floor(value * mult + 0.5) / mult);
+			if (valNeg) {
 				valStr = "-" + valInt;
 				value = -value;
-				}
-			else
+			} else {
 				valStr = "" + valInt;
-			var fracStr = "00000000000000"+frac;
+			}
+			var fracStr = "00000000000000" + frac;
 			fracStr = fracStr.substring(fracStr.length-prec, fracStr.length);
 			i = fracStr.length-1;
-			if (isItThere || fixed==0)
-			{
+			if (isItThere || fixed === 0) {
 				// remove trailing zeros unless fixed during entry.
-				while (i>=0 && fracStr.charAt(i)=="0")
+				while (i>=0 && fracStr.charAt(i)=="0") {
 					--i;
+				}
 				fracStr = fracStr.substring(0,i+1);
 			}
-			if (i>=0) valStr += "." + fracStr;
+			if (i >= 0) {
+				valStr += "." + fracStr;
+			}
 		}
 		return valStr;
-	}
-	else{
+	} else {
 		var s = "";
-		if (val<0 || val>valueMaximum)
+		if (val<0 || val>valueMaximum) {
 			return "Error";
-		if (val==0)
+		}
+		if (val === 0) {
 			return "0";
-		if (base<2)
-		{
-			while (val && s.length < 20)
-			{
-				var x = val % 16;
-				var d = hexdigits.charAt(x);
+		}
+		var x, d;
+		if (base<2) {
+			while (val && s.length < 20) {
+				x = val % 16;
+				d = hexdigits.charAt(x);
 				val = (val-x)/16 | 0;
 				var y = val % 16;
 				var e = hexdigits.charAt(y);
@@ -171,98 +209,96 @@ var format = function (val) {
 			s = '"' + s + '"';
 			return unescape(s);
 		}
-		while (val && s.length < 20)
-		{
-			var x = val % base;
-			var d = hexdigits.charAt(x);
+		while (val && s.length < 20) {
+			x = val % base;
+			d = hexdigits.charAt(x);
 			val = (val-x)/base | 0;
 			s = "" + d + s;
 		}
 		return s;
-		} 
-}
+	} 
+};
 
-var update = function (){
-	 if(base == 10){
-		var display = format(value);	  
-		if (expMode){
+var update = function () {
+	var display;
+	 if (base == 10) {
+		display = format(value);	  
+		if (expMode) {
 			if (expval<0){
 				display += " " + expval;
-			}
-			else{
+			} else {
 				display += " +" + expval;
 			}
 		}
-		if (display.indexOf(".")<0 && display != "Error "){
+		if (display.indexOf(".")<0 && display != "Error ") {
 			if (isItThere || decimal>0){
 				display += '.';
-			}
-			else{
+			} else {
 				display += ' ';
 			}
 		}
 		display = "               " + display;
 		display = display.substring(display.length-digitsMaximum-1,display.length);
 		target.CalculatorLabel.setValue(display);
-	}
-	else{
+	} else {
 		value = value % valueMaximum;
 		if (value<0){
 			value = value + valueMaximum;
 		}
-		var display = format(value);
-		if (isItThere){
+		display = format(value);
+		if (isItThere) {
 			display += ".";
-		}
-		else{
+		} else {
 			display += " ";
 		}
 		display = "                 " + display;
 		display = display.substring(display.length-digitsMaximum-1,display.length);
 		target.CalculatorLabel.setValue(display);
 	} 
-}
+};
 
-target.digitF = function (n) {
-	n=parseInt(n);
-	if(base == 10){
+target.digitF = function (sender) {
+	var n = parseInt(sender, 10);
+	if (isNaN(n)) {
+		n = parseInt(_Core.system.getSoValue(sender,"text"),base);
+	}
+	if (base == 10) {
+		// this.bubble("tracelog","base10"); // debug
 		if (isItThere){
 			value = 0;
 			digits = 0;
 			isItThere = false;
 		}
-		if (n==0 && digits==0){
+		if (n === 0 && digits === 0) {
 			update();
 			return;
 		}
-		if (expMode){
-			if (expval<0){
+		if (expMode) {
+			if (expval<0) {
 				n = -n;
 			}
-			if (digits < 3){
+			if (digits < 3) {
 				expval = expval * 10 + n;
 				++digits;
 				update();
 			}
 			return;
 		}
-		if (value<0){
+		if (value<0) {
 			n = -n;
 		}
-		if (digits < digitsMaximum-1){
+		if (digits < digitsMaximum-1) {
 			++digits;
-			if (decimal>0){
+			if (decimal>0) {
 				decimal = decimal * 10;
 				value = value + (n/decimal);
 				++fixed;
-			}
-			else{
+			} else {
 				value = value * 10 + n;
 			}
 		}
 		update();
-	}
-	else{
+	} else {
 		if (isItThere){
 			value = 0;
 			digits = 0;
@@ -280,84 +316,97 @@ target.digitF = function (n) {
 		}
 		update();
 	}
-}
+};
+
+/* this function calculates the x/y index of the selected button,
+   sets ScreenCursorPosition and calls doCenterF */
+target.doButtonClick = function (sender) {
+	try {
+		this.showTime();
+		var x = _Core.system.getSoValue(sender,"x");
+		var y = _Core.system.getSoValue(sender,"y");
+		// FIXME use ID instead of coordinate lookup
+		var id = _Core.system.getSoValue(sender,"id");
+		x = (x - 121 + 81) / 60 ;
+		y = (y - 287 + 37) / 50;
+		
+		posX = Math.floor(x);
+		posY = Math.floor(y);
+		if (posY === 0) { 
+			firstY = 105;
+		} else { 
+			firstY = 205;
+		} 
+		this.drawGridCursor(posX, posY);
+		target.doCenterF();
+	} catch (ignore) {
+	}
+};
 
 target.doPreviousF = function() { 
 	clear();
-}
+};
 
 target.doNextF = function() { 
 	equals();
-}
+};
 
 target.doCenterF = function() {
 	var  todo = button[posY][posX].split(":");
 	switch (todo[0]) {
-		case "b" : {
-			setNumberBase(todo[1]);
+		case "b" :
+			target.setNumberBase(todo[1]);
 			break;
-		}	
-	 	case "c" : { switch (todo[1]) {
-					case "clear": { 
-						clear();
-						break;
-					}
-					case "clearAll": { 
-						clearAll();
-						break;
-					}
-					case "equals": { 
-						equals();
-						break;
-					}					
-					case "exitApp": { 
-						this.exitApp();
-						break;
-					}					
-					case "exp": { 
-						exp();
-						break;
-					}					
-					case "pclose": { 
-						pclose();
-						break;
-					}					
-					case "period": { 
-						period();
-						break;
-					}
-					case "popen": { 
-						popen();
-						break;
-					}
-					case "sign": { 
-						sign();
-						break;
-					}
-				}
+		case "c": 
+			switch (todo[1]) {
+				case "clear":  
+					clear();
+					break;
+				case "clearAll":  
+					clearAll();
+					break;
+				case "equals":  
+					equals();
+					break;
+				case "exitApp": 
+					this.exitApp();
+					break;
+				case "exp": 
+					exp();
+					break;
+				case "pclose":
+					// kartu: calls what?
+					pclose();
+					break;
+				case "period": 
+					period();
+					break;
+				case "popen":
+					// kartu: calls what?
+					popen();
+					break;
+				case "sign":  
+					sign();
+					break;
+			}
 			break;
-			}		
-	 	case "d" : {
+		case "d":
 			this.digitF(todo[1]);
 			break;
-		}
-	 	case "f" : {
+		case "f":
 			func(todo[1]);		
 			break;
-		}	
-	 	case "m" : {
+		case "m":
 			mathOp(todo[1]);
 			break;
-		}
-		case "t" : {
-			setTrigmeth(todo[1]);
+		case "t":
+			target.setTrigmeth(todo[1]);
 			break;
-		}					
 	}
-}
+};
 
 var enter = function() {
-	if(base == 10){
+	if (base == 10) {
 			if (expMode){
 				value = value * Math.exp(expval * Math.LN10);
 			}
@@ -365,127 +414,159 @@ var enter = function() {
 			expMode = false;
 			decimal = 0;
 			fixed = 0;
-	}
-	else{
+	} else {
 		isItThere = true;
 	}
-}
+};
 
-var stackPushTier = function(){
+var stackPushTier = function() {
 	this.value = 0;
 	this.prec = 0;
 	this.op = "";
-}
+};
 
-var setNumberBase = function(b){
-	target.setVariable("BASIS",b);
+target.setNumberBase = function(b) {
+	if ( b == "hex" || b == "dec" || b == "bin" ) {     
+		target.setVariable("BASIS",b);
+	} else {
+		b = target.getVariable("BASIS");
+	}
 	switch (b) {
-		case 'hex': {	base=16;
-				button=func_bas16;
-				break; }
-		case 'dec': {	base=10;
-				button=func_bas10;		
-				break; }
-		case 'bin': {	base=2;
-				button=func_bas2;		
-				break; }
-		default : { base=10; }		
+		case 'hex': 
+			base=16;
+			button=func_bas16;
+			break;
+		case 'dec': 
+			base=10;
+			button=func_bas10;		
+			break;
+		case 'bin':
+			base=2;
+			button=func_bas2;		
+			break;
+		default : 
+			base=10;		
 	}
 	// enable trigm only when base=10
 	target.TRIGM.RBUTTON_DEG.enable(base==10);
 	target.TRIGM.RBUTTON_RAD.enable(base==10);
 	target.TRIGM.RBUTTON_GRAD.enable(base==10); 
+	
 	// activate/deactivate buttons/functions according base
-	for (var i=0; i<6; i++)
-	 for (var j=0; j<9; j++){
-	  var id = buttons[i][j];
-	  if (id!=null){
-	   	target[id].enable(button[i+4][j]!=null); 
-	  }
-	 } 
+	for (var i=0; i<6; i++) {
+		for (var j=0; j<9; j++) {
+			var id = buttons[i][j];
+			if (id !== null) {
+				target[id].enable(button[i+4][j] !== null); 
+			}
+		}
+	}
 	equals(); 
-} 
+};
 
-var setTrigmeth = function(t){
-        	target.setVariable("TRIG",t);
-        	trigmeth[0].checked = (t=="deg");
-        	trigmeth[1].checked = (t=="rad");
-        	trigmeth[2].checked = (t=="grad");
-        	if (base == 10) {angleConvert(t)}
-} 
+target.setTrigmeth = function(t){
+	if ( t == "deg" || t == "rad" || t == "grad" ) {
+		target.setVariable("TRIG",t);
+		trigmeth[0].checked = (t=="deg");
+		trigmeth[1].checked = (t=="rad");
+		trigmeth[2].checked = (t=="grad");
+	} else {
+		t = target.getVariable("TRIG");
+	}
+	if (base == 10) {
+		angleConvert(t);
+	}
+}; 
 
-
-var freshstart = function () {
- 	var display = format(value);
+// defined above
+freshstart = function () {
+	var display = format(value);
 	display = "               " + display;
 	display = display.substring(display.length-digitsMaximum-1,display.length);
 	target.CalculatorLabel.setValue(display);
-  	enter();
-	func ("memclearall"); 
+	enter();
+	func("memclearall"); 
 
-	setTrigmeth("deg");
-	setNumberBase("dec");
+	target.setTrigmeth("deg");
+	target.setNumberBase("dec");
 
 //	initialise stack
 	var i = 0;
 	stack[0] = 0;
-	for (i=0; i<stack.length; ++i){
+	for (i=0; i<stack.length; ++i) {
 		stack[i] = 0;
 		stack[i] = new stackPushTier();		
 	} 
-}
+};
 
 target.showTime = function () {
 	var time = new Date();
 	var timeLocale = time.toLocaleTimeString();
 	var show = timeLocale.substring(0, timeLocale.lastIndexOf(':'));
 	target.clock1.setValue(show);
-}
+};
 
 target.moveCursor = function (direction) {
 	this.showTime();
-		if (direction == "right") {
-			posX = posX + 1;
-			if (posX > 8) posX = 0;
+	if (direction == "right") {
+		posX = posX + 1;
+		if (posX > 8) {
+			posX = 0;
 		}
-		if (direction == "left") {
-			posX = posX - 1;
-			if (posX < 0) posX = 8;
+	}
+	if (direction == "left") {
+		posX = posX - 1;
+		if (posX < 0) {
+			posX = 8;
 		}
-		if (direction == "up") {
-			posY = posY - 1;
-			if (posY < 0) posY = 9;
+	}
+	if (direction == "up") {
+		posY = posY - 1;
+		if (posY < 0) {
+			posY = 9;
 		}
-		if (direction == "down") {
-			posY = posY + 1;
-			if (posY > 9) posY = 0;
+	}
+	if (direction == "down") {
+		posY = posY + 1;
+		if (posY > 9) {
+			posY = 0;
 		}
-		if (!(direction =="left") && posY == 8 && posX == 7) {posX++}; // double sized equals button
-		if (button[posY][posX] == null) {this.moveCursor(direction)};  // jump holes
-		if (posY == 0) { firstY = 105} else { firstY = 205} 
-		this.drawGridCursor(posX, posY);
-}
+	}
+	if (direction !="left" && posY == 8 && posX == 7) {
+		posX++; // double sized equal button
+	} 
+	if (button[posY][posX] === null) {
+		this.moveCursor(direction); // jump holes
+	}  
+	if (posY === 0) { 
+		firstY = 105;
+	} else { 
+		firstY = 205;
+	} 
+	this.drawGridCursor(posX, posY);
+};
 
 target.drawGridCursor = function (x, y) {
 	this.gridCursor.changeLayout(firstX + x * curDX, undefined, undefined, firstY + y * curDY, undefined, undefined);
-}
+};
 
-var clearAll = function(){
+clearAll = function(){
 	stackTier = 0;
 	clear();
-} 
+};
 
-var clear = function(){
+clear = function(){
 	expMode = false;
 	value = 0;
 	enter();
 	update();
-}
-var push = function(value,op,prec){
+};
+
+var push = function(value,op,prec) {
 	if (stackTier==maxPushLevels){
 		return false;
 	}
-	for (i=stackTier;i>0; --i){
+	for (var i = stackTier; i>0; --i){
 		stack[i].value = stack[i-1].value;
 		stack[i].op = stack[i-1].op;
 		stack[i].prec = stack[i-1].prec;
@@ -495,20 +576,20 @@ var push = function(value,op,prec){
 	stack[0].prec = prec;
 	++stackTier;
 	return true;
-}
+};
 
-var pop = function(){
-	if (stackTier==0){
+var pop = function() {
+	if (stackTier === 0) {
 		return false;
 	}
-	for (i=0;i<stackTier; ++i){
+	for (var i=0; i<stackTier; ++i) {
 		stack[i].value = stack[i+1].value;
 		stack[i].op = stack[i+1].op;
 		stack[i].prec = stack[i+1].prec;
 	}
 	--stackTier;
 	return true;
-}
+};
 
 var openp =  function(){
 	enter();
@@ -516,35 +597,29 @@ var openp =  function(){
 		value = "NAN";
 	}
 	update();
-}
+};
 
 var closep =  function(){
 	enter();
-	while (evalx())
-		;
+	while (evalx()); // empty block
 	update();
-}
+};
 
-var mathOp = function(op) {
+mathOp = function(op) {
 	enter();
 	var prec = 0;
 	if(base == 10){
 		if (op=='+' || op=='-'){
 			prec = 1;
-		}
-		else if (op=='*' || op=='/' || op=='%'){ // op=='%' was added (blippie)
+		} else if (op=='*' || op=='/' || op=='%'){ // op=='%' was added (blippie)
 			prec = 2;
-		}
-		else if (op=="pow"){
+		} else if (op=="pow"){
 			prec = 3;
-		}
-		else if (op=="or" || op=='xor'){ // this statement wasn't originally here
+		} else if (op=="or" || op=='xor'){ // this statement wasn't originally here
 			prec = 4;
-		}
-		else if (op=="and"){ // this statement wasn't originally here
+		} else if (op=="and"){ // this statement wasn't originally here
 			prec = 5;
-		}
-		else if(op=="lsh" || op=="rsh"){ // this statement wasn't originally here
+		} else if(op=="lsh" || op=="rsh"){ // this statement wasn't originally here
 			prec = 6;
 		}
 		if (stackTier>0 && prec <= stack[0].prec){
@@ -554,27 +629,20 @@ var mathOp = function(op) {
 			value = "NAN";
 		}
 		update();
-	}
-	else{
+	} else {
 		if (op=='+' || op=='-'){
 			prec = 1;
-		}
-		else if (op=='*' || op=='/' || op=='%'){ // op=='%' was added (blippie)
+		} else if (op=='*' || op=='/' || op=='%'){ // op=='%' was added (blippie)
 			prec = 2;
-		}
-		else if(op=='pow'){
+		} else if(op=='pow'){
 			prec = 3;
-		}
-		else if (op=="or" || op=='xor'){
+		} else if (op=="or" || op=='xor'){
 			prec = 4; // original value: prec = 3;
-		}
-		else if (op=="and"){
+		} else if (op=="and"){
 			prec = 5; // original value: prec = 4;
-		}
-		else if(op=="lsh" || op=="rsh"){ // this statement wasn't originally here
+		} else if(op=="lsh" || op=="rsh"){ // this statement wasn't originally here
 			prec = 6;
-		}
-		else{
+		} else {
 			value = "NAN";
 		}
 		if (stackTier>0 && prec <= stack[0].prec){
@@ -585,48 +653,45 @@ var mathOp = function(op) {
 		}
 		update();
 	}
-}
+};
 
-var equals = function(){
+equals = function() {
 	enter();
 	while (stackTier>0){
 		evalx();
 	}
 	update();
-}
+};
 
-var sign = function (){
-	if(base == 10){
-		if (expMode){
+sign = function (){
+	if (base == 10){
+		if (expMode) {
 			expval = -expval;
-		}
-		else{
+		} else {
 			value = -value;
 		}
 		update();
 	}
-}
+};
 
-
-var period = function (){
-	if(base == 10){
+period = function () {
+	if (base == 10){
 		if (isItThere){
-				value = 0;
-				digits = 1;
+			value = 0;
+			digits = 1;
 		}
 		isItThere = false;
-		if (decimal == 0){
-				decimal = 1;
+		if (decimal === 0) {
+			decimal = 1;
 		}
 		update();
 	}
-}
+};
 
-
-var exp = function (){
-	if(base == 10){
+exp = function () {
+	if (base == 10) {
 		if (isItThere || expMode){
-				return;
+			return;
 		}
 		expMode = true;
 		expval = 0;
@@ -634,198 +699,126 @@ var exp = function (){
 		decimal = 0;
 		update();
 	}
-}
+};
 
-var evalx =  function(){
-
-	if (stackTier==0){
+evalx =  function(){
+	if (stackTier === 0) {
 		return false;
 	}
 
 	var op = stack[0].op;
 	var sval = stack[0].value;
-		target.bubble("tracelog","evalx "+op+sval); // debug
 
-	if (op == '+'){
+	if (op == '+') {
 		value = sval + value;
-	}
-
-	else if (op == '-'){
+	} else if (op == '-') {
 		value = sval - value;
-	}
-
-	else if (op == '*'){
+	} else if (op == '*') {
 		value = sval * value;
-	}
-
-	else if (op == '/'){
+	} else if (op == '/') {
 		value = sval / value;
-	}
-
-	else if (op == '%'){
+	} else if (op == '%') {
 		value = sval % value;
-	}
-
-	else if (op == 'pow'){
+	} else if (op == 'pow') {
 		value = Math.pow(sval,value);
-	}
-
-	else if(op == "and"){
+	} else if(op == "and") {
 		value = sval & value;
-	}
-
-	else if(op == "or"){
+	} else if(op == "or") {
 		value = sval | value;
-	}
-
-	else if(op == "xor"){
+	} else if(op == "xor") {
 		value = sval ^ value;
-	}
-
-	else if(op == "lsh"){
+	} else if(op == "lsh") {
 		value = sval << value;
-	}
-
-	else if(op == "rsh"){
+	} else if(op == "rsh") {
 		value = sval >> value;
 	}
-
 	pop();
-	if (op=='(')
+	if (op == '(') {
 		return false;
+	}
 	return true;
-}
+};
 
-
-var func = function (f){
+func = function (f) {
 	enter();
 
-	if (f=="percent"){ // behave like old TI-Calculators
+	var n;
+	if ( f== "percent") { // behave like old TI-Calculators
 		var op = stack[0].op;
 		var sval = stack[0].value;
 		if (op == '+' || op =='-') {
 			value = sval * value / 100;	
-		} 
-		else {
+		} else {
 			value = value/100;
 		}
-	}
-	
-	else if (f=="1/x"){
+	} else if (f=="1/x"){
 		value = 1/value;
-	}
-
-	else if (f=="n!"){
+	} else if (f=="n!"){
 		value = Math.floor(value);
 
-		if (value<0 || value>200){
+		if (value<0 || value>200) {
 			value = "NAN";
-		}
-
-		else{
-			var n = 1;
+		} else {
+			n = 1;
 			var i;
-			for (i=1;i<=value;++i){
+			for (i=1; i <= value; ++i){
 				n *= i;
 			}
 		}
-
 		value = n;
-	}
-
-	else  if(f=="memclearall"){
+	} else if (f=="memclearall") {
 		target.Meminput1.setValue(0);
 		target.Meminput2.setValue(0);
 		target.Meminput3.setValue(0);
-		//memform.meminput4.value = "";
-		//memform.meminput5.value = "";
-	}
-
-	else if(f=="memplus1"){
+	} else if (f == "memplus1") {
 		target.Meminput1.setValue(target.Meminput1.getValue()*1+value);
-	}
-	else if(f=="memminus1"){
+	} else if (f=="memminus1") {
 		target.Meminput1.setValue(target.Meminput1.getValue()*1-value);
-	}
-	else if(f=="memrecall1"){
+	} else if (f=="memrecall1") {
 		value = parseFloat(target.Meminput1.getValue());
-	}
-	else if(f=="memclear1"){
+	} else if (f=="memclear1") {
 		target.Meminput1.setValue(0);
-	}
-	else if(f=="memplus2"){
+	} else if (f=="memplus2") {
 		target.Meminput2.setValue(target.Meminput2.getValue()*1+value);
-	}
-	else if(f=="memminus2"){
+	} else if (f=="memminus2") {
 		target.Meminput2.setValue(target.Meminput2.getValue()*1-value);
-	}
-	else if(f=="memrecall2"){
+	} else if (f=="memrecall2") {
 		value = parseFloat(target.Meminput2.getValue());
-	}
-	else if(f=="memclear2"){
+	} else if (f=="memclear2") {
 		target.Meminput2.setValue(0);
-	}
-	else if(f=="memplus3"){
+	} else if (f=="memplus3") {
 		target.Meminput3.setValue(target.Meminput3.getValue()*1+value);
-	}
-	else if(f=="memminus3"){
+	} else if (f=="memminus3") {
 		target.Meminput3.setValue(target.Meminput3.getValue()*1-value);
-	}	
-	else if(f=="memrecall3"){
+	} else if (f=="memrecall3") {
 		value = parseFloat(target.Meminput3.getValue());
-	}
-	else if(f=="memclear3"){
+	} else if (f=="memclear3") {
 		target.Meminput3.setValue(0);
-	}
-	/*
-	else if(f=="memplus4"){
-		memform.meminput4.value = value;
-	}
-	else if(f=="memrecall4"){
-		value = parseFloat(memform.meminput4.value);
-	}
-	else if(f=="memclear4"){
-		memform.meminput4.value = "";
-	}
-	else if(f=="memplus5"){
-		memform.meminput5.value = value;
-	}
-	else if(f=="memrecall5"){
-		value = parseFloat(memform.meminput5.value);
-	}
-	else if(f=="memclear5"){
-		memform.meminput5.value = "";
-	}
-	*/	
-	else if(f=="sin"){
+	} else if (f=="sin"){
 		// if "Deg" is checked...
-		if(trigmeth[0].checked){
+		if (trigmeth[0].checked){
 			value = Math.sin(value * Math.PI / 180);
 		}
 		// if "Rad" is checked...
-		else if(trigmeth[1].checked){
+		else if(trigmeth[1].checked) {
 			value = Math.sin(value);
 		}
 		// if "Grad" is checked...
-		else if(trigmeth[2].checked){
+		else if(trigmeth[2].checked) {
 			value = Math.sin(value * Math.PI / 200);
 		}
-	}
-	else if (f=="cos"){
+	} else if (f=="cos"){
 		// if "Deg" is checked...
-		if(trigmeth[0].checked){
+		if(trigmeth[0].checked) {
 			value = Math.cos(value * Math.PI / 180);
-		}
-		// if "Rad" is checked...
-		else if(trigmeth[1].checked){
+		// if "Rad" is checked...			
+		} else if(trigmeth[1].checked) {
 			value = Math.cos(value);
-		}
 		// if "Grad" is checked...
-		else if(trigmeth[2].checked){
+		} else if(trigmeth[2].checked) {
 			value = Math.cos(value * Math.PI / 200);
 		}
-	}
-	else if (f=="tan"){
+	} else if (f=="tan") {
 		// if "Deg" is checked...
 		if(trigmeth[0].checked){
 			value = Math.tan(value * Math.PI / 180);
@@ -838,126 +831,97 @@ var func = function (f){
 		else if(trigmeth[2].checked){
 			value = Math.tan(value * Math.PI / 200);
 		}
-	}
-	else if (f=="log"){
+	} else if (f=="log") {
 		value = Math.log(value)/Math.LN10;
-	}
-	else if (f=="log2"){
+	} else if (f=="log2") {
 		value = Math.log(value)/Math.LN2;
-	}
-	else if (f=="ln"){
+	} else if (f=="ln") {
 		value = Math.log(value);
-	}
-	else if (f=="sqrt"){
+	} else if (f=="sqrt") {
 		value = Math.sqrt(value);
-	}
-	else if (f=="lsh"){
+	} else if (f=="lsh") {
 		value = value << 1;
-	}
-	else if (f=="rsh"){
+	} else if (f=="rsh") {
 		value = value >> 1;
-	}
-	else if (f=="pi"){
+	} else if (f=="pi") {
 		value = Math.PI;
-	}
-	else if (f=="acos"){
+	} else if (f=="acos") {
 		// if "Deg" is checked...
-		if(trigmeth[0].checked){
+		if (trigmeth[0].checked) {
 			value = Math.acos(value) * (180 / Math.PI);
-		}
-		// if "Rad" is checked...
-		else if(trigmeth[1].checked){
+		// if "Rad" is checked...			
+		} else if (trigmeth[1].checked) {
 			value = Math.acos(value);
-		}
 		// if "Grad" is checked...
-		else if(trigmeth[2].checked){
+		} else if (trigmeth[2].checked) {
 			value = Math.acos(value) * (200 / Math.PI);
 		}
-	}
-	else if(f=="asin"){
+	} else if (f=="asin") {
 		// if "Deg" is checked...
-		if(trigmeth[0].checked){
+		if (trigmeth[0].checked) {
 			value = Math.asin(value) * (180 / Math.PI);
-		}
 		// if "Rad" is checked...
-		else if(trigmeth[1].checked){
+		} else if(trigmeth[1].checked) {
 			value = Math.asin(value);
-		}
 		// if "Grad" is checked...
-		else if(trigmeth[2].checked){
+		} else if(trigmeth[2].checked) {
 			value = Math.asin(value) * (200 / Math.PI);
 		}
-	}
-	else if(f=="atan"){
+	} else if (f=="atan") {
 		// if "Deg" is checked...
-		if(trigmeth[0].checked){
+		if (trigmeth[0].checked) {
 			value = Math.atan(value) * (180 / Math.PI);
-		}
 		// if "Rad" is checked...
-		else if(trigmeth[1].checked){
+		} else if(trigmeth[1].checked) {
 			value = Math.atan(value);
-		}
 		// if "Grad" is checked...
-		else if(trigmeth[2].checked){
+		} else if(trigmeth[2].checked) {
 			value = Math.atan(value) * (200 / Math.PI);
 		}
-	}
-	else if(f=="10tox"){
+	} else if (f=="10tox") {
 		value = Math.exp(value * Math.LN10);
-	}
-	else if(f=="etox"){
+	} else if (f=="etox") {
 		value = Math.exp(value);
-	}
-	else if(f=="2tox"){
+	} else if (f=="2tox") {
 		value = Math.exp(value * Math.LN2);
-	}
-	else if(f=="xsq"){
+	} else if (f=="xsq") {
 		value = value*value;
-	}
-	else if(f=="not"){
+	} else if(f=="not") {
 		value = ~ value;
 	}
 	update();
-}
-
+};
 
 var checkbase= function(e) {
-	if(e >= base){
+	if (e >= base) {
 		return false;
-	}
-	else{
+	} else {
 		return true;
 	}
-}
+};
 
-var angleConvert = function(e){
+angleConvert = function(e) {
 	if (e == "deg"){
-		if (angleMeasure == "rad"){
+		if (angleMeasure == "rad") {
 			value = (180 / Math.PI) * value;
-		}
-		else if (angleMeasure == "grad"){
+		} else if (angleMeasure == "grad"){
 			value = (180 / 200) * value;
 		}
 		angleMeasure = "deg";
-	}
-	else if (e == "rad"){
-		if (angleMeasure == "deg"){
+	} else if (e == "rad") {
+		if (angleMeasure == "deg") {
 			value = (Math.PI / 180) * value;
-		}
-		else if (angleMeasure == "grad"){
+		} else if (angleMeasure == "grad") {
 			value = (Math.PI / 200) * value;
 		}
 		angleMeasure = "rad";
-	}
-	else if (e == "grad"){
-		if (angleMeasure == "deg"){
+	} else if (e == "grad") {
+		if (angleMeasure == "deg") {
 			value = (200 / 180) * value;
-		}
-		else if (angleMeasure == "rad"){
+		} else if (angleMeasure == "rad") {
 			value = (200 / Math.PI) * value;
 		}
 		angleMeasure = "grad";
 	}
 	equals();
-}
-
+};
