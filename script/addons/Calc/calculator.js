@@ -3,6 +3,7 @@
 //	2010-06-05 Mark Nord - initial release - public beta
 //	2010-08-23 Mark Nord - Buttons enabled, should work on PRS 600 too
 //	2010-11-21 kartu - Fixed getSoValue related bugs, removed stale code, reformatted in line with the rest of PRS+
+//	2010-11-21 kartu - Fixed openp/closep (renamed to popen/pclose)
 
 // GLOBAL VARIABLES
 var digitsMaximum = 16; 
@@ -31,7 +32,7 @@ var digits;
 
 // forward declaration
 var clearAll, clear, mathOp, equals, freshstart, sign, 
-	period, evalx, exp, func, angleConvert; 
+	period, evalx, exp, func, angleConvert, popen, pclose; 
 
 var trigmeth  = [
 	[{checked:true}],
@@ -375,14 +376,12 @@ target.doCenterF = function() {
 					exp();
 					break;
 				case "pclose":
-					// kartu: calls what?
 					pclose();
 					break;
 				case "period": 
 					period();
 					break;
 				case "popen":
-					// kartu: calls what?
 					popen();
 					break;
 				case "sign":  
@@ -591,7 +590,7 @@ var pop = function() {
 	return true;
 };
 
-var openp =  function(){
+popen =  function(){
 	enter();
 	if (!push(0,'(',0)){
 		value = "NAN";
@@ -599,7 +598,7 @@ var openp =  function(){
 	update();
 };
 
-var closep =  function(){
+pclose =  function(){
 	enter();
 	while (evalx()); // empty block
 	update();
