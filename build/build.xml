@@ -12,7 +12,7 @@
 <!-- CRAMFS specific -->
 <property name="FW_VER_FILE" value="${TMP}/${FW}/opt/prspfw.ver" />
 <property name="PRSP_DIR_CRAMFS" value="${TMP}/${FW}/${MODEL}/opt/sony/ebook/application/resources/prsp" />
-<!-- ISO specific -->
+<!-- ISO specific FIXME: this name is confusing, as mounting ISO didn't work, switched back to CRAMFS, rename the setting to somehting more appropriate, say mountable/flashable-->
 <property name="PRSP_DIR_ISO" value="${TMP}/${FW}/${MODEL}/resources/prsp" />
 	
 <!-- =================== Task Defs ================================= -->
@@ -85,7 +85,7 @@
 			<include name="compat/*.js" />
 		</fileset>
 	</copy>
-	<copy todir="${PRSP_DIR_CRAMFS}/addons">
+	<copy todir="${PRSP_DIR_ISO}/addons">
 		<fileset dir="${TMP}/${SC}/addons">
 			<exclude name="*.js" />
 			<include name="**/*.*" />
@@ -277,8 +277,8 @@
 		<fileset dir="${DIST}" />
 	</zip>
 	
-	<!-- Delete temporary folder -->
-	<delete dir="${TMP}" failonerror="false"/>
+	<!-- Delete temporary folder TODO restore -->
+	<!-- delete dir="${TMP}" failonerror="false"/-->
 </target>
 
 </project>
