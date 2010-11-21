@@ -6,6 +6,7 @@
 //	2010-03-14 kartu - Initial version, refactored from Utils
 //	2010-04-17 kartu - Moved global vars into local functions context
 //	2010-07-09 kartu - Renamed file so that it is loaded before other modules
+//	2010-11-21 kartu - Moved libfsk to resources/prsp subfolder
 
 try {
 	// dummy function, to avoid introducing global vars
@@ -24,7 +25,7 @@ try {
 			"PATH=\"/usr/local/bin:/usr/bin:/sbin:/bin:/usr/bin/X11:/usr/games:/usr/local/sony/bin:/usr/sbin\"\n" +
 			"LD_LIBRARY_PATH=\"/opt/sony/ebook/application:/lib:/usr/lib:/usr/local/sony/lib:/opt/sony/ebook/lib\"\n" +
 			"export PATH LD_LIBRARY_PATH\n";
-		var VM_FILE = "/opt/sony/ebook/application/prspVM.xml";	
+		var VM_FILE = "/opt/sony/ebook/application/resources/prsp/prspVM.xml";	
 		var RESULT_FILE = "/tmp/__result__";
 		
 		Core.shell.SD = 0;
