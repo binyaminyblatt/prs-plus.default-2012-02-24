@@ -285,16 +285,10 @@ return {
 		VALUE_ALWAYS: "Always",
 		VALUE_NEVER: "Never",
 		VALUE_DISABLED: "Disabled",
-		OPTION_REPLACE: "History into Continue Reading",
 		VALUE_ON: "On",
 		VALUE_OFF: "Off",
 		OPTION_SKIP_BOOK_MENU: "Skip Book Menu"
 	},
-
-//ReadMark	ReadMark: {
-//		TITLE_UNREAD: "Mark Book - Already Read",
-//		TITLE_READ: "Mark Book - Not Yet Read",
-//	},
 
 	TextScale: {
 		OPTION_SCALE_DEFAULT: "Default Scale",
@@ -322,6 +316,6 @@ return {
 		ACTION_DICTIONARY: "Launch Dictionary",
 		OPTION_DICTIONARY: "Dictionary File",
 		VALUE_DISABLED: "Disabled",
-		VALUE_DEFAULT: "default",
+		VALUE_DEFAULT: "default"
 	}
 };

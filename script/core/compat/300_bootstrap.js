@@ -6,6 +6,7 @@
 // History:
 //	2010-09-02 kartu - Initial version
 //	2010-09-07 kartu - Added Italian translation by Samhain
+//	2010-11-27 kartu - Added Georgian translation by raverfas
 
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -17,22 +18,24 @@ var localize = function(Core) {
 		currentLang = kbook.model.language;
 
 		settingsNode = kbook.root.nodes[6];
-		languages = ["en", "de", "fr", "nl", "it", "ru"];
+		languages = ["en", "de", "fr", "ge", "it", "nl", "ru"];
 		prspLanguages = {
 			en: "English.js",
 			de: "Deutsch.js",
 			fr: "French.js",
+			ge: "Georgian.js",
+			it: "Italian.js",
 			nl: "English.js", // missing Dutch PRS+ translation
-			ru: "Russian.js",
-			it: "Italian.js"
+			ru: "Russian.js"
 		};
 		langNames = {
 			en: "English",
 			de: "Deutsch", 
-			fr: "Français", 
+			fr: "Français",
+			it: "Italiano",	
+			ge: "ქართული",
 			nl: "Nederlands", 
-			ru: "Русский",
-			it: "Italiano"
+			ru: "Русский"
 		};
 
 		if (currentLang === undefined || prspLanguages[currentLang] === undefined) {
