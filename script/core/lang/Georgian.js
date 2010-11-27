@@ -24,6 +24,7 @@
 //	2010-05-20 kartu - Removed script reference from about string
 //	2010-06-29 kartu - Split KeyBindings keys into KeyBindings and StandardActions
 //				Added 0-9 translations
+//	2010-11-27 kartu - Amended translations with changes up to 2.0.3preview
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 0) {
@@ -299,10 +300,12 @@ return {
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS:  "PRS+ პარამეტრები",
+		NODE_PRSP_SETTINGS_SHORT: "PRS+ პარამ.",
 		NODE_OTHERS: "მულტიმედია",
 		NODE_GAMES_AND_UTILS: "თამაშები და უტილიტები",
 		GROUP_MENU_TITLE: "მენიუს პარამეტრები",
-		GROUP_VIEWER_TITLE: "წიგნის მნახველის პარამეტრები"
+		GROUP_VIEWER_TITLE: "წიგნის მნახველის პარამეტრები",
+		MSG_RESTART: "საჭიროებს გადატვირთვას"
 	},
 
 	CoreLang: {
@@ -317,8 +320,8 @@ return {
 		ddMMMYYYY: "31/იან/1999",
 		ddMONTHYYYY: "31/იანვარი/1999",
 
-		OPTION_DATE_SEPARATOR: "თარიღის სიმბოლო",
-		VALUE_SPACE: "space",
+		OPTION_DATE_SEPARATOR: "გამყოფი სიმბოლო",
+		VALUE_SPACE: "ინტერვალი",
 		VALUE_NONE: "არაფერი",
 
 		MONTH_SHORT_1: "იან",
@@ -460,6 +463,7 @@ return {
 		VALUE_BY_AUTHOR_SWAPPING: "ავტორის სახელის, შემდეგ გვარის მიხ.",
 		VALUE_BY_FILENAME: "ფაილის სახელის მიხ.",
 		OPTION_TITLE_SORTER: "'titleSorter' ველის მიხ.",
+		OPTION_FAVOURITE_FOLDERS: "რჩეული ფოლდერები",		
 		ENABLED: "ჩარ",
 		DISABLED: "გამ",
 		OPTION_IM_ROOT: "შიდა მეხს. საწყისი ფოლდერი",
@@ -472,6 +476,7 @@ return {
 		NODE_COPY_AND_RESCAN_COMMENT: "აკოპირებს ფაილს შ.მ.-ში და იწყებს სკანირებას",
 		ERROR_TARGET_EXISTS: "შეცდომა: ფაილი ასეთი სახელით არსებობს",
 		NODE_BROWSE_FOLDERS: "ფოლდერების დათვალიერება",
+		NODE_BROWSE_FOLDERS_SHORT: "ფოლდერები",		
 		NODE_BROWSE_FOLDERS_COMMENT: "ფაილური სისტემის დათვალიერება",
 		NODE_INTERNAL_MEMORY: "შიდა მეხსიერება",
 		NODE_MEMORY_STICK: "Memory Stick",
@@ -480,7 +485,11 @@ return {
 		NODE_SD_CARD_MOUNT: "SD კარტა mount-ის გამოყებნებით"
 	},
 
-	Clock: {
+	StatusBar: {
+		TITLE: "სტატუსის ზოლი"
+	},
+	
+	StatusBar_Clock: {
 		TITLE: "საათი",
 		OPTION_STYLE: "საათის სტილი",
 		VALUE_24H: "24 საათი",
@@ -495,7 +504,7 @@ return {
 		PM: "pm"
 	},
 
-	PageIndex: {
+	StatusBar_PageIndex: {
 		TITLE: "გვერდის სტატუსი (1 - 1)",
 		INDEX_STYLE_BOOK: "ინდექსის სტილი წიგნებში",
 		INDEX_MODE_BOOK: "ინდექსის რეჟიმი წიგნებში",
@@ -519,18 +528,17 @@ return {
 	BookHistory: {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_PAGE_X: FUNC_PAGE_X,
-		TITLE: "Book History",
+		TITLE: "წიგნების ისტორია",
+		SHORT_TITLE:  "ისტორია",
+		VALUE_WHEN_ENTERING_BOOK: "წიგნის გაშლისას",
+		VALUE_WHEN_EXITING_BOOK: "წიგნის დახურვისას",
+		VALUE_ALWAYS: "ყოველთვის",		
+		VALUE_NEVER: "არასდროს",
 		VALUE_DISABLED: "გამორთულია",
-		OPTION_REPLACE: "History into Continue Reading",
 		VALUE_ON: "ჩართულია",
 		VALUE_OFF: "გამორთულია",
 		OPTION_SKIP_BOOK_MENU: "წიგნის მენიუს გამოტოვება"
 	},
-
-//ReadMark	ReadMark: {
-//		TITLE_UNREAD: "Mark Book - Already Read",
-//		TITLE_READ: "Mark Book - Not Yet Read",
-//	},
 
 	TextScale: {
 		OPTION_SCALE_DEFAULT: "ნაგულისხმები მასშტაბი",
@@ -541,9 +549,15 @@ return {
 		VALUE_ENABLED: "ჩართულია"
 	},
 
-	MenuTuning: {
-		OPTION_OUTER: "მენიუს სათაური შეიცავს"
-	},
+	MenuCustomizer: {
+		TITLE: "მთავარი მენიუს მორგება",
+		VALUE_YES: "კი",
+		VALUE_NO: "არა",
+		VALUE_DEFAULT: "ნაგულისხმევი",
+		SLOT: "ჭრილი #",
+		MENU_ITEM: "მენიუს ელემენტი",
+		MENU_SEPARATOR: "მენიუს გამყოფი"
+	},	
 
 	Dictionary: {
 		TITLE: "ლექსიკონი",
@@ -551,6 +565,7 @@ return {
 		WARN_DICT_DOESNT_EXIST: "ლექსიკონის ფაილი არ არსებობს!",
 		ACTION_DICTIONARY: "ლექსიკონის გაშვება",
 		OPTION_DICTIONARY: "ლექსიკონის ფაილი",
-		VALUE_DISABLED: "გამორთულია"
+		VALUE_DISABLED: "გამორთულია",
+		VALUE_DEFAULT: "ნაგულისხმევი"		
 	}
 };
