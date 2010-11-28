@@ -6,25 +6,33 @@
 //	2010-06-29 kartu - Initial version
 //	2010-09-24 kartu - Added hasJoypadButtons / hasOtherButtons
 //				Added support for 600 (new event system, handleEvent is called for UP and DOWN and HOLD events)
+//	2010-11-28 kartu - Added option for actions to pass control to the default key handler
 
 tmp = function() {
-	var KeyBindings;
-	var STATE_GLOBAL = "ALL";
-	var contexts = [STATE_GLOBAL, "MENU", "PAGE"];
-	var contextsLen = contexts.length;
-	var defVal = "default";
-	var contextLabels; // "when in menu" etc, initialized in pre init, 
-	var values = []; // list of action names, initialized in pre init
-	var valueTitles = {}; // localized list of action names, initialized in pre init
-	var actionName2action = {}; // action name to actual function map, initialized in pre init
-	var L; // localize function, initialized in pre init
-	var compat; // compatibility configuration variable, initialized in pre init
-	var keyCodes; // initialized in pre init
-	var oldHandleEvent = Fskin.device.handleEvent; // saving original event handler
-	var options; // addon's options, initialized in onInit
+	var KeyBindings, STATE_GLOBAL, contexts, contextsLen, defVal, contextLabels,
+		values, valueTitles, actionName2action, L, compat, keyCodes,
+		oldHandleEvent, options, getBoundAction, handleEvent,
+		handleEvent2, createOptionDef, createValueList, createButtonOptions,
+		createNumericButtonOptions, createJoypadButtonOptions, createVolumeButtonOptions,
+		createOtherButtonOptions;
+	STATE_GLOBAL = "ALL";
+	contexts = [STATE_GLOBAL, "MENU", "PAGE"];
+	contextsLen = contexts.length;
+	defVal = "default";
+	values = []; // list of action names, initialized in pre init
+	valueTitles = {}; // localized list of action names, initialized in pre init
+	actionName2action = {}; // action name to actual function map, initialized in pre init
+	oldHandleEvent = Fskin.device.handleEvent; // saving original event handler
+
+	// variables
+	//contextLabels; // "when in menu" etc, initialized in pre init, 
+	//L; // localize function, initialized in pre init
+	//compat; // compatibility configuration variable, initialized in pre init
+	//keyCodes; // initialized in pre init
+	//options; // addon's options, initialized in onInit
 	
 	// Returns action bound to the key, or undefined, if not bound
-	var getBoundAction = function (key, state) {
+	getBoundAction = function (key, state) {
 		// Direct match
 		var actionName = options[state + key];
 		if (actionName !== undefined &&  actionName !== defVal) {
@@ -39,16 +47,17 @@ tmp = function() {
 	};
 	
 	// Handles key events, calling corresponding handler, if set (300/505)
-	var handleEvent = function (target, event) {
+	handleEvent = function (target, event) {
 		try {
-			var key = event.getKey();
-			var state = kbook.model.STATE;
+			var key, state, action;
+			key = event.getKey();
+			state = kbook.model.STATE;
 			
-			var action = getBoundAction(key, state);
-			
+			action = getBoundAction(key, state);
 			if (action !== undefined) {
-				action.action();
-				return;
+				if (!action.action()) {
+					return;
+				}
 			}
 		} catch (e) {
 			try {
@@ -60,22 +69,23 @@ tmp = function() {
 	};	
 
 	// Handles key events, calling corresponding handler, if set (version that supports 600 and, hopefully, the newer versions)
-	var handleEvent2 = function (target, event, a, b) {
+	handleEvent2 = function (target, event, a, b) {
 		try {
 			// Only next / previous keys of 600 (and probably later versions) respond to this, not worth the hussle
 			// -1 press, 2 hold, 1 release
 			//var type = Fskin.customHoldTimePart.getEventValue(event);
-			
-			var key = this.getEventKey(event);
-			var state = kbook.model.STATE;
+			var key, state, action;	
+			key = this.getEventKey(event);
+			state = kbook.model.STATE;
 			if (state == "MENU_HOME") {
 				state = "MENU";
 			}
-			var action = getBoundAction(key, state);
+			action = getBoundAction(key, state);
 			
 			if (action !== undefined) {
-				action.action();
-				return;
+				if (!action.action()) {
+					return;
+				}
 			} else if (getBoundAction(key + "State", state)) {
 				// Ignore "state" messages since there is a bound key
 				return;
@@ -95,13 +105,14 @@ tmp = function() {
 	//		contexts[2] + key
 	//		...
 	//		contexts[n] + key
-	var createOptionDef = function(groupTitle, key) {
-		var group = {
+	createOptionDef = function(groupTitle, key) {
+		var group, i;
+		group = {
 			groupTitle: groupTitle,
 			groupIcon: "FOLDER"
 		};
 		group.optionDefs = [];
-		for (var i = 0; i < contextsLen; i++) {
+		for (i = 0; i < contextsLen; i++) {
 			group.optionDefs.push({
 				name: contexts[i] + key,
 				title: contextLabels[i],
@@ -114,13 +125,14 @@ tmp = function() {
 	};
 	
 	// Fills values & valueTitles arrays with actions
-	var createValueList = function() {
+	createValueList = function() {
+		var i, n, action, actions;
 		// Fill value list with actions
 		values.push(defVal);
 		valueTitles[defVal] = L("DEFAULT_VALUE");
-		var actions = Core.actions;
-		for (var i = 0, n = actions.length; i < n; i++) {
-			var action = actions[i];
+		actions = Core.actions;
+		for (i = 0, n = actions.length; i < n; i++) {
+			action = actions[i];
 			if (action && action.hasOwnProperty("name")) {
 				values.push(action.name);
 				actionName2action[action.name] = action;
@@ -131,11 +143,12 @@ tmp = function() {
 		}			
 	};
 	
-	var createButtonOptions = function(keys, opDefs) {
-		for (var i = 0, n = keys.length; i < n; i++) {
+	createButtonOptions = function(keys, opDefs) {
+		var i, n, key, keyCode;
+		for (i = 0, n = keys.length; i < n; i++) {
 			// simple key press	
-			var key = keys[i];
-			var keyCode = keyCodes[key]; 
+			key = keys[i];
+			keyCode = keyCodes[key]; 
 			if (keyCode !== undefined) {
 				opDefs.push(createOptionDef(L("BN_" + key.toUpperCase()), keyCode));
 			}
@@ -148,7 +161,7 @@ tmp = function() {
 		}
 	};
 	
-	var createNumericButtonOptions = function() {
+	createNumericButtonOptions = function() {
 		// Numeric buttons
 		if (compat.hasNumericButtons) {
 			var numberGroup = {
@@ -161,7 +174,7 @@ tmp = function() {
 		}
 	};
 	
-	var createJoypadButtonOptions = function() {
+	createJoypadButtonOptions = function() {
 		if (compat.hasJoypadButtons) {
 			// Joypad buttons
 			var joypadGroup = {
@@ -174,7 +187,7 @@ tmp = function() {
 		}
 	};
 	
-	var createVolumeButtonOptions = function() {
+	createVolumeButtonOptions = function() {
 		// Volume buttons
 		if (compat.hasVolumeButtons) {
 			var volumeGroup = {
@@ -187,7 +200,7 @@ tmp = function() {
 		}	
 	};
 	
-	var createOtherButtonOptions = function() {
+	createOtherButtonOptions = function() {
 		if (compat.hasOtherButtons) {
 			var otherGroup = {
 				groupTitle: L("OTHER_BUTTONS"),
@@ -224,6 +237,7 @@ tmp = function() {
 		
 		onInit: function() {
 			options = this.options;
+			// FIXME: determine reader version based on info from compat
 			if (Fskin.deviceBooleanPart) {
 				// 600+
 				Fskin.device.handleEvent = handleEvent2;

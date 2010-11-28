@@ -4,26 +4,44 @@
 //
 // History:
 //	2010-06-27 kartu - Adapted for 300 from former KeyBindings addon
+//	2010-11-28 kartu - 600: Implemented #31 "Use Volume buttons to move through history"
+//				300: Fixed "next/prev" page actions consuming "goto page" key events 
 
 tmp = function() {
-	var L = Core.lang.getLocalizer("StandardActions");
+	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled;
+	NAME = "StandardActions";
+	L = Core.lang.getLocalizer(NAME);
+	log = Core.log.getLogger(NAME);
 
-	// Saving original functions
-	var model = kbook.model;
-	var book = model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
-	var bookDoNext = book.doNext;
-	var bookDoPrevious = book.doPrevious;
-	var bookDoLeft = book.doLeft;
-	var bookDoRight = book.doRight;
-	var bookDoCenter = book.doCenter;
+	// Shortcuts
+	model = kbook.model;
+	book = model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
+	isBookEnabled = function() {
+		return book.isEnabled();
+	}
+	
+	// Cross-model do history
+	//	whereTo - integer, positive moves back
+	doHistory = function (whereTo) {
+		try {
+			if (model.currentBook && model.currentBook.media) {
+				if (model.currentBook.media.rememberBy(kbook.bookData, whereTo)) {
+					return;
+				}
+			}		
+		} catch (e) {
+			log.error("doHistory", e);
+		}
+		model.doBlink();
+	};
 
-	var StandardActions = {
-		name: "StandardActions",
+	StandardActions = {
+		name: NAME,
 		title: L("TITLE"),
 		icon: "SETTINGS",
 		onPreInit: function() {
 			if (Core.config.compat.hasVolumeButtons) {
-				this.addons.push({
+				this.actions.push({
 					name: "NextSong",
 					title: L("ACTION_NEXT_SONG"),
 					group: "Utils",
@@ -32,7 +50,7 @@ tmp = function() {
 						model.doGotoNextSong();
 					}
 				});
-				this.addons.push({
+				this.actions.push({
 					name: "PreviousSong",
 					title: L("ACTION_PREVIOUS_SONG"),
 					group: "Utils",
@@ -42,6 +60,22 @@ tmp = function() {
 					}
 				});
 				
+			}
+			// FIXME: implicit "is touchscreen device"
+			if (Core.config.compat.hasJoypadButtons) {
+				this.actions.push({
+					name: "GotoLink",
+					title: L("ACTION_GOTO_LINK"),
+					group: "Utils",
+					icon: "NEXT_PAGE",
+					action: function () {
+						if (isBookEnabled()) {
+							book.doCenter();
+						} else {
+							return true;
+						}
+					}
+				});
 			}
 		},
 		
@@ -61,7 +95,11 @@ tmp = function() {
 				group: "Utils",
 				icon: "NEXT_PAGE",
 				action: function () {
-					bookDoNext.call(book);
+					if (isBookEnabled()) {
+						book.doNext();
+					} else {
+						return true;
+					}
 				}
 			},
 			{
@@ -70,7 +108,11 @@ tmp = function() {
 				group: "Utils",
 				icon: "PREVIOUS_PAGE",
 				action: function () {
-					bookDoPrevious.call(book);
+					if (isBookEnabled()) {
+						book.doPrevious();
+					} else {
+						return true;
+					}
 				}
 			},
 			{
@@ -79,7 +121,11 @@ tmp = function() {
 				group: "Utils",
 				icon: "NEXT_PAGE",
 				action: function () {
-					bookDoRight.call(book);
+					if (isBookEnabled()) {
+						doHistory(-1);
+					} else {
+						return true;
+					}
 				}
 			},
 			{
@@ -88,21 +134,16 @@ tmp = function() {
 				group: "Utils",
 				icon: "PREVIOUS_PAGE",
 				action: function () {
-					bookDoLeft.call(book);
-				}
-			},
-			{
-				name: "GotoLink",
-				title: L("ACTION_GOTO_LINK"),
-				group: "Utils",
-				icon: "NEXT_PAGE",
-				action: function () {
-					bookDoCenter.call(book);
+					if (isBookEnabled()) {
+						doHistory(1);
+					} else {
+						return true;
+					}
 				}
 			},
 			{
 				name: "ContinueReading",
-				title: L("CONTINUE_READING"),
+				title: L("ACTION_CONTINUE_READING"),
 				group: "Utils",
 				icon: "CONTINUE",
 				action: function () {

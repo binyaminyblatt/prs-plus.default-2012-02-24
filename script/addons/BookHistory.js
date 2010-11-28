@@ -31,7 +31,7 @@
 //				changed skipBookMenu options to: never, always, when entering book, when exiting book
 //	2010-09-16 kartu - Fixed: new books weren't added to BH until restart
 //	2010-09-25 kartu - Adapted for 600 (removed direct reference to model.current)
-//	2010-11-10 kartu - Renamed menu node icon from LIST to BOOK_HISTORY (TODO fix it for 300)
+//	2010-11-10 kartu - Renamed menu node icon from LIST to BOOK_HISTORY
 //				added "short title" (for small buttons of touch readers etc)
 //				renamed "opening" book to "entering" book
 

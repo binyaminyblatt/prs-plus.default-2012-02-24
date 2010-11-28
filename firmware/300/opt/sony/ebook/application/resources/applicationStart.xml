@@ -110,6 +110,19 @@
 			<string key="9" do="doDigit" />
 			<string key="0" do="doDigit" />
 
+			<!-- Introduced by PRS+, "hold" fix by Mark Nord & kravitz -->
+			<string key="11" do="doHold1"/>
+			<string key="12" do="doHold2"/>
+			<string key="13" do="doHold3"/>
+			<string key="14" do="doHold4"/>
+			<string key="15" do="doHold5"/>
+			<string key="16" do="doHold6"/>
+			<string key="17" do="doHold7"/>
+			<string key="18" do="doHold8"/>
+			<string key="19" do="doHold9"/>
+			<string key="10" do="doHold0"/>
+			<!-- end -->
+
 			<string key="kHold1" do="doHold1"/>
 			<string key="kHold2" do="doHold2"/>
 			<string key="kHold3" do="doHold3"/>
