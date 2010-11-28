@@ -152,17 +152,21 @@ return {
 		BN_H_MENU: "Holding Menu Button",
 		BN_H_SB_NEXT: "Holding Sidebar 'Next Page'",
 		BN_H_SB_PREVIOUS: "Holding Sidebar 'Previous Page'",
-		BN_H_JP_CENTER: "Holding Joypad Center Button",
-		BN_H_1: "Hold 1",
-		BN_H_2: "Hold 2",
-		BN_H_3: "Hold 3",
-		BN_H_4: "Hold 4",
-		BN_H_5: "Hold 5",
-		BN_H_6: "Hold 6",
-		BN_H_7: "Hold 7",
-		BN_H_8: "Hold 8",
-		BN_H_9: "Hold 9",
-		BN_H_0: "Hold 0",
+		BN_H_JP_LEFT: "Holding Joypad Left",
+		BN_H_JP_RIGHT: "Holding Joypad Right",
+		BN_H_JP_UP: "Holding Joypad Up",
+		BN_H_JP_DOWN: "Holding Joypad Down",
+		BN_H_JP_CENTER: "Holding Joypad Center",
+		BN_H_1: "Holding 1",
+		BN_H_2: "Holding 2",
+		BN_H_3: "Holding 3",
+		BN_H_4: "Holding 4",
+		BN_H_5: "Holding 5",
+		BN_H_6: "Holding 6",
+		BN_H_7: "Holding 7",
+		BN_H_8: "Holding 8",
+		BN_H_9: "Holding 9",
+		BN_H_0: "Holding 0",
 		BN_1: "1",
 		BN_2: "2",
 		BN_3: "3",
@@ -174,12 +178,15 @@ return {
 		BN_9: "9",
 		BN_0: "0",
 		BN_VOLUME_DOWN: "Volume -",
-		BN_H_VOLUME_DOWN: "Hold Volume -",
+		BN_H_VOLUME_DOWN: "Holding Volume -",
 		BN_VOLUME_UP: "Volume +",
-		BN_H_VOLUME_UP: "Hold Volume +"
+		BN_H_VOLUME_UP: "Holding Volume +",
+		BN_HOME: "Home Button",
+		BN_H_HOME: "Holding Home Button"		
 	},		
 	
 	StandardActions: {
+		TITLE: "Standard Actions",
 		// Actions
 		ACTION_SHUTDOWN: "Shutdown",
 		ACTION_NEXT_PAGE: "Next Page",
@@ -188,7 +195,8 @@ return {
 		ACTION_PREVIOUS_IN_HISTORY: "Previous in History",
 		ACTION_PREVIOUS_SONG: "Previous Song",
 		ACTION_NEXT_SONG: "Next Song",
-		ACTION_GOTO_LINK: "Goto Link"
+		ACTION_GOTO_LINK: "Goto Link",
+		ACTION_CONTINUE_READING: "Continue Reading"
 	},
 
 	Screenshot: {
@@ -316,6 +324,19 @@ return {
 		ACTION_DICTIONARY: "Launch Dictionary",
 		OPTION_DICTIONARY: "Dictionary File",
 		VALUE_DISABLED: "Disabled",
-		VALUE_DEFAULT: "default"
+		VALUE_DEFAULT: "Default"
+	},
+	
+	MediaTag: {
+		TITLE: "Mark Books",
+		OPTION_POSITION: "Mark Position",
+		VALUE_OVER_ICON: "Left (over icon)",
+		VALUE_BOTTOM: "Bottom",
+		VALUE_RIGHT: "Right",
+		MARK_0: "Mark 1 (check)",
+		MARK_1: "Mark 2 (star)",
+		MARK_2: "Mark 3 (circle)",
+		MARK_3: "Mark 4 (square)",
+		MARK_4: "Mark 5 (triangle)"
 	}
 };

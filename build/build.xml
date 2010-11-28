@@ -9,11 +9,9 @@
 <property name="FW_DIR" value="${PRSPInst}/${FW}" />
 <property name="SC_DIR" value="${PRSPInst}/${SC}" />
 <property name="TOOLS_DIR" value="${PRSPInst}/tools" />
-<!-- CRAMFS specific -->
 <property name="FW_VER_FILE" value="${TMP}/${FW}/opt/prspfw.ver" />
-<property name="PRSP_DIR_CRAMFS" value="${TMP}/${FW}/${MODEL}/opt/sony/ebook/application/resources/prsp" />
-<!-- ISO specific FIXME: this name is confusing, as mounting ISO didn't work, switched back to CRAMFS, rename the setting to somehting more appropriate, say mountable/flashable-->
-<property name="PRSP_DIR_ISO" value="${TMP}/${FW}/${MODEL}/resources/prsp" />
+<property name="PRSP_DIR_FLASHABLE" value="${TMP}/${FW}/${MODEL}/opt/sony/ebook/application/resources/prsp" />
+<property name="PRSP_DIR_MOUNTABLE" value="${TMP}/${FW}/${MODEL}/resources/prsp" />
 	
 <!-- =================== Task Defs ================================= -->
 <!-- Tasks for compressing the script. Need two, since jsmin doesn't do advanced compression, but yui fails on some scripts. --> 
@@ -31,13 +29,13 @@
 />	
 	
 <!-- ======================== Settings ================================= -->	
-<!-- Distinguish between cramfs builds (flashable cramfs) and iso builds (bunch of iso files mounted on the fly) -->
-<condition property="build.ISO">
+<!-- Distinguish between flashable and mountable (bunch of files mounted on the fly) builds -->
+<condition property="build.MOUNTABLE">
 	<or>
 		<equals arg1="${MODEL}" arg2="600"/>
 	</or>
 </condition>
-<condition property="build.CRAMFS">
+<condition property="build.FLASHABLE">
 	<or>
 		<equals arg1="${MODEL}" arg2="300"/>
 		<equals arg1="${MODEL}" arg2="505"/>
@@ -72,20 +70,20 @@
 	<include name="${SC}/addons/TextEncoding.js"/>		
 </fileset>
 	
-<!-- ======================== ISO ================================= -->
-<!-- Creates ISO for "on the fly mountable" installs -->
-<target name="create-firmware.iso" if="build.ISO">
+<!-- ======================== MOUNTABLE ================================= -->
+<!-- Creates MOUNTABLE for "on the fly mountable" installs -->
+<target name="create-firmware.mountable" if="build.MOUNTABLE">
 	<!-- Copy script stuff to firmware folder -->
-	<copy file="${TMP}/tmp-core-min.js" tofile="${PRSP_DIR_ISO}/core.js" />
-	<copy file="${TMP}/tmp-addons-min.js" tofile="${PRSP_DIR_ISO}/addons.js" />
-	<copy file="${TMP}/${SC}/prsp-min.js" tofile="${PRSP_DIR_ISO}/prsp.js" />
-	<copy todir="${PRSP_DIR_ISO}">
+	<copy file="${TMP}/tmp-core-min.js" tofile="${PRSP_DIR_MOUNTABLE}/core.js" />
+	<copy file="${TMP}/tmp-addons-min.js" tofile="${PRSP_DIR_MOUNTABLE}/addons.js" />
+	<copy file="${TMP}/${SC}/prsp-min.js" tofile="${PRSP_DIR_MOUNTABLE}/prsp.js" />
+	<copy todir="${PRSP_DIR_MOUNTABLE}">
 		<fileset dir="${TMP}">
 			<include name="lang/*.js" />
 			<include name="compat/*.js" />
 		</fileset>
 	</copy>
-	<copy todir="${PRSP_DIR_ISO}/addons">
+	<copy todir="${PRSP_DIR_MOUNTABLE}/addons">
 		<fileset dir="${TMP}/${SC}/addons">
 			<exclude name="*.js" />
 			<include name="**/*.*" />
@@ -109,22 +107,22 @@
 	<copy file="${TMP}/${INSTALLER}/installer.sh" todir="${DIST}/PRSPInstaller" />	
 </target>
 
-<!-- ======================== CRAMFS ================================= -->
-<!-- Creates firmware for CRAMFS flashable installs --> 
-<target name="create-firmware.cramfs" if="build.CRAMFS">
+<!-- ======================== FLASHABLE ================================= -->
+<!-- Creates firmware for FLASHABLE flashable installs --> 
+<target name="create-firmware.flashable" if="build.FLASHABLE">
 	<!-- Copy script stuff to firmware folder -->
 	<mkdir dir="${FW_DIR}" />
-	<mkdir dir="${PRSP_DIR_CRAMFS}"/>
-	<copy file="${TMP}/tmp-core-min.js" tofile="${PRSP_DIR_CRAMFS}/core.js" />
-	<copy file="${TMP}/tmp-addons-min.js" tofile="${PRSP_DIR_CRAMFS}/addons.js" />
-	<copy file="${TMP}/${SC}/prsp-min.js" tofile="${PRSP_DIR_CRAMFS}/prsp.js" />
-	<copy todir="${PRSP_DIR_CRAMFS}">
+	<mkdir dir="${PRSP_DIR_FLASHABLE}"/>
+	<copy file="${TMP}/tmp-core-min.js" tofile="${PRSP_DIR_FLASHABLE}/core.js" />
+	<copy file="${TMP}/tmp-addons-min.js" tofile="${PRSP_DIR_FLASHABLE}/addons.js" />
+	<copy file="${TMP}/${SC}/prsp-min.js" tofile="${PRSP_DIR_FLASHABLE}/prsp.js" />
+	<copy todir="${PRSP_DIR_FLASHABLE}">
 		<fileset dir="${TMP}">
 			<include name="lang/*.js" />
 			<include name="compat/*.js" />
 		</fileset>
 	</copy>
-	<copy todir="${PRSP_DIR_CRAMFS}/addons">
+	<copy todir="${PRSP_DIR_FLASHABLE}/addons">
 		<fileset dir="${TMP}/${SC}/addons">
 			<exclude name="*.js" />
 			<include name="**/*.*" />
@@ -198,10 +196,10 @@
 	</copy>
 	
 	<!-- create installer -->
-	<antcall target="installer.cramfs"/>	
+	<antcall target="installer.flashable"/>	
 </target>
 
-<target name="installer.cramfs" if="build.CRAMFS">
+<target name="installer.flashable" if="build.FLASHABLE">
 	<mkdir dir="${PRSPInst}" />
 	<!-- Installer -->
 	<copy todir="${PRSPInst}">
@@ -265,20 +263,20 @@
 	</jsmin>	
 
 	<!-- Firmware -->
-	<antcall target="create-firmware.cramfs"/>
-	<antcall target="create-firmware.iso"/>
+	<antcall target="create-firmware.flashable"/>
+	<antcall target="create-firmware.mountable"/>
 	
 	<attrib archive="false">
 		<fileset dir="${DIST}"/>
 	</attrib>
 	
 	<!-- Release archive -->
+	<echo>Compressing release archive</echo>
 	<zip destfile="${DIST}/PRSP_${MODEL}_${PRSP_VER}_Installer.zip">
 		<fileset dir="${DIST}" />
 	</zip>
 	
-	<!-- Delete temporary folder TODO restore -->
-	<!-- delete dir="${TMP}" failonerror="false"/-->
+	<delete dir="${TMP}" failonerror="false" />
 </target>
 
 </project>

@@ -402,7 +402,11 @@ return {
 		BN_H_MENU: "დაჭერილი მენუს ღილაკი",
 		BN_H_SB_NEXT: "დაჭერილი გვერდითი 'შემდეგი'",
 		BN_H_SB_PREVIOUS: "დაჭერილი გვერდითი 'წინა'",
-		BN_H_JP_CENTER: "დაჭერილი ჯოისტიკის შუა ღილ.",
+		BN_H_JP_LEFT: "დაჭერილი ჯოისტ. მარცხენა ღილ.",
+		BN_H_JP_RIGHT: "დაჭერილი ჯოისტ. მარჯვენა ღილ.",
+		BN_H_JP_UP: "დაჭერილი ჯოისტ. ზედა ღილ.",
+		BN_H_JP_DOWN: "დაჭერილი ჯოისტ. ქვედა ღილ.",
+		BN_H_JP_CENTER: "დაჭერილი ჯოისტ. შუა ღილ.",
 		BN_H_1: "დაჭერილი 1",
 		BN_H_2: "დაჭერილი 2",
 		BN_H_3: "დაჭერილი 3",
@@ -426,10 +430,13 @@ return {
 		BN_VOLUME_DOWN: "ხმა -",
 		BN_H_VOLUME_DOWN: "დაჭერილი ხმა -",
 		BN_VOLUME_UP: "ხმა +",
-		BN_H_VOLUME_UP: "დაჭერილი ხმა +"
+		BN_H_VOLUME_UP: "დაჭერილი ხმა +",
+		BN_HOME: "ღილაკი \"სახლი\"",
+		BN_H_HOME: "დაჭერილი ღილაკი \"სახლი\""
 	},		
 	
 	StandardActions: {
+		TITLE: "სტანდარტული მოქმედება",
 		// Actions
 		ACTION_SHUTDOWN: "გათიშვა",
 		ACTION_NEXT_PAGE: "შემდეგი გვერდი",
@@ -438,7 +445,8 @@ return {
 		ACTION_PREVIOUS_IN_HISTORY: "შემდეგი ისტორიაში",
 		ACTION_PREVIOUS_SONG: "წინა სიმღერა",
 		ACTION_NEXT_SONG: "შემდეგი სიმღერა",
-		ACTION_GOTO_LINK: "ბმულის გახსნა"
+		ACTION_GOTO_LINK: "ბმულის გახსნა",
+		ACTION_CONTINUE_READING: "კითხვის გაგრძელება"
 	},
 
 	Screenshot: {
@@ -567,5 +575,18 @@ return {
 		OPTION_DICTIONARY: "ლექსიკონის ფაილი",
 		VALUE_DISABLED: "გამორთულია",
 		VALUE_DEFAULT: "ნაგულისხმევი"		
-	}
+	},
+	
+	MediaTag: {
+		TITLE: "წიგნების მარკირება",
+		OPTION_POSITION: "ნიშნის პოზიცია",
+		VALUE_OVER_ICON: "მარხენა ხატულაზე",
+		VALUE_BOTTOM: "ქვემოთ",
+		VALUE_RIGHT: "მარჯვნივ",
+		MARK_0: "ნიშანი 1 (თოლია)",
+		MARK_1: "ნიშანი 2 (ვარსკვლავი)",
+		MARK_2: "ნიშანი 3 (წრეწირი)",
+		MARK_3: "ნიშანი 4 (კვადრატი)",
+		MARK_4: "ნიშანი 5 (სამკუთხედი)"
+	}	
 };

@@ -5,7 +5,7 @@
 // History:
 //	2010-07-21 kartu - Initial version
 //	2010-09-28 kartu - Adapted for 600 (MENU_GROUP => MENU_DETAILS_GROUP)
-
+//	2010-11-27 kartu - Fixed #17 "clock is not updated when going from standby"
 // Available to sub-addons
 var StatusBar;
 
@@ -87,6 +87,8 @@ tmp = function() {
 		// Subscribe to "page changed" events in both menu and book
 		Core.events.subscribe(Core.events.EVENTS.BOOK_PAGE_CHANGED, updateBook);
 		Core.events.subscribe(Core.events.EVENTS.MENU_PAGE_CHANGED, updateMenu);
+		// Update when going back from standby
+		Core.events.subscribe(Core.events.EVENTS.RESUME, updateMenu);
 	};
 	
 	Core.addAddon(StatusBar);
