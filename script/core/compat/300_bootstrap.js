@@ -8,6 +8,7 @@
 //	2010-09-07 kartu - Added Italian translation by Samhain
 //	2010-11-27 kartu - Added Georgian translation by raverfas
 //	2010-11-28 kartu - First digit is ignored, if it is zero, when opening "goto" dialog
+//	2010-11-29 kartu - Renamed ga => ka
 
 tmp = function() {
 	var oldSetLocale, localize;
@@ -21,12 +22,12 @@ tmp = function() {
 			currentLang = kbook.model.language;
 	
 			settingsNode = kbook.root.nodes[6];
-			languages = ["en", "de", "fr", "ge", "it", "nl", "ru"];
+			languages = ["en", "de", "fr", "ka", "it", "nl", "ru"];
 			prspLanguages = {
 				en: "English.js",
 				de: "Deutsch.js",
 				fr: "French.js",
-				ge: "Georgian.js",
+				ka: "Georgian.js",
 				it: "Italian.js",
 				nl: "English.js", // missing Dutch PRS+ translation
 				ru: "Russian.js"
@@ -36,7 +37,7 @@ tmp = function() {
 				de: "Deutsch", 
 				fr: "Français",
 				it: "Italiano",	
-				ge: "ქართული",
+				ka: "ქართული",
 				nl: "Nederlands", 
 				ru: "Русский"
 			};
