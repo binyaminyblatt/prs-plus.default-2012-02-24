@@ -68,6 +68,7 @@
 	<include name="${SC}/addons/StatusBar_Clock.js"/>
 	<include name="${SC}/addons/StatusBar_PageIndex.js"/>		
 	<include name="${SC}/addons/TextEncoding.js"/>		
+	<include name="${SC}/addons/StandardActions.js"/>		
 </fileset>
 	
 <!-- ======================== MOUNTABLE ================================= -->
