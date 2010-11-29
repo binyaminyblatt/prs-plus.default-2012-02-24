@@ -19,6 +19,7 @@
 //				last 3 page changes will be taken into account instead of 5
 //	2010-05-24 kravitz - Fixed getPpm() result checking
 //	2010-07-21 kartu - Refactored as Statusbar "plugin"
+//	2010-11-29 kartu - ALL: implemented #16 "88.1% (add decimal) in statusbar"
 
 tmp = function() {
 	var log, L, lastTime, lastPage, ppmHistory, ppmIdx, MAX_PPM_HISTORY,
@@ -110,7 +111,7 @@ tmp = function() {
 
 	updateIndexBook = function () {
 		try {
-			var c, ii, i, per, show, timeLeft, ppm;
+			var c, ii, i, per, roundedPer, show, timeLeft, ppm;
 			switch (StatusBar.options.indexBookMode) {
 				case "always":
 					break;
@@ -126,7 +127,8 @@ tmp = function() {
 			if (!c) {
 				c++;
 			}
-			per = Math.floor((i / c) * 100);
+			per = (i / c) * 100;
+			roundedPer = per.toFixed(1);
 
 			show = "";
 
@@ -136,20 +138,20 @@ tmp = function() {
 					break;
 				case "XofYper":
 					// get percentage
-					show = ii + " " + L("OF") + " " + c + " (" + per + "%) ";
+					show = ii + " " + L("OF") + " " + c + " (" + roundedPer + "%) ";
 					break;
 				case "XdivY":
 					show = ii + " / " + c;
 					break;
 				case "XdivYper":
 					// get percentage
-					show = ii + " / " + c + " (" + per + "%) ";
+					show = ii + " / " + c + " (" + roundedPer + "%) ";
 					break;
 				case "XremYper":
-					show = ii + " + " + (c - i) + " (" + per + "%) ";
+					show = ii + " + " + (c - i) + " (" + roundedPer + "%) ";
 					break;
 				case "XremYperRem":
-					show = ii + " + " + (c - i) + " (" + (100 - per) + "%) ";
+					show = ii + " + " + (c - i) + " (" + (100 - per).toFixed(1) + "%) ";
 					break;
 				case "XdivYstats0":
 					show = ii + " / " + c +  " (" + getPpm(i) + ")";
