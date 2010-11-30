@@ -9,8 +9,9 @@
 //	2010-11-27 kartu - Added Georgian translation by raverfas
 //	2010-11-28 kartu - First digit is ignored, if it is zero, when opening "goto" dialog
 //	2010-11-29 kartu - Renamed ga => ka
+//	2010-11-30 kartu - Fixed #14 " * by author/title sorting doesn't work for non latin chars"
 
-tmp = function() {
+var tmp = function() {
 	var oldSetLocale, localize;
 	//-----------------------------------------------------------------------------------------------------
 	// Localization related code is model specific.  
@@ -162,6 +163,12 @@ tmp = function() {
 		} catch (ignore) {
 			bootLog("error in doDigit: " + ignore);
 		}
+	};
+	
+	// Fix sorting
+	var compareStrings =  Core.config.compat.compareStrings;
+	String.prototype.localeCompare = function(a) {
+		return compareStrings(this.valueOf(), a);
 	};
 };
 

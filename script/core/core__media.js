@@ -13,7 +13,7 @@
 tmp = function() {
 	var findLibrary, findMedia, createMediaNode, isImage, startsWith;
 	// Shortcut
-	startsWith = Core.string.startsWith; 
+	startsWith = Core.text.startsWith; 
 	
 	/**
 	* Finds kinoma "source" (instance of FskCache.source) corresponding to the given full path

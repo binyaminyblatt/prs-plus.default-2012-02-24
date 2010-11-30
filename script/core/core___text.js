@@ -1,5 +1,5 @@
-// Name: String
-// Description: String related methods
+// Name: Text
+// Description: Strings & text related methods
 // Author: kartu
 //
 // History:
@@ -7,6 +7,7 @@
 //	2010-04-21 kartu - Reformatted
 //	2010-07-08 kartu - Added trim()
 //	2010-07-09 kartu - Renamed file so that it is loaded before other modules
+//	2010-11-30 kartu - Renamed to core___text
 
 try {
 	var ws = null;
@@ -21,7 +22,7 @@ try {
 		return ws;
 	};
 
-	Core.string = {
+	Core.text = {
 		compareStrings: function (a, b) {
 			return a.localeCompare(b);
 		},

@@ -7,7 +7,7 @@ LD_LIBRARY_PATH="/opt/sony/ebook/application:/lib:/usr/lib:/usr/local/sony/lib:/
 export PATH LD_LIBRARY_PATH
 
 # set initial date
-/bin/date 0101000009
+/bin/date 0101000007
 
 # Call custom script if ebook is not connected to USB
 USBCONN=`/bin/cat /proc/usbtg/connect`

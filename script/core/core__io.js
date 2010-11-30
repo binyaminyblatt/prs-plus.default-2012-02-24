@@ -7,6 +7,8 @@
 //	2010-04-21 kartu - Reformatted
 //	2010-07-09 kartu - Renamed file so that it is loaded before other modules
 //	2010-11-11 kartu - Added listFiles function
+//	2010-11-30 kartu - Refactoring Core.stirng => Core.text
+
 try {
 	Core.io = {
 		// Returns list of files in the directory. Accepts 0..*  extension arguments.
@@ -15,7 +17,7 @@ try {
 		//
 		listFiles : function(path, ext) {
 			var iterator, items, item, p, i, n, endsWith;
-			endsWith = Core.string.endsWith;
+			endsWith = Core.text.endsWith;
 			items = [];
 			try {
 				if (FileSystem.getFileInfo(path)) {
