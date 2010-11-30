@@ -34,6 +34,7 @@
 //	2010-11-10 kartu - Renamed menu node icon from LIST to BOOK_HISTORY
 //				added "short title" (for small buttons of touch readers etc)
 //				renamed "opening" book to "entering" book
+//	2010-11-30 kartu - Refactoring Core.stirng => Core.text
 
 tmp = function() {
 	var L, log, trim, model, BH_TITLE, BH_SHORT_TITLE, BH_FILE, BookHistory, bookList, mustSave, bookHistoryNode,
@@ -42,7 +43,7 @@ tmp = function() {
 		
 	L = Core.lang.getLocalizer("BookHistory");
 	log = Core.log.getLogger("BookHistory");
-	trim = Core.string.trim;
+	trim = Core.text.trim;
 	model = kbook.model;
 	
 	BH_TITLE = L("TITLE");

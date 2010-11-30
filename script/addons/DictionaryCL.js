@@ -4,10 +4,11 @@
 //
 // History:
 //	2010-05-01 kartu - Adapted for PRS+ from http://www.mobileread.com/forums/attachment.php?attachmentid=13182&d=1212445222
+//	2010-11-30 kartu - Refactoring Core.stirng => Core.text
 
 tmp = function() {
 	var L = Core.lang.getLocalizer("Dictionary");
-	var endsWith = Core.string.endsWith;
+	var endsWith = Core.text.endsWith;
 	var DISABLED = "disabled";
 	var log = Core.log.getLogger("DictionaryCL");
 	

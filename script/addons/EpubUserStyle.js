@@ -11,12 +11,13 @@
 //	2010-04-25 kartu - Marked onPreInit as constructor
 //	2010-04-27 kravitz - Joined "viewer" settings group
 //	2010-04-28 kravitz - Fixed user .css files path
+//	2010-11-30 kartu - Refactoring Core.stirng => Core.text
 
 tmp = function() {
 	// Localize
 	var L = Core.lang.getLocalizer("EpubUserStyle");
 
-	var endsWith = Core.string.endsWith;
+	var endsWith = Core.text.endsWith;
 
 	// Constants
 	var USER_CSS = "style.css";

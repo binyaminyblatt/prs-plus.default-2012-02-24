@@ -16,6 +16,7 @@
 //	2010-05-24 kartu - Fixed weird bug "after deleting collection reader jumps to main menu, instead of collection" (fix by kravitz) that occured only if there was no SD card
 //	2010-07-06 kartu - Rewritten from scratch, added "favourite folders" and picture,music,notes support
 //	2010-09-29 kartu - Fixed: only existing roots will be shown in BrowseFolders (i.e. SD card won't be shown, if it is not inserted) 
+//	2010-11-30 kartu - Refactoring Core.stirng => Core.text
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -24,8 +25,8 @@ tmp = function() {
 		doOpenHere, doCopyAndOpen;
 	log = Core.log.getLogger("BrowseFolders");
 	L = Core.lang.getLocalizer("BrowseFolders");
-	startsWith = Core.string.startsWith;
-	trim = Core.string.trim;
+	startsWith = Core.text.startsWith;
+	trim = Core.text.trim;
 	supportedMIMEs = {
 		"application/rtf": true,
 		"application/pdf": true,
