@@ -72,7 +72,6 @@ var tmp = function() {
 			});
 			
 			// Enter function for language children, changes locale and moves to parent
-			// TODO add "requires restart" popup message
 			enter = function() {
 				try {
 					// Code from kbook.xsb
@@ -82,6 +81,8 @@ var tmp = function() {
 					kbook.root.update(kbook.model);
 					kbook.model.writeFilePreference();
 					this.parent.gotoParent(kbook.model);
+					// TODO localize
+					Core.ui.showMsg("Requires restart");
 				} catch (e) {
 					bootLog("changing language", e);
 				}

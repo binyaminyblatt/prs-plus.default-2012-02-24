@@ -27,6 +27,7 @@
 //	2010-11-10 kartu - Changed the way missing translations are handled:
 //					1) if debug is enabled it will be loged
 //					2) key is returned instead of prefix + key (didn't fit on the screen most of the time anyway)
+//	2010-12-01 kartu - Switched back to returning prefix + key to give user some hint what's behind "TITLE"
 
 tmp = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
@@ -84,7 +85,7 @@ tmp = function() {
 					if (isDebug) {
 						log.trace("Missing translation " + prefix + key);
 					}
-					return key;                                                           
+					return prefix + key;
 				};
 				return f;
 			};
