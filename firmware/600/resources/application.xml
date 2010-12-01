@@ -5,6 +5,7 @@
 			<!-- PRS+ stuff -->
 			<variable name="prspModel" value="600" />
 			<variable name="prspPath" value="/opt/sony/ebook/application/resources/prsp/" />
+			<variable name="prspVersionFile" value="[prspPath]prspfw.ver" />
 			<variable name="prspCoreFile" value="[prspPath]core.js" />
 			<variable name="prspAddonsFile" value="[prspPath]addons.js" />
 			<variable name="prspStartupFile" value="[prspPath]prsp.js"/>
