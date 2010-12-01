@@ -24,25 +24,6 @@
 			<variable name="kFskDocumentViewerMinTextScale" value="0"/>
 			<variable name="PreferencesDir" value="/opt0/preferences/"/>
 			<variable name="kFskPlatformGrayEffectiveBit" value="3"/>
-
-			<!-- PRS+ stuff -->
-			<variable name="prspModel" value="300" />
-			<variable name="prspPath" value="/opt/sony/ebook/application/resources/prsp/" />
-			<variable name="prspCoreFile" value="[prspPath]core.js" />
-			<variable name="prspAddonsFile" value="[prspPath]addons.js" />
-			<variable name="prspStartupFile" value="[prspPath]prsp.js"/>
-			<variable name="prspSettingsPath" value="/opt0/prsp/"/>
-			<variable name="prspAddonsPath" value="[prspPath]addons/"/>
-			<variable name="prspCorePath" value="[prspPath]"/>
-			<variable name="prspPublicPath" value="/Data/database/system/PRSPlus/"/>
-			<variable name="prspUserCSSPath" value="[prspPublicPath]epub/"/>
-			<variable name="userDictionaryPath" value="[prspPublicPath]dictionary/"/>
-			<variable name="prspSafeModeFile" value="/tmp/safemode"/>
-			<variable name="prspLogFile" value="/Data/Beta/prsp.log"/>			
-
-			<!-- PRS+ Beta related stuff -->
-			<variable name="prspBetaStartupFile" value="/Data/Beta/prsp.js"/>
-			<variable name="prspBetaUserConfig" value="/Data/Beta/user.config"/>
 		</environment>
 
 		<debug>

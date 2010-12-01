@@ -78,6 +78,7 @@
 	<copy file="${TMP}/tmp-core-min.js" tofile="${PRSP_DIR_MOUNTABLE}/core.js" />
 	<copy file="${TMP}/tmp-addons-min.js" tofile="${PRSP_DIR_MOUNTABLE}/addons.js" />
 	<copy file="${TMP}/${SC}/prsp-min.js" tofile="${PRSP_DIR_MOUNTABLE}/prsp.js" />
+	<echo file="${PRSP_DIR_MOUNTABLE}/prspfw.ver">${PRSP_VER}</echo>	
 	<copy todir="${PRSP_DIR_MOUNTABLE}">
 		<fileset dir="${TMP}">
 			<include name="lang/*.js" />
@@ -277,7 +278,7 @@
 		<fileset dir="${DIST}" />
 	</zip>
 	
-	<delete dir="${TMP}" failonerror="false" />
+	<!-- delete dir="${TMP}" failonerror="false" / -->
 </target>
 
 </project>

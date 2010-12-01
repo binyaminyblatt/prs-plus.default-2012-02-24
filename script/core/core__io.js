@@ -8,6 +8,7 @@
 //	2010-07-09 kartu - Renamed file so that it is loaded before other modules
 //	2010-11-11 kartu - Added listFiles function
 //	2010-11-30 kartu - Refactoring Core.stirng => Core.text
+//	2010-11-30 kartu - Fixed nasty double-bug with getFileContent not working properly on 600 plus finally block hijacking control.
 
 try {
 	Core.io = {
@@ -53,18 +54,18 @@ try {
 		// If any kind of error happens (file doesn't exist, or is not readable etc) returns <defVal>
 		//
 		getFileContent: function (path, defVal) {
-			var stream;
+			var stream, result;
 			try {
-				stream = new Stream.File(path);
-				return stream.toString();
-			} catch (whatever) {
-			} finally {
+				stream = new Stream.File(path, 2);
 				try {
+					result = stream.toString();
+				} finally {
 					stream.close();
-				} catch (ignore) {
 				}
+			} catch (whatever) {
+				return defVal;
 			}
-			return defVal;
+			return result;
 		},
 		
 		// Sets content of the file <path> to <content>. If file exists it will be overwritten.
