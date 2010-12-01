@@ -7,6 +7,8 @@
 //	2010-09-02 kartu - Initial version
 //	2010-11-29 kartu - Added Georgian (by rawerfas) Italian #29 (by Salvatore Ingala) and Chinese #26 (by frank0734) translations
 //	2010-11-30 kartu - Fixed #14 " * by author/title sorting doesn't work for non latin chars"
+//	2010-12-01 kartu - Fixed #28 "Stand-by image should be independent of screen orientation" 
+//			(added landscape subfolder support, as there is no way to rotate the image
 
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -14,7 +16,7 @@
 //-----------------------------------------------------------------------------------------------------
 
 var tmp = function() {
-	var localize, localizeKeyboard, oldSetLocale, oldChangeKeyboardType, oldReadPreference, getRandomImage, wallpapers;
+	var localize, localizeKeyboard, oldSetLocale, oldChangeKeyboardType, oldReadPreference, getRandomWallpaper, wallpapers, landscapeWallpapers, oldCallback;
 	localize = function(Core) {
 		try {
 			var i, n, currentLang, settingsNode, langNode, languages, langNames, enter, 
@@ -205,14 +207,12 @@ var tmp = function() {
 				//"Georgian": "languages/KeyboardLayoutGeorgian.xml"
 			};
 			path = System.applyEnvironment('[keyboardLayoutPath]') ;
-			bootLog("changeKeyboardType " + langType + " path is " + path);
 			url = 'file://' + path + keyboardPaths[langType] ;
 			this.layoutData = null;
 			this.setURI(url);
 		} catch (e) {
 			// call the default version
 			oldChangeKeyboardType.apply(this, arguments);
-			bootLog("changeKeyboardType " + langType, e);
 		}
 	};
 	
@@ -246,7 +246,7 @@ var tmp = function() {
 	};
 	
 	// FIXME test
-	var oldCallback = FskCache._diskSource.synchronizeCallback;
+	oldCallback = FskCache._diskSource.synchronizeCallback;
 	FskCache._diskSource.synchronizeCallback = function() {
 		try {
 			if (Core && Core.config && Core.config.disableCardScan) {
@@ -263,31 +263,43 @@ var tmp = function() {
 		}
 	};
 	
-	getRandomImage = function(folder) {
+	getRandomWallpaper = function() {
+		var  path, folder, idx, list;
 		try {
-			var  path, idx;
-			if (!wallpapers) {
-				wallpapers = Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
+			if (kbook.model.container.getVariable('ORIENTATION')) {
+				// horizontal layout, use another set of pictures
+				folder = System.applyEnvironment("[prspPublicPath]wallpaper/landscape/");
+				if (!landscapeWallpapers) {
+					landscapeWallpapers = Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
+				}
+				list = landscapeWallpapers;
+			} else {
+				folder = System.applyEnvironment("[prspPublicPath]wallpaper/");
+				if (!wallpapers) {
+					wallpapers = Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
+				}
+				list = wallpapers;
 			}
-			while (wallpapers.length > 0) {
-				idx = Math.floor(Math.random() * wallpapers.length);
-				path = wallpapers[idx];
+
+			while (list.length > 0) {
+				idx = Math.floor(Math.random() * list.length);
+				path = list[idx];
 				if (Core.media.isImage(path)) {
 					return folder + path;
 				} else {
-					wallpapers.splice(idx, 1);
+					list.splice(idx, 1);
 				}
 			}
 		} catch (e) {
 			bootLog("error in random image " + e);
 		}
 	};
-	
+
+	// Standby image
 	standbyImage.draw = function() {
 		var window, path, bitmap, temp, port, x, y, bounds, ratio, width, height, ditheredBitmap, color;
 		window = this.root.window;
-	
-		path = getRandomImage(System.applyEnvironment("[prspPublicPath]wallpaper/"));
+		path = getRandomWallpaper();
 		
 		if (FileSystem.getFileInfo(path)) {
 			try {
@@ -322,10 +334,10 @@ var tmp = function() {
 			window.setPenColor(this.color);
 			window.fillRectangle(this);
 			window.setPenColor(color);
-		}	
+		}
 	};
 	
-	// Fix sorting
+	// Fix sorting (unicode order)
 	var compareStrings =  Core.config.compat.compareStrings;
 	String.prototype.localeCompare = function(a) {
 		return compareStrings(this.valueOf(), a);
