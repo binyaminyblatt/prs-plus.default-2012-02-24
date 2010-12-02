@@ -240,6 +240,12 @@ var tmp = function() {
 			if (kbook.root.nodes[3].hasOwnProperty("homelargekind")) {
 				Fskin.kbookMenuHome.homeMenu.vertical.items[2].kind = kbook.root.nodes[3].homelargekind;
 			}
+			
+			// FIXME proper fix is including glyphs into fonts
+			// Fix missing arrows #42 in page turn gesture comment
+			kbook.root.nodes[6].nodes[2].nodes[3]._mycomment = function() {
+				return kbook.model.gestureDirectionFlag ? "<--" : "-->";
+			};
 		} catch (e) {
 			bootLog("in overriden readPreference " + e);
 		}
