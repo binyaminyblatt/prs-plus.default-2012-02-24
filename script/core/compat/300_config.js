@@ -103,9 +103,10 @@ return {
 		customNodes: [
 			{ name: "BookHistory", parent: "gamesAndUtils"},
 			{ name: "Calculator", parent: "gamesAndUtils" },
+			{ name: "DictionaryCL", parent: "gamesAndUtils" },
 			{ name: "FiveBalls", parent: "gamesAndUtils" },				
 			{ name: "Mahjong", parent: "gamesAndUtils" },
-			{ name: "Sudoku", parent: "gamesAndUtils" },			
+			{ name: "Sudoku", parent: "gamesAndUtils" },
 			{ name: "PRSPSettings", parent: "settings", position: 8 }
 		],
 		movableNodes: [1,0 /* by author */,1,1,1,/* all bookmarks */ 0, /* settings */ 0, 1,1,1],
