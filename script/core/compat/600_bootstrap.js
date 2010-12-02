@@ -106,8 +106,6 @@ var tmp = function() {
 			settingsNode.nodes[5]= langNode;
 			localizeKeyboard(Core);
 			
-			// TOOD hide menu customizer
-			
 			// self destruct :)
 			localize = null;
 		} catch (e) {
@@ -202,9 +200,8 @@ var tmp = function() {
 				"French-France": "KeyboardLayout189.xml",
 				"German-Germany": "KeyboardLayout129.xml",
 				"Dutch-Netherlands": "KeyboardLayout143.xml",
-				"Russian": "languages/KeyboardLayoutRussian.xml"
-				// FIXME
-				//"Georgian": "languages/KeyboardLayoutGeorgian.xml"
+				"Russian": "languages/KeyboardLayoutRussian.xml",
+				"Georgian": "languages/KeyboardLayoutGeorgian.xml"
 			};
 			path = System.applyEnvironment('[keyboardLayoutPath]') ;
 			url = 'file://' + path + keyboardPaths[langType] ;

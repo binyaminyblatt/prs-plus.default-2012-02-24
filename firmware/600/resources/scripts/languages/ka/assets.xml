@@ -67,7 +67,7 @@
 		<string id="STR_COUNTER_UTILITIES_N" value="უტილიტა" /> 
 		<string id="STR_COUNTER_UTILITIES_1" value="1 უტილიტა" /> 
 		<string id="STR_COUNTER_UTILITIES_0" value="ცარიელი" /> 
-		<string id="STR_COUNTER_BOOK_N" value="წიგნი" /> 
+		<string id="STR_COUNTER_BOOK_N" value=" წიგნი" /> 
 		<string id="STR_COUNTER_BOOK_1" value="1 წიგნი" /> 
 		<string id="STR_COUNTER_BOOK_0" value="ცარიელი" /> 
 		<string id="STR_COUNTER_COLLECTION_N" value="კოლექცია" /> 
