@@ -5,12 +5,13 @@
 // History:
 //	2010-05-01 kartu - Adapted for PRS+ from http://www.mobileread.com/forums/attachment.php?attachmentid=13182&d=1212445222
 //	2010-11-30 kartu - Refactoring Core.stirng => Core.text
+//	2010-12-01	kartu - Fixed bug caused by moving PRS+ out of sandbox
+//
 
 tmp = function() {
 	var L = Core.lang.getLocalizer("Dictionary");
 	var endsWith = Core.text.endsWith;
 	var DISABLED = "disabled";
-	var log = Core.log.getLogger("DictionaryCL");
 	
 	var DictionaryCL = {
 		name: "DictionaryCL",
@@ -25,13 +26,12 @@ tmp = function() {
 				
 				if (FileSystem.getFileInfo(dictPath)) {
 					var rootPath = Core.config.addonsPath + "DictionaryCL/";
-					var params = {
-						log: Core.log.getLogger("DictionaryCL-app"),
-						rootPath: rootPath,
-						Core: Core,
-						dictPath: dictPath
-					};
-					kbook.autoRunRoot.dictionaryParams = params;
+
+					kbook.autoRunRoot.sandbox.dictionaryParams = params;
+					kbook.autoRunRoot.sandbox.exec = Core.shell.exec;
+					kbook.autoRunRoot.sandbox.getFileContent = Core.io.getFileContent;
+					kbook.autoRunRoot.sandbox.dictPath = dictPath;
+					
 					kbook.autoRunRoot.path = rootPath + "dictionary.xml";
 					kbook.autoRunRoot.enterIf(kbook.model);
 				} else {

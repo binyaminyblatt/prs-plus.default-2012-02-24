@@ -3,6 +3,7 @@
 //
 // History:
 //	2010-09-11 kartu - Initial version
+//	2010-12-01 kartu - Added link to Calculator
 
 return {
 	// Menu icon indices 
@@ -120,9 +121,10 @@ return {
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
-			{ name: "BookHistory", parent: "gamesAndUtils"},
-			{ name: "collections", parent: "more" },			
-			{ name: "notes", parent: "more", separator: false },
+			{ name: "BookHistory", parent: "more"},
+			{ name: "Calculator", parent: "more"},
+			{ name: "collections", parent: "more" },
+			{ name: "notes", parent: "more"},
 			{ name: "PRSPSettings", parent: "more" }
 		],
 		movableNodes: [0, 0, 1, 1, 1, 1],

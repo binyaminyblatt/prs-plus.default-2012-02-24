@@ -45,10 +45,6 @@
 	</assets>
 <code>
 	<function id="trace" params="message">
-		try { 
-			kbook.autoRunRoot.dictionaryParams.log.trace(message);
-		} catch (ignore) {
-		}
 	</function>
 
 	<function id="runJs" params="path,target">
@@ -58,7 +54,6 @@
 			fn(target, kbook.autoRunRoot.dictionaryParams);
 			delete fn;
 		} catch(e) {
-			this.trace("error running script "+path+": "+e.toString()+"\n");
 		}
 	</function>
 	
@@ -80,7 +75,6 @@
 			}
 			this._scriptLoaded = true;
 		} catch (e) {
-			this.trace("Error in loadScript: " + e);
 		}
 	</function>
 
@@ -104,7 +98,6 @@
 			target.focus(true)
 		}
 	} catch (e) {
-		this.trace("Error in modelChanged: " + e);
 	}
     </function>
 </code>
@@ -150,9 +143,9 @@
 		<function id="doDown">
 		  this.arrowKey("down");
 		</function>
-		<!--<function id="doSize">
-		  this.version();
-		</function>-->
+		<function id="doSize">
+		  this.moveCursor("right");
+		</function>
 		  </code>
 
         <kbookLabel id="inputLine" skin="sometext" left="30" right="150" top="75" height="60" align="left" text=""/>
