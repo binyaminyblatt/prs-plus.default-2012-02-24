@@ -148,14 +148,14 @@
 		<string id="STR_UI_TITLESORTLABEL9" value="Ш Щ Э Ю Я" />
 		<string id="STR_UI_TITLESORTLABEL10" value="Прочие" />
 		<string id="STR_VAL_TITLESORTCRITERION1" value="Ͽ" />
-		<string id="STR_VAL_TITLESORTCRITERION2" value="в" />
-		<string id="STR_VAL_TITLESORTCRITERION3" value="ж" />
-		<string id="STR_VAL_TITLESORTCRITERION4" value="к" />
-		<string id="STR_VAL_TITLESORTCRITERION5" value="н" />
-		<string id="STR_VAL_TITLESORTCRITERION6" value="р" />
-		<string id="STR_VAL_TITLESORTCRITERION7" value="у" />
-		<string id="STR_VAL_TITLESORTCRITERION8" value="ч" />
-		<string id="STR_VAL_TITLESORTCRITERION9" value="я" />
+		<string id="STR_VAL_TITLESORTCRITERION2" value="В" />
+		<string id="STR_VAL_TITLESORTCRITERION3" value="Ж" />
+		<string id="STR_VAL_TITLESORTCRITERION4" value="К" />
+		<string id="STR_VAL_TITLESORTCRITERION5" value="Н" />
+		<string id="STR_VAL_TITLESORTCRITERION6" value="Р" />
+		<string id="STR_VAL_TITLESORTCRITERION7" value="У" />
+		<string id="STR_VAL_TITLESORTCRITERION8" value="Ч" />
+		<string id="STR_VAL_TITLESORTCRITERION9" value="Я" />
 		<string id="STR_UI_AUTHORSORTLABEL1" value="0-9, A-Z" />
 		<string id="STR_UI_AUTHORSORTLABEL2" value="А Б В" />
 		<string id="STR_UI_AUTHORSORTLABEL3" value="Г Д Е Ж" />
