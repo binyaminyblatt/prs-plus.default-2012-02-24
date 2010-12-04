@@ -4,6 +4,7 @@
 // History:
 //	2010-09-11 kartu - Initial version
 //	2010-12-01 kartu - Added link to Calculator
+//	2010-12-04 kartu - BrowseFolders will apear in "more", if not shown on the main page.
 
 return {
 	// Menu icon indices 
@@ -122,6 +123,7 @@ return {
 		// Nodes assigned to certain nodes
 		customNodes: [
 			{ name: "BookHistory", parent: "more"},
+			{ name: "BrowseFolders", parent: "more"},
 			{ name: "Calculator", parent: "more"},
 			{ name: "collections", parent: "more" },
 			{ name: "notes", parent: "more"},
