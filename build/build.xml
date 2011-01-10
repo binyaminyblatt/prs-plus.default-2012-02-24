@@ -33,6 +33,7 @@
 <condition property="build.MOUNTABLE">
 	<or>
 		<equals arg1="${MODEL}" arg2="600"/>
+		<equals arg1="${MODEL}" arg2="950"/>
 	</or>
 </condition>
 <condition property="build.FLASHABLE">
@@ -58,6 +59,19 @@
 	<include name="${SC}/addons/**/*"/>
 </fileset>
 <fileset id="include_600" dir="../">
+	<include name="${SC}/addons/Calc/**/*"/>
+	<include name="${SC}/addons/Calc.js"/>
+	<include name="${SC}/addons/BookHistory.js"/>
+	<include name="${SC}/addons/BrowseFolders.js"/>
+	<include name="${SC}/addons/EpubUserStyle.js"/>
+	<include name="${SC}/addons/Screenshot.js"/>
+	<include name="${SC}/addons/StatusBar.js"/>
+	<include name="${SC}/addons/StatusBar_Clock.js"/>
+	<include name="${SC}/addons/StatusBar_PageIndex.js"/>		
+	<include name="${SC}/addons/TextEncoding.js"/>		
+	<include name="${SC}/addons/StandardActions.js"/>		
+</fileset>
+<fileset id="include_950" dir="../">
 	<include name="${SC}/addons/Calc/**/*"/>
 	<include name="${SC}/addons/Calc.js"/>
 	<include name="${SC}/addons/BookHistory.js"/>
