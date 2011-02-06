@@ -17,12 +17,15 @@
 //	2010-07-06 kartu - Rewritten from scratch, added "favourite folders" and picture,music,notes support
 //	2010-09-29 kartu - Fixed: only existing roots will be shown in BrowseFolders (i.e. SD card won't be shown, if it is not inserted) 
 //	2010-11-30 kartu - Refactoring Core.stirng => Core.text
+//	2011-01-31 kartu - Removed comment field (fix for x50)
+//	2011-02-04 kartu - Added trailing / to SD/MS/other roots check path
+//	2011-02-06 kartu - Implemented #55 "'Jump to Folders' action"
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
 		compareFields, supportedMIMEs, createLazyInitNode, constructLazyNode, ACTION_ICON,
-		doOpenHere, doCopyAndOpen;
+		doOpenHere, browseFoldersNode;
 	log = Core.log.getLogger("BrowseFolders");
 	L = Core.lang.getLocalizer("BrowseFolders");
 	startsWith = Core.text.startsWith;
@@ -162,30 +165,19 @@ tmp = function() {
 		this.gotoNode(mediaNode, kbook.model);
 	};
 	
-	doCopyAndOpen = function() {
-		// TODO
-		Core.ui.showMsg("Not implemented");
-	};
 	//-----------------------------------------------------------------------------------------------------------------------------
 	// Node constructors
 	//-----------------------------------------------------------------------------------------------------------------------------
 	// Construct "open here", "copy to IM and open" node
 	constructLazyNode = function() {
-		var openHereNode, copyAndOpenNode;
-		// FIXME with "via mount" option, open here should not be available
+		var openHereNode;
 		openHereNode = Core.ui.createContainerNode({
 				title: L("OPEN_HERE"),
 				parent: this,
 				icon: ACTION_ICON
 		});
-		copyAndOpenNode = Core.ui.createContainerNode({
-				title: L("COPY_TO_IM"),
-				parent: this,
-				icon: ACTION_ICON
-		});
 		openHereNode.enter = doOpenHere;
-		copyAndOpenNode.enter = doCopyAndOpen;
-		this.nodes = [openHereNode, copyAndOpenNode];		
+		this.nodes = [openHereNode];		
 	};
 	
 	// Constructs folder node
@@ -288,7 +280,7 @@ tmp = function() {
 			// Number of nodes created
 			nNodes = 0;
 			for (i = 0, n = roots.length; i < n; i++) {
-				if (FileSystem.getFileInfo(roots[i])) {
+				if (FileSystem.getFileInfo(roots[i] + "/")) {
 					idx = i;
 					nNodes++;
 				}
@@ -300,7 +292,7 @@ tmp = function() {
 				return;
 			} else {
 				for (i = 0, n = roots.length; i < n; i++) {
-					if (FileSystem.getFileInfo(roots[i])) {
+					if (FileSystem.getFileInfo(roots[i] + "/")) {
 						nodes.push(createFolderNode(roots[i], rootTitles[i], this, rootIcons[i]));
 					}
 				}
@@ -321,15 +313,17 @@ tmp = function() {
 		title: L("TITLE"),
 		icon: "FOLDER",				
 		getAddonNode: function() {
-			// FIXME is there any guarantee that getAddonNode is called only once?
-			return Core.ui.createContainerNode({
-					title: L("NODE_BROWSE_FOLDERS"),
-					shortName: L("NODE_BROWSE_FOLDERS_SHORT"),
-					icon: "FOLDER",
-					comment: L("NODE_BROWSE_FOLDERS_COMMENT"),
-					parent: kbook.root,
-					construct: folderRootConstruct
-			});
+			if (browseFoldersNode === undefined) {
+				browseFoldersNode = Core.ui.createContainerNode({
+						title: L("NODE_BROWSE_FOLDERS"),
+						shortName: L("NODE_BROWSE_FOLDERS_SHORT"),
+						icon: "FOLDER",
+						comment: "",
+						parent: kbook.root,
+						construct: folderRootConstruct
+				});
+			}
+			return browseFoldersNode;
 		},
 		optionDefs: [
 			{
@@ -399,7 +393,23 @@ tmp = function() {
 			if (BrowseFolders.options.cardScan === "disabled") {
 				Core.config.disableCardScan = true;
 			}
-		}
+		},
+		
+		actions: [{
+			name: "BrowseFolders",
+			title: L("TITLE"),
+			group: "Utils",
+			icon: "FOLDER",
+			action: function () {
+				var current = Core.ui.getCurrentNode();
+				if (current) {
+					current.gotoNode(browseFoldersNode, kbook.model);
+				} else {
+					log.trace("can't find current node");
+				}
+			}
+		}]
+		
 	};
 	Core.addAddon(BrowseFolders);
 };

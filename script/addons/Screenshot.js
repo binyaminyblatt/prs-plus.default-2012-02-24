@@ -12,27 +12,31 @@
 //	2010-04-25 kartu - Made timer a local variable
 //	2010-05-20 kartu - Fixed addon name (affects settings)
 //	2010-07-13 kartu - Added "has SD card" check
+//	2011-02-06 kartu - Removed timer from confirmation
+//		Changed default save location to internal memory
+//		Switched to using Core.ui.showMsg
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
-	var L = Core.lang.getLocalizer("Screenshot");
-	var log = Core.log.getLogger("Screenshot");
-	var timer;
+	var L, log, extension, getSavePath;
+	L = Core.lang.getLocalizer("Screenshot");
+	log = Core.log.getLogger("Screenshot");
 	
-	var extension = ".jpg";
-	var getSavePath = function (root) {
+	extension = ".jpg";
+	getSavePath = function (root) {
+		var d, name, n;
 		if (!FileSystem.getFileInfo(root)) {
 			return false;
 		}
 	
-		var d = new Date();
-		var name = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+		d = new Date();
+		name = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 						
 		if (!FileSystem.getFileInfo(root + name + extension)) {
 			return name + extension;
 		}
 		
-		var n = 0;
+		n = 0;
 		while (FileSystem.getFileInfo(root + name + "_" + n + extension)) {
 			n++;
 		}
@@ -63,20 +67,13 @@ tmp = function() {
 				}
 			}
 		],
-		getTimer: function () {
-			if (typeof timer == "undefined") {
-				timer = new Timer();
-				timer.target = this;
-			}
-			return timer;
-		},
 		onPreInit: function() {
 			if (Core.config.compat.hasCardSlots) {
 				Screenshot.optionDefs.push({
 					name: "saveTo",
 					title: L("OPT_SAVETO"),
 					icon: "DB",
-					defaultValue: "b:/",
+					defaultValue: "/Data/",
 					values: ["a:/", "b:/", "/Data/"],
 					valueTitles: saveToValueTitles
 				});
@@ -93,19 +90,15 @@ tmp = function() {
 			group: "Utils",
 			icon: "PICTURE",
 			action: function () {
+				var root, saveFilename, savePath, stream, msg1, msg2, bitmap;
 				try {
-					var root = Screenshot.options.saveTo;
-					var saveFilename = getSavePath(root);
-					var savePath = root + saveFilename;
+					root = Screenshot.options.saveTo;
+					saveFilename = getSavePath(root);
+					savePath = root + saveFilename;
 					
-					var win = kbook.model.container.getWindow();
-					var bitmap = win.getBitmap();
-					var x, y, w, h;
-									
-					var stream;
-					var msg1, msg2;
 					try {
 						stream = new Stream.File(savePath, 1);
+						bitmap = kbook.model.container.getWindow().getBitmap();
 						bitmap.writeJPEG(stream);
 						stream.close();
 					} catch (ee) {
@@ -113,45 +106,12 @@ tmp = function() {
 						msg2 = L("FAILED_TO_SAVE");
 					}
 					
-					var showSaveProgress = Screenshot.options.showSaveProgress;
-					if (showSaveProgress === "on") {
-						var bounds = win.getBounds();
-						var width = bounds.width;
-						var height = bounds.height;
-	
-						if (typeof msg1 === "undefined") {
+					if (Screenshot.options.showSaveProgress === "on") {
+						if (msg1 === undefined) {
 							msg1 = L("SAVING_TO") + saveToValueTitles[root];
 							msg2 = saveFilename;
 						}
-	
-						win.setTextStyle("bold");
-						win.setTextSize(24);
-						
-						var bounds1 = win.getTextBounds(msg1);
-						var bounds2 = win.getTextBounds(msg2);
-						
-						var gap = 20;
-						w = Math.max(bounds1.width, bounds2.width) + gap * 2; 
-						h = bounds1.height + bounds2.height + gap * 3;
-	
-						x = Math.max(0, (width - w) / 2);
-						y = Math.max(0, (height - h) / 2);
-						
-						win.beginDrawing();
-						win.setPenColor(Color.white);
-						win.fillRectangle(x, y, w, h);
-						win.setPenColor(Color.black);
-						win.frameRectangle(x, y, w, h);
-						win.frameRectangle(x + 1, y + 1, w - 2, h - 2);
-						win.drawText(msg1, x + gap, y + gap, bounds1.width, bounds1.height);
-						win.drawText(msg2, x + gap, y + gap * 2 + bounds1.height, bounds2.width, bounds2.height);
-						win.endDrawing();
-	
-						var timer = Screenshot.getTimer();
-						timer.onCallback = function (delta) {
-							win.invalidate(x, y, w, h);
-						};
-						timer.schedule(1000);
+						Core.ui.showMsg([msg1, msg2]);
 					}
 					
 				} catch (e) {

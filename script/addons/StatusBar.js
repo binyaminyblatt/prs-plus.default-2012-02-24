@@ -6,6 +6,8 @@
 //	2010-07-21 kartu - Initial version
 //	2010-09-28 kartu - Adapted for 600 (MENU_GROUP => MENU_DETAILS_GROUP)
 //	2010-11-27 kartu - Fixed #17 "clock is not updated when going from standby"
+//	2011-02-05 kartu - Adapted for x50
+
 // Available to sub-addons
 var StatusBar;
 
@@ -15,14 +17,25 @@ tmp = function() {
 	
 	// not to type this gazillion times
 	var sandbox = kbook.model.container.sandbox;
-	var TIME = sandbox.STATUS_GROUP.sandbox.prspTime;
-	var BOOK = sandbox.PAGE_GROUP.sandbox.PAGE;
+	var BOOK;
 	var MENU;
+	var TIME;
+
+	// FIXME model sniffing
 	if (sandbox.MENU_GROUP) {
 		MENU = sandbox.MENU_GROUP.sandbox.MENU;
 	} else if (sandbox.MENU_DETAILS_GROUP) {
-		// FIXME move such code to compat
 		MENU = sandbox.MENU_DETAILS_GROUP.sandbox.MENU;
+	}
+	if (sandbox.STATUS_GROUP.sandbox.STATUS_GROUP_SUB) {
+		TIME = sandbox.STATUS_GROUP.sandbox.STATUS_GROUP_SUB.sandbox.STATUS_GROUP.sandbox.prspTime;
+	} else {
+		TIME = sandbox.STATUS_GROUP.sandbox.prspTime;
+	}
+	if (sandbox.PAGE_GROUP.sandbox.PAGE_SUBGROUP) {
+		BOOK = sandbox.PAGE_GROUP.sandbox.PAGE_SUBGROUP.sandbox.PAGE;
+	} else {
+		BOOK = sandbox.PAGE_GROUP.sandbox.PAGE;
 	}
 
 	// Statusbar widgets
@@ -54,9 +67,6 @@ tmp = function() {
 					}
 				}
 			}
-		},
-		onInit: function() {
-			Core.utils.callAll(widgets, this, undefined, "onInit");
 		},
 		setTime: function (value) {
 			if (value === undefined) {

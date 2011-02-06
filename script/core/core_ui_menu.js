@@ -3,7 +3,11 @@
 // Author: kartu
 //
 // History:
-//	2010-11-10 kartu - renamed from MenuCustomizer to "Menu Customizer" (used as settings file name)
+//	2010-11-10 kartu - Renamed from MenuCustomizer to "Menu Customizer" (used as settings file name)
+//	2011-02-05 kartu - Added support for "Core.config.compat.rootNode" parameter (target node for menu customizer)
+//				"Separator" option is not shown, if model doesn't have numeric button.
+//				Fixed #34 ALL: MenuCustomizer should put unassigned nodes into default one.
+//					Unmodifiable slots got different title.
 
 var MenuCustomizer;
 tmp = function() {
@@ -50,7 +54,11 @@ tmp = function() {
 		var standardMenuLayout, key, path, node, j, m;
 		standardMenuLayout = Core.config.compat.standardMenuLayout;
 		// Root node
-		nodeMap.root = kbook.root;
+		if (Core.config.compat.rootNode) {
+			nodeMap.root = Core.config.compat.rootNode;
+		} else {
+			nodeMap.root = kbook.root;
+		}
 		
 		// Empty node
 		nodeMap.empty = getEmptyNode();
@@ -84,9 +92,9 @@ tmp = function() {
 		var addon, node, i, n;
 		for (i = 0, n = addons.length; i < n; i++) {
 			addon = addons[i];
-			if (typeof addon.activate == "function") {
+			if (typeof addon.activate === "function") {
 				node = createActivateNode(addon);
-			} else if (typeof addon.getAddonNode == "function") {
+			} else if (typeof addon.getAddonNode === "function") {
 				node = addon.getAddonNode();
 			} else {
 				continue;
@@ -100,7 +108,7 @@ tmp = function() {
 	MenuCustomizer = {
 		name: "MenuCustomizer",
 		onPreInit: function() {
-			var L, i, movableNodes, optionValues, optionValueTitles, menuOptionValues, menuOptionValueTitles, values;
+			var L, i, movableNodes, optionValues, optionValueTitles, menuOptionValues, menuOptionValueTitles, values, title;
 			L = Core.lang.getLocalizer("MenuCustomizer");
 			this.title = L("TITLE");
 			this.optionDefs = [];
@@ -126,35 +134,53 @@ tmp = function() {
 			this.optionDefs = [];
 			for (i = 0; i < movableNodes.length; i++) {
 				// Don't show impossible values on unmovable nodes
-				values = movableNodes[i] === 0 ?  [defVal] : optionValues;
+				if (movableNodes[i] === 0) {
+					values = [defVal];
+					title = L("UNMOVABLE_SLOT") + " " + (i + 1);
+				} else {
+					values = optionValues;
+					title = L("SLOT") + " " + (i + 1);
+				}
 				
-				this.optionDefs.push({
-						groupTitle: (L("SLOT") + " " + (i + 1)),
-						groupIcon: "FOLDER",
-						optionDefs: [
-							{
-								name: "slot_" + i,
-								title: L("MENU_ITEM"),
-								defaultValue: defVal,
-								values: values,
-								valueTitles: optionValueTitles
-							},
-							{
-								name: "slot_sep_" + i,
-								title: L("MENU_SEPARATOR"),
-								defaultValue: defVal,
-								values: menuOptionValues,
-								valueTitles: menuOptionValueTitles
-							}
-						]
-				});
+				// FIXME implicit "is touch device"
+				// Whether ot show or not "Separator" menu options
+				if (Core.config.compat.hasNumericButtons) {
+					this.optionDefs.push({
+							groupTitle: title,
+							groupIcon: "FOLDER",
+							optionDefs: [
+								{
+									name: "slot_" + i,
+									title: L("MENU_ITEM"),
+									defaultValue: defVal,
+									values: values,
+									valueTitles: optionValueTitles
+								},
+								{
+									name: "slot_sep_" + i,
+									title: L("MENU_SEPARATOR"),
+									defaultValue: defVal,
+									values: menuOptionValues,
+									valueTitles: menuOptionValueTitles
+								}
+							]
+					});
+				} else {
+					this.optionDefs.push({
+						name: "slot_" + i,
+						title: title,
+						defaultValue: defVal,
+						values: values,
+						valueTitles: optionValueTitles
+					});
+				}
 			}
 		},
 		
 		onInit: function() {
 			try {
-				var i, n, options, root, prspMenu, customContainers, customNodes, movableNodes, defaultLayout, placedNodes,
-					nodeName, node, container, isSeparator, isShortName, customNode, parentNode, stillEmpty;
+				var i, n, options, root, prspMenu, customContainers, customNodes, movableNodes, defaultLayout, placedNodes, detachedNodes,
+					nodeName, node, container, isSeparator, isShortName, customNode, parentNode, stillEmpty, isDefault, defaultNode, defaultNodeName;
 				
 				options = this.options;
 				root = nodeMap.root;
@@ -180,6 +206,8 @@ tmp = function() {
 				
 				// Set of already placed nodes
 				placedNodes = {};
+				// Set of default nodes that were replaced by user defined ones
+				detachedNodes = {};
 				
 				// Set root menu nodes, remembering which were placed and which were not
 				// was a non empty node inserted
@@ -188,8 +216,10 @@ tmp = function() {
 					nodeName = options["slot_" + i];
 					isSeparator = options["slot_sep_" + i] === "true";
 					isShortName = Boolean(defaultLayout[i].shortName);
+					isDefault = nodeName === defVal || movableNodes[i] === 0;
+					
 					// If slot set to default or node is unmovable
-					if (nodeName === defVal || movableNodes[i] === 0) {
+					if (isDefault) {
 						if (defaultLayout[i] === undefined) {
 							break;
 						}
@@ -197,12 +227,16 @@ tmp = function() {
 						if (options["slot_sep_" + i] === defVal) {
 							isSeparator = defaultLayout[i].separator === true;
 						}
+					} else {
+						detachedNodes[defaultLayout[i].name] = true;
 					}
 					node = nodeMap[nodeName];
+					
 					// node might be an actuall node or a function, that creates it
-					if (typeof node == "function") { 
+					if (typeof node === "function") { 
 						node = node();
 					}
+					
 					// if node is empty (or not found), have to insert empty node, if it is not the last node
 					if (node === undefined || node === getEmptyNode()) {
 						if (stillEmpty) {
@@ -256,7 +290,25 @@ tmp = function() {
 						parentNode.nodes.push(node);
 					}
 				}
-
+				
+				// Default node, if not specified, using "more"
+				defaultNodeName = Core.config.compat.defaultNode;
+				if (defaultNodeName === undefined) {
+					defaultNodeName = "more"; 
+				}
+				defaultNode = nodeMap[defaultNodeName];
+				// Put  detached nodes into default node
+				if (defaultNode !== undefined && defaultNode.nodes !== undefined) {
+					for (nodeName in detachedNodes) {
+						// If node wasnot assigned and can be found and is not itself the default node, attach it to the default
+						if (placedNodes[nodeName] !== true && nodeMap[nodeName] !== undefined && defaultNodeName !== nodeName) {
+							// Pushing
+							node = nodeMap[nodeName];
+							defaultNode.nodes.push(node);
+							node.parent = defaultNode;
+						}
+					}
+				}
 			} catch (e) {
 				log.error("in menu onInit: ", e);
 			}

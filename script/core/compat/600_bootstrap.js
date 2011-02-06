@@ -9,6 +9,7 @@
 //	2010-11-30 kartu - Fixed #14 " * by author/title sorting doesn't work for non latin chars"
 //	2010-12-01 kartu - Fixed #28 "Stand-by image should be independent of screen orientation" 
 //			(added landscape subfolder support, as there is no way to rotate the image
+//	2011-02-06 kartu - Fixed #64 "Wrong german translation file"
 
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -26,7 +27,7 @@ var tmp = function() {
 			languages = ["en", "de", "fr", "it", "nl", "ka", "ru", "zh"];
 			prspLanguages = {
 				en: "English.js",
-				de: "Deutsch.js",
+				de: "German.js",
 				fr: "French.js",
 				it: "Italian.js",
 				ka: "Georgian.js",
