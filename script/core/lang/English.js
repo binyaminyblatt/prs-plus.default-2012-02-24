@@ -16,6 +16,8 @@
 //	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
 //	2010-06-29 kartu - Split KeyBindings keys into KeyBindings and StandardActions
 //				Added 0-9 translations
+//	2011-02-05 kartu - Added NODE_MORE
+//			Added ScrollbarAlphabet
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -55,7 +57,8 @@ return {
 		NODE_GAMES_AND_UTILS: "Games & Utilities",
 		GROUP_MENU_TITLE: "Menu Settings",
 		GROUP_VIEWER_TITLE: "Book Viewer Settings",
-		MSG_RESTART: "Restart for changes to take effect"
+		MSG_RESTART: "Restart for changes to take effect",
+		NODE_MORE: "More"
 	},
 
 	CoreLang: {
@@ -313,6 +316,7 @@ return {
 		VALUE_NO: "no",
 		VALUE_DEFAULT: "default",
 		SLOT: "Slot",
+		UNMOVABLE_SLOT: "Fixed slot",
 		MENU_ITEM: "Menu Item",
 		MENU_SEPARATOR: "Separator"
 	},
@@ -338,5 +342,11 @@ return {
 		MARK_2: "Mark 3 (circle)",
 		MARK_3: "Mark 4 (square)",
 		MARK_4: "Mark 5 (triangle)"
+	},
+	
+	ScrollbarAlphabet: {
+		TITLE: "Scrollbar Alphabet",
+		OPT_ALPHABET: "Alphabet",
+		VALUE_DEFAULT: "default"
 	}
 };

@@ -55,8 +55,12 @@ tmp = function() {
 			
 			action = getBoundAction(key, state);
 			if (action !== undefined) {
-				if (!action.action()) {
-					return;
+				try {
+					if (!action.action()) {
+						return;
+					}
+				} catch (e0) {
+					log.error("executing action: " + key + "." + state);
 				}
 			}
 		} catch (e) {
@@ -83,8 +87,12 @@ tmp = function() {
 			action = getBoundAction(key, state);
 			
 			if (action !== undefined) {
-				if (!action.action()) {
-					return;
+				try {
+					if (!action.action()) {
+						return;
+					}
+				} catch (e0) {
+					log.error("executing action: " + key + "." + state);
 				}
 			} else if (getBoundAction(key + "State", state)) {
 				// Ignore "state" messages since there is a bound key

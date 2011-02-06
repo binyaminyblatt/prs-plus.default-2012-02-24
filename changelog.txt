@@ -1,0 +1,123 @@
+=== 2.0.6 alpha (ported to 950) ==
+ * ALL: "Fixed #34  MenuCustomizer should put unassigned nodes into default one"
+ * ALL: Implemented #55 "'Jump to Folders' action"
+ * ALL: Fixed #64 "Wrong german translation file"
+ * 300: Fixed "next/prev" page actions consuming "goto page" key events
+ * 600,x50: Added "books" scrollbar customization feature 
+
+=== 2.0.5 alpha ===
+ * 600: BrowseFolders will apear in "more", if not shown on the main page.
+ * 300: Fixed sort by title (Russian locale)
+
+=== 2.0.4 alpha ===
+ * ALL: Updated "about prs+"
+ * ALL: Added Russian translation fixes by happyhgy
+ * ALL: implemented #16 "88.1% (add decimal) in statusbar"
+ * ALL: Fixed #36 (wrong Courier font name)
+ * ALL: Fixed #17 "clock is not updated when going from standby"
+
+ * 600: Temporary fix for #42
+ * 600: Added Georgian keyboard (ergonomic)
+ * 600: Fixed #28 "Stand-by image should be independent of screen orientation" (added landscape subfolder support, as there is no way to rotate the image"
+ * 600: Fixed #41 "PRS+ Firmware version number missing on About page"
+ * 600: Fixed #14 " by author/title sorting doesn't work for non latin chars"
+ * 600: Implemented #26 Chinese localization
+ * 600: Implemented #29 Italian localizaiton
+ * 600: Fixed #23 (Calc not working)
+ * 600: Added Georgian translation (by rawerfas)
+ * 600: Implemented: #31 "Use Volume buttons to move through history"
+ * 600: Fixed #37 "prsp.sh in IM is not called"
+
+ * 300: Fixed DicitonaryCL
+ * 300: Fixed #14 " * by author/title sorting doesn't work for non latin chars"
+ * 300: Added Georgian translation (by rawerfas)
+ * 300: Fixed #13 "back/fordward history actions do not work"
+ * 300: Implemented #20 "bind default "hold numeric button" actions"
+ * 300: First digit is ignored, if it is zero, when opening "goto" dialog
+ * 300: Fixed "next/prev" page actions consuming "goto page" key events
+
+
+=== 2.0.3 preview ===
+ * 600: added standby "wallpaper" feature (randomly showing /database/system/PRSPlus/wallpaper on standby)
+ * 600: added option to open books directly from MS/SD card, with disabled scanning
+
+=== 2.0.2 preview ===
+ * 300: Added "hold" events (researched by Mark Nord, implemented by kravitz)
+ * 300: Fixed BH bug (list of books wasn't correctly updated)
+ * 300: #Added libfskload
+
+=== 2.0.1 preview ===
+ * 300: Added Italian localization
+ * 300: Improved installer to support common 18060 firmware
+
+=== 2.0.0 preview ===
+ * Big part of PRS+ code rewritten from scratch to simplify porting to new devices
+ * Current version only supports 300
+
+=== 1.1.3 ====
+ * Minor bugfixes (not worth updating from 1.1.2rc unless you delete books from collections all day long).
+=== 1.1.2 release candidate ===
+ * Bugfixes
+=== 1.1.1 beta ===
+ * Added Simplified Chinese translation by thawk
+ * Amended most translations.
+ * Changed !BookHistory to immediately open books instead of showing book menu. Renamed corresponding action from !ContinueReading to !BookHistory (<font color="red">as a result, old key binding to !ContinueReading won't work until reassigned</font>)
+ * Fixed all known bugs (Dictionary path, EPUB zoom, !PageIndex's ppm/time left)
+
+=== 1.1.0 beta ===
+ * Localization 
+   * Catalan by surquizu
+   * Czech by Hobogen
+   * Deutsch by Duglum & klawong & Mark Nord
+   * English
+   * French by Duglum & VICTORSJG
+   * ქართული by kartu
+   * Русский by SLL
+   * Spanish by VICTORSJG & surquizu
+ * page per minute / remaining time settings for !PageIndex
+ * dictionary by Clemenseken & Lisac (to use it, put your dictionary files int /database/system/PRSPlus/dictionary. Dictionary files MUST have "dic" extension)
+ * Book History by kravitz
+ * option to set default zoom size, limit available zoom steps by kravitz
+ * Main menu customization by kravitz
+ * Introduced "safe mode", if reader is connected to USB during startup, PRS+ does not load.
+ * PRS+ settings moved to /opt0, PRS+ addons and core are now built into firmware
+
+=== 1.0.2 ===
+==== Script ====
+ * Added EpubUserStyle addon that allows to switch between files with .css extension located in /database/system/PRSPlus/epub folder
+ * Added !TextEncoding addon, that allows to switch between Latin1 / win1521 encodings in text/rtf files.
+ * Added mount/umount feature to !BrowseFolders (experimental). SD cards with folder structure of any complexity should now be accessible. Mounting and unmounting takes roughtly half a second.
+ * Removed obsolete prsp.sh samples
+==== Firmware ====
+ * Support for switching between win1251/Latin1 txt/rtf file encodings
+ * Removed prsp.sh call from SD card, added . call to /database/system/PRSPlus/prsp.sh (located in Internal Memory)
+ * Added porkupan's (aka boroda) "is usb connected"check, if reader is connected via USB during startup, neither prsp.sh is called, nor LD_PRELOAD is set.
+
+=== 1.0.1 ==
+==== Script ====
+ * Added chinese and Russian shell script samples
+ * Added VICTORSJG's "menu index"
+ * Fixed missing string problem for next/previous song actions. 
+ * Fixed NaN problem in epubs page index
+==== Firmware ====
+ * Fixed call to prps.sh
+
+=== 1.0.0 ===
+==== Script ====
+ * Added settings to disable usage of "titleSorter" field. (useful in case someone has half-balked LRFs)
+ * Added thawk's titleSorter support (titleSorter is an invisible field in LRF files that is used for sorting)
+ * Added next/previous song actions by KrzyInuYasha
+ * Added PRS+ version info to ABOUT
+ * Fixed problem with screenshot confirmation message (it wasn't disappearing in some cases)
+ * Fixed problem with "doCenter" like keys, caused by multiple keys being bound to a single function.
+ * Fixed epub page number bug
+
+==== Firmware ====
+ * Added win1251 to UTF-8 (cyrillic only) so file) (for "export LD_PRELOAD=/opt/sony/ebook/application/Latin1toUTF8.so" hack)
+ * Added call to /Data/database/system/PRSPlus/prsp.sh file to startup shell script.
+ * Added igorsk's libfskLoad.so to /opt/sony/ebook/application folder, with corresponding prspVm.xml file (used by dictionary and similiar apps)
+
+=== 1.0.0 RC2 ===
+==== Script  ====
+ * Fixed problem with "doCenter" like keys, caused by multiple keys being bound to a single function.
+ * Fixed problem with screenshot confirmation message (it wasn't disappearing in case image was saved to internal memory)

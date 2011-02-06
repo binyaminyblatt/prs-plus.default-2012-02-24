@@ -35,6 +35,10 @@
 //				added "short title" (for small buttons of touch readers etc)
 //				renamed "opening" book to "entering" book
 //	2010-11-30 kartu - Refactoring Core.stirng => Core.text
+//	2011-01-31 kartu - Shortened comment field (fix for x50)
+//	2011-02-01 kartu - Fixed goto child / parent in on enter book (on x50 book nodes do not have children)
+//			Added "short comment" field.
+//			Skip book menu menu option is shown only on older models (with numeric buttons)
 
 tmp = function() {
 	var L, log, trim, model, BH_TITLE, BH_SHORT_TITLE, BH_FILE, BookHistory, bookList, mustSave, bookHistoryNode,
@@ -77,10 +81,14 @@ tmp = function() {
 			
 			if (fromParentFlag && (skipOption === "entering" || skipOption === "always")) {
 				// skip menu (jump to "continue")
-				this.gotoChild(0, model);
+				if (this.nodes !== undefined && this.nodes.length !== undefined && this.nodes.length > 0) {
+					this.gotoChild(0, model);
+				}
 			} else if (!fromParentFlag && (skipOption === "exiting" || skipOption === "always")) {
 				// skip menu (jump to parent)
-				this.gotoParent(model);
+				if (this.canGotoParent()) {
+					this.gotoParent(model);
+				}
 			}
 		} catch (e) {
 			log.error("enterBook", e);
@@ -204,8 +212,9 @@ tmp = function() {
 					bookHistoryNode.nodes.pop();
 				}
 			}
+			
 			mustSave = true;
-		} catch (e) {
+		} catch (e) { 
 			log.error("bookChanged,", e);
 		}
 	};
@@ -238,6 +247,21 @@ tmp = function() {
 		icon: "LIST",
 		onInit: function() {
 			// FIXME do nothing if disabled
+			if (Core.config.compat.hasNumericButtons) {
+				this.optionDefs.push({
+					name: "skipBookMenu",
+					title: L("OPTION_SKIP_BOOK_MENU"),
+					icon: "CONTINUE",
+					defaultValue: "entering",
+					values:	["entering", "exiting", "always", "never"],
+					valueTitles: {
+						"entering": L("VALUE_WHEN_ENTERING_BOOK"),
+						"exiting": L("VALUE_WHEN_EXITING_BOOK"),
+						"always": L("VALUE_ALWAYS"),
+						"never": L("VALUE_NEVER")
+					}
+				});
+			}
 			
 			loadFromFile();
 			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, bookChanged);
@@ -255,6 +279,9 @@ tmp = function() {
 					construct: constructNodes,
 					destruct: destructNodes
 				});
+
+				// (X) like description, i.e. (3)
+				bookHistoryNode.shortComment = function () {return "(" + bookList.length + ")"; },
 
 				// null value of the nodes is used by the contructor to detect uninitialized state
 				bookHistoryNode.nodes = null;
@@ -303,19 +330,6 @@ tmp = function() {
 				"30": L("FUNC_X_BOOKS", 30),
 				"40": L("FUNC_X_BOOKS", 40),
 				"50": L("FUNC_X_BOOKS", 50)
-			}
-		},
-		{
-			name: "skipBookMenu",
-			title: L("OPTION_SKIP_BOOK_MENU"),
-			icon: "CONTINUE",
-			defaultValue: "entering",
-			values:	["entering", "exiting", "always", "never"],
-			valueTitles: {
-				"entering": L("VALUE_WHEN_ENTERING_BOOK"),
-				"exiting": L("VALUE_WHEN_EXITING_BOOK"),
-				"always": L("VALUE_ALWAYS"),
-				"never": L("VALUE_NEVER")
 			}
 		}],
 

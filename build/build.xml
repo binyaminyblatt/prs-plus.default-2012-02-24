@@ -54,9 +54,11 @@
 </fileset>
 <fileset id="include_300" dir="../">
 	<include name="${SC}/addons/**/*"/>
+	<exclude name="${SC}/addons/ScrollbarAlphabet.js"/>
 </fileset>
 <fileset id="include_505" dir="../">
 	<include name="${SC}/addons/**/*"/>
+	<exclude name="${SC}/addons/ScrollbarAlphabet.js"/>
 </fileset>
 <fileset id="include_600" dir="../">
 	<include name="${SC}/addons/Calc/**/*"/>
@@ -70,10 +72,9 @@
 	<include name="${SC}/addons/StatusBar_PageIndex.js"/>		
 	<include name="${SC}/addons/TextEncoding.js"/>		
 	<include name="${SC}/addons/StandardActions.js"/>		
+	<include name="${SC}/addons/ScrollbarAlphabet.js"/>		
 </fileset>
 <fileset id="include_950" dir="../">
-	<include name="${SC}/addons/Calc/**/*"/>
-	<include name="${SC}/addons/Calc.js"/>
 	<include name="${SC}/addons/BookHistory.js"/>
 	<include name="${SC}/addons/BrowseFolders.js"/>
 	<include name="${SC}/addons/EpubUserStyle.js"/>
@@ -81,8 +82,8 @@
 	<include name="${SC}/addons/StatusBar.js"/>
 	<include name="${SC}/addons/StatusBar_Clock.js"/>
 	<include name="${SC}/addons/StatusBar_PageIndex.js"/>		
-	<include name="${SC}/addons/TextEncoding.js"/>		
 	<include name="${SC}/addons/StandardActions.js"/>		
+	<include name="${SC}/addons/ScrollbarAlphabet.js"/>		
 </fileset>
 	
 <!-- ======================== MOUNTABLE ================================= -->
@@ -120,7 +121,13 @@
 	</exec>
 	
 	<copy file="${TMP}/${FW}/${MODEL}/prsp.sh" todir="${DIST}/PRSPInstaller/prsp" />
-	<copy file="${TMP}/${INSTALLER}/installer.sh" todir="${DIST}/PRSPInstaller" />	
+	<copy todir="${DIST}/PRSPInstaller/prsp" includeEmptyDirs="false">
+		<fileset dir="${TMP}/${FW}/${MODEL}">
+			<exclude name="*.dt" />
+			<include name="*" />
+		</fileset>
+	</copy>
+	<copy file="${TMP}/${INSTALLER}/installer.sh.${MODEL}" tofile="${DIST}/PRSPInstaller/installer.sh" />
 </target>
 
 <!-- ======================== FLASHABLE ================================= -->

@@ -9,8 +9,10 @@
 //	2010-05-24 kravitz - Removed BookHistory.doDeleteBook handler
 //	2010-05-20 kartu - Adapted for 300
 //	2010-09-28 kartu - Adapted for 600
+//	2011-01-28 kartu - Adapted for x50
 
 tmp = function() {
+	var handlers, callAll, hook, getHandler;
 	var TERMINATE = 0,
 	SLEEP = 1,
 	RESUME = 2,
@@ -18,14 +20,14 @@ tmp = function() {
 	BOOK_PAGE_CHANGED = 201,
 	BOOK_CHANGED = 202,
 	BOOK_DELETED = 203;
-	var handlers = {};
+	handlers = {};
 	
 	// Calls each element of function array
-	var callAll = Core.utils.callAll;
+	callAll = Core.utils.callAll;
 	
 	// Hooks given event, dummy argument is not an actuall argument, it  is used for storing reference
-	var hook = function (eventKey, dummyOldFunc, dummyHandler) {
-		var object, funcName;
+	hook = function (eventKey, dummyOldFunc, dummyHandler) {
+		var object, funcName, sandbox;
 		switch (eventKey) {
 			case TERMINATE:
 				object = kbook.model;
@@ -40,16 +42,24 @@ tmp = function() {
 				funcName = "resume";
 				break;
 			case MENU_PAGE_CHANGED:
-				// FIXME move this to compat
-				if (kbook.model.container.sandbox.MENU_GROUP) {
-					object = kbook.model.container.sandbox.MENU_GROUP.sandbox.MENU;
-				} else if (kbook.model.container.sandbox.MENU_DETAILS_GROUP) {
-					object = kbook.model.container.sandbox.MENU_DETAILS_GROUP.sandbox.MENU;
-				}				
+				// FIXME model sniffing
+				sandbox = kbook.model.container.sandbox;
+				if (sandbox.MENU_GROUP) {
+					object = sandbox.MENU_GROUP.sandbox.MENU;
+				} else if (sandbox.MENU_DETAILS_GROUP) {
+					object = sandbox.MENU_DETAILS_GROUP.sandbox.MENU;
+				}
 				funcName = "pageChanged";
 				break;
 			case BOOK_PAGE_CHANGED:
-				object = kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
+				// FIXME model sniffing
+				sandbox =  kbook.model.container.sandbox;
+				if (sandbox.PAGE_GROUP.sandbox.PAGE_SUBGROUP) {
+					object =sandbox.PAGE_GROUP.sandbox.PAGE_SUBGROUP.sandbox.PAGE;
+				} else {
+					object = sandbox.PAGE_GROUP.sandbox.PAGE;
+				}
+				
 				funcName = "pageChanged";
 				break;
 			case BOOK_CHANGED:
@@ -66,7 +76,7 @@ tmp = function() {
 		// dummy is just a closure specific variable, that holds old function
 		dummyOldFunc = object[funcName];
 		dummyHandler = handlers[eventKey];
-		if (typeof dummyOldFunc == "function") {
+		if (typeof dummyOldFunc === "function") {
 			object[funcName] = function() {
 				callAll(dummyHandler.before, this, arguments);
 				try {
@@ -92,7 +102,7 @@ tmp = function() {
 	 * @param dontCreate - if set to true, new handler won't be created if it doesn't exist
 	 * @returns handler, or undefined, if dontCreate is set to true and handler wasn't found 
 	*/
-	var getHandler = function (eventKey, dontCreate) {
+	getHandler = function (eventKey, dontCreate) {
 		if (handlers[eventKey] === undefined && dontCreate !== true) {
 			handlers[eventKey] = {
 				before: [],
@@ -129,12 +139,13 @@ tmp = function() {
 			}
 		},
 		unsubscribe: function (eventKey, func, before) {
-			var handler = getHandler(eventKey, true);
+			var handler, a, i, n;
+			handler = getHandler(eventKey, true);
 			if (handler === undefined) {
 				return;
 			}
-			var a = before ? handler.before : handler.after;
-			for (var i = 0, n = a.length; i < n; i++) {
+			a = before ? handler.before : handler.after;
+			for (i = 0, n = a.length; i < n; i++) {
 				if (a[i] === func) {
 					a.splice(i, 1);
 				}

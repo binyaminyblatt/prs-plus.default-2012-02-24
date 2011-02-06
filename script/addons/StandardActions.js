@@ -5,7 +5,8 @@
 // History:
 //	2010-06-27 kartu - Adapted for 300 from former KeyBindings addon
 //	2010-11-28 kartu - 600: Implemented #31 "Use Volume buttons to move through history"
-//				300: Fixed "next/prev" page actions consuming "goto page" key events 
+//				300: Fixed "next/prev" page actions consuming "goto page" key events
+//	2010-02-05 kartu - Changed direct function calls with "bubbles" for x50 
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled;
@@ -15,10 +16,17 @@ tmp = function() {
 
 	// Shortcuts
 	model = kbook.model;
-	book = model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
+	
+	// Fixme implicit model sniffing
+	if (model.container.sandbox.PAGE_GROUP.sandbox.PAGE_SUBGROUP) {
+		book = model.container.sandbox.PAGE_GROUP.sandbox.PAGE_SUBGROUP.sandbox.PAGE;
+	} else {
+		book = model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
+	}
+	
 	isBookEnabled = function() {
 		return book.isEnabled();
-	}
+	};
 	
 	// Cross-model do history
 	//	whereTo - integer, positive moves back
@@ -70,7 +78,7 @@ tmp = function() {
 					icon: "NEXT_PAGE",
 					action: function () {
 						if (isBookEnabled()) {
-							book.doCenter();
+							book.bubble("doCenter");
 						} else {
 							return true;
 						}
@@ -96,7 +104,7 @@ tmp = function() {
 				icon: "NEXT_PAGE",
 				action: function () {
 					if (isBookEnabled()) {
-						book.doNext();
+						book.bubble("doNext");
 					} else {
 						return true;
 					}
@@ -109,7 +117,7 @@ tmp = function() {
 				icon: "PREVIOUS_PAGE",
 				action: function () {
 					if (isBookEnabled()) {
-						book.doPrevious();
+						book.bubble("doPrevious");
 					} else {
 						return true;
 					}
