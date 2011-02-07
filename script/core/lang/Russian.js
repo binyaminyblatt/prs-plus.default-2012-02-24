@@ -317,7 +317,8 @@ return {
                 NODE_OTHERS: "Мультимедиа",
                 NODE_GAMES_AND_UTILS: "Игры и приложения",
                 GROUP_MENU_TITLE: "Стиль и функции меню",
-                GROUP_VIEWER_TITLE: "Шрифты и кодировки"
+                GROUP_VIEWER_TITLE: "Шрифты и кодировки",
+                NODE_MORE: "Прочее"
         },
 
         CoreLang: {
