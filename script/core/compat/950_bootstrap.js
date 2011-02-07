@@ -6,6 +6,7 @@
 // History:
 //	2011-01-12 kartu - Initial version, based on 600
 //	2011-02-06 kartu - Fixed #64 "Wrong german translation file"
+//	2011-02-07 kartu - Implemented #? possibility to download files using web browser
 
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -13,7 +14,7 @@
 //-----------------------------------------------------------------------------------------------------
 
 var tmp = function() {
-	var updateSiblings, fixTimeZones, localize, localizeKeyboard, oldSetLocale, oldChangeKeyboardType, oldReadPreference, wallpapers, landscapeWallpapers, oldCallback;
+	var updateSiblings, fixTimeZones, localize, localizeKeyboard, oldSetLocale, oldChangeKeyboardType, oldReadPreference, oldCallback;
 
 	// Updaes node siblings (used for setting selected / unselected icon)
 	updateSiblings = function(fieldName) {
@@ -501,6 +502,21 @@ var tmp = function() {
 	var compareStrings =  Core.config.compat.compareStrings;
 	String.prototype.localeCompare = function(a) {
 		return compareStrings(this.valueOf(), a);
+	};
+	
+	// Add option to download files
+	kbook.webviewexData.onUnsupportedMimeType = function (url, mimetype) {
+		try {
+			var dialog = kbook.model.getConfirmationDialog();
+			dialog.target = this;
+			dialog.onOk = function () {
+				Core.shell.exec("/usr/bin/wget -P /Data " + url);	
+			};
+			dialog.onNo = function () {
+			};
+			dialog.openDialog("fskin:/l/strings/STR_UI_BUTTON_DOWNLOAD_NOW".idToString() + "?\n\nURL: " + url + "\nMIME: " +mimetype, 0);
+		} catch (ignore) {
+		}
 	};
 };
 
