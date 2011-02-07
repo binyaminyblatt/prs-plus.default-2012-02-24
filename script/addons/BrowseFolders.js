@@ -20,12 +20,13 @@
 //	2011-01-31 kartu - Removed comment field (fix for x50)
 //	2011-02-04 kartu - Added trailing / to SD/MS/other roots check path
 //	2011-02-06 kartu - Implemented #55 "'Jump to Folders' action"
+//	2011-02-07 kartu - Implemented # sort by filename, showing filename as comment
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
 		compareFields, supportedMIMEs, createLazyInitNode, constructLazyNode, ACTION_ICON,
-		doOpenHere, browseFoldersNode;
+		doOpenHere, browseFoldersNode, extractFileName;
 	log = Core.log.getLogger("BrowseFolders");
 	L = Core.lang.getLocalizer("BrowseFolders");
 	startsWith = Core.text.startsWith;
@@ -51,12 +52,12 @@ tmp = function() {
 		file: 0
 	};
 
-
 	// Which fields to use for comparison
 	compareFields = {
 		"author": ["author", "titleSorter", "title"],
 		"title": ["titleSorter", "title"],
-		filename: ["path"]
+		filename: ["path"],
+		filenameAsComment: ["path"]
 	};
 	
 	compare = Core.config.compat.compareStrings;
@@ -123,6 +124,20 @@ tmp = function() {
 		return node;
 	};
 	
+	
+	extractFileName = function(path) {
+		var idx;
+		if (path === undefined) {
+			return undefined;
+		}
+		idx = path.lastIndexOf("/");
+		if (idx > -1) {
+			return path.substring(idx + 1);
+		} else {
+			return path;
+		}
+	}
+	
 	createMediaNode = function (path, title, parent) {
 		var node, mime;
 		node = Core.media.createMediaNode(path, parent);
@@ -132,7 +147,14 @@ tmp = function() {
 			if (supportedMIMEs[mime]) {
 				node = createLazyInitNode(path, title, parent);
 			}
-			
+		} else if (BrowseFolders.options.sortMode === "filenameAsComment") {
+			node._mycomment = function() {
+				try {
+					return extractFileName(this.media.path);
+				} catch (e) {
+					return "error: " + e;
+				}
+			};
 		}
 		return node;
 	};
@@ -331,11 +353,12 @@ tmp = function() {
 				title: L("OPTION_SORTING_MODE"),
 				icon: "LIST",
 				defaultValue: "author",
-				values: ["title", "author", "filename"],
+				values: ["title", "author", "filename", "filenameAsComment"],
 				valueTitles: {
 					title: L("VALUE_BY_TITLE"),
 					author: L("VALUE_BY_AUTHOR_THEN_TITLE"),
-					filename: L("VALUE_BY_FILENAME")
+					filename: L("VALUE_BY_FILENAME"),
+					filenameAsComment:  L("VALUE_BY_FILENAME_AS_COMMENT")
 				}
 			},
 			{
