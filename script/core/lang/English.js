@@ -18,6 +18,7 @@
 //				Added 0-9 translations
 //	2011-02-05 kartu - Added NODE_MORE
 //			Added ScrollbarAlphabet
+//	2011-02-07 kartu - Added BrowseFolders.VALUE_BY_FILENAME_AS_COMMENT
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -223,6 +224,7 @@ return {
 		VALUE_BY_AUTHOR_THEN_TITLE: "By author then title",
 		VALUE_BY_AUTHOR_SWAPPING: "By author swapping name/surname",
 		VALUE_BY_FILENAME: "By filename",
+		VALUE_BY_FILENAME_AS_COMMENT: "By filename shown as comment",
 		OPTION_TITLE_SORTER: "Use 'titleSorter' Field, when Sorting",
 		OPTION_FAVOURITE_FOLDERS: "Favourite folders",
 		ENABLED: "Enabled",
