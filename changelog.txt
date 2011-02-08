@@ -1,4 +1,12 @@
-=== 2.0.6 alpha (ported to 950) ==
+ === 2.0.8 alpha (ported to 650/350) ===
+ * ALL: Added Core.config.userCSSFile support (instead of hardcoded style.css)
+ * 650/350: Ported to 650 (tested) and 350 (should work :))
+
+=== 2.0.7 alpha ===
+ * Implemented #? possibility to download files using web browser
+ * ALL: Implemented # sort by filename, showing filename as comment
+
+=== 2.0.6 alpha (ported to 950) ===
  * ALL: "Fixed #34  MenuCustomizer should put unassigned nodes into default one"
  * ALL: Implemented #55 "'Jump to Folders' action"
  * ALL: Fixed #64 "Wrong german translation file"
