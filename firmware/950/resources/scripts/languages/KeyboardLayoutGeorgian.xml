@@ -241,7 +241,7 @@
 		<key text="ჟ" shift="ჟ" left="927" top="72" width="81" height="58"/>
 		
 		<key caps="shift"	text="" left="14" top="134" width="125" height="58" bit="8" skin="shiftHSMALL"/>
-		<key text="ზ" shift="ხ" left= "141" top="134" width="81" height="58"/>
+		<key text="ზ" shift="ზ" left= "141" top="134" width="81" height="58"/>
 		<key text="ხ" shift="ხ" left= "224" top="134" width="81" height="58"/>
 		<key text="ც" shift="ც" left="307" top="134" width="81" height="58"/>
 		<key text="ვ" shift="ვ" left="390" top="134" width="81" height="58"/>

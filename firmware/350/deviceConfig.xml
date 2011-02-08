@@ -13,7 +13,27 @@
 	<usb vbusPath="/proc/target_vbus"/>
 	<subcpu subcpuPath="/dev/subcpu">
 		<system exitCodeFile="/tmp/exitcode"/>
-		<key/>
+		<key>
+			<map>
+				<item code="0x1" event="kHome" hold="kHome-hold" state="kHomeState" type="" property=""/>
+				<item code="0x2" event="kNextCustom" hold="kNextCustom" state="kNextState" type="custom" property=""/>
+				<item code="0x3" event="kPreviousCustom" hold="kPreviousCustom" state="kPreviousState" type="custom" property=""/>
+				<item code="0xb" event="kVolumePlus" hold="kVolumePlus-hold" state="kVolumePlusState" type="" property=""/>
+				<item code="0xc" event="kVolumeMinus" hold="kVolumeMinus-hold" state="kVolumeMinusState" type="" property=""/>
+				<item code="0xd" event="kOption" hold="kOption-hold" state="kOptionState" type="" property=""/>
+				<item code="0xe" event="kSize" hold="kSize-hold" state="kSizeState" type="" property=""/>
+				<item code="0x1e" event="kWANSwitch" hold="kWANSwitch" state="kWANSwitch" type="" property="kFskMediaPropertyWireless"/>
+				<item code="0x1f" event="kWiFiSwitch" hold="kWiFiSwitch" state="kWiFiSwitch" type="" property="kFskMediaPropertyWireless"/>
+				<item code="0x20" event="kPowerSwitch" hold="kPowerSwitch" state="kPowerSwitchState" type="custom" property=""/>
+				<item code="0x21" event="3" hold="kHold3" state="" type="string" property=""/>
+				<item code="0x22" event="4" hold="kHold4" state="" type="string" property=""/>
+				<item code="0x23" event="5" hold="kHold5" state="" type="string" property=""/>
+				<item code="0x24" event="6" hold="kHold6" state="" type="string" property=""/>
+				<item code="0x25" event="7" hold="kHold7" state="" type="string" property=""/>
+				<item code="0x26" event="8" hold="kHold8" state="" type="string" property=""/>
+				<item code="0x27" event="9" hold="kHold9" state="" type="string" property=""/>
+			</map>
+		</key>
 		<touchpanel width="600" height="800" sampling="30" breakThreshold="1" hysteresis="3" maxFilter="800" junk="0" pressureFilter="2.0" orientation="1"><!-- junk="0" is for IR touch panel -->
 			<default>
 				<calibrationPoint>

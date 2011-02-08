@@ -156,16 +156,20 @@
 			<checkBoolean key="kLight" can="canLight" do="doLight"/>
 			<boolean key="kVolumePlus" do="doLoud"/>
 			<boolean key="kVolumeMinus" do="doQuiet"/>
-			<boolean key="kMute" do="doMute"/>
+			<boolean key="kVolumePlus-hold" do="doMute"/>
+			<boolean key="kVolumeMinus-hold" do="doMute"/>
 			<customHold key="kPowerSwitch" hold="doPowerSwitchHold" up="doPowerSwitch" holdTime="3000"/>
 			<boolean key="kWANSwitch" peek="getWANSwitchState" do="doWANSwitch" id="WAN_SWITCH"/>
 			
 			<boolean key="kSize" do="doSize"/>
+			<boolean key="kSize-hold" do="doSize"/>			
 			<boolean key="kSearch" do="doSearch"/>
 			<boolean key="kOption" do="doOption"/>
+			<boolean key="kOption-hold" do="doRoot"/>
 
 			<boolean key="kMenu" do="doMenu"/>
 			<boolean key="kHome" do="doRoot"/>
+			<boolean key="kHome-hold" do="doRoot"/>			
 			<custom key="kPreviousCustom" hold="doPreviousHold" up="doPrevious"/>
 			<custom key="kNextCustom" hold="doNextHold" up="doNext"/>
 			<boolean key="kShutdown" do="doQuit"/>
@@ -190,7 +194,27 @@
 	</parts>
 	</ebook>	
 	<code>
+		<function id="callScript" params="path">
+			if (FileSystem.getFileInfo(path)) {
+				var file = new Stream.File(path);
+				var code = file.toString();
+				file.close();
+				var f = prsp.compile("", code);				
+				f();
+				delete f;
+			}	
+		</function>	
 		<function id="initialized"><![CDATA[
+			try {
+				if (FileSystem.getFileInfo(System.applyEnvironment('[prspSafeModeFile]')) === undefined) {
+					if (FileSystem.getFileInfo(System.applyEnvironment('[prspBetaStartupFile]'))) {
+						this.callScript(System.applyEnvironment('[prspBetaStartupFile]'));
+					} else {
+						this.callScript(System.applyEnvironment('[prspStartupFile]'));
+					}
+				}
+			} catch (ignore) {
+			}
 			USBDispatcher.doRegister(this.getWindow())
 			this.getDevice().doProcessed(100);
 			if (ebook && "delayLoadSettings" in ebook)
