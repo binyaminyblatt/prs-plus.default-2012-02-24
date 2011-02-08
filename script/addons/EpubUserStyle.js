@@ -12,6 +12,7 @@
 //	2010-04-27 kravitz - Joined "viewer" settings group
 //	2010-04-28 kravitz - Fixed user .css files path
 //	2010-11-30 kartu - Refactoring Core.stirng => Core.text
+//	2011-02-07 kartu - Added Core.config.userCSSFile support (instead of hardcoded style.css)
 
 tmp = function() {
 	// Localize
@@ -20,7 +21,10 @@ tmp = function() {
 	var endsWith = Core.text.endsWith;
 
 	// Constants
-	var USER_CSS = "style.css";
+	var USER_CSS = Core.config.userCSSFile;
+	if (USER_CSS === undefined) {
+		USER_CSS = "style.css";
+	}
 	var DISABLED = "disabled";
 
 	var EpubUserStyle = {
