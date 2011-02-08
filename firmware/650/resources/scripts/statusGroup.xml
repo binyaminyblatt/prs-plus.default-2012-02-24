@@ -168,8 +168,8 @@
 		<kbookIndicator id="halfFreehandIndicator" skin="halfPageIndicator" left="31" height="30" bottom="0" variable="NOTEPAD_HALF_PAGE"/>
 		<kbookIndicator id="splitPageIndicator" skin="splitPageIndicator" left="31" height="30" bottom="0" variable="BOOK_SPLIT_PAGE" visible="false"/>
 
-		<checkbox skin="blinkCheckBox" width="24" right="84" height="30" bottom="0" variable="BLINK" on="1" off="0" active="false"/>
-		<group id="VOLUME_GROUP" width="75" right="0" height="30" bottom="0" visible="false">
+		<checkbox skin="blinkCheckBox" width="24" right="180" height="30" bottom="0" variable="BLINK" on="1" off="0" active="false"/>
+		<group id="VOLUME_GROUP" width="75" right="100" height="30" bottom="0" visible="false">
 			<checkbox id="MUTE" skin="volumeCheckBox" width="20" right="130" height="30" bottom="0" variable="MUTE" on="1" off="0" active="false"/>
 			<kbookProgress id="VOLUME" skin="volumeProgress" width="43" right="87" height="30" bottom="0" variable="VOLUME"/>
 		</group>
@@ -184,5 +184,9 @@
 		</group>
 		<monochrome id="MONOCHROME_LABEL" left="30" right="84" height="30" bottom="0" visible="false"/>
 		<monochrome id="MONOCHROME_SIZE" left="0" right="0" top="0" bottom="0" visible="false"/>
+		
+		<!-- PRS+ stuff --> 
+		<label id="prspTime" align="right" right="62" bottom="0" height="30" width="120" />
+		<!-- End of PRS+ stuff -->		
 	</group>
 </document>
