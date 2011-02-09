@@ -355,7 +355,6 @@ tmp = function() {
 				browseFoldersNode.unlock = function() {
 					oldUnlock.apply(this, arguments);
 					if (this.locked < 0) {
-						log.trace("negative locked value");
 						this.locked = 0;
 					}
 				};
