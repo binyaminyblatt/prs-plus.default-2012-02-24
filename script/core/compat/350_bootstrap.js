@@ -8,6 +8,7 @@
 //	2011-02-06 kartu - Fixed #64 "Wrong german translation file"
 //	2011-02-07 kartu - Implemented #? possibility to download files using web browser
 //	2011-02-08 kartu - Deleted irrelevant "fixTimeZones" code
+//	2011-02-09 kartu - Fixed # Text Memo open => press root leads to reboot
 
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -382,6 +383,16 @@ var tmp = function() {
 	var compareStrings =  Core.config.compat.compareStrings;
 	String.prototype.localeCompare = function(a) {
 		return compareStrings(this.valueOf(), a);
+	};
+
+	// Workaround for # Text Memo open => press root leads to reboot
+	kbook.kbookNotepad.exit = function(param) {
+		var note = this.note;
+		this.note = null;
+		if (note && note.type === "text" && note.newbie) {
+			return;
+		}
+		this.bubble('doMenuClose');
 	};
 };
 
