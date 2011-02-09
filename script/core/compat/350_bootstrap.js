@@ -1,5 +1,5 @@
-// Name: bootstrap 950
-// Description: Sony PRS-300 bootstrap code
+// Name: bootstrap 350
+// Description: Sony PRS-350 bootstrap code
 //	Receives variables: bootLog, Core, loadAddons, loadCore
 //		must call loadAddons, loadCore and Core.init at appropriate times
 //
@@ -7,6 +7,7 @@
 //	2011-01-12 kartu - Initial version, based on 600
 //	2011-02-06 kartu - Fixed #64 "Wrong german translation file"
 //	2011-02-07 kartu - Implemented #? possibility to download files using web browser
+//	2011-02-08 kartu - Deleted irrelevant "fixTimeZones" code
 
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -188,12 +189,6 @@ var tmp = function() {
 				bootLog("Error localizing keyboard  " + e0);
 			}
 			
-			try {
-				fixTimeZones(Core);
-			} catch (e1) {
-				bootLog("Error fixing timezones " + e1);
-			}
-
 			// self destruct :)
 			localize = null;
 		} catch (e2) {
