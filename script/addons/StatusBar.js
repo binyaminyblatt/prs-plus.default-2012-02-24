@@ -7,19 +7,18 @@
 //	2010-09-28 kartu - Adapted for 600 (MENU_GROUP => MENU_DETAILS_GROUP)
 //	2010-11-27 kartu - Fixed #17 "clock is not updated when going from standby"
 //	2011-02-05 kartu - Adapted for x50
+//	2011-02-09 kartu - Fixed # Page index is not updated when book is opened
 
 // Available to sub-addons
 var StatusBar;
 
 tmp = function() {
-	var L = Core.lang.getLocalizer("StatusBar");
-	var log = Core.log.getLogger("StatusBar");
+	var L, log, BOOK, PAGE_INFO, MENU, TIME, sandbox, widgets, updateMenu, updateBook;
+	L = Core.lang.getLocalizer("StatusBar");
+	log = Core.log.getLogger("StatusBar");
 	
 	// not to type this gazillion times
-	var sandbox = kbook.model.container.sandbox;
-	var BOOK;
-	var MENU;
-	var TIME;
+	sandbox = kbook.model.container.sandbox;
 
 	// FIXME model sniffing
 	if (sandbox.MENU_GROUP) {
@@ -34,18 +33,23 @@ tmp = function() {
 	}
 	if (sandbox.PAGE_GROUP.sandbox.PAGE_SUBGROUP) {
 		BOOK = sandbox.PAGE_GROUP.sandbox.PAGE_SUBGROUP.sandbox.PAGE;
+		PAGE_INFO = sandbox.PAGE_GROUP.sandbox.PAGE_INFO.sandbox;
 	} else {
 		BOOK = sandbox.PAGE_GROUP.sandbox.PAGE;
 	}
+	if(PAGE_INFO === undefined) {
+		PAGE_INFO = kbook.model;
+	}
+
 
 	// Statusbar widgets
-	var widgets = [];
+	widgets = [];
 	
-	var updateMenu = function() {
+	updateMenu = function() {
 		Core.utils.callAll(widgets, MENU, undefined, "onMenuPageChanged");
 	};
 	
-	var updateBook = function() {
+	updateBook = function() {
 		Core.utils.callAll(widgets, BOOK, undefined, "onBookPageChanged");
 	};
 	
@@ -56,13 +60,14 @@ tmp = function() {
 		optionDefs: [],
 		actions: [],
 		onPreInit: function() {
+			var i, n, od, j, m;
 			Core.utils.callAll(widgets, this, undefined, "onPreInit");
 
 			// Add widgets' option definitions
-			for (var i = 0, n = widgets.length; i < n; i++) {
-				var od = widgets[i].optionDefs;
+			for (i = 0, n = widgets.length; i < n; i++) {
+				od = widgets[i].optionDefs;
 				if (od !== undefined) {
-					for (var j = 0, m = od.length; j < m; j++) {
+					for (j = 0, m = od.length; j < m; j++) {
 						this.optionDefs.push (od[j]); // concat is also possible, yes
 					}
 				}
@@ -81,7 +86,7 @@ tmp = function() {
 			kbook.model.setVariable("MENU_INDEX_COUNT", value);
 		},
 		setBookIndex: function (value) {
-			kbook.model.setVariable("BOOK_INDEX_COUNT", value);
+			PAGE_INFO.setVariable("BOOK_INDEX_COUNT", value);
 		},
 		addWidget: function (widget) {
 			widgets.push(widget);
