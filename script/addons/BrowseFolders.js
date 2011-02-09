@@ -22,7 +22,7 @@
 //	2011-02-06 kartu - Implemented #55 "'Jump to Folders' action"
 //	2011-02-07 kartu - Implemented # sort by filename, showing filename as comment
 //	2011-02-09 kartu - Fixed # BrowseFolders view not updated when settings change
-/			Removed "mount" option
+//			Removed "mount" option
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
