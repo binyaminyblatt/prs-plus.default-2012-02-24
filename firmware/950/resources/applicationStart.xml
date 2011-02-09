@@ -162,10 +162,10 @@
 			<boolean key="kWANSwitch" peek="getWANSwitchState" do="doWANSwitch" id="WAN_SWITCH"/>
 			
 			<boolean key="kSize" do="doSize"/>
-			<boolean key="kSize-hold" do="doSize"/>
+			<boolean key="kSize-hold" do="doSearch"/>
 			<boolean key="kSearch" do="doSearch"/>
 			<boolean key="kOption" do="doOption"/>
-			<boolean key="kOption-hold" do="doRoot"/>
+			<boolean key="kOption-hold" do="doMenu"/>
 
 			<boolean key="kMenu" do="doMenu"/>
 			<boolean key="kHome" do="doRoot"/>
