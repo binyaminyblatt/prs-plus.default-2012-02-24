@@ -1,5 +1,5 @@
 // Name: bootstrap 950
-// Description: Sony PRS-300 bootstrap code
+// Description: Sony PRS-950 bootstrap code
 //	Receives variables: bootLog, Core, loadAddons, loadCore
 //		must call loadAddons, loadCore and Core.init at appropriate times
 //

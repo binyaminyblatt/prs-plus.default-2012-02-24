@@ -3,6 +3,7 @@
 //
 // History:
 //	2011-01-12 kartu - Initial version, based on 600
+//	2011-02-08 kartu - "More" is now by default attached to the root folder
 
 return {
 	// Menu icon indices 
@@ -131,7 +132,7 @@ return {
 		customContainers: [
 			// TODO add games / calc
 			//{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", icon: "GAME"},
-			{ name: "more", title: "NODE_MORE", icon: "MORE"}
+			{ name: "more", title: "NODE_MORE", icon: "MORE", parent: "root"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [

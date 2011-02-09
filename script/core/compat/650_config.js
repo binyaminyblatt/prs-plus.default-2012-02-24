@@ -1,8 +1,9 @@
-// Name: 950 config
-// Description: Sony PRS-950 model specific configuration
+// Name: 650 config
+// Description: Sony PRS-650 model specific configuration
 //
 // History:
 //	2011-02-07 kartu - Initial version, based on 950
+//	2011-02-08 kartu - "More" is now by default attached to the root folder
 
 return {
 	// Menu icon indices 
@@ -130,7 +131,7 @@ return {
 		customContainers: [
 			// TODO add games / calc
 			//{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", icon: "GAME"},
-			{ name: "more", title: "NODE_MORE", icon: "MORE"}
+			{ name: "more", title: "NODE_MORE", icon: "MORE", parent: "root"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
