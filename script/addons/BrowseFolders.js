@@ -21,6 +21,8 @@
 //	2011-02-04 kartu - Added trailing / to SD/MS/other roots check path
 //	2011-02-06 kartu - Implemented #55 "'Jump to Folders' action"
 //	2011-02-07 kartu - Implemented # sort by filename, showing filename as comment
+//	2011-02-09 kartu - Fixed # BrowseFolders view not updated when settings change
+/			Removed "mount" option
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -92,6 +94,7 @@ tmp = function() {
 	//-----------------------------------------------------------------------------------------------------------------------------
 	// Node creation
 	//-----------------------------------------------------------------------------------------------------------------------------
+	
 	createFolderNode = function (path, title, parent, icon) {
 		try {
 			if (icon === undefined) {
@@ -136,7 +139,7 @@ tmp = function() {
 		} else {
 			return path;
 		}
-	}
+	};
 	
 	createMediaNode = function (path, title, parent) {
 		var node, mime;
@@ -335,6 +338,7 @@ tmp = function() {
 		title: L("TITLE"),
 		icon: "FOLDER",				
 		getAddonNode: function() {
+			var oldUnlock;
 			if (browseFoldersNode === undefined) {
 				browseFoldersNode = Core.ui.createContainerNode({
 						title: L("NODE_BROWSE_FOLDERS"),
@@ -344,6 +348,17 @@ tmp = function() {
 						parent: kbook.root,
 						construct: folderRootConstruct
 				});
+				
+				// When BrowseFolders settings change, child nodes are detached and unlock is forced.
+				// this could lead to lock value to become negative.
+				oldUnlock = browseFoldersNode.unlock;
+				browseFoldersNode.unlock = function() {
+					oldUnlock.apply(this, arguments);
+					if (this.locked < 0) {
+						log.trace("negative locked value");
+						this.locked = 0;
+					}
+				};
 			}
 			return browseFoldersNode;
 		},
@@ -398,21 +413,9 @@ tmp = function() {
 					}
 	
 				});
-				BrowseFolders.optionDefs.push({
-					name: "useMount",
-					title: L("OPTION_MOUNT"),
-					icon: "DB",
-					defaultValue: "disabled",
-					values: ["enabled", "disabled"],
-					valueTitles: {
-						enabled: L("ENABLED"),
-						disabled: L("DISABLED")
-					}
-				});
 			}
 		},
 		onInit: function() {
-			// FIXME test if this works at all
 			if (BrowseFolders.options.cardScan === "disabled") {
 				Core.config.disableCardScan = true;
 			}
@@ -431,7 +434,18 @@ tmp = function() {
 					log.trace("can't find current node");
 				}
 			}
-		}]
+		}],
+		
+		onSettingsChanged: function(propertyName, oldValue, newValue) {
+			if (oldValue === newValue) {
+				return;
+			}
+			
+			// Release the node so that it's content can be updated
+			if (browseFoldersNode) {
+				browseFoldersNode.unlockPath();
+			}
+		}
 		
 	};
 	Core.addAddon(BrowseFolders);
