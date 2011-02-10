@@ -27,6 +27,7 @@
 //      2010-07-02 kartu - Split KeyBindings keys into KeyBindings and StandardActions
 //                              Added 0-9 translations
 //	2010-12-01 kartu - Added happyhgy's fixes
+//	2011-02-10 kartu - Added StandarActions translations
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -452,6 +453,7 @@ return {
         },
         
         StandardActions: {
+        	TITLE: "Стандартные действия",
                 // Actions
                 ACTION_SHUTDOWN: "Отключить",
                 ACTION_NEXT_PAGE: "Следующая страница",
@@ -461,7 +463,15 @@ return {
                 ACTION_PREVIOUS_SONG: "Предыдущая песня",
                 ACTION_NEXT_SONG: "Следующая песня",
                 ACTION_GOTO_LINK: "Перейти по ссылке",
-                CONTINUE_READING: "Продолжить чтение" //---
+                CONTINUE_READING: "Продолжить чтение",
+		ACTION_OPEN_TOC: "Open TOC",
+		// "Bubble" actions		
+		ACTION_doOption: "Открыть опции",
+		ACTION_doSearch: "Поиск",
+		ACTION_doRotate: "Поворот экрана",
+		ACTION_doMenu: "Меню (назад / вверх)",
+		ACTION_doSize: "Масштаб",
+		ACTION_doRoot: "Вернутся в главное меню"                
         },
 
         Screenshot: {

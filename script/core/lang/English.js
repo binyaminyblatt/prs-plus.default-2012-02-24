@@ -19,6 +19,7 @@
 //	2011-02-05 kartu - Added NODE_MORE
 //			Added ScrollbarAlphabet
 //	2011-02-07 kartu - Added BrowseFolders.VALUE_BY_FILENAME_AS_COMMENT
+//	2011-02-10 kartu - Added StandarActions translations
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -200,7 +201,15 @@ return {
 		ACTION_PREVIOUS_SONG: "Previous Song",
 		ACTION_NEXT_SONG: "Next Song",
 		ACTION_GOTO_LINK: "Goto Link",
-		ACTION_CONTINUE_READING: "Continue Reading"
+		ACTION_CONTINUE_READING: "Continue Reading",
+		ACTION_OPEN_TOC: "Open TOC",
+		// "Bubble" actions		
+		ACTION_doOption: "Open Options",
+		ACTION_doSearch: "Search",
+		ACTION_doRotate: "Rotate",
+		ACTION_doMenu: "Previous Menu (Back / Up)",
+		ACTION_doSize: "Size",
+		ACTION_doRoot: "Goto Home"
 	},
 
 	Screenshot: {

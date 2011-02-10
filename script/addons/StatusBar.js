@@ -37,7 +37,7 @@ tmp = function() {
 	} else {
 		BOOK = sandbox.PAGE_GROUP.sandbox.PAGE;
 	}
-	if(PAGE_INFO === undefined) {
+	if (PAGE_INFO === undefined) {
 		PAGE_INFO = kbook.model;
 	}
 
