@@ -281,7 +281,7 @@ tmp = function() {
 				});
 
 				// (X) like description, i.e. (3)
-				bookHistoryNode.shortComment = function () {return "(" + bookList.length + ")"; },
+				bookHistoryNode.shortComment = function () {return "(" + bookList.length + ")"; };
 
 				// null value of the nodes is used by the contructor to detect uninitialized state
 				bookHistoryNode.nodes = null;
