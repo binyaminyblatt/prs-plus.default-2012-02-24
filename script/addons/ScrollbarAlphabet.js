@@ -4,9 +4,11 @@
 //
 // History:
 //	2011-02-06 kartu - Initial version
+//	2011-02-10 kartu - Implemented # Latin-English and Latin-Georgian scrollbars 
 
 tmp = function() {
-	var log, L, defVal, ScrollbarAlphabet, initAlphaBins, getBinName, oldInitAlphaBins, oldGetBinName, BINS, rangeBasedGetBinName; 
+	var log, L, defVal, ScrollbarAlphabet, initAlphaBins, getBinName, oldInitAlphaBins, oldGetBinName, BINS, rangeBasedGetBinName,
+	createCharToBinMapping; 
 	L = Core.lang.getLocalizer("ScrollbarAlphabet");
 	log = Core.log.getLogger("ScrollbarAlphabet");
 	defVal = "default";
@@ -28,6 +30,20 @@ tmp = function() {
 		}
 		return "*";
 	};
+	
+	// Creates letter => bin name mapping "hashmap"
+	createCharToBinMapping = function(bins) {
+		var result, i, j, n, m, bin;
+		result = {};
+		for (i = 0, n = bins.length; i < n; i++) {
+			bin = bins[i];
+			for (j = 0, m = bin.length; j < m; j++) {
+				result[bin.charAt(j)] = bin;
+			}
+		}
+		return result;
+	};
+	
 		
 	BINS = {
 		"lat": {
@@ -68,6 +84,30 @@ tmp = function() {
 				}
 			}
 		}, 
+		"lat_rus": {
+			bins: [ "#","AB", "CD", "EF", "GH", "IJ", "KL", "MN", "OP", "QR", "ST", "UV", "WX", "YZ",
+				 "АБ", "ВГ", "ДЕ", "ЁЖ", "ЗИ", "ЙК", "ЛМ", "НО", "ПР", "СТ", "УФ", "ХЦ", "ЧШ", "ЩЪ", "ЫЭ", "ЮЯ", "*"],
+			getBinName: function (item) {
+				var binName;
+				try {
+					// Try Russian first
+					binName = BINS.rus.getBinName(item);
+					if (binName === "*" || binName === "#") {
+						// If not Russian, try latin
+						binName = BINS.lat.getBinName(item);
+					}
+		
+					if (this.map === undefined) {
+						this.map = createCharToBinMapping (this.bins);
+					}
+					
+					return this.map[binName];
+				} catch (e) {
+					log.error("in lat_rus.getBinName, item is " + item, e);
+					return "*";
+				}
+			}
+		}, 
 		"geo": {
 			bins: [ "#", "ა", "ბ", "გ", "დ", "ე", "ვ", "ზ", "თ", "ი", "კ", "ლ", "მ", "ნ", "ო", "პ", "ჟ", "რ", "ს", "ტ", "უ", "ფ", "ქ", "ღ", "ყ", "შ", "ჩ", "ც", "ძ", "წ", "ჭ", "ხ", "ჯ", "ჰ", "*"],
 			getBinName: function (item) {
@@ -78,7 +118,31 @@ tmp = function() {
 					return "*";
 				}
 			}
-		} 
+		},
+		"lat_geo": {
+			bins: [ "#","AB", "CD", "EF", "GH", "IJ", "KL", "MN", "OP", "QR", "ST", "UV", "WX", "YZ",
+				"აბ", "გდ", "ევ", "ზთ", "იკ", "ლმ", "ნო", "პჟ", "რს", "ტუ", "ფქ", "ღყ", "შჩ", "ცძ", "წჭ", "ხჯ", "ჰ", "*"],
+			getBinName: function (item) {
+				var binName;
+				try {
+					// Try Georgian first
+					binName = BINS.geo.getBinName(item);
+					if (binName === "*" || binName === "#") {
+						// If not Georgian, try latin
+						binName = BINS.lat.getBinName(item);
+					}
+		
+					if (this.map === undefined) {
+						this.map = createCharToBinMapping (this.bins);
+					}
+					
+					return this.map[binName];
+				} catch (e) {
+					log.error("in lat_rus.getBinName, item is " + item, e);
+					return "*";
+				}
+			}
+		}		
 	};
 	
 	getBinName = function(item) {
@@ -118,11 +182,13 @@ tmp = function() {
 				title: L("OPT_ALPHABET"),
 				icon: "ABC",
 				defaultValue: defVal,
-				values: [defVal, "lat", "rus", "geo"],
+				values: [defVal, "lat", "rus", "lat_rus", "geo", "lat_geo"],
 				valueTitles: {
 					"lat": "Latin",
 					"rus": "Русский",
-					"geo": "ქართული"
+					"lat_rus": "Англо - русский",
+					"geo": "ქართული",
+					"lat_geo": "ინგლისურ - ქართული"
 				}			
 			}];
 			this.optionDefs[0].valueTitles[defVal] = L("VALUE_DEFAULT");
@@ -132,6 +198,9 @@ tmp = function() {
 			oldGetBinName = kbook.menuData.getBinName;
 			kbook.menuData.initAlphaBins = initAlphaBins;
 			kbook.menuData.getBinName = getBinName;
+			if (!BINS[this.options.alphabet]) {
+				this.options.alphabet = defVal;
+			}
 		}
 	};
 	
