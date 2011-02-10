@@ -6,7 +6,8 @@
 // History:
 //	2011-01-12 kartu - Initial version, based on 600
 //	2011-02-06 kartu - Fixed #64 "Wrong german translation file"
-//	2011-02-07 kartu - Implemented #? possibility to download files using web browser
+//	2011-02-07 kartu - Implemented # possibility to download files using web browser
+//	2011-02-10 kartu - Implemented # Russian phonetic keyboard (keyboard xml by boroda)
 
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -344,7 +345,8 @@ var tmp = function() {
 				"Italian-Italy",
 				"Portuguese-Portugal",				
 				"Georgian", 
-				"Russian"
+				"Russian",
+				"Russian-Phonetic"
 		];
 		keyboardNames = {
 			"German-Germany": "Deutsch",
@@ -356,6 +358,7 @@ var tmp = function() {
 			"Dutch-Netherlands": "Nederlands",
 			"Portuguese-Portugal": "Português",				
 			"Russian": "Русская",
+			"Russian-Phonetic": "Русская (яверты)",
 			"English-UK": "United Kingdom",
 			"English-US": "United States"
 		};
@@ -416,6 +419,7 @@ var tmp = function() {
 				"Italian-Italy": "KeyboardLayout142.xml",
 				"Portuguese-Portugal": "KeyboardLayout275.xml",
 				"Russian": "languages/KeyboardLayoutRussian.xml",
+				"Russian-Phonetic": "languages/KeyboardLayoutRussianPhonetic.xml",
 				"Georgian": "languages/KeyboardLayoutGeorgian.xml"
 			};
 			path = System.applyEnvironment('[keyboardLayoutPath]') ;
