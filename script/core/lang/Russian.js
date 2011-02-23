@@ -315,6 +315,7 @@ return {
                 FUNC_X_SETTINGS: FUNC_X_SETTINGS,
                 FUNC_X_ITEMS: FUNC_X_ITEMS,
                 NODE_PRSP_SETTINGS: "Настройки PRS+",
+                NODE_PRSP_SETTINGS_SHORT: " Настр. PRS+",
                 NODE_OTHERS: "Мультимедиа",
                 NODE_GAMES_AND_UTILS: "Игры и приложения",
                 GROUP_MENU_TITLE: "Стиль и функции меню",
@@ -455,6 +456,7 @@ return {
         StandardActions: {
         	TITLE: "Стандартные действия",
                 // Actions
+                ACTION_CONTINUE_READING: "Продолжить чтение",
                 ACTION_SHUTDOWN: "Отключить",
                 ACTION_NEXT_PAGE: "Следующая страница",
                 ACTION_PREVIOUS_PAGE: "Предыдущая страница",
@@ -495,7 +497,9 @@ return {
                 VALUE_BY_AUTHOR_THEN_TITLE: "По автору и по названию",
                 VALUE_BY_AUTHOR_SWAPPING: "По автору с заменой имя<>фамилия",
                 VALUE_BY_FILENAME: "По имени файла",
+                VALUE_BY_FILENAME_AS_COMMENT: "Название файла в комментарии",
                 OPTION_TITLE_SORTER: "Использовать поле «titleSorter»",
+                OPTION_FAVOURITE_FOLDERS: "Избранные папки",
                 ENABLED: "Включено",
                 DISABLED: "Отключено",
                 OPTION_IM_ROOT: "Начинать просмотр папок с...",
@@ -508,6 +512,7 @@ return {
                 NODE_COPY_AND_RESCAN_COMMENT: "Скопировать файл и просканировать всю память",
                 ERROR_TARGET_EXISTS: "Ошибка, файл уже существует",
                 NODE_BROWSE_FOLDERS: "Просмотр папок",
+                NODE_BROWSE_FOLDERS_SHORT: "Папки",
                 NODE_BROWSE_FOLDERS_COMMENT: "Просмотр файловой системы",
                 NODE_INTERNAL_MEMORY: "Внутренняя память",
                 NODE_MEMORY_STICK: "Memory Stick",
@@ -558,6 +563,7 @@ return {
                 FUNC_X_BOOKS: FUNC_X_BOOKS,
                 FUNC_PAGE_X: FUNC_PAGE_X,
                 TITLE: "История книг",
+                SHORT_TITLE: "История",
                 VALUE_DISABLED: "Отключена",
                 OPTION_REPLACE: "История в «Продолжить чтение»",
                 VALUE_ON: "Включено",
@@ -616,16 +622,8 @@ return {
           VALUE_DEFAULT: "По умолчанию",
           VALUE_YES: "Включен",
           VALUE_NO: "Выключен",
-          SLOT_1: "Строка 1",
-          SLOT_2: "Строка 2",
-          SLOT_3: "Строка 3",
-          SLOT_4: "Строка 4",
-          SLOT_5: "Строка 5",
-          SLOT_6: "Строка 6",
-          SLOT_7: "Строка 7",
-          SLOT_8: "Строка 8",
-          SLOT_9: "Строка 9",
-          SLOT_10: "Строка 0"
+          UNMOVABLE_SLOT: "Неизменяемый слот",
+          SLOT: "Слот"
         },
         StatusBar:{
           TITLE: "Строка состояния"
@@ -657,5 +655,10 @@ return {
                 VALUE_STATS0: "5 / 100 (страниц в минуту)",
                 VALUE_STATS1: "5 / 100 (оставшееся время)",
                 VALUE_STATS2: "5 / 100 (см / оставшееся время)"
+        },
+        ScrollbarAlphabet: {
+        	TITLE: "Алфавит полосы прокрутки",
+        	OPT_ALPHABET: "Алфавит",
+        	VALUE_DEFAULT: "По умолчанию"
         }
 };
