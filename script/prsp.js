@@ -3,10 +3,11 @@
 //
 // History:
 //	2010-06-26 kartu - Initial version, based on 505
+//	2011-02-26 kartu - Added compatPath & getFileContent params to bootstrap call
 
 if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 	var bootLog;
-	var path, code, f, endsWith, listFiles, getFileContent, getFileContentEx, userConfig, Core, loadCore, loadAddons;
+	var path, code, f, endsWith, listFiles, getFileContent, getFileContentEx, userConfig, Core, loadCore, loadAddons, compatPath;
 	var tmp = function() {
 		var config = {
 			model: System.applyEnvironment("[prspModel]"),
@@ -139,10 +140,12 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 				bootLog("Failed to load addons " + e);
 			}
 		};
+
+		compatPath = Core.config.corePath + "compat/";
 		
 		// Read compatibility configuration
 		try {
-			path = Core.config.corePath + "compat/" +  Core.config.model + "_config.js";
+			path = compatPath + Core.config.model + "_config.js";
 			code = getFileContent(path);
 			f = new Function("", code);
 			Core.config.compat = f();
@@ -152,10 +155,10 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 		
 		// Call model specific bootstrap
 		try {
-			path = Core.config.corePath + "compat/" +  Core.config.model + "_bootstrap.js";
+			path = compatPath +  Core.config.model + "_bootstrap.js";
 			code = getFileContent(path);
-			f = new Function("bootLog,Core,loadCore,loadAddons", code);
-			f(bootLog,Core, loadCore, loadAddons);
+			f = new Function("bootLog,Core,loadCore,loadAddons,getFileContent, compatPath", code);
+			f(bootLog, Core, loadCore, loadAddons, getFileContent, compatPath);
 		} catch (e1) {
 			bootLog("FATAL: failed to call bootstrap " + e1); 
 		}
