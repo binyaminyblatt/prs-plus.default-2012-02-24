@@ -39,6 +39,7 @@
 //	2011-02-01 kartu - Fixed goto child / parent in on enter book (on x50 book nodes do not have children)
 //			Added "short comment" field.
 //			Skip book menu menu option is shown only on older models (with numeric buttons)
+//	2011-02-26 kartu - Fixed #68:  x50: Deleting books opened via Book History is bugged
 
 tmp = function() {
 	var L, log, trim, model, BH_TITLE, BH_SHORT_TITLE, BH_FILE, BookHistory, bookList, mustSave, bookHistoryNode,
@@ -98,9 +99,6 @@ tmp = function() {
 	// Creates book nodes (once)
 	constructNodes = function () {
 		var i, node;
-		if (this.nodes) {
-			return;
-		}
 		this.nodes = [];
 		
 		for (i = bookList.length-1; i >= 0; i--) {
@@ -112,10 +110,6 @@ tmp = function() {
 				mustSave = true;
 			}
 		}
-	};
-	
-	destructNodes = function () {
-		// do nothing
 	};
 	
 	// Loads saved Book History from addon's private file
@@ -228,10 +222,6 @@ tmp = function() {
 			for (i = 0, n = bookList.length; i < n; i++) {
 				if (path === bookList[i]) {
 					bookList.splice(i, 1);
-					// if nodes are initialized, also pop book node
-					if (bookHistoryNode && bookHistoryNode.nodes) {
-						bookHistoryNode.nodes.splice(i, 1);
-					}
 					mustSave = true;
 					break;
 				}
@@ -265,7 +255,8 @@ tmp = function() {
 			
 			loadFromFile();
 			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, bookChanged);
-			Core.events.subscribe(Core.events.EVENTS.BOOK_DELETED, bookDeleted);
+			// Fix for #68 x50: Deleting books opened via Book History is bugged
+			Core.events.subscribe(Core.events.EVENTS.BOOK_DELETED, bookDeleted, true);
 			Core.events.subscribe(Core.events.EVENTS.TERMINATE, save);
 			Core.events.subscribe(Core.events.EVENTS.SLEEP, save);
 		},
@@ -276,8 +267,7 @@ tmp = function() {
 					shortName: BH_SHORT_TITLE,
 					icon: "BOOK_HISTORY",
 					comment: function () {return L("FUNC_X_BOOKS", bookList.length); },
-					construct: constructNodes,
-					destruct: destructNodes
+					construct: constructNodes
 				});
 
 				// (X) like description, i.e. (3)
