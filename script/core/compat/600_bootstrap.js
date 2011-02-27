@@ -3,6 +3,9 @@
 //	Receives variables: bootLog, Core, loadAddons, loadCore
 //		must call loadAddons, loadCore and Core.init at appropriate times
 //
+// Credits:
+//	Keyboard popup chars code discovered and harnessed by Mark Nord
+//
 // History:
 //	2010-09-02 kartu - Initial version
 //	2010-11-29 kartu - Added Georgian (by rawerfas) Italian #29 (by Salvatore Ingala) and Chinese #26 (by frank0734) translations
@@ -10,6 +13,7 @@
 //	2010-12-01 kartu - Fixed #28 "Stand-by image should be independent of screen orientation" 
 //			(added landscape subfolder support, as there is no way to rotate the image
 //	2011-02-06 kartu - Fixed #64 "Wrong german translation file"
+//	2011-02-27 kartu - Added Belorussian / Ukranian chars (as popups) to keyboard
 
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -249,7 +253,6 @@ var tmp = function() {
 		}
 	};
 	
-	// FIXME test
 	oldCallback = FskCache._diskSource.synchronizeCallback;
 	FskCache._diskSource.synchronizeCallback = function() {
 		try {
@@ -346,6 +349,50 @@ var tmp = function() {
 	String.prototype.localeCompare = function(a) {
 		return compareStrings(this.valueOf(), a);
 	};
+	
+	// Localize "popup" keyboard, that shows after holding button for a couple of secs
+	localizeKeyboardPopups = function() {
+		var keyboardLayout, oldIsSelectChar, oldSetPopupChar, SEL_CHARS;
+		
+		keyboardLayout = Fskin.kbookKeyboard.keyboardLayout;
+		oldIsSelectChar =  keyboardLayout.isSelectChar;
+		oldSetPopupChar = keyboardLayout.setPopupChar;
+		
+		SEL_CHARS = {
+			"и": ["и", "і", "ї"], 
+			"у": ["у", "ў"], 
+			"е": ["е", "ё", "е", "є"], 
+			"г": ["г", "ґ"], 
+			"ъ": ["ъ", "'"],
+			"И": ["И", "І", "Ї"], 
+			"У": ["У", "Ў"], 
+			"Е": ["Е", "Ё", "Е", "Є"], 
+			"Г": ["Г", "Ґ"], 
+			"Ъ": ["Ъ", "'"]		
+		};
+		
+		keyboardLayout.isSelectChar = function(key) {
+			if (SEL_CHARS[key] !== undefined) {
+				return true;
+			}
+			return oldIsSelectChar.apply(this, arguments);
+		};
+		
+		keyboardLayout.setPopupChar = function (text, popup) {
+			var chars, i, n;
+			chars = SEL_CHARS[text];
+			if (chars !== undefined) {
+				n = chars.length;
+				for (i = 0; i < 8; i++) {
+					popup["addkey" + i].setText(i < n ? chars[i] : "");
+				}
+				return n;
+			}
+			return oldIsSelectChar.apply(this, arguments);
+		};
+	};
+	localizeKeyboardPopups();
+	
 };
 
 tmp();

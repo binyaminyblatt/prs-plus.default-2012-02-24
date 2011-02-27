@@ -6,6 +6,7 @@
  * x50: Added Belorussian / Ukranian chars (as popups) to keyboard
  * x50: Added rotate by 0 / 90 / 180 / 270 / clock wise / counter clock wize actions
  * 600: Added rotate by 90 action
+ * 600: Added Belorussian / Ukranian chars (as popups) to keyboard
 
 === 2.0.9 alpha (bugfixes/enhancements for x50) ===
  * x50: Fixed "Holding option /zoom buttons should call "Go Back in Menus" and "Search" respectively"
