@@ -1,7 +1,8 @@
-// Name: 300
-// Description: Sony PRS-300 bootstrap code
-//	Receives variables: bootLog, Core, loadAddons, loadCore
-//		must call loadAddons, loadCore and Core.init at appropriate times
+// Name: 600
+// Description: Sony PRS-600 bootstrap code
+//	Receives PARAMS argument with the following fields:
+//		bootLog, Core, loadAddons, loadCore
+//	Must call loadAddons, loadCore and Core.init at appropriate times
 //
 // Credits:
 //	Keyboard popup chars code discovered and harnessed by Mark Nord
@@ -14,14 +15,16 @@
 //			(added landscape subfolder support, as there is no way to rotate the image
 //	2011-02-06 kartu - Fixed #64 "Wrong german translation file"
 //	2011-02-27 kartu - Added Belorussian / Ukranian chars (as popups) to keyboard
-
+//	2011-02-27 kartu - Refactored parameters into PARAMS object
+//
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
 // Replacing default  "choose language" menu & "choose keyboard" menu
 //-----------------------------------------------------------------------------------------------------
 
 var tmp = function() {
-	var localize, localizeKeyboard, oldSetLocale, oldChangeKeyboardType, oldReadPreference, getRandomWallpaper, wallpapers, landscapeWallpapers, oldCallback;
+	var localize, localizeKeyboard, localizeKeyboardPopups, oldSetLocale, oldChangeKeyboardType, oldReadPreference, 
+		getRandomWallpaper, wallpapers, landscapeWallpapers, oldCallback;
 	localize = function(Core) {
 		try {
 			var i, n, currentLang, settingsNode, langNode, languages, langNames, enter, 
@@ -51,7 +54,7 @@ var tmp = function() {
 			};
 	
 			// Load core js		
-			loadCore();
+			PARAMS.loadCore();
 			
 			// Load PRS+ strings
 			langFile = Core.config.corePath + "lang/" + prspLanguages[currentLang];
@@ -88,7 +91,7 @@ var tmp = function() {
 					// TODO localize
 					Core.ui.showMsg("Requires restart");					
 				} catch (e) {
-					bootLog("changing language", e);
+					PARAMS.bootLog("changing language", e);
 				}
 			};
 			
@@ -114,7 +117,7 @@ var tmp = function() {
 			// self destruct :)
 			localize = null;
 		} catch (e) {
-			bootLog("localize", e);
+			PARAMS.bootLog("localize", e);
 		}
 	};
 	
@@ -126,9 +129,9 @@ var tmp = function() {
 			// restore "old" set locale
 			Fskin.localize.setLocale = oldSetLocale;
 			
-			localize(Core);
+			localize(PARAMS.Core);
 		} catch (e) {
-			bootLog("in overriden setLocale", e);
+			PARAMS.bootLog("in overriden setLocale", e);
 		}
 	};
 	
@@ -163,7 +166,7 @@ var tmp = function() {
 				kbook.model.writeFilePreference();
 				this.parent.gotoParent(kbook.model);			
 			} catch (e) {
-				bootLog("changing keyboard", e);
+				PARAMS.bootLog("changing keyboard", e);
 			}
 		};	
 		
@@ -226,12 +229,12 @@ var tmp = function() {
 			// restore "old" readPreference
 			kbook.model.readPreference = oldReadPreference;
 			
-			loadAddons();
-			Core.init();
+			PARAMS.loadAddons();
+			PARAMS.Core.init();
 	
 			// Fix home icons of "All Notes" &  "Collections"
-			Core.ui.nodes.collections.homekind = Core.config.compat.NodeKinds.HOME_COLLECTIONS;
-			Core.ui.nodes.notes.homekind = Core.config.compat.NodeKinds.HOME_NOTES;
+			PARAMS.Core.ui.nodes.collections.homekind = PARAMS.Core.config.compat.NodeKinds.HOME_COLLECTIONS;
+			PARAMS.Core.ui.nodes.notes.homekind = PARAMS.Core.config.compat.NodeKinds.HOME_NOTES;
 			
 			// Fix large icons in home menu
 			// bottom right icon
@@ -249,23 +252,22 @@ var tmp = function() {
 				return kbook.model.gestureDirectionFlag ? "<--" : "-->";
 			};
 		} catch (e) {
-			bootLog("in overriden readPreference " + e);
+			PARAMS.bootLog("in overriden readPreference " + e);
 		}
 	};
 	
 	oldCallback = FskCache._diskSource.synchronizeCallback;
 	FskCache._diskSource.synchronizeCallback = function() {
 		try {
-			if (Core && Core.config && Core.config.disableCardScan) {
+			if (PARAMS.Core && PARAMS.Core.config && PARAMS.Core.config.disableCardScan) {
 				this.target.synchronizedSource();
 				this.target.synchronizeDone();
 				this.stack.pop();
 			} else {
 				oldCallback.apply(this, arguments);
 			}
-			//bootLog("Finished syncronizing: " +  this.stack.pop().path);
 		} catch (e) {
-			bootLog("Error in callback: " + e);
+			PARAMS.bootLog("Error in callback: " + e);
 			oldCallback.apply(this, arguments);
 		}
 	};
@@ -277,13 +279,13 @@ var tmp = function() {
 				// horizontal layout, use another set of pictures
 				folder = System.applyEnvironment("[prspPublicPath]wallpaper/landscape/");
 				if (!landscapeWallpapers) {
-					landscapeWallpapers = Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
+					landscapeWallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
 				}
 				list = landscapeWallpapers;
 			} else {
 				folder = System.applyEnvironment("[prspPublicPath]wallpaper/");
 				if (!wallpapers) {
-					wallpapers = Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
+					wallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
 				}
 				list = wallpapers;
 			}
@@ -291,14 +293,14 @@ var tmp = function() {
 			while (list.length > 0) {
 				idx = Math.floor(Math.random() * list.length);
 				path = list[idx];
-				if (Core.media.isImage(path)) {
+				if (PARAMS.Core.media.isImage(path)) {
 					return folder + path;
 				} else {
 					list.splice(idx, 1);
 				}
 			}
 		} catch (e) {
-			bootLog("error in random image " + e);
+			PARAMS.bootLog("error in random image " + e);
 		}
 	};
 
@@ -334,7 +336,7 @@ var tmp = function() {
 				window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
 				ditheredBitmap.close();
 			} catch (e) {
-				bootLog("Exception in standby image draw " + e);
+				PARAMS.bootLog("Exception in standby image draw " + e);
 			}
 		} else {
 			color = window.getPenColor();
@@ -345,7 +347,7 @@ var tmp = function() {
 	};
 	
 	// Fix sorting (unicode order)
-	var compareStrings =  Core.config.compat.compareStrings;
+	var compareStrings = PARAMS.Core.config.compat.compareStrings;
 	String.prototype.localeCompare = function(a) {
 		return compareStrings(this.valueOf(), a);
 	};
