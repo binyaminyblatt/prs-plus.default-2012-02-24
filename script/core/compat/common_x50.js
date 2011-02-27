@@ -59,6 +59,7 @@ tmp = function() {
 			return oldIsSelectChar.apply(this, arguments);
 		};
 	};
+	localizeKeyboardPopups();
 	
 	// Updates node siblings (used for setting selected / unselected icon)
 	updateSiblings = function(fieldName) {
