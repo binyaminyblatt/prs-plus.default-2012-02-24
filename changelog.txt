@@ -4,6 +4,8 @@
  * x50: Fixed #66 x50: Collection editing broken, if collection node is not in the 4th slot
  * x50: Periodicals node no longer "unmovable", replaced with "Browse Folders" by default
  * x50: Added Belorussian / Ukranian chars (as popups) to keyboard
+ * x50: Added rotate by 0 / 90 / 180 / 270 / clock wise / counter clock wize actions
+ * 600: Added rotate by 90 action
 
 === 2.0.9 alpha (bugfixes/enhancements for x50) ===
  * x50: Fixed "Holding option /zoom buttons should call "Go Back in Menus" and "Search" respectively"

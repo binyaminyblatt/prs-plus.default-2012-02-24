@@ -86,6 +86,7 @@
 	<include name="${SC}/addons/StatusBar_PageIndex.js"/>		
 	<include name="${SC}/addons/StandardActions.js"/>		
 	<include name="${SC}/addons/ScrollbarAlphabet.js"/>		
+	<include name="${SC}/core/compat/common_x50.js"/>	
 </patternset>
 <fileset id="include_350" dir="../">
 	<patternset refid="include_x50"/>
