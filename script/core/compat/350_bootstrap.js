@@ -13,7 +13,8 @@
 //	2011-02-09 kartu - Fixed # Text Memo open => press root leads to reboot
 //	2011-02-10 kartu - Implemented # Russian phonetic keyboard (keyboard xml by boroda)
 //	2011-02-26 kartu - Refactored, moved code common to x50 models into common_x50.js
-
+//	2011-02-27 kartu - Refactored parameters into PARAMS object
+//
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
 // Replacing default  "choose language" menu & "choose keyboard" menu
@@ -33,10 +34,12 @@ var tmp = function() {
 	
 	// Call code common to x50 models	
 	try {
-		var f = new Function("Core,bootLog,loadCore,loadAddons,getFileContent,compatPath,langNodeIndex,keyboardNodeIndex", getFileContent(compatPath + "common_x50.js"));
-		f(Core, bootLog, loadCore, loadAddons, getFileContent, compatPath, 3, 4);
+		var f = new Function("PARAMS", PARAMS.getFileContent(PARAMS.compatPath + "common_x50.js"));
+		PARAMS.langNodeIndex = 3;
+		PARAMS.keyboardNodeIndex = 4;
+		f(PARAMS);
 	} catch (ee) {
-		bootLog("error calling common x50 " + ee);
+		PARAMS.bootLog("error calling common x50 " + ee);
 	}
 };
 

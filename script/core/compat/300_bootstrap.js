@@ -1,7 +1,8 @@
 // Name: 300
 // Description: Sony PRS-300 bootstrap code
-//	Receives variables: bootLog, Core, loadAddons, loadCore
-//		must call loadAddons, loadCore and Core.init at appropriate times
+//	Receives PARAMS argument with the following fields:
+//		bootLog, Core, loadAddons, loadCore
+//	Must call loadAddons, loadCore and Core.init at appropriate times
 //
 // History:
 //	2010-09-02 kartu - Initial version
@@ -11,6 +12,7 @@
 //	2010-11-29 kartu - Renamed ga => ka
 //	2010-11-30 kartu - Fixed #14 " * by author/title sorting doesn't work for non latin chars"
 //	2011-02-06 kartu - Fixed #64 "Wrong german translation file"
+//	2011-02-27 kartu - Refactored parameters into PARAMS object
 
 var tmp = function() {
 	var oldSetLocale, localize;
@@ -49,7 +51,7 @@ var tmp = function() {
 			}
 	
 			// Load core js		
-			loadCore();
+			PARAMS.loadCore();
 			
 			// Load PRS+ strings
 			langFile = Core.config.corePath + "lang/" + prspLanguages[currentLang];
@@ -85,7 +87,7 @@ var tmp = function() {
 					// TODO localize
 					Core.ui.showMsg("Requires restart");
 				} catch (e) {
-					bootLog("changing language", e);
+					PARAMS.bootLog("changing language", e);
 				}
 			};
 			
@@ -111,10 +113,10 @@ var tmp = function() {
 			delete this.localize;
 			
 			// Language strings were loaded, time to init Core
-			loadAddons();
+			PARAMS.loadAddons();
 			Core.init();
 		} catch (e) {
-			bootLog("localize", e);
+			PARAMS.bootLog("localize", e);
 		}
 	};
 	
@@ -123,11 +125,11 @@ var tmp = function() {
 	Fskin.localize.setLocale = function() {
 		try {
 			oldSetLocale.apply(this, arguments);
-			localize(Core);
+			localize(PARAMS.Core);
 			// restore "old" set locale
 			Fskin.localize.setLocale	= oldSetLocale;
 		} catch (e) {
-			bootLog("in overriden setLocale", e);
+			PARAMS.bootLog("in overriden setLocale", e);
 		}
 	};
 	
@@ -147,7 +149,7 @@ var tmp = function() {
 	kbook.model.container.sandbox.PAGE_GROUP.sandbox.doDigit = function(part) {
 		try {
 			var c, s, i, container, key;
-			bootLog("sandbox.PAGE is " + this.sandbox.PAGE);
+			PARAMS.bootLog("sandbox.PAGE is " + this.sandbox.PAGE);
 			c = this.sandbox.PAGE.countPages().toString().length - 1;
 			s = "";
 			for (i = 0; i < c; i++) {
@@ -163,12 +165,12 @@ var tmp = function() {
 			container = kbook.model.container;
 			container.sandbox.beforeModal.call(container, container.sandbox.GOTO_GROUP);
 		} catch (ignore) {
-			bootLog("error in doDigit: " + ignore);
+			PARAMS.bootLog("error in doDigit: " + ignore);
 		}
 	};
 	
 	// Fix sorting
-	var compareStrings =  Core.config.compat.compareStrings;
+	var compareStrings =  PARAMS.Core.config.compat.compareStrings;
 	String.prototype.localeCompare = function(a) {
 		return compareStrings(this.valueOf(), a);
 	};

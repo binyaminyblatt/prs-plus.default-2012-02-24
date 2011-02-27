@@ -1,6 +1,6 @@
 // Name: bootstrap 950
 // Description: Sony PRS-950 bootstrap code
-//	Receives the following parameters: 
+//	Receives PARAMS argument with the following fields:
 //		Core, bootLog, loadCore, loadAddons, getFileContent, compatPath
 //		must call loadAddons, loadCore and Core.init at appropriate times
 //
@@ -10,6 +10,7 @@
 //	2011-02-07 kartu - Implemented # possibility to download files using web browser
 //	2011-02-10 kartu - Implemented # Russian phonetic keyboard (keyboard xml by boroda)
 //	2011-02-26 kartu - Refactored, moved code common to x50 models into common_x50.js
+//	2011-02-27 kartu - Refactored parameters into PARAMS object
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -44,7 +45,7 @@ var tmp = function() {
 			}
 			
 		} catch (e) {
-			bootLog("In updateSiblings " + e);
+			PARAMS.bootLog("In updateSiblings " + e);
 		}
 	};
 
@@ -168,7 +169,7 @@ var tmp = function() {
 			var dialog = kbook.model.getConfirmationDialog();
 			dialog.target = this;
 			dialog.onOk = function () {
-				Core.shell.exec("/usr/bin/wget -P /Data " + url);	
+				PARAMS.Core.shell.exec("/usr/bin/wget -P /Data " + url);	
 			};
 			dialog.onNo = function () {
 			};
@@ -179,15 +180,14 @@ var tmp = function() {
 
 	// Call code common to x50 models	
 	try {
-		var f = new Function("Core,bootLog,loadCore,loadAddons,getFileContent,compatPath,langNodeIndex,keyboardNodeIndex,fixTimeZones", getFileContent(compatPath + "common_x50.js"));
-		f(Core, bootLog, loadCore, loadAddons, getFileContent, compatPath, 4, 5, fixTimeZones);
+		var f = new Function("PARAMS", PARAMS.getFileContent(PARAMS.compatPath + "common_x50.js"));
+		PARAMS.langNodeIndex = 4;
+		PARAMS.keyboardNodeIndex = 5;
+		PARAMS.fixTimeZones = fixTimeZones;
+		f(PARAMS);
 	} catch (ee) {
-		bootLog("error calling common x50 " + ee);
-	}
-	
-	// no need in this function
-	updateSiblings = undefined;
-	fixTimeZones = undefined;
+		PARAMS.bootLog("error calling common x50 " + ee);
+	}	
 };
 
 tmp();

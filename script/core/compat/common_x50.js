@@ -4,7 +4,7 @@
 // Credits:
 //	Keyboard popup chars code discovered and harnessed by Mark Nord
 //
-// Receives the following parameters: 
+// Receives PARAMS argument with the following fields:: 
 //		Core, bootLog, loadCore, loadAddons, getFileContent, compatPath, langNodeIndex, keyboardNodeIndex
 //	optional parameters:
 //		fixTimeZones 
@@ -13,6 +13,7 @@
 //	2011-02-26 kartu - Initial version, merged from 350/950 code
 //		Added Belorussian / Ukranian chars (as popups) to keyboard
 //		Fixed #66 x50: Collection editing broken, if collection node is not in the 4th slot
+//	2011-02-27 kartu - Refactored parameters into PARAMS object
 //
 tmp = function() {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -86,7 +87,7 @@ tmp = function() {
 			}
 			
 		} catch (e) {
-			bootLog("In updateSiblings " + e);
+			PARAMS.bootLog("In updateSiblings " + e);
 		}
 	};
 	
@@ -122,7 +123,7 @@ tmp = function() {
 			};
 			
 			// Load core js		
-			loadCore();
+			PARAMS.loadCore();
 			
 			// Load PRS+ strings
 			langFile = Core.config.corePath + "lang/" + prspLanguages[currentLang];
@@ -148,7 +149,7 @@ tmp = function() {
 			try {
 				// Hook comment field
 				kbook.commentField.format = function (item, name) {
-					if (item && '_mycomment' in item) {
+					if (item && item.hasOwnProperty("_mycomment")) {
 						if ((typeof item._mycomment) === "function") {
 							try {
 								return item._mycomment();
@@ -158,12 +159,12 @@ tmp = function() {
 						} else {
 							return item._mycomment;
 						}
-					} else if (item && 'comment' in item) {
+					} else if (item && item.hasOwnProperty("comment")) {
 						return item.comment;
 					}
 				};
 			} catch (e) {
-				bootLog("error hooking commendField.format function");
+				PARAMS.bootLog("error hooking commendField.format function");
 			}
 			
 			// Enter function for language children, changes locale and moves to parent
@@ -199,7 +200,7 @@ tmp = function() {
 					// TODO localize
 					Core.ui.showMsg("Requires restart");					
 				} catch (e) {
-					bootLog("changing language", e);
+					PARAMS.bootLog("changing language", e);
 				}
 			};
 			
@@ -225,26 +226,26 @@ tmp = function() {
 			}
 			
 			// Replace "language" node with custom node
-			settingsNode.nodes[0].nodes[langNodeIndex] = langNode;
+			settingsNode.nodes[0].nodes[PARAMS.langNodeIndex] = langNode;
 			
 			try {
 				localizeKeyboard(Core);
 			} catch (e0) {
-				bootLog("Error localizing keyboard  " + e0);
+				PARAMS.bootLog("Error localizing keyboard  " + e0);
 			}
 			
 			try {
-				if (typeof fixTimeZones === "function") {
-					fixTimeZones(Core);
+				if (typeof PARAMS.fixTimeZones === "function") {
+					PARAMS.fixTimeZones(Core);
 				}
 			} catch (e1) {
-				bootLog("Error fixing timezones " + e1);
+				PARAMS.bootLog("Error fixing timezones " + e1);
 			}
 
 			// self destruct :)
 			localize = null;
 		} catch (e2) {
-			bootLog("error in localize " + e2);
+			PARAMS.bootLog("error in localize " + e2);
 		}
 	};
 	// Init language related stuff once setLocale was called and strings were loaded
@@ -255,9 +256,9 @@ tmp = function() {
 			// restore "old" set locale
 			Fskin.localize.setLocale = oldSetLocale;
 			
-			localize(Core);
+			localize(PARAMS.Core);
 		} catch (e) {
-			bootLog("in overriden setLocale " + e);
+			PARAMS.bootLog("in overriden setLocale " + e);
 		}
 	};
 	
@@ -328,7 +329,7 @@ tmp = function() {
 			keyboardNode.nodes.push(node);
 		}	
 		
-		advancedSettingsNode.nodes[keyboardNodeIndex] = keyboardNode;
+		advancedSettingsNode.nodes[PARAMS.keyboardNodeIndex] = keyboardNode;
 	
 		// self destruct :)	
 		localizeKeyboard = null;
@@ -370,17 +371,17 @@ tmp = function() {
 			// restore "old" readPreference
 			kbook.model.readPreference = oldReadPreference;
 			
-			loadAddons();
-			Core.init();
+			PARAMS.loadAddons();
+			PARAMS.Core.init();
 		} catch (e) {
-			bootLog("in overriden readPreference " + e);
+			PARAMS.bootLog("in overriden readPreference " + e);
 		}
 	};
 	
 	oldCallback = FskCache._diskSource.synchronizeCallback;
 	FskCache._diskSource.synchronizeCallback = function() {
 		try {
-			if (Core && Core.config && Core.config.disableCardScan) {
+			if (PARAMS.Core && PARAMS.Core.config && PARAMS.Core.config.disableCardScan) {
 				this.target.synchronizedSource();
 				this.target.synchronizeDone();
 				this.stack.pop();
@@ -388,13 +389,13 @@ tmp = function() {
 				oldCallback.apply(this, arguments);
 			}
 		} catch (e) {
-			bootLog("Error in callback: " + e);
+			PARAMS.bootLog("Error in callback: " + e);
 			oldCallback.apply(this, arguments);
 		}
 	};
 
 	// Fix sorting (unicode order)
-	var compareStrings =  Core.config.compat.compareStrings;
+	var compareStrings =  PARAMS.Core.config.compat.compareStrings;
 	String.prototype.localeCompare = function(a) {
 		return compareStrings(this.valueOf(), a);
 	};
@@ -503,5 +504,5 @@ tmp = function() {
 try {
 	tmp();
 } catch (e) {
-	bootLog("Error in common X50: " + e);
+	PARAMS.bootLog("Error in common X50: " + e);
 }

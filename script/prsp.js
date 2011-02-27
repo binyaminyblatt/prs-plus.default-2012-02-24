@@ -4,6 +4,7 @@
 // History:
 //	2010-06-26 kartu - Initial version, based on 505
 //	2011-02-26 kartu - Added compatPath & getFileContent params to bootstrap call
+//	2011-02-27 kartu - Refactored parameters into PARAMS object
 
 if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 	var bootLog;
@@ -157,8 +158,15 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 		try {
 			path = compatPath +  Core.config.model + "_bootstrap.js";
 			code = getFileContent(path);
-			f = new Function("bootLog,Core,loadCore,loadAddons,getFileContent, compatPath", code);
-			f(bootLog, Core, loadCore, loadAddons, getFileContent, compatPath);
+			f = new Function("PARAMS", code);
+			f({
+				bootLog: bootLog,
+				Core: Core,
+				loadCore: loadCore, 
+				loadAddons: loadAddons, 
+				getFileContent: getFileContent, 
+				compatPath: compatPath
+			});
 		} catch (e1) {
 			bootLog("FATAL: failed to call bootstrap " + e1); 
 		}
