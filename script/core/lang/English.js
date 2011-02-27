@@ -20,6 +20,7 @@
 //			Added ScrollbarAlphabet
 //	2011-02-07 kartu - Added BrowseFolders.VALUE_BY_FILENAME_AS_COMMENT
 //	2011-02-10 kartu - Added StandarActions translations
+//	2011-02-27 kartu - Added StandarActions translations (rotate)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -207,6 +208,12 @@ return {
 		ACTION_doOption: "Open Options",
 		ACTION_doSearch: "Search",
 		ACTION_doRotate: "Rotate",
+		ACTION_doRotate0: "Rotate 0°",
+		ACTION_doRotate90: "Rotate 90°",
+		ACTION_doRotate180: "Rotate 180°",
+		ACTION_doRotate270: "Rotate 270°",
+		ACTION_doRotateCWise: "Rotate Clock Wise",
+		ACTION_doRotateCCWise: "Rotate Counter Clock Wise",
 		ACTION_doMenu: "Previous Menu (Back / Up)",
 		ACTION_doSize: "Size",
 		ACTION_doRoot: "Goto Home"
