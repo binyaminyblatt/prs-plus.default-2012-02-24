@@ -11,10 +11,13 @@
 //
 // History:
 //	2011-02-26 kartu - Initial version, merged from 350/950 code
-//		Fixed doRotation
-
+//		Added Belorussian / Ukranian chars (as popups) to keyboard
+//		Fixed doRotation aciton
+//		Fixed #66 x50: Collection editing broken, if collection node is not in the 4th slot
+//
 tmp = function() {
-	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, oldChangeKeyboardType, oldReadPreference, oldCallback;
+	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
+		oldChangeKeyboardType, oldReadPreference, oldCallback, makeRootNodesMovable;
 
 	// doRotate is missing in x50 kbook, easy workaround not to change StandardActions
 	kbook.model.doRotate = function() {
@@ -379,7 +382,6 @@ tmp = function() {
 		}
 	};
 	
-	// FIXME test
 	oldCallback = FskCache._diskSource.synchronizeCallback;
 	FskCache._diskSource.synchronizeCallback = function() {
 		try {
@@ -396,49 +398,111 @@ tmp = function() {
 		}
 	};
 
-	// Add "dynamic" comment ability
-	var getComment = function(node, idx) {
-		if (typeof node.nodes[idx].shortComment === "function") {
-			return node.nodes[idx].shortComment();
-		}
-		return kbook.commentField.format(node.nodes[idx]);
-	};
-	kbook.model.getPeriodicalComment = function (node) {
-		return getComment(node, 2);
-	};
-	kbook.model.getCollectionComment = function (node) {
-		return getComment(node, 3);
-	};
-	kbook.model.getNotesComment = function (node) {
-		return getComment(node, 4);
-	};
-
-	// Add "dynamic" "kind" ability
-	var oldPeriodicalKind = kbook.model.getPeriodicalKind;
-	kbook.model.getPeriodicalKind = function (node) {
-		if (node.nodes[2].homelargekind) {
-			return node.nodes[2].homelargekind;
-		}
-		return oldPeriodicalKind.apply(this, arguments);
-	};	
-	kbook.model.getCollectionKind = function (node) {
-		if (node.nodes[3].homelargekind) {
-			return node.nodes[3].homelargekind;
-		}
-		return 2;
-	};
-	kbook.model.getNotesKind = function (node) {
-		if (node.nodes[4].homelargekind) {
-			return node.nodes[4].homelargekind;
-		}
-		return 3;
-	};
-
 	// Fix sorting (unicode order)
 	var compareStrings =  Core.config.compat.compareStrings;
 	String.prototype.localeCompare = function(a) {
 		return compareStrings(this.valueOf(), a);
 	};
+	
+	// Allow menu customization
+	// Kinoma's code is hardcoded with references to periodicals / collections / all notes	
+	makeRootNodesMovable = function() {
+		var getComment, getKind, periodicalsNode, collectionsNode, notesNode;
+
+		// Save references to periodicals / collections / allNotes
+		periodicalsNode = kbook.root.getDeviceRootNode().getNode(2);
+		collectionsNode = kbook.root.getDeviceRootNode().getNode(3);
+		notesNode = kbook.root.getDeviceRootNode().getNode(4);
+		periodicalsNode.kind = 66; // has no kind by default
+		periodicalsNode.separator = 0; // remove separator line
+		
+		// Helper functions
+		getComment = function (node) {
+			if (typeof node.shortComment === "function") {
+				return node.shortComment();
+			}
+			return kbook.commentField.format(node);
+		};
+		getKind = function (node, defVal) {
+			if (node.homelargekind) {
+				return node.homelargekind;
+			}
+			return defVal;
+		};
+		
+		// Fix get<Node> functions
+		kbook.root.getPeriodicalListNode = function () {
+			return periodicalsNode;
+		};
+		kbook.root.getCollectionsNode = function () {
+			return collectionsNode;
+		};
+		kbook.root.getAllNotesNode = function () {
+			return notesNode;
+		};
+		
+		// Fix goto<Node> functions
+		kbook.model.doGoToPeriodicalList = function () {
+			this.currentNode.gotoNode(kbook.root.getDeviceRootNode().getNode(2), this);
+		};
+		kbook.model.doGoToCollections = function () {
+			this.currentNode.gotoNode(kbook.root.getDeviceRootNode().getNode(3), this);
+		};
+		kbook.model.doGoToAllNotes = function () {
+			this.currentNode.gotoNode(kbook.root.getDeviceRootNode().getNode(4), this);
+		};
+		
+		// Fixing hardcoded periodicals / collections / notes
+		kbook.model.updateDeviceRoot = function (node) {
+			var n, continueTitle, continueAuthor, continueDate, middleItemKind, middleItemTitle, middleItemComment, leftItemKind, leftItemTitle, leftItemComment, centerItemKind, centerItemTitle, centerItemComment, rightItemKind, rightItemTitle, rightItemComment, homeView;
+			this.setHomeCover(node);
+			kbook.menuHomeThumbnailBookData.setNode(kbook.root.getBookThumbnailsNode());
+			continueTitle = this.getContinueComment(node);
+			continueAuthor = this.getContinueAuthor(node);
+			continueDate = this.getContinueDate(node);
+			middleItemKind = this.getBooksKind(node);
+			middleItemTitle = this.getBooksTitle(node);
+			middleItemComment = this.getBooksComment(node);
+			
+			n = node.nodes[2];
+			leftItemKind = getKind(n, 0);
+			leftItemTitle = n.title;
+			leftItemComment = getComment(n);
+			
+			n = node.nodes[3];
+			centerItemKind = getKind(n, 2);
+			centerItemTitle = n.title;
+			centerItemComment = getComment(n);
+			
+			n = node.nodes[4];
+			rightItemKind = getKind(n, 3);
+			rightItemTitle = n.title;
+			rightItemComment = getComment(n);
+			
+			homeView = this.container.findContent('MENU_HOME');
+			this.setParticularVariable(homeView, 'CONTINUE_TITLE', continueTitle);
+			this.setParticularVariable(homeView, 'CONTINUE_AUTHOR', continueAuthor);
+			this.setParticularVariable(homeView, 'CONTINUE_DATE', continueDate);
+			this.setParticularVariable(homeView, 'MIDDLE_ITEM_KIND', middleItemKind);
+			this.setParticularVariable(homeView, 'MIDDLE_ITEM_NAME', middleItemTitle);
+			this.setParticularVariable(homeView, 'MIDDLE_ITEM_COMMENT', middleItemComment);
+			this.setParticularVariable(homeView, 'MIDDLE_ITEM_NAME_COMMENT', middleItemTitle + '||' + middleItemComment);
+			this.setParticularVariable(homeView, 'LEFT_ITEM_KIND', leftItemKind);
+			this.setParticularVariable(homeView, 'LEFT_ITEM_NAME', leftItemTitle);
+			this.setParticularVariable(homeView, 'LEFT_ITEM_COMMENT', leftItemComment);
+			this.setParticularVariable(homeView, 'LEFT_ITEM_NAME_COMMENT', leftItemTitle + '||' + leftItemComment);
+			this.setParticularVariable(homeView, 'CENTER_ITEM_KIND', centerItemKind);
+			this.setParticularVariable(homeView, 'CENTER_ITEM_NAME', centerItemTitle);
+			this.setParticularVariable(homeView, 'CENTER_ITEM_COMMENT', centerItemComment);
+			this.setParticularVariable(homeView, 'CENTER_ITEM_NAME_COMMENT', centerItemTitle + '||' + centerItemComment);
+			this.setParticularVariable(homeView, 'RIGHT_ITEM_KIND', rightItemKind);
+			this.setParticularVariable(homeView, 'RIGHT_ITEM_NAME', rightItemTitle);
+			this.setParticularVariable(homeView, 'RIGHT_ITEM_COMMENT', rightItemComment);
+			this.setParticularVariable(homeView, 'RIGHT_ITEM_NAME_COMMENT', rightItemTitle + '||' + rightItemComment);
+		};
+	};
+	makeRootNodesMovable();
+
 };
 
 try {
