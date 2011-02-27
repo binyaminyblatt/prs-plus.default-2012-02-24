@@ -28,6 +28,7 @@
 //                              Added 0-9 translations
 //	2010-12-01 kartu - Added happyhgy's fixes
 //	2011-02-10 kartu - Added StandarActions translations
+//	2011-02-27 kartu - Added StandarActions translations (rotate)
 
 var _x_cache = [];
 var _x_cases = [2, 0, 1, 1, 1, 2];
@@ -453,8 +454,8 @@ return {
                 BN_H_VOLUME_UP: "Громкость «+», удерживая"
         },
         
-        StandardActions: {
-        	TITLE: "Стандартные действия",
+	StandardActions: {
+		TITLE: "Стандартные действия",
                 // Actions
                 ACTION_CONTINUE_READING: "Продолжить чтение",
                 ACTION_SHUTDOWN: "Отключить",
@@ -471,6 +472,12 @@ return {
 		ACTION_doOption: "Открыть опции",
 		ACTION_doSearch: "Поиск",
 		ACTION_doRotate: "Поворот экрана",
+		ACTION_doRotate0: "Поворот на 0°",
+		ACTION_doRotate90: "Поворот на  90°",
+		ACTION_doRotate180: "Поворот на 180°",
+		ACTION_doRotate270: "Поворот на 270°",
+		ACTION_doRotateCWise: "Поворот по часовой",
+		ACTION_doRotateCCWise: "Поворот против часовой",
 		ACTION_doMenu: "Меню (назад / вверх)",
 		ACTION_doSize: "Масштаб",
 		ACTION_doRoot: "Вернутся в главное меню"                
