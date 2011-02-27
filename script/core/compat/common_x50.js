@@ -12,18 +12,12 @@
 // History:
 //	2011-02-26 kartu - Initial version, merged from 350/950 code
 //		Added Belorussian / Ukranian chars (as popups) to keyboard
-//		Fixed doRotation aciton
 //		Fixed #66 x50: Collection editing broken, if collection node is not in the 4th slot
 //
 tmp = function() {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
 		oldChangeKeyboardType, oldReadPreference, oldCallback, makeRootNodesMovable;
 
-	// doRotate is missing in x50 kbook, easy workaround not to change StandardActions
-	kbook.model.doRotate = function() {
-		this.container.bubble('onEnterOrientation');
-	};
-	
 	// Localize "popup" keyboard, that shows after holding button for a couple of secs
 	localizeKeyboardPopups = function() {
 		var keyboardLayout, oldIsSelectChar, oldSetPopupChar, SEL_CHARS;

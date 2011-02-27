@@ -60,7 +60,7 @@ tmp = function() {
 						return;
 					}
 				} catch (e0) {
-					log.error("executing action: " + key + "." + state);
+					log.error("executing action: " + key + "." + state, e0);
 				}
 			}
 		} catch (e) {

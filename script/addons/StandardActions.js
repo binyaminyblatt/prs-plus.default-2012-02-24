@@ -8,6 +8,8 @@
 //				300: Fixed "next/prev" page actions consuming "goto page" key events
 //	2010-02-05 kartu - Changed direct function calls with "bubbles" for x50
 //	2011-02-10 kartu - Implemented # goto TOC, doOption, doSearch, doRotate, doMenu, doSize, doRoot actions
+//	2011-02-27 kartu - x50: Added rotate by 0 / 90 / 180 / 270 / clock wise / counter clock wize actions
+//	2011-02-27 kartu - 600: Added rotate by 90 action
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, 
@@ -31,14 +33,14 @@ tmp = function() {
 	};
 	
 	// Generic "bubbling" code, bubbles using currently focused item;
-	doBubble = function(cmd) {
+	doBubble = function(cmd, param) {
 		var currentNode, focus;
 		currentNode = model.currentNode;
 		if (currentNode) {
 			focus = kbook.model.container.getWindow().focus;
 			if (focus) {
 				try {
-					focus.bubble(cmd);
+					focus.bubble(cmd, param);
 				} catch (e) {
 					log.error("in doBubble, command " + cmd, e);
 				}
@@ -48,14 +50,13 @@ tmp = function() {
 		}
 	};
 	
-	// Do bubble function to be called 
 	doBubbleFunc = function() {
 		doBubble(this.bubble);
 	};
 	
 	// Adds "bubblable" actions, if model supports them
 	addBubbleActions = function (actions) {
-		var bubbles, bubble, i, n;
+		var bubbles, bubble, i, m, n;
 		bubbles = ["doOption", "doSearch", "doRotate", "doMenu", "doSize", "doRoot"];
 		for (i = 0, n = bubbles.length; i < n; i ++) {
 			bubble = bubbles[i];
@@ -65,6 +66,70 @@ tmp = function() {
 					title: L("ACTION_" + bubble),
 					bubble: bubble,
 					action: doBubbleFunc
+				});
+			}
+		}
+		bubbles = undefined;
+		
+		// doRotate for x50
+		if (kbook.model.onEnterOrientation) {
+			var rotateFuncX50 = function() {
+				var orientation = kbook.model.container.getVariable("ORIENTATION");
+				if (this.closeCurrentOverlay) {
+					this.closeCurrentOverlay();
+				}
+				switch (this.bubble) {
+					case 0:
+					case 1:
+					case 2:
+					case 3:
+						if (orientation === this.bubble) {
+							orientation = 0;
+						} else {
+							orientation = this.bubble;
+						}
+						break;
+					case -1:
+						// clock wise
+						orientation -= 1;
+						if (orientation < 0) {
+							orientation = 3;
+						}
+						break;
+					case -2:
+						// counter clock wise
+						orientation += 1;
+						if (orientation > 3) {
+							orientation = 0;
+						}
+						break;
+				}
+				doBubble("doRotate", orientation);
+			};
+			
+			// FIXME model sniffing, there must be a better way
+			// On 600 only rotate by 90 is possible
+			if (Core.config.model === "600") {
+				m = 1;
+				n = 2;
+			} else {
+				m = -2;
+				n = 4;
+			}
+			
+			for (i = m; i < n; i++) {
+				if (i >= 0) {
+					bubble = "doRotate" + 90 * i;
+				} else if (i === -2) {
+					bubble = "doRotateCCWise";
+				} else {
+					bubble = "doRotateCWise";
+				}
+				actions.push( {
+					name: "BubbleAction_" + bubble,
+					title: L("ACTION_" + bubble),
+					bubble: i, 
+					action: rotateFuncX50
 				});
 			}
 		}
