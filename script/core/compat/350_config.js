@@ -4,6 +4,7 @@
 // History:
 //	2011-02-07 kartu - Initial version, based on 650
 //	2011-02-08 kartu - "More" is now by default attached to the root folder
+//	2011-02-27 kartu - Periodicals node no longer "unmovable", replaced with "Browse Folders" by default
 
 return {
 	// Menu icon indices 
@@ -138,15 +139,15 @@ return {
 			{ name: "PRSPSettings", parent: "settings", position: 0},
 			//{ name: "gamesAndUtils", parent: "more" },
 			{ name: "collections", parent: "more" },
-			{ name: "notes", parent: "more" },			
-			{ name: "BookHistory", parent: "more" }
+			{ name: "periodicals", parent: "more" },
+			{ name: "notes", parent: "more" }	
 		],
-		movableNodes: [0, 0, 0, 1, 1],
+		movableNodes: [0, 0, 1, 1, 1],
 		defaultLayout: [
 			{ name: "continue"},
 			{ name: "books"},
-			{ name: "periodicals"},
 			{ name: "BrowseFolders"},
+			{ name: "BookHistory"},
 			{ name: "more" }
 		]		
 	},

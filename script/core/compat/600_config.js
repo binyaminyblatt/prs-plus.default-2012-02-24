@@ -5,6 +5,7 @@
 //	2010-09-11 kartu - Initial version
 //	2010-12-01 kartu - Added link to Calculator
 //	2010-12-04 kartu - BrowseFolders will apear in "more", if not shown on the main page.
+//	2011-02-27 kartu - Periodicals node no longer "unmovable", replaced with "Browse Folders" by default
 
 return {
 	// Menu icon indices 
