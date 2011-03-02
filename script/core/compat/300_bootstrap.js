@@ -13,6 +13,7 @@
 //	2010-11-30 kartu - Fixed #14 " * by author/title sorting doesn't work for non latin chars"
 //	2011-02-06 kartu - Fixed #64 "Wrong german translation file"
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
+//	2011-03-02 kartu - Added #57 Spanish localization (by Carlos)
 
 var tmp = function() {
 	var oldSetLocale, localize;
@@ -26,10 +27,11 @@ var tmp = function() {
 			currentLang = kbook.model.language;
 	
 			settingsNode = kbook.root.nodes[6];
-			languages = ["en", "de", "fr", "ka", "it", "nl", "ru"];
+			languages = ["en", "es", "de", "fr", "ka", "it", "nl", "ru"];
 			prspLanguages = {
 				en: "English.js",
 				de: "German.js",
+				es: "Spanish.js",
 				fr: "French.js",
 				ka: "Georgian.js",
 				it: "Italian.js",
@@ -39,6 +41,7 @@ var tmp = function() {
 			langNames = {
 				en: "English",
 				de: "Deutsch", 
+				es: "Español",
 				fr: "Français",
 				it: "Italiano",	
 				ka: "ქართული",
