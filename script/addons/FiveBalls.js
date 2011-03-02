@@ -1,25 +1,30 @@
-// Name: Five Balls game
-// Description: adapted version of Five Balls
-// Author: Clemenseken
-//
-// History:
-//	2010-03-14 kartu - #Refactored Utils -> Core
-//	2010-04-10 kartu - Prepared for merge into single JS
-//	2010-04-10 kartu - Prepared for merge into single JS once more... :)
-//	2010-07-01 kartu - Added title
+/* Name: Fiveballs game
+   Original code (c) 2008 Clemenseken
+   
+	History:
+	date? kartu - further adaptation
+	2010-12-11 Ben Chenoweth - conversion for Touch
+	2010-12-12 Ben Chenoweth - applied Mark Nord's temporary workaround for PRS+1.1.3 on PRS-505
+	2011-02-06 Ben Chenoweth - HOME button now quits game
+	2011-02-10 Ben Chenoweth - Replaced small menu with buttons (touch version).
+	2011-02-28 Ben Chenoweth - Changed addon name to CamelCase
+*/
 
 tmp = function() {
 	var FiveBalls = {
 		name: "FiveBalls",
 		title: "Five Balls",
-		description: "Five Balls Game",
+		description: "Game",
 		icon: "GAME",
 		activate: function () {
+			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
+			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
+		
 			kbook.autoRunRoot.path = Core.config.addonsPath + "FiveBalls/fiveballs.xml";
 			kbook.autoRunRoot.enterIf(kbook.model);
 		},
 		actions: [{
-			name: "Five Balls",
+			name: "FiveBalls",
 			group: "Games",
 			icon: "GAME",
 			action: function () {

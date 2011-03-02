@@ -5,6 +5,14 @@
 //	2011-01-12 kartu - Initial version, based on 600
 //	2011-02-08 kartu - "More" is now by default attached to the root folder
 //	2011-02-27 kartu - Periodicals node no longer "unmovable", replaced with "Browse Folders" by default
+//	2011-02-28 kartu -  ALL: Added 
+//		Calculator by Mark Nord
+//		Chess by Ben Chenoweth / Stefano Gioffre
+//		Five in a Row by Ben Chenoweth
+//		Five Balls by Clemenseken
+//		Free Cell by Ben Chenoweth
+//		Mahjong by Clemenseken
+//		Sudoku by Obelix
 
 return {
 	// Menu icon indices 
@@ -131,17 +139,21 @@ return {
 	prspMenu: {
 		// Container nodes
 		customContainers: [
-			// TODO add games / calc
-			//{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", icon: "GAME"},
 			{ name: "more", title: "NODE_MORE", icon: "MORE", parent: "root"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
 			{ name: "PRSPSettings", parent: "settings", position: 0},
-			//{ name: "gamesAndUtils", parent: "more" },
 			{ name: "collections", parent: "more" },
 			{ name: "periodicals", parent: "more" },
-			{ name: "notes", parent: "more" }	
+			{ name: "notes", parent: "more" },
+			{ name: "Calculator", parent: "more" },	
+			{ name: "Chess", parent: "more" },
+			{ name: "FiveBalls", parent: "more" },	
+			{ name: "FiveRow", parent: "more" },	
+			{ name: "FreeCell", parent: "more" },
+			{ name: "Mahjong", parent: "more" },
+			{ name: "Sudoku", parent: "more" }			
 		],
 		movableNodes: [0, 0, 1, 1, 1],
 		defaultLayout: [

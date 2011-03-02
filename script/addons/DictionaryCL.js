@@ -5,7 +5,8 @@
 // History:
 //	2010-05-01 kartu - Adapted for PRS+ from http://www.mobileread.com/forums/attachment.php?attachmentid=13182&d=1212445222
 //	2010-11-30 kartu - Refactoring Core.stirng => Core.text
-//	2010-12-01	kartu - Fixed bug caused by moving PRS+ out of sandbox
+//	2010-05-30 m-land - text, zoom, scroll aso
+//	2010-12-03 Mark Nord - adapterd for PRS+ moved out of sandbox using kartus solution
 //
 
 tmp = function() {
@@ -30,6 +31,10 @@ tmp = function() {
 					kbook.autoRunRoot.sandbox.dictionaryParams = params;
 					kbook.autoRunRoot.sandbox.exec = Core.shell.exec;
 					kbook.autoRunRoot.sandbox.getFileContent = Core.io.getFileContent;
+					kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
+					kbook.autoRunRoot.sandbox.setSoValue = Core.system.setSoValue;
+					kbook.autoRunRoot.sandbox.maxSmartZoom = DictionaryCL.options.maxSmartZoom;
+					kbook.autoRunRoot.sandbox.resultSize = DictionaryCL.options.resultSize;
 					kbook.autoRunRoot.sandbox.dictPath = dictPath;
 					
 					kbook.autoRunRoot.path = rootPath + "dictionary.xml";
@@ -57,6 +62,26 @@ tmp = function() {
 				values: [DISABLED],
 				valueTitles: {
 					disabled: L("VALUE_DISABLED")
+				}
+			},
+			{
+			    name: "resultSize",
+				title: 'Results size',  //@@@
+				icon: "ABC",
+				defaultValue: 25,
+				values: [15, 20, 25, 30, 35],
+				valueTitles: {
+					15: '15', 20: '20', 25: '25', 30: '30', 35: '35'
+				}
+			},
+			{
+			    name: "maxSmartZoom",
+				title: 'Max smart zoom',  //@@@
+				icon: "ABC",
+				defaultValue: 20,
+				values: [0, 10, 20, 25, 40, 50],
+				valueTitles: {
+				    0: 'Disabled', 10: '10 %', 20: '20 %', 25: '25 %', 40: '40 %', 50: '50 %'   //@@@
 				}
 			}
 		],

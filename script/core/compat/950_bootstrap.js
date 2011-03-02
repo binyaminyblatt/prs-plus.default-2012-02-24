@@ -180,7 +180,7 @@ var tmp = function() {
 
 	// Call code common to x50 models	
 	try {
-		var f = new Function("PARAMS", PARAMS.getFileContent(PARAMS.compatPath + "common_x50.js"));
+		var f = new Function("PARAMS", PARAMS.getFileContent(PARAMS.compatPath + "common_350_650_950.js"));
 		PARAMS.langNodeIndex = 4;
 		PARAMS.keyboardNodeIndex = 5;
 		PARAMS.fixTimeZones = fixTimeZones;

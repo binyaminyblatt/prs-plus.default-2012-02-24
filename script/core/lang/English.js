@@ -366,5 +366,11 @@ return {
 		TITLE: "Scrollbar Alphabet",
 		OPT_ALPHABET: "Alphabet",
 		VALUE_DEFAULT: "default"
-	}
+	},
+	
+        Calc: {
+        	TITLE: "Calculator",
+        	DESCRIPTION: ""
+        }
+	
 };

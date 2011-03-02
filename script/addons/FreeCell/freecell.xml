@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
+
+    <assets>
+
+        <behavior id="cardSprite">
+            <script on="mouseUp" params="event">
+		if (this.hitBounds(event.x, event.y))
+			this.bubble("doCardClick",this);
+            </script>
+        </behavior>
+        <behavior id="freeSprite">
+            <script on="mouseUp" params="event">
+		if (this.hitBounds(event.x, event.y))
+			this.bubble("doFreeClick",this);
+            </script>
+        </behavior>
+        <behavior id="openSprite">
+            <script on="mouseUp" params="event">
+		if (this.hitBounds(event.x, event.y))
+			this.bubble("doOpenClick",this);
+            </script>
+        </behavior>		
+        <behavior id="selectSprite">
+            <script on="mouseUp" params="event">
+		if (this.hitBounds(event.x, event.y))
+			this.bubble("doSelectClick",this);
+            </script>
+        </behavior>
+		
+        <style font="Swis721 BT">
+            <style id="sumText" size="40" style="bold" color="#000000"/>
+            <style id="sometext" size="22" style="bold" color="#000000"/>
+            <style id="digits" size="22" style="bold" color="#666666"/>
+			<style id="quitinstr" size="18" style="" color="#FFFFFF"/>
+            <style id="versText" size="40" style="bold" color="#FFFFFF"/>
+            <style id="klWeis" size="40" style="bold" color="#FFFFFF" align="center"/>
+            <style id="touchText" size="12" style="bold" color="#000000"/>
+        </style>
+
+        <style font="Courier10 BT">
+            <style id="titleText" size="75" style="bold" color="#000000"/>
+        </style>
+		
+		<style id="button-e" size="21" style="bold" halign="center">
+			<style id="button-d" color="#6D6D6D"/>
+			<style id="button-p"/>
+			<style id="button-s" />
+		</style>
+		
+        <texture href="skins/freecellLabels.png">
+            <cutout id="HelpT" x="42" y="295" width="516" height="611"/>
+			<cutout id="select" x="0" y="1" width="73" height="96"/>
+			<cutout id="free" x="73" y="1" width="73" height="96"/>
+			<cutout id="button-l" x="610" y="102" width="16" height="40" lines="60"/>
+			<cutout id="button-c" x="626" y="102" width="20" height="40" lines="60"/>
+			<cutout id="button-r" x="646" y="102" width="16" height="40" lines="60"/>
+			<cutout id="congrat" x="160" y="0" width="411" height="142"/>
+			<cutout id="gCursor" x="610" y="0" width="90" height="100"/>
+			<cutout id="colHelp_c" x="20" y="170" width="554" height="52"/>
+        </texture>
+
+        <texture href="skins/freecellCards.png">
+            <cutout id="cards" x="0" y="1" width="73" height="98" columns="80"/>
+        </texture>
+
+        <texture href="skins/freecellMain.png">
+            <cutout id="FreeCellHeader-l" x="350" y="0" width="70" height="70"/>
+            <cutout id="FreeCellHeader-c" x="421" y="0" width="70" height="70"/>
+            <cutout id="FreeCellHeader-r" x="492" y="0" width="70" height="70"/>
+            <cutout id="FreeCellInfo-l" x="0" y="70" width="0" height="697"/>
+            <cutout id="FreeCellInfo-c" x="0" y="70" width="600" height="697"/>
+            <cutout id="FreeCellInfo-r" x="0" y="70" width="0" height="697"/>
+            <cutout id="FreeCellStatus-l" x="0" y="766" width="600" height="33"/>
+            <cutout id="FreeCellStatus-c" x="0" y="766" width="0" height="0"/>
+            <cutout id="FreeCellStatus-r" x="0" y="766" width="0" height="0"/>
+        </texture>
+
+        <skin id="klWeis" 		styles="klWeis"/>
+        <skin id="sumText" 		styles="sumText"/>
+        <skin id="sometext" 	styles="sometext"/>
+        <skin id="digits" 		styles="digits"/>
+		<skin id="quitinstr" 	styles="quitinstr"/>
+        <skin id="card" 		cutouts="cards"/>
+		<skin id="selectCard"	cutouts="select"/>
+		<skin id="freeCell"		cutouts="free"/>
+        <skin id="hHelpT" 		cutouts="HelpT"/>
+        <skin id="colHelp"	  	cutouts="colHelp_c"/>
+		<skin id="congrats"		cutouts="congrat"/>
+        <skin id="title" styles="versText"/>
+        <skin id="title2" styles="titleText"/>
+        <skin id="versText" 	styles="versText"/>
+        <skin id="touchText" styles="touchText"/>
+        <skin id="FreeCellSkin" cutouts="FreeCellHeader-l,FreeCellHeader-c, FreeCellHeader-r,FreeCellInfo-l,FreeCellInfo-c,FreeCellInfo-r,
+					FreeCellStatus-l,FreeCellStatus-c,FreeCellStatus-r"/>
+		<skin id="gridCursor" 		cutouts="gCursor"/>	
+		<skin id="button" 
+			cutouts="button-l,button-c,button-r"
+			styles="button-d,button-e,button-p,button-s"/>
+    </assets>
+
+
+    <code>
+		<function id="runJs" params="path,target">
+			try {
+				var f = new Stream.File(path);          
+				var fn = new Function("target", f.toString());
+				fn(target);
+				delete fn;
+			}
+			catch(e)
+			{
+			}
+		</function>
+		<function id="loadScript">
+			if (!this.hasOwnProperty('_scriptLoaded'))
+				this._scriptLoaded = false;
+			if (!this._scriptLoaded)
+			{
+				if(kbook.autoRunRoot.path==undefined){
+					path = this.getBaseURI().slice(7); 		
+					kbook.model=this;
+				}else{
+					path = kbook.autoRunRoot.path;
+				}
+				var index = path.lastIndexOf('/');
+				if (index > 0)
+				   path = path.substring(0, index + 1);
+				this.driveroot = path.substring(0,2);
+				var target = this.AUTORUN_GROUP.AUTORUN;
+				target.driveroot = this.driveroot;
+				target.fiverowRoot = path;
+				
+				this.runJs(path+"freecell.js",target);
+				
+			}
+			this._scriptLoaded = true;
+		</function>
+		<function id="modelChanged">
+			arguments.callee.grammar.call(this);
+			var state = this.getVariable("STATE"); 
+			
+			var target;
+
+			if (this.state != state) {
+				this.focus(true)
+				this.AUTORUN_GROUP.show(false)
+				switch(state) {
+				case "AUTORUN":
+					this.loadScript();
+					this.AUTORUN_GROUP.show(true);
+					target = this.AUTORUN_GROUP.AUTORUN;
+					break;
+				}
+				this.state = state;
+				target.init();
+				if (target.isEnabled()) {  
+				
+					target.focus(true);
+					
+				};
+			}           
+		</function>
+    </code>
+
+    <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
+        <panel skin="FreeCellSkin" left="0" right="0" top="0" bottom="0"/>
+        <label skin="title" left="10" right="240" top="0" height="70" align="left" text="Free Cell"/>
+        <group id="AUTORUN" width="600" top="70" bottom="30">
+            <code>
+                <function id="doPrevious">this.doPrev();</function>
+				<function id="doNext">	this.doNext();</function>
+                <function id="doSize">	this.doSize();</function>
+				<function id="doMark">	this.doMark();</function>
+                <function id="doOption">	this.showHelp();</function>
+				<function id="doRoot">	this.quitGame();</function>
+				<function id="doMenu">	this.showHelp();</function>
+				<function id="doCenter">	this.cursorClick();</function>
+				<function id="doLeft">		this.moveCursor("left");</function>
+				<function id="doRight">		this.moveCursor("right");</function>
+				<function id="doUp">	this.moveCursor("up");</function>
+				<function id="doDown">	this.moveCursor("down");</function>		
+				<function id="doDigit" params="part"> this.digitF(part.key);</function> 
+            </code>
+			
+			<button id="BUTTON_RES"		active="true" text="Restart"    left="310" width="100" top="-57" height="45" do="doButtonClick"/>
+			<button id="BUTTON_RAN"		active="true" text="New Deal"   left="420" width="100" top="-57" height="45" do="doButtonClick"/>
+			<button id="BUTTON_EXT"		active="true" text="Quit"    left="530" width="60" top="-57" height="45" do="doButtonClick"/>
+			
+			<sprite skin='freeCell' id='free0' left="2" width="73" top="0" height="96" active="true" canFocus='true' >
+				<behave like="freeSprite"/>
+			</sprite>
+			<sprite skin='freeCell' id='free1' left="76" width="73" top="0" height="96" active="true" canFocus='true' >
+				<behave like="freeSprite"/>
+			</sprite>
+			<sprite skin='freeCell' id='free2' left="150" width="73" top="0" height="96" active="true" canFocus='true' >
+				<behave like="freeSprite"/>
+			</sprite>
+			<sprite skin='freeCell' id='free3' left="224" width="73" top="0" height="96" active="true" canFocus='true' >
+				<behave like="freeSprite"/>
+			</sprite>
+
+			<sprite skin='freeCell' id='open0' left="4" width="73" top="110" height="96" active="true" canFocus='true' >
+				<behave like="openSprite"/>
+			</sprite>
+			<sprite skin='freeCell' id='open1' left="78" width="73" top="110" height="96" active="true" canFocus='true' >
+				<behave like="openSprite"/>
+			</sprite>
+			<sprite skin='freeCell' id='open2' left="152" width="73" top="110" height="96" active="true" canFocus='true' >
+				<behave like="openSprite"/>
+			</sprite>
+			<sprite skin='freeCell' id='open3' left="226" width="73" top="110" height="96" active="true" canFocus='true' >
+				<behave like="openSprite"/>
+			</sprite>
+			<sprite skin='freeCell' id='open4' left="300" width="73" top="110" height="96" active="true" canFocus='true' >
+				<behave like="openSprite"/>
+			</sprite>
+			<sprite skin='freeCell' id='open5' left="374" width="73" top="110" height="96" active="true" canFocus='true' >
+				<behave like="openSprite"/>
+			</sprite>
+			<sprite skin='freeCell' id='open6' left="448" width="73" top="110" height="96" active="true" canFocus='true' >
+				<behave like="openSprite"/>
+			</sprite>
+			<sprite skin='freeCell' id='open7' left="522" width="73" top="110" height="96" active="true" canFocus='true' >
+				<behave like="openSprite"/>
+			</sprite>
+
+			<sprite id='nonTouch_colHelp'	skin='colHelp' left='20' width='564' top='400' height='52' active='false' canFocus='false'/>			
+
+            <sprite skin='card' id='card0' width="73" height="96" u="0" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card1' width="73" height="96" u="1" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card2' width="73" height="96" u="2" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card3' width="73" height="96" u="3" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card4' width="73" height="96" u="4" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card5' width="73" height="96" u="5" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card6' width="73" height="96" u="6" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card7' width="73" height="96" u="7" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card8' width="73" height="96" u="8" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card9' width="73" height="96" u="9" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card10' width="73" height="96" u="10" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card11' width="73" height="96" u="11" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card12' width="73" height="96" u="12" v="0" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card13' width="73" height="96" u="0" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card14' width="73" height="96" u="1" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card15' width="73" height="96" u="2" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card16' width="73" height="96" u="3" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card17' width="73" height="96" u="4" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card18' width="73" height="96" u="5" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card19' width="73" height="96" u="6" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card20' width="73" height="96" u="7" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card21' width="73" height="96" u="8" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card22' width="73" height="96" u="9" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card23' width="73" height="96" u="10" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card24' width="73" height="96" u="11" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card25' width="73" height="96" u="12" v="1" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card26' width="73" height="96" u="0" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card27' width="73" height="96" u="1" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card28' width="73" height="96" u="2" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card29' width="73" height="96" u="3" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card30' width="73" height="96" u="4" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card31' width="73" height="96" u="5" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card32' width="73" height="96" u="6" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card33' width="73" height="96" u="7" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card34' width="73" height="96" u="8" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card35' width="73" height="96" u="9" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card36' width="73" height="96" u="10" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card37' width="73" height="96" u="11" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card38' width="73" height="96" u="12" v="2" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card39' width="73" height="96" u="0" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card40' width="73" height="96" u="1" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card41' width="73" height="96" u="2" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card42' width="73" height="96" u="3" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card43' width="73" height="96" u="4" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card44' width="73" height="96" u="5" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card45' width="73" height="96" u="6" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card46' width="73" height="96" u="7" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card47' width="73" height="96" u="8" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card48' width="73" height="96" u="9" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card49' width="73" height="96" u="10" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card50' width="73" height="96" u="11" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+            <sprite skin='card' id='card51' width="73" height="96" u="12" v="3" free="false" active="true" >
+                <behave like="cardSprite"/>
+            </sprite>
+			<sprite id='selection' skin='selectCard' left='200' width='73' top='300' height='96' u='0' active="false" canFocus='true' >
+                <behave like="selectSprite"/>
+            </sprite>
+		
+            <label id='messageStatus' skin='klWeis' left='200' right='0' top='684' height='60' align='left' text='Your move...'/>
+
+            <label id='sometext1' skin='versText' left='400' right='0' top='635' height='60' align='left' text='#'/>
+
+			<sprite id='congratulations'	skin='congrats' left='94' width='411' top='250' height='142' active='false' canFocus='false'/>
+
+			<sprite skin="gridCursor" id="gridCursor"  left="522" width="90" top="605" height="100" u="0" active="false" canFocus="true"/>
+            <sprite id='touchHelp'  	skin='hHelpT' left='42' width='516' top='50' height='611' active='false' canFocus='false'/>		
+            <label id='touchButtons1'   skin='touchText'    left='1' right='0' top='665' height='60' align='left' text='Open snapshot       Save snapshot                Quit                        Undo                     Help'/>
+			<label id='nonTouch'   skin='touchText'    left='1' right='0' top='665' height='60' align='left' text='PREV to open and NEXT to save snapshot     -     SIZE to undo     -     MENU to show/hide help'/>
+			<label id="instr4" skin="quitinstr" left="420" right="0" top="705" height="20" align="left" text="9: New Deal   0: Quit"/>
+        </group>
+    </group>
+</document>

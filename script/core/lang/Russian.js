@@ -667,5 +667,9 @@ return {
         	TITLE: "Алфавит полосы прокрутки",
         	OPT_ALPHABET: "Алфавит",
         	VALUE_DEFAULT: "По умолчанию"
+        },
+        Calc: {
+        	TITLE: "Калькулятор",
+        	DESCRIPTION: ""
         }
 };
