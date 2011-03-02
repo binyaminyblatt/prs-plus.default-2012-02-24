@@ -16,7 +16,7 @@
  	* Mahjong by Clemenseken
  	* Sudoku by Obelix
  * 300/505: Added Dictionary by Clemenseken, lysak, m-land, Mark Nord
-
+ * 300: Added #57 Spanish localization (by Carlos)
 === 2.0.9 alpha (bugfixes/enhancements for x50) ===
  * x50: Fixed "Holding option /zoom buttons should call "Go Back in Menus" and "Search" respectively"
  * 350/650: Fixed "Text Memo open => press root => reboot"
