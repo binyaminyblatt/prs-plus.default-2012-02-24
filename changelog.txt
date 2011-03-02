@@ -18,6 +18,7 @@
  	* Sudoku by Obelix
  * 300/505: Added Dictionary by Clemenseken, lysak, m-land, Mark Nord
  * 300: Added #57 Spanish localization (by Carlos)
+ * 300: Fixed #63 author/title sort in 2.0.5alpha not working (patch by vento...@airpost.net)
 
 === 2.0.9 alpha (bugfixes/enhancements for x50) ===
  * x50: Fixed "Holding option /zoom buttons should call "Go Back in Menus" and "Search" respectively"

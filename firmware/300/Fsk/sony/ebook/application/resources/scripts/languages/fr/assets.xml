@@ -147,15 +147,15 @@
 		<string id="STR_UI_TITLESORTLABEL8" value="T U V" />
 		<string id="STR_UI_TITLESORTLABEL9" value="W X Y Z" />
 		<string id="STR_UI_TITLESORTLABEL10" value="Autre" />
-		<string id="STR_VAL_TITLESORTCRITERION1" value="a" />
-		<string id="STR_VAL_TITLESORTCRITERION2" value="d" />
-		<string id="STR_VAL_TITLESORTCRITERION3" value="g" />
-		<string id="STR_VAL_TITLESORTCRITERION4" value="j" />
-		<string id="STR_VAL_TITLESORTCRITERION5" value="m" />
-		<string id="STR_VAL_TITLESORTCRITERION6" value="p" />
-		<string id="STR_VAL_TITLESORTCRITERION7" value="t" />
-		<string id="STR_VAL_TITLESORTCRITERION8" value="w" />
-		<string id="STR_VAL_TITLESORTCRITERION9" value="ᴢ" />
+		<string id="STR_VAL_TITLESORTCRITERION1" value="9" />
+		<string id="STR_VAL_TITLESORTCRITERION2" value="C" />
+		<string id="STR_VAL_TITLESORTCRITERION3" value="F" />
+		<string id="STR_VAL_TITLESORTCRITERION4" value="I" />
+		<string id="STR_VAL_TITLESORTCRITERION5" value="L" />
+		<string id="STR_VAL_TITLESORTCRITERION6" value="O" />
+		<string id="STR_VAL_TITLESORTCRITERION7" value="S" />
+		<string id="STR_VAL_TITLESORTCRITERION8" value="V" />
+		<string id="STR_VAL_TITLESORTCRITERION9" value="Z" />
 		<string id="STR_UI_AUTHORSORTLABEL1" value="0-9" />
 		<string id="STR_UI_AUTHORSORTLABEL2" value="A B C" />
 		<string id="STR_UI_AUTHORSORTLABEL3" value="D E F" />
@@ -166,15 +166,15 @@
 		<string id="STR_UI_AUTHORSORTLABEL8" value="T U V" />
 		<string id="STR_UI_AUTHORSORTLABEL9" value="W X Y Z" />
 		<string id="STR_UI_AUTHORSORTLABEL10" value="Autre" />
-		<string id="STR_VAL_AUTHORSORTCRITERION1" value="a" />
-		<string id="STR_VAL_AUTHORSORTCRITERION2" value="d" />
-		<string id="STR_VAL_AUTHORSORTCRITERION3" value="g" />
-		<string id="STR_VAL_AUTHORSORTCRITERION4" value="j" />
-		<string id="STR_VAL_AUTHORSORTCRITERION5" value="m" />
-		<string id="STR_VAL_AUTHORSORTCRITERION6" value="p" />
-		<string id="STR_VAL_AUTHORSORTCRITERION7" value="t" />
-		<string id="STR_VAL_AUTHORSORTCRITERION8" value="w" />
-		<string id="STR_VAL_AUTHORSORTCRITERION9" value="ᴢ" />
+		<string id="STR_VAL_AUTHORSORTCRITERION1" value="9" />
+		<string id="STR_VAL_AUTHORSORTCRITERION2" value="C" />
+		<string id="STR_VAL_AUTHORSORTCRITERION3" value="F" />
+		<string id="STR_VAL_AUTHORSORTCRITERION4" value="I" />
+		<string id="STR_VAL_AUTHORSORTCRITERION5" value="L" />
+		<string id="STR_VAL_AUTHORSORTCRITERION6" value="O" />
+		<string id="STR_VAL_AUTHORSORTCRITERION7" value="S" />
+		<string id="STR_VAL_AUTHORSORTCRITERION8" value="V" />
+		<string id="STR_VAL_AUTHORSORTCRITERION9" value="Z" />
 		<string id="STR_FORMAT_DATE" value="DD/MM/YY" />
 		<string id="STR_UI_MESSAGE_USBDONOT" value="Ne pas déconnecter" />
 		<string id="STR_UI_MESSAGE_USBCONNECTED" value="USB connecté" />
