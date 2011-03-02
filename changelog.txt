@@ -7,6 +7,7 @@
  * x50: Added rotate by 0 / 90 / 180 / 270 / clock wise / counter clock wize actions
  * 600: Added rotate by 90 action
  * 600: Added Belorussian / Ukranian chars (as popups) to keyboard
+ * 600: Added #47&48 Spanish (by ?) & Catalan (by Alex Castrillo) localizations
  * ALL: Added 
  	* Calculator by Mark Nord
  	* Chess by Ben Chenoweth / Stefano Gioffre
@@ -17,6 +18,7 @@
  	* Sudoku by Obelix
  * 300/505: Added Dictionary by Clemenseken, lysak, m-land, Mark Nord
  * 300: Added #57 Spanish localization (by Carlos)
+
 === 2.0.9 alpha (bugfixes/enhancements for x50) ===
  * x50: Fixed "Holding option /zoom buttons should call "Go Back in Menus" and "Search" respectively"
  * 350/650: Fixed "Text Memo open => press root => reboot"
