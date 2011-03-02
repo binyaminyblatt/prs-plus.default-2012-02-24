@@ -16,6 +16,7 @@
 //	2011-02-06 kartu - Fixed #64 "Wrong german translation file"
 //	2011-02-27 kartu - Added Belorussian / Ukranian chars (as popups) to keyboard
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
+//	2011-03-02 kartu - Added #47&48 Spanish (by ?)  & Catalan (by Alex Castrillo) localizations
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -31,9 +32,11 @@ var tmp = function() {
 				node, prspLanguages, langFile;
 			currentLang = kbook.model.language;
 			settingsNode = kbook.root.nodes[6].nodes[2];
-			languages = ["en", "de", "fr", "it", "nl", "ka", "ru", "zh"];
+			languages = ["ca", "en", "es", "de", "fr", "it", "nl", "ka", "ru", "zh"];
 			prspLanguages = {
+				ca: "Catalan.js",
 				en: "English.js",
+				es: "Spanish.js",
 				de: "German.js",
 				fr: "French.js",
 				it: "Italian.js",
@@ -43,7 +46,9 @@ var tmp = function() {
 				zh: "SimplifiedChinese.js"
 			};
 			langNames = {
+				ca: "Català",
 				en: "English",
+				es: "Español",
 				de: "Deutsch", 
 				fr: "Français", 
 				it: "Italiano",
