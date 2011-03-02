@@ -1,633 +1,677 @@
-target.firstX = 81;
-target.firstY = 195;
+// Original code Mikhail Sharonov
+// History:
+//	2010-07-24 Mark Nord	use only one set of 89 Sprits and lesser use of target
+//	2010-11-17 Mark Nord	clickable in Sim, maybe useable on touch-devices
+//		Issues:	Select Game not implemented yet
+//				Zero-Sprite without glyph after Exit Quit via menubar, the simulator lose focus and becomes unresponsive
+//	2010-11-20 Mark Nord	full functional in Simulator
+//		Core functions used: _Core.system.getSoValue
+//	 2010-11-21 Mark Nord	decided to explicit include code for getSoValue
+//	2010-11-21 Mark Nord	3rd and 4th row of sprite-skin
+//	2010-12-01 Mark Nord	fix menuBar.endLoop, use of Core-functions, no expicit code <== isn't possible
+//	2011-12-03 Mark Nord	use of sandbox-exposed Core-functions
+//		Core.config.compat.hasNumericButtons =>  kbook.autoRunRoot.hasNumericButtons
+//		Core.system.getSoValue =>  kbook.autoRunRoot.getSoValue
+//		Core.system.compile => prsp.compile
+// 	2011-03-01 kartu - Moved into a function, to allow variable name optimizations
 
-
-target.curDX = 50;
-target.curDY = 50;
-
-target.posX = 1;
-target.posY = 1;
-
-target.menuX = 0;
-
-target.menuDX = 185;
-target.subDY = 22;
-
-
-
-target.menufirstX = 21;
-//target.menufirstY=78;
-target.menufirstY = 45;
-
-target.subfirstX = 60;
-//target.menufirstY=78;
-target.subfirstY = 90;
-
-
-target.isMenu = true;
-target.isSubMenu = false;
-target.isEntering = false;
-target.isEnteringFirst = false;
-
-
-target.startTime = "";
-
-target.sudokuFiles = new Array("simple.tpl", "easy.tpl", "medium.tpl", "hard.tpl");
-target.sudokuNumRecords = new Array(0, 0, 0, 0);
-
-target.subMenuPos = new Array(0, 0, 0);
-target.subMenuPosMax = new Array(3, 3, 1);
-
-target.cNum = 1;
-
-target.currentPuzzle = 0;
-
-
-target.drawMenuCursor = function (x) {
-	this.menuCursor.changeLayout(this.menufirstX + x * this.menuDX, undefined, undefined, this.menufirstY, undefined, undefined);
-}
-
-
-target.showTime = function () {
-
-	var time = new Date();
-	var timeLocale = time.toLocaleTimeString();
-	var show = timeLocale.substring(0, timeLocale.lastIndexOf(':'));
-
-	if (this.startTime != "") {
-		var playDuration = time - this.startTime;
-		var seconds = Math.floor(playDuration / 1000);
-		var h = Math.floor(seconds / 3600);
-		var m = Math.floor((seconds % 3600) / 60);
-		//var s = (seconds%3600)%60;
-
-		if (h < 10) h = "0" + h;
-		if (m < 10) m = "0" + m;
-		//if (s<10) s="0"+s;
-
-
-		var showDuration = "Play time " + h + ":" + m; //+":"+s+":";
-
-		this.clock2.setValue(showDuration);
-	} else this.clock2.setValue("");
-
-	this.clock1.setValue(show);
-
-}
-
-
-target.drawSubMenu = function (x) {
-	var id = 'subMenu' + x;
-	this.subMenu0.show(true);
-	this.subMenu1.show(true);
-	this.subMenu2.show(true);
-	this.currentNum.show(true);
-	this.subMenu0.changeLayout(this.subfirstX + 0 * this.menuDX, undefined, undefined, this.subfirstY, undefined, undefined);
-	this.subMenu1.changeLayout(this.subfirstX + 1 * this.menuDX, undefined, undefined, this.subfirstY, undefined, undefined);
-	this.subMenu2.changeLayout(this.subfirstX + 2 * this.menuDX, undefined, undefined, this.subfirstY, undefined, undefined);
-	this.currentNum.show(false);
-	this.subMenu0.show(false);
-	this.subMenu1.show(false);
-	this.subMenu2.show(false);
-	if (this.isSubMenu) {
-		this[id].show(true);
-	}
-}
-
-
-target.drawSubMenuCursor = function () {
-	this.subCursor.show(true);
-	this.subCursor.changeLayout(this.subfirstX + this.menuX * this.menuDX, undefined, undefined, this.subfirstY + this.subMenuPos[this.menuX] * this.subDY, undefined, undefined);
-	this.subCursor.show(false);
-	this.isEntering = false;
-	this.cNum = this.cNum * 1;
-	if (this.isSubMenu) {
-		if ((this.menuX == 0) & (this.subMenuPos[0] == 2)) {
-			this.isEntering = true;
-			this.isEnteringFirst = true;
+var tmp = function () {
+	var firstX = 81;
+	var firstY = 195;
+	
+	var curDX = 50;
+	var curDY = 50;
+	
+	var posX = 0;
+	var posY = 0;
+	
+	var menuX = 0;
+	
+	var menuDX = 185;
+	var subDY = 22;
+	
+	var menufirstX = 21;
+	var menufirstY = 45;
+	
+	var subfirstX = 60;
+	var subfirstY = 90;
+	
+	
+	var isMenu = true;
+	var isSubMenu = false;
+	var isEntering = false;
+	var isEnteringFirst = false;
+	
+	
+	var startTime = "";
+	
+	var sudokuFiles = new Array("simple.tpl", "easy.tpl", "medium.tpl", "hard.tpl");
+	var sudokuNumRecords = new Array(0, 0, 0, 0);
+	
+	var subMenuPos = new Array(0, 0, 0);
+	var subMenuPosMax = new Array(3, 3, 1);
+	
+	var cNum = 1;
+	
+	var currentPuzzle = 0;
+	
+	var newEvent = prsp.compile("param", "return new Event(param)");
+	
+	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
+	var getSoValue = kbook.autoRunRoot.getSoValue;
+	
+	var lastSprite = "Digit00";
+	
+	var drawMenuCursor = function (x) {
+		target.nonTouch.menuCursor.changeLayout(menufirstX + x * menuDX, undefined, undefined, menufirstY, undefined, undefined);
+	};
+	
+	var showTime = function () {
+	
+		var time = new Date();
+		var timeLocale = time.toLocaleTimeString();
+		var show = timeLocale.substring(0, timeLocale.lastIndexOf(':'));
+	
+		if (startTime != "") {
+			var playDuration = time - startTime;
+			var seconds = Math.floor(playDuration / 1000);
+			var h = Math.floor(seconds / 3600);
+			var m = Math.floor((seconds % 3600) / 60);
+	
+			if (h < 10) h = "0" + h;
+			if (m < 10) m = "0" + m;
+	
+			var showDuration = "Play time " + h + ":" + m;
+	
+			target.clock2.setValue(showDuration);
+		} else target.clock2.setValue("");
+	
+		target.clock1.setValue(show);
+	
+	};
+	
+	var drawSubMenu = function (x) {
+		var id = 'subMenu' + x;
+		target.nonTouch.subMenu0.show(true);
+		target.nonTouch.subMenu1.show(true);
+		target.nonTouch.subMenu2.show(true);
+		target.nonTouch.currentNum.show(true);
+		target.nonTouch.subMenu0.changeLayout(subfirstX + 0 * menuDX, undefined, undefined, subfirstY, undefined, undefined);
+		target.nonTouch.subMenu1.changeLayout(subfirstX + 1 * menuDX, undefined, undefined, subfirstY, undefined, undefined);
+		target.nonTouch.subMenu2.changeLayout(subfirstX + 2 * menuDX, undefined, undefined, subfirstY, undefined, undefined);
+		target.nonTouch.currentNum.show(false);
+		target.nonTouch.subMenu0.show(false);
+		target.nonTouch.subMenu1.show(false);
+		target.nonTouch.subMenu2.show(false);
+		if (isSubMenu) {
+			target.nonTouch[id].show(true);
 		}
-		this.subCursor.show(true);
-	}
-}
-
-target.drawCurrentNum = function () {
-	this.currentNum.show(false);
-	this.currentNum.setValue(this.cNum);
-	if ((this.isSubMenu) & (this.menuX == 0)) {
-		this.currentNum.show(true);
-	}
-}
-
-
-
-target.showLabels = function () {
-	var totalPuzzles = this.sudokuNumRecords[target.subMenuPos[1]];
-
-	if (totalPuzzles == 0) this.currentPuzzle = 0;
-
-	if (target.subMenuPos[1] == 0) totalPuzzles = "Simple:" + totalPuzzles;
-	if (target.subMenuPos[1] == 1) totalPuzzles = "Easy:" + totalPuzzles;
-	if (target.subMenuPos[1] == 2) totalPuzzles = "Medium:" + totalPuzzles;
-	if (target.subMenuPos[1] == 3) totalPuzzles = "Hard:" + totalPuzzles;
-
-	this.numRecords.setValue(totalPuzzles);
-	this.numCurrent.setValue(target.currentPuzzle);
-	if (target.currentPuzzle == 0) {
-		this.numCurrent.show(false);
-		this.sometext1.show(false);
-	} else {
-		this.numCurrent.show(true);
-		this.sometext1.show(true);
-	}
-}
-
-
-
-target.init = function () {
-	this.cCon.show(false);
-	this.showTime();
-	this.gridCursor.show(true);
-	this.menuCursor.show(true);
-
-
-	this.subCursor.show(true);
-	this.subMenu0.show(true);
-	this.subMenu1.show(true);
-	this.subMenu2.show(true);
-
-
-	this.menuX = 0;
-	this.drawMenuCursor(this.menuX);
-	this.drawGridCursor(this.posX, this.posY);
-	for (var i = 0; i < 4; i++) this.checkSudokuFiles(i);
-	this.showLabels();
-
-	this.gridCursor.show(false);
-	this.subCursor.show(false);
-	this.subMenu0.show(false);
-	this.subMenu1.show(false);
-	this.subMenu2.show(false);
-	this.bckGround.show(false);
-	//this.cCon.show(false);
-	//this.showTime();
-}
-/*
-target.isFree = function (x,y)
-{
-var id = "fixDigit"+y+x;
-if (this[id].u > 0) return true
-              else return false;
-}
-*/
-
-target.showSubMenu = function (x) {
-	this.drawSubMenu(x);
-	this.drawSubMenuCursor();
-	this.drawCurrentNum();
-}
-
-
-target.doMenuF = function () {
-	this.cCon.stopAnimation("cCon");
-	this.cCon.show(false);
-	this.bckGround.show(false);
-	this.isSubMenu = false;
-	this.showSubMenu(this.menuX, 0);
-
-	this.gridCursor.show(true);
-	this.menuCursor.show(true);
-	this.isMenu = true;
-	this.menuX = 0;
-	this.drawGridCursor(this.posX, this.posY);
-	this.drawMenuCursor(0);
-	this.gridCursor.show(false);
-	this.gridCursor.show(false);
-	this.startTime = "";
-	this.showTime();
-	this.container.getDevice().doneResume();
-	this.container.getModel().resume();
-	//this.container.getWindow().doBlink();
-}
-
-
-target.startSudoku = function () {
-	this.eraseBoard();
-	if (this.currentPuzzle > 0) {
-
-		var s = this.getSudokuString(target.currentPuzzle - 1, target.subMenuPos[1]);
-		if (s != '') this.doSudoku(s);
-		this.gridCursor.show(true);
-		this.menuCursor.show(true);
-		this.posX = 0;
-		this.posY = 0;
-		this.drawGridCursor(this.posX, this.posY);
-		this.drawMenuCursor(this.menuX);
-		this.menuCursor.show(false)
-		//target.moveCursor("right");
-		this.isMenu = false;
-		this.startTime = new Date();
-		this.showTime();
-	}
-}
-
-
-target.doCenterF = function () {
-
-	if (this.isMenu) {
-		if (this.isSubMenu) {
-			switch (this.menuX) {
-			case 0:
-				{
-					//this.currentPuzzle=2;
-
-					switch (target.subMenuPos[0]) {
-					case 0:
-						{
-							var nStr = Math.floor(Math.random() * this.sudokuNumRecords[target.subMenuPos[1]]);
-							this.currentPuzzle = nStr + 1;
-							this.showLabels();
-							this.startSudoku();
-							break;
-						}
-					case 1:
-						{
-							this.currentPuzzle = this.currentPuzzle + 1;
-							if (this.currentPuzzle > this.sudokuNumRecords[target.subMenuPos[1]]) this.currentPuzzle = 0;
-							this.showLabels();
-							this.startSudoku();
-							break;
-						}
-					case 2:
-						{
-							this.currentPuzzle = this.cNum * 1;
-							if (this.currentPuzzle > this.sudokuNumRecords[target.subMenuPos[1]]) {
-								this.currentPuzzle = 0;
-								this.cNum = "";
-							};
-
-							this.showLabels();
-							this.startSudoku();
-							break;
-						}
-					case 3:
-						{
-							this.eraseBoard();
-							this.loadGame();
-							this.showLabels();
-							this.gridCursor.show(true);
-							this.menuCursor.show(true);
-							this.posX = 0;
-							this.posY = 0;
-							this.drawGridCursor(this.posX, this.posY);
-							this.drawMenuCursor(this.menuX);
-							this.menuCursor.show(false);
-							this.startTime = new Date();
-							this.showTime();
-							this.isMenu = false;
-							break;
-						}
-
-					} // end of switch
-
-					break;
-				}
-			case 1:
-				{
-					this.currentPuzzle = 0;
-					this.showLabels();
-					break;
-				}
-			case 2:
-				{
-					if (target.subMenuPos[2] == 1) this.saveGame();
-
-					if (target.subMenuPos[2] == 0) {
-						kbook.autoRunRoot.exitIf(kbook.model);
-						return;
-					};
-					break;
-				}
-
-			} //end of switch
+	};
+	
+	var drawSubMenuCursor = function () {
+		target.nonTouch.subCursor.show(true);
+		target.nonTouch.subCursor.changeLayout(subfirstX + menuX * menuDX, undefined, undefined, subfirstY + subMenuPos[menuX] * subDY, undefined, undefined);
+		target.nonTouch.subCursor.show(false);
+		isEntering = false;
+		cNum = cNum * 1;
+		if (isSubMenu) {
+			if ((menuX == 0) & (subMenuPos[0] == 2)) {
+				isEntering = true;
+				isEnteringFirst = true;
+			}
+			target.nonTouch.subCursor.show(true);
 		}
-		this.isSubMenu = !this.isSubMenu;
-		this.showSubMenu(this.menuX);
-
-	}
-}
-
-
-
-target.moveCursor = function (direction) {
-	this.showTime();
-	if (this.isSubMenu) {
-		if (direction == "up") {
-			this.subMenuPos[this.menuX] = this.subMenuPos[this.menuX] - 1;
-			if (this.subMenuPos[this.menuX] < 0) this.subMenuPos[this.menuX] = this.subMenuPosMax[this.menuX];
-			this.drawSubMenuCursor();
+	};
+	
+	var drawCurrentNum = function () {
+		target.nonTouch.currentNum.show(false);
+		target.nonTouch.currentNum.setValue(cNum);
+		if ((isSubMenu) & (menuX == 0)) {
+			target.nonTouch.currentNum.show(true);
 		}
-		if (direction == "down") {
-			this.subMenuPos[this.menuX] = this.subMenuPos[this.menuX] + 1;
-			if (this.subMenuPos[this.menuX] > this.subMenuPosMax[this.menuX]) this.subMenuPos[this.menuX] = 0;
-			this.drawSubMenuCursor();
-		}
-
-	}
-
-	if (!this.isMenu) {
-		if (direction == "right") {
-			this.posX = this.posX + 1;
-			if (this.posX > 8) this.posX = 0;
-		}
-		if (direction == "left") {
-			this.posX = this.posX - 1;
-			if (this.posX < 0) this.posX = 8;
-		}
-		if (direction == "up") {
-			this.posY = this.posY - 1;
-			if (this.posY < 0) this.posY = 8;
-		}
-		if (direction == "down") {
-			this.posY = this.posY + 1;
-			if (this.posY > 8) this.posY = 0;
-		}
-		this.drawGridCursor(this.posX, this.posY);
-	} else this.moveMenuCursor(direction);
-
-	this.showSubMenu(this.menuX, 0);
-}
-
-target.moveMenuCursor = function (direction) {
-	if (target.isMenu) {
-		if (direction == "right") {
-			this.menuX = this.menuX + 1;
-			if (this.menuX > 2) this.menuX = 0;
-		}
-		if (direction == "left") {
-			this.menuX = this.menuX - 1;
-			if (this.menuX < 0) this.menuX = 2;
-		}
-		this.drawMenuCursor(this.menuX);
-	}
-}
-
-
-
-target.drawGridCursor = function (x, y) {
-	this.gridCursor.changeLayout(this.firstX + x * this.curDX, undefined, undefined, this.firstY + y * this.curDY, undefined, undefined);
-
-}
-
-target.drawDigit = function (key) {
-
-	if (this.isEntering) {
-		if (this.isEnteringFirst) {
-			this.cNum = "";
-			this.isEnteringFirst = false;
-		}
-
-		this.cNum = this.cNum + key;
-		this.currentNum.setValue(this.cNum);
-
-	}
-	if (!this.isMenu) {
-		var id = "custDigit" + this.posY + this.posX;
-		var id1 = "fixDigit" + this.posY + this.posX;
-
-		if (this[id1].u <= 0) {
-			this.showTime();
-			this[id].u = key;
-			//if (key!=0) this.checkDone();
-			this.checkDone();
-
-		}
-
-	}
-
-}
-
-
-target.doSudoku = function (strTemplate) {
-	for (var i = 0; i < 9; i++)
-	for (var j = 0; j < 9; j++) {
-		var id = "fixDigit" + i + j;
-		var id1 = "custDigit" + i + j;
-
-		var dig = strTemplate.charAt(j + 9 * i);
-
-		if ((dig > 0) && (dig <= 9)) {
-			this[id].u = dig;
-			this[id1].u = -1;
+	};
+	
+	var showLabels = function () {
+		var totalPuzzles = sudokuNumRecords[subMenuPos[1]];
+	
+		if (totalPuzzles == 0) currentPuzzle = 0;
+	
+		if (subMenuPos[1] == 0) totalPuzzles = "Simple:" + totalPuzzles;
+		if (subMenuPos[1] == 1) totalPuzzles = "Easy:" + totalPuzzles;
+		if (subMenuPos[1] == 2) totalPuzzles = "Medium:" + totalPuzzles;
+		if (subMenuPos[1] == 3) totalPuzzles = "Hard:" + totalPuzzles;
+	
+		target.numRecords.setValue(totalPuzzles);
+		target.numCurrent.setValue(currentPuzzle);
+		if (currentPuzzle == 0) {
+			target.numCurrent.show(false);
+			target.sometext1.show(false);
 		} else {
-			this[id].u = -1;
-			this[id1].u = 0;
+			target.numCurrent.show(true);
+			target.sometext1.show(true);
 		}
-	}
-}
-
-target.eraseBoard = function () {
-	for (var i = 0; i < 9; i++)
-	for (var j = 0; j < 9; j++) {
-		var id = "fixDigit" + i + j;
-		var id1 = "custDigit" + i + j;
-		this[id].u = 0;
-		this[id1].u = 0;
-	}
-	//this.custDigit.u=0;
-}
-
-
-target.checkSudokuFiles = function (num) {
-	var res = null;
-	var sudokuPath = this.sudokuRoot + 'sudoku/' + this.sudokuFiles[num];
-	var i = 0;
-
-	if (FileSystem.getFileInfo(sudokuPath)) {
-		var stream = new Stream.File(sudokuPath);
-		while (stream.bytesAvailable) {
-			var s = stream.readLine();
-			if (s.length == 81) i++;
+	};
+	
+	target.init = function () {
+	
+		this.cCon.show(false);
+		showTime();
+		this.nonTouch.menuCursor.show(true);
+	
+		if (!hasNumericButtons) {
+			this.nonTouch.show(false);
+			this.Touch.show(true);
+			this.Touch.cNum.show(false);
+		} else {
+			this.nonTouch.show(true);
+			this.Touch.show(false);
 		}
-		res = i;
-		if (res > 0) this.sudokuNumRecords[num] = i;
-		stream.close();
-	}
-	stream.close();
-
-	return res;
-}
-
-
-
-target.getSudokuString = function (nStr, num) {
-	var res = '';
-	var sudokuPath = this.sudokuRoot + 'sudoku/' + this.sudokuFiles[num];
-
-	var i = 0;
-
-	try {
-		var stream = new Stream.File(sudokuPath);
-		while (stream.bytesAvailable) {
-			var s = stream.readLine();
-			if (s.length == 81) i++;
-			if (i == (nStr + 1)) {
-				res = s;
-				break
-			};
+	
+		this.nonTouch.subCursor.show(true);
+		this.nonTouch.subMenu0.show(true);
+		this.nonTouch.subMenu1.show(true);
+		this.nonTouch.subMenu2.show(true);
+	
+		menuX = 0;
+		drawMenuCursor(menuX);
+		drawGridCursor(posX, posY);
+		for (var i = 0; i < 4; i++) checkSudokuFiles(i);
+		showLabels();
+	
+		this.nonTouch.subCursor.show(false);
+		this.nonTouch.subMenu0.show(false);
+		this.nonTouch.subMenu1.show(false);
+		this.nonTouch.subMenu2.show(false);
+		this.bckGround.show(false);
+	};
+	
+	var showSubMenu = function (x) {
+		drawSubMenu(x);
+		drawSubMenuCursor();
+		drawCurrentNum();
+	};
+	
+	target.doMenuF = function () {
+		this.cCon.stopAnimation("cCon");
+		this.cCon.show(false);
+		this.bckGround.show(false);
+		isSubMenu = false;
+		showSubMenu(menuX, 0);
+	
+		this.nonTouch.menuCursor.show(true);
+		isMenu = true;
+		menuX = 0;
+		// drawGridCursor(posX, posY);
+		drawMenuCursor(0);
+		startTime = "";
+		showTime();
+	};
+	
+	
+	var startSudoku = function () {
+		eraseBoard();
+		if (currentPuzzle > 0) {
+			// 2 lines to handle touch-interface
+			target.Touch.key0.u = 10;
+			target.Touch.cNum.show(false);
+	
+			var s = getSudokuString(currentPuzzle - 1, subMenuPos[1]);
+			if (s != '') doSudoku(s);
+			target.nonTouch.menuCursor.show(true);
+			posX = 0;
+			posY = 0;
+			drawGridCursor(posX, posY);
+			drawMenuCursor(menuX);
+			target.nonTouch.menuCursor.show(false)
+			isMenu = false;
+			startTime = new Date();
+			showTime();
 		}
-
-	}
-	catch(e) {
-		res = '';
-	}
-	stream.close();
-
-	return res;
-}
-
-
-target.saveGame = function () {
-
-	var res = true;
-	var sudokuPath = this.sudokuRoot + 'game';
-	var fixStr = "";
-	var custStr = "";
-
-	for (var i = 0; i < 9; i++)
-	for (var j = 0; j < 9; j++) {
-		var id = "fixDigit" + i + j;
-		var id1 = "custDigit" + i + j;
-		if (this[id].u > 0) fixStr = fixStr + this[id].u;
-		else fixStr = fixStr + ".";
-		if (this[id1].u > 0) custStr = custStr + this[id1].u;
-		else custStr = custStr + ".";
-	}
-
-	try {
-		if (FileSystem.getFileInfo(sudokuPath)) FileSystem.deleteFile(sudokuPath);
-		var stream = new Stream.File(sudokuPath, 1);
-		stream.writeLine(this.cNum);
-		stream.writeLine(this.currentPuzzle);
-		stream.writeLine(this.subMenuPos[0]);
-		stream.writeLine(this.subMenuPos[1]);
-		stream.writeLine(this.subMenuPos[2]);
-		stream.writeLine(fixStr);
-		stream.writeLine(custStr);
-		stream.close();
-	}
-	catch(e) {
-		res = false;
-	}
-	stream.close();
-
-	return res;
-
-}
-
-
-target.loadGame = function () {
-	var res = true;
-	var sudokuPath = this.sudokuRoot + 'game';
-	var fixStr = "";
-	var custStr = "";
-
-
-	try {
+	};
+	
+	/* functions to be called by fsk_menu */
+	target.GameRandom = function () {
+		var nStr = Math.floor(Math.random() * sudokuNumRecords[subMenuPos[1]]);
+		currentPuzzle = nStr + 1;
+		showLabels();
+		startSudoku();
+	};
+	
+	target.GameNext = function () {
+		currentPuzzle = currentPuzzle + 1;
+		if (currentPuzzle > sudokuNumRecords[subMenuPos[1]]) currentPuzzle = 0;
+		showLabels();
+		startSudoku();
+	};
+	
+	target.GameLoad = function () {
+		eraseBoard();
+		loadGame();
+		showLabels();
+		target.nonTouch.menuCursor.show(true);
+		posX = 0;
+		posY = 0;
+		drawGridCursor(posX, posY);
+		drawMenuCursor(menuX);
+		target.nonTouch.menuCursor.show(false);
+		startTime = new Date();
+		showTime();
+		isMenu = false;
+	};
+	
+	target.GameSelect = function () {
+		isEntering = true;
+		isEnteringFirst = true;
+		target.Touch.key0.u = 11;
+		target.Touch.cNum.cNum.setValue(cNum);
+		target.Touch.cNum.show(true);
+	};
+	
+	/* menu exist in the scope of DOCUMENT !! */
+	target.container.container.doSelectLevel = function(sender) {
+		var x = getSoValue(sender,"index");
+		subMenuPos[1] = x;
+		//	this.bubble("tracelog","x="+x); // debug
+		currentPuzzle = 0;
+		showLabels();
+	};
+	
+	target.GameSave = function () {
+		saveGame();
+	};
+	
+	target.ExitQuit = function () {
+		var ev, func, menuBar;
+		ev = newEvent(2048);
+		menuBar = this.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
+		// this.bubble("tracelog","findContent= "+menuBar);
+		func = getSoValue(menuBar,"endLoop");
+		// this.bubble("tracelog","endLoop= "+func);
+		func.call(menuBar,ev);
+		kbook.autoRunRoot.exitIf(kbook.model);
+	};
+	
+	/* handler for "digit-key-sprites" */
+	target.doNumKey = function (sender) {
+		var x = getSoValue(sender,"id").substring(3,4);
+		//	this.bubble("tracelog","id="+x); // debug
+		this.drawDigit(x);
+	};
+	
+	/* handler for "grid-sprites" */
+	target.doGridClick = function (sender) {
+		var id, y, x, v;
+		id = getSoValue(sender,"id");
+		y = id.substring(5,6);
+		x = id.substring(6,7);
+		v = getSoValue(sender,"v");
+		//	this.bubble("tracelog","posX="+x); // debug
+		//	this.bubble("tracelog","posY="+y);
+		//	this.bubble("tracelog","v="+v);
+		if (v == 2) {
+			posX = x;
+			posY = y;
+			drawGridCursor(posX, posY);
+		    }
+	};
+	
+	target.doCenterF = function () {
+	
+		if (isMenu) {
+			if (isSubMenu) {
+				switch (menuX) {
+				case 0:
+					{
+						switch (subMenuPos[0]) {
+						case 0:
+							{	target.GameRandom();
+								break;
+							}
+						case 1:
+							{	target.GameNext();
+								break;
+							}
+						case 2:	{	currentPuzzle = cNum * 1;
+								if (currentPuzzle > sudokuNumRecords[subMenuPos[1]]) {
+									currentPuzzle = 0;
+									cNum = "";
+								};
+	
+								showLabels();
+								startSudoku();
+								break;
+							}
+						case 3:
+							{	target.GameLoad();
+								break;
+							}
+	
+						} // end of switch
+	
+						break;
+					}
+				case 1:
+					{
+						currentPuzzle = 0;
+						showLabels();
+						break;
+					}
+				case 2:
+					{
+						if (subMenuPos[2] == 1) saveGame();
+	
+						if (subMenuPos[2] == 0) {
+							kbook.autoRunRoot.exitIf(kbook.model);
+							return;
+						};
+						break;
+					}
+	
+				} //end of switch
+			}
+			isSubMenu = !isSubMenu;
+			showSubMenu(menuX);
+	
+		}
+	};
+	
+	target.moveCursor = function (direction) {
+		showTime();
+		if (isSubMenu) {
+			if (direction == "up") {
+				subMenuPos[menuX] = subMenuPos[menuX] - 1;
+				if (subMenuPos[menuX] < 0) subMenuPos[menuX] = subMenuPosMax[menuX];
+				drawSubMenuCursor();
+			}
+			if (direction == "down") {
+				subMenuPos[menuX] = subMenuPos[menuX] + 1;
+				if (subMenuPos[menuX] > subMenuPosMax[menuX]) subMenuPos[menuX] = 0;
+				drawSubMenuCursor();
+			}
+	
+		}
+	
+		if (!isMenu) {
+			if (direction == "right") {
+				posX = posX + 1;
+				if (posX > 8) posX = 0;
+			}
+			if (direction == "left") {
+				posX = posX - 1;
+				if (posX < 0) posX = 8;
+			}
+			if (direction == "up") {
+				posY = posY - 1;
+				if (posY < 0) posY = 8;
+			}
+			if (direction == "down") {
+				posY = posY + 1;
+				if (posY > 8) posY = 0;
+			}
+			drawGridCursor(posX, posY);
+		} else moveMenuCursor(direction);
+	
+		showSubMenu(menuX, 0);
+	};
+	
+	var moveMenuCursor = function (direction) {
+		if (isMenu) {
+			if (direction == "right") {
+				menuX = menuX + 1;
+				if (menuX > 2) menuX = 0;
+			}
+			if (direction == "left") {
+				menuX = menuX - 1;
+				if (menuX < 0) menuX = 2;
+			}
+			drawMenuCursor(menuX);
+		}
+	};
+	
+	var drawGridCursor = function (x, y) {
+		// target.gridCursor.changeLayout(firstX + x * curDX, undefined, undefined, firstY + y * curDY, undefined, undefined);
+		var id = "Digit" + y + x;
+		if (lastSprite != id) {
+			target[lastSprite].v--}
+		lastSprite = id;
+		target[id].v++;
+	};
+	
+	target.drawDigit = function (key) {
+	
+		if (isEntering) {
+			if (isEnteringFirst) {
+				cNum = "";
+				isEnteringFirst = false;
+			}
+	
+			if (key=="O") {			// add for touch interface
+				isEntering = false;
+				currentPuzzle = cNum * 1;
+				showLabels();
+				startSudoku();
+				return;
+			}
+			if (key=="A") {			// add for touch interface
+				isEntering = false;
+				target.Touch.cNum.show(false);
+				return;
+			}
+	
+			cNum = cNum + key;
+			this.nonTouch.currentNum.setValue(cNum);
+			this.Touch.cNum.cNum.setValue(cNum);
+	
+		}
+		if ((!isMenu) && (!isEntering)) {
+			var id = "Digit" + posY + posX;
+	
+			if (this[id].v > 1 ) {
+				showTime();
+				this[id].u = key;
+				checkDone();
+	
+			}
+	
+		}
+	
+	};
+	
+	var doSudoku = function (strTemplate) {
+		for (var i = 0; i < 9; i++)
+		for (var j = 0; j < 9; j++) {
+			var id = "Digit" + i + j;
+			var dig = strTemplate.charAt(j + 9 * i);
+	
+			if ((dig > 0) && (dig <= 9)) {
+				target[id].u = dig;
+				target[id].v = 0;		// FixDigit
+			} else {
+				target[id].u = 0;
+				target[id].v = 2;		//CustDigit
+			}
+		}
+	};
+	
+	var eraseBoard = function () {
+		lastSprite = "Digit00";
+		for (var i = 0; i < 9; i++)
+		for (var j = 0; j < 9; j++) {
+			var id = "Digit" + i + j;
+			target[id].u = 0;
+			target[id].v = 2;
+		}
+	};
+	
+	
+	var checkSudokuFiles = function (num) {
+		var res = null;
+		var sudokuPath = target.sudokuRoot + 'sudoku/' + sudokuFiles[num];
+		var i = 0;
+	
 		if (FileSystem.getFileInfo(sudokuPath)) {
 			var stream = new Stream.File(sudokuPath);
-
-			this.cNum = stream.readLine();
-			this.currentPuzzle = stream.readLine();
-			var a = stream.readLine();
-			// this.subMenuPos[0] = a*1;
-			a = stream.readLine();
-			this.subMenuPos[1] = a * 1;
-			a = stream.readLine();
-			this.subMenuPos[2] = a * 1;
-			fixStr = stream.readLine();
-			custStr = stream.readLine();
-
-			for (var i = 0; i < 9; i++)
-			for (var j = 0; j < 9; j++) {
-				var id = "fixDigit" + i + j;
-				var id1 = "custDigit" + i + j;
-				var digF = fixStr.charAt(j + 9 * i);
-				var digC = custStr.charAt(j + 9 * i);
-
-				if ((digF > 0) && (digF <= 9)) this[id].u = digF;
-				else this[id].u = 0;
-				if ((digC > 0) && (digC <= 9)) this[id1].u = digC;
-				else this[id1].u = -1;
-
+			while (stream.bytesAvailable) {
+				var s = stream.readLine();
+				if (s.length == 81) i++;
 			}
-
+			res = i;
+			if (res > 0) sudokuNumRecords[num] = i;
 			stream.close();
-
-
 		}
-	}
-	catch(e) {
-		res = false;
-	}
-	stream.close();
-
-	return res;
-}
-
-target.checkDone = function () {
-	var i = 0;
-	var j = 0;
-	var id = "";
-	var id1 = "";
-	var chF = 0;
-	var chN = 0;
-	this.bckGround.show(false);
-	this.cCon.stopAnimation("cCon");
-	this.cCon.show(false);
-
-	for (i = 0; i < 9; i++)
-	for (j = 0; j < 9; j++) {
-		id = "fixDigit" + i + j;
-		id1 = "custDigit" + i + j;
-		if ((this[id].u <= 0) && (this[id1].u <= 0)) return;
-	}
-
-	for (i = 0; i < 9; i++)
-	for (j = 0; j < 8; j++) {
-		id = "fixDigit" + i + j;
-		id1 = "custDigit" + i + j;
-		if (this[id].u <= 0) chF = this[id1].u;
-		else chF = this[id].u;
-		for (var k = j + 1; k < 9; k++) {
-			id = "fixDigit" + i + k;
-			id1 = "custDigit" + i + k;
-			if (this[id].u <= 0) chN = this[id1].u;
-			else chN = this[id].u;
-			if (chF == chN) return;
+		stream.close();
+	
+		return res;
+	};
+	
+	
+	var getSudokuString = function (nStr, num) {
+		var res = '';
+		var sudokuPath = target.sudokuRoot + 'sudoku/' + sudokuFiles[num];
+	
+		var i = 0;
+	
+		try {
+			var stream = new Stream.File(sudokuPath);
+			while (stream.bytesAvailable) {
+				var s = stream.readLine();
+				if (s.length == 81) i++;
+				if (i == (nStr + 1)) {
+					res = s;
+					break
+				};
+			}
+	
 		}
-	}
-
-
-	for (j = 0; j < 9; j++)
-	for (i = 0; i < 8; i++) {
-		id = "fixDigit" + i + j;
-		id1 = "custDigit" + i + j;
-		if (this[id].u <= 0) chF = this[id1].u;
-		else chF = this[id].u;
-		for (var k = i + 1; k < 9; k++) {
-			id = "fixDigit" + k + j;
-			id1 = "custDigit" + k + j;
-			if (this[id].u <= 0) chN = this[id1].u;
-			else chN = this[id].u;
-			if (chF == chN) return;
+		catch(e) {
+			res = '';
 		}
-	}
-
-
-
-	this.bckGround.show(true);
-	this.cCon.show(true);
-	this.cCon.startAnimation("cCon");
-
-	//this.numRecords.setValue("done");
-}
+		stream.close();
+	
+		return res;
+	};
+	
+	var saveGame = function () {
+	
+		var res = true;
+		var sudokuPath = target.sudokuRoot + 'game';
+		var fixStr = "";
+		var custStr = "";
+	
+		for (var i = 0; i < 9; i++)
+		for (var j = 0; j < 9; j++) {
+			var id = "Digit" + i + j;
+			if ((target[id].u > 0) && (target[id].v <= 1)) fixStr = fixStr + target[id].u;
+			else fixStr = fixStr + ".";
+			if ((target[id].u > 0) && (target[id].v >= 2)) custStr = custStr + target[id].u;
+			else custStr = custStr + ".";
+		}
+	
+		try {
+			if (FileSystem.getFileInfo(sudokuPath)) FileSystem.deleteFile(sudokuPath);
+			var stream = new Stream.File(sudokuPath, 1);
+			stream.writeLine(cNum);
+			stream.writeLine(currentPuzzle);
+			stream.writeLine(subMenuPos[0]);
+			stream.writeLine(subMenuPos[1]);
+			stream.writeLine(subMenuPos[2]);
+			stream.writeLine(fixStr);
+			stream.writeLine(custStr);
+			stream.close();
+		}
+		catch(e) {
+			res = false;
+		}
+		stream.close();
+	
+		return res;
+	};
+	
+	
+	var loadGame = function () {
+		var res = true;
+		var sudokuPath = target.sudokuRoot + 'game';
+		var fixStr = "";
+		var custStr = "";
+	
+		try {
+			if (FileSystem.getFileInfo(sudokuPath)) {
+				var stream = new Stream.File(sudokuPath);
+	
+				cNum = stream.readLine();
+				currentPuzzle = parseInt(stream.readLine());
+				var a = stream.readLine();
+				a = stream.readLine();
+				subMenuPos[1] = a * 1;
+				a = stream.readLine();
+				subMenuPos[2] = a * 1;
+				fixStr = stream.readLine();
+				custStr = stream.readLine();
+	
+				for (var i = 0; i < 9; i++)
+				for (var j = 0; j < 9; j++) {
+					var id = "Digit" + i + j;
+					var digF = fixStr.charAt(j + 9 * i);
+					var digC = custStr.charAt(j + 9 * i);
+	
+					if ((digF > 0) && (digF <= 9)) { target[id].u = digF; target[id].v = 0;}
+					if ((digC > 0) && (digC <= 9)) { target[id].u = digC; target[id].v = 2;}
+				}
+				stream.close();
+			}
+		}
+		catch(e) {
+			res = false;
+		}
+		stream.close();
+	
+		return res;
+	};
+	
+	var checkDone = function () {
+		var i = 0;
+		var j = 0;
+		var id = "";
+		var chF = 0;
+		var chN = 0;
+		target.bckGround.show(false);
+		target.cCon.stopAnimation("cCon");
+		target.cCon.show(false);
+	
+		for (i = 0; i < 9; i++)
+		for (j = 0; j < 9; j++) {
+			id = "Digit" + i + j;
+			if ((target[id].u <= 0) ) return;
+		}
+	
+		for (i = 0; i < 9; i++)
+		for (j = 0; j < 8; j++) {
+			id = "Digit" + i + j;
+			chF = target[id].u;
+			for (var k = j + 1; k < 9; k++) {
+				id = "Digit" + i + k;
+				if (target[id].v > 1) chN = target[id].u; else chN = -1;
+				if (chF == chN) return;
+			}
+		}
+	
+		for (j = 0; j < 9; j++)
+		for (i = 0; i < 8; i++) {
+			id = "Digit" + i + j;
+			chF = target[id].u;
+			for (var k = i + 1; k < 9; k++) {
+				id = "Digit" + k + j;
+				if (target[id].v > 1) chN = target[id].u; else chN = -1;
+				if (chF == chN) return;
+			}
+		}
+	
+		if (hasNumericButtons)
+			target.bckGround.show(true);
+		target.cCon.show(true);
+		target.cCon.startAnimation("cCon");
+	
+	};
+};
+tmp();
+tmp = undefined;

@@ -149,7 +149,7 @@ tmp = function() {
 			try {
 				// Hook comment field
 				kbook.commentField.format = function (item, name) {
-					if (item && item.hasOwnProperty("_mycomment")) {
+					if (item && '_mycomment' in item) {
 						if ((typeof item._mycomment) === "function") {
 							try {
 								return item._mycomment();
@@ -159,7 +159,7 @@ tmp = function() {
 						} else {
 							return item._mycomment;
 						}
-					} else if (item && item.hasOwnProperty("comment")) {
+					} else if (item && 'comment' in item) {
 						return item.comment;
 					}
 				};

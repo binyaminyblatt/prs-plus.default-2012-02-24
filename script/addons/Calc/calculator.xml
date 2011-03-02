@@ -1,9 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!-- Calculator  |  PRS-505 version  |  by Mark Nord
 	 History: 
 	   2010-06-05 Mark Nord - initial release - public beta 
 	   2010-07-19 Mark Nord - topbar icon 
-	   2010-08-17 Mark Nord - buttons clickable-->
+	   2010-08-17 Mark Nord - buttons clickable
+	   2010-12-05 Mark Nord - appTitle appIcon configurable form starter, 
+	   						  button->index calculation device-independent
+	   						  gridCursor only shown on PRS-300/505
+	   -->
 
 <document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
 <assets>
@@ -38,30 +42,7 @@
 	<cutout id="panel-rb" x="685" y="425" width="9" height="9"/>
 </texture>
 
-<texture href="skins/simAssets.png">
-			<cutout id="null" x="0" y="0" width="0" height="0"/>
-	
-			<cutout id="default-button-l" x="0" y="244" width="19" height="40" lines="60"/>
-			<cutout id="default-button-c" x="20" y="244" width="20" height="40" lines="60"/>
-			<cutout id="default-button-r" x="40" y="244" width="19" height="40" lines="60"/>
 
-			<cutout id="dialog-lt" x="180" y="180" width="10" height="10"/>
-			<cutout id="dialog-ct" x="190" y="180" width="40" height="5"/>
-			<cutout id="dialog-rt" x="230" y="180" width="10" height="10"/>
-			<cutout id="dialog-lm" x="180" y="190" width="5" height="40"/>
-			<cutout id="dialog-rm" x="235" y="190" width="5" height="40"/>
-			<cutout id="dialog-lb" x="180" y="230" width="10" height="10"/>
-			<cutout id="dialog-cb" x="190" y="235" width="40" height="5"/>
-			<cutout id="dialog-rb" x="230" y="230" width="10" height="10"/>
-			
-			<cutout id="titleBarLine" x="315" y="7" width="30" height="2"/>
-	</texture>	
-	<texture href="skins/simBackground.jpg">
-			<cutout id="background-f"/>
-			<cutout id="leftShadow-f"/>
-			<cutout id="rightShadow-f"/>
-	</texture>			
-			
 	<style font="Swis721 BT">
 	<style id="digits" size="42" style="bold" color="#000000"/>
 	<style id="memory" size="22" style="bold" color="#000000"/>
@@ -80,19 +61,7 @@
 			<style id="control-p"/>
 			<style id="control-s"/>
 		</style>
-	<style id="dialog" background="#80000000"/>		
 
-		<skin id="simpleText"
-				cutouts="null,null,null,null,null,null,null,null,null" 
-				styles="label-l,label-l,label-l,label-l"/>
-	
-	<skin id="panel-titleBarLine" 
-				cutouts="null,titleBarLine,null,null,null,null,null,null,null"/>
-	<skin id="background" 
-				cutouts="background-f"/>			
-	<skin id="dialog" 
-				cutouts="dialog-lt,dialog-ct,dialog-rt,dialog-rm,dialog-rb,dialog-cb,dialog-lb,dialog-lm"
-				styles="dialog"/>						
 	<skin id="memory" 
 		styles="memory"/>
 	<skin id="digits" 
@@ -109,9 +78,6 @@
 	<skin id="button" 
 			cutouts="button-l,button-c,button-r"
 			styles="button-d,button-e,button-p,button-s"/>	
-	<skin id="default-button" 
-				cutouts="default-button-l,default-button-c,default-button-r"
-				styles="button-d,button-e,button-p,button-s"/>					
 	<skin id="calcSkin" 
 		cutouts="calcHeader-l,calcHeader-c,calcHeader-r,calcInfo-l,calcInfo-c,calcInfo-r,calcStatus-l,calcStatus-c,calcStatus-r"/>
 		
@@ -193,12 +159,9 @@
 
 <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
 	<panel skin="calcSkin" left="0" right="0" top="0" bottom="0"/> 
-    <sprite skin="kbookMenuIcon" left="0" width="70" top="0" height="70" u="39" v="1" active="false" canFocus="false"/>   
-    <label skin="title" left="70" right="0" top="0" height="70" align="left" text="Calculator"/>
     <group id="AUTORUN" width="600" top="70" bottom="30">
 		 <code>
             <function id="doDigit" params="part">                           
-               // this.bubble("tracelog","doDigit");
 	           this.digitF(part.key)		 
             </function>          
 
@@ -210,31 +173,14 @@
               this.exitApp();
             </function>
 
-            <function id="doOption"> // emergency exit for PRS-600
+            <function id="doRoot"> // emergency exit for PRS-600
               this.exitApp();
             </function>
 
             <function id="doCenter">
              this.doCenterF();
             </function>
-
-            <function id="doHoldMark">
-             //this.doCenterF();
-             this.doMenuF();
-            </function>
-                         
-            <function id="doMark">
-             //this.doCenterF();
-             //this.doMenuF();
-             
-            try {
-	             this.ABOUT_DIALOG.open()
-	            }
-        	catch(e)
-	        {
-    	    }         
-            </function>
-
+                       
             <function id="doLeft">
          	   this.moveCursor("left");
             </function>
@@ -260,7 +206,8 @@
             </function>
 
         </code>
-
+    <sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1" active="false" canFocus="false"/>   
+    <label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="Calculator"/>
 	<panel skin="panel" left="38" right="38" top="55" height="42"/>
  	<label id="CalculatorLabel" skin="digits" align="right" visible="true" left="40" right="40" top="55" height="40"></label>
 
@@ -357,34 +304,10 @@
 	<button id="BUTTON_E" 		active="false" text="E"   left="460" width="57" bottom="20" height="50" do="digitF"/>		
     <button id="BUTTON_F" 		active="false" text="F"   left="520" width="57" bottom="20" height="50" do="digitF"/>		
    	
-	<sprite skin="gridCursor" id="gridCursor"  left="522" width="90" top="605" height="100" u="0" active="false" canFocus="true"/>
+	<sprite skin="gridCursor" id="gridCursor"  left="522" width="90" top="605" height="100" u="0" active="false" canFocus="true" visible="false"/>
 
 	<label id="clock1" skin="clock" width="100" right="4" height="30" bottom="-30" align="right" text=""/>
-
-    <dialog id="ABOUT_DIALOG"  width="550" height="250" > // bottom="0">
-		<code>
-			<function id="doCenter">
-             this.doOK();
-            </function>
-			<function id="doOK">
-				this.show(false)
-			</function>
-			<function id="open">
-				this.show(true)
-			</function>
-		</code>
-		<background skin="background" left="0" right="0" top="0" bottom="0"/>
-		<label skin="simpleText" text="About PRS-505 Calculator" left="11" right="11" top="1" height="21"/>
-		<panel skin="panel-titleBarLine" left="0" right="0" top="22" height="2"/> 
-		<label skin="simpleText" active="false" text="Calculator for PRS-505" align="center" left="28" right="28" top="40" height="28"/>
-		<!--label skin="simpleText" active="false" text="FSK Test-Environment for Autorun Applications under MS-Windows" align="center" left="28" right="28" top="80" height="28"/>
-		<label skin="simpleText" active="false" text="derived from eBookUpdaterMain.xml" align="center" left="28" right="28" top="120" height="28"/-->
-		<label skin="simpleText" active="false" text="2010 by Mark Nord" left="28" right="28" top="140" align="center" height="28"/>
-		<!--label skin="simpleText" active="false" text="using work from kartu &amp; m-land" left="28" align="center" right="28" top="160" height="28"/-->
-		<default-button id="OK" text="Ok" width="130" right="17" bottom="10" do="doOK"/>
-	</dialog>	
-    
-    </group>
+   </group>
 </group>
 
 

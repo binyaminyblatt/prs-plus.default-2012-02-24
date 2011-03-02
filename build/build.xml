@@ -1,341 +1,322 @@
-<project default="build">
-<loadproperties srcfile="prsp.properties"/>
-<property name="TMP" value="tmp"/>	
-<property name="FW" value="firmware"/>
-<property name="SC" value="script"/>
-<property name="INSTALLER" value="installer" />
-<property name="DIST" value="dist"/>
-<property name="PRSPInst" value="${DIST}/PRSPInstaller/Sony Reader/software"/>
-<property name="FW_DIR" value="${PRSPInst}/${FW}" />
-<property name="SC_DIR" value="${PRSPInst}/${SC}" />
-<property name="TOOLS_DIR" value="${PRSPInst}/tools" />
-<property name="FW_VER_FILE" value="${TMP}/${FW}/opt/prspfw.ver" />
-<property name="PRSP_DIR_FLASHABLE" value="${TMP}/${FW}/${MODEL}/opt/sony/ebook/application/resources/prsp" />
-<property name="PRSP_DIR_MOUNTABLE" value="${TMP}/${FW}/${MODEL}/resources/prsp" />
-	
-<!-- =================== Task Defs ================================= -->
-<!-- Tasks for compressing the script. Need two, since jsmin doesn't do advanced compression, but yui fails on some scripts. --> 
-<taskdef name="yui-compressor" classname="net.noha.tools.ant.yuicompressor.tasks.YuiCompressorTask">
-	<classpath>
-		<pathelement location="tools/yuicompressor-2.4.2.jar" />
-		<pathelement location="tools/yui-compressor-ant-task-0.5.jar" />
-	</classpath>
-</taskdef>
-<taskdef name="jsmin" classname="net.matthaynes.jsmin.JSMin_Task" classpath="tools/jsmin.0.2.4.jar"/>
-<!-- Task for creating iso files -->
-<taskdef name="iso"
-	classname="de.tu_darmstadt.informatik.rbg.hatlak.iso9660.ISOTask"
-	classpath="tools/iso/sabre.jar:tools/iso/iso9660.jar"
-/>	
-	
-<!-- ======================== Settings ================================= -->	
-<!-- Distinguish between flashable and mountable (bunch of files mounted on the fly) builds -->
-<condition property="build.MOUNTABLE">
-	<or>
-		<equals arg1="${MODEL}" arg2="600"/>
-		<equals arg1="${MODEL}" arg2="350"/>
-		<equals arg1="${MODEL}" arg2="650"/>
-		<equals arg1="${MODEL}" arg2="950"/>
-	</or>
-</condition>
-<condition property="build.FLASHABLE">
-	<or>
-		<equals arg1="${MODEL}" arg2="300"/>
-		<equals arg1="${MODEL}" arg2="505"/>
-	</or>
-</condition>
+<!-- 
+Build script for PRS+ project
 
-<!-- Files to copy for the particular reader model (allows to disable certain addons) -->
-<fileset id="include_common" dir="../">
-	<include name="${SC}/*"/>
-	<include name="${SC}/core/*"/>
-	<include name="${SC}/core/lang/*"/>
-	<include name="${SC}/core/compat/${MODEL}*"/>	
-	<include name="${FW}/${MODEL}/**/*"/>
-	<include name="${INSTALLER}/**/*"/>	
-</fileset>
-<fileset id="include_300" dir="../">
-	<include name="${SC}/addons/**/*"/>
-	<exclude name="${SC}/addons/ScrollbarAlphabet.js"/>
-</fileset>
-<fileset id="include_505" dir="../">
-	<include name="${SC}/addons/**/*"/>
-	<exclude name="${SC}/addons/ScrollbarAlphabet.js"/>
-</fileset>
-<fileset id="include_600" dir="../">
-	<include name="${SC}/addons/Calc/**/*"/>
-	<include name="${SC}/addons/Calc.js"/>
-	<include name="${SC}/addons/BookHistory.js"/>
-	<include name="${SC}/addons/BrowseFolders.js"/>
-	<include name="${SC}/addons/EpubUserStyle.js"/>
-	<include name="${SC}/addons/Screenshot.js"/>
-	<include name="${SC}/addons/StatusBar.js"/>
-	<include name="${SC}/addons/StatusBar_Clock.js"/>
-	<include name="${SC}/addons/StatusBar_PageIndex.js"/>		
-	<include name="${SC}/addons/TextEncoding.js"/>		
-	<include name="${SC}/addons/StandardActions.js"/>		
-	<include name="${SC}/addons/ScrollbarAlphabet.js"/>		
-</fileset>
-<patternset id="include_x50">
-	<include name="${SC}/addons/BookHistory.js"/>
-	<include name="${SC}/addons/BrowseFolders.js"/>
-	<include name="${SC}/addons/EpubUserStyle.js"/>
-	<include name="${SC}/addons/Screenshot.js"/>
-	<include name="${SC}/addons/StatusBar.js"/>
-	<include name="${SC}/addons/StatusBar_Clock.js"/>
-	<include name="${SC}/addons/StatusBar_PageIndex.js"/>		
-	<include name="${SC}/addons/StandardActions.js"/>		
-	<include name="${SC}/addons/ScrollbarAlphabet.js"/>		
-	<include name="${SC}/core/compat/common_x50.js"/>	
-</patternset>
-<fileset id="include_350" dir="../">
-	<patternset refid="include_x50"/>
-</fileset>
-<fileset id="include_650" dir="../">
-	<patternset refid="include_x50"/>
-</fileset>
-<fileset id="include_950" dir="../">
-	<patternset refid="include_x50"/>
-</fileset>
+History:
+2011-03-01 kartu - Rewritten from scratch
+-->
+<project default="buildAll">
+	<!--======================================================================== 
+		Task definitions
+	========================================================================-->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="tools/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+	<taskdef name="yui-compressor" classname="net.noha.tools.ant.yuicompressor.tasks.YuiCompressorTask">
+		<classpath>
+			<pathelement location="tools/yuicompressor-2.4.2.jar" />
+			<pathelement location="tools/yui-compressor-ant-task-0.5.1.jar" />
+		</classpath>
+	</taskdef>
+	<taskdef name="jsmin" classname="net.matthaynes.jsmin.JSMin_Task" classpath="tools/jsmin.0.2.4.jar" />
 	
-<!-- ======================== MOUNTABLE ================================= -->
-<!-- Creates MOUNTABLE for "on the fly mountable" installs -->
-<target name="create-firmware.mountable" if="build.MOUNTABLE">
-	<!-- Copy script stuff to firmware folder -->
-	<copy file="${TMP}/tmp-core-min.js" tofile="${PRSP_DIR_MOUNTABLE}/core.js" />
-	<copy file="${TMP}/tmp-addons-min.js" tofile="${PRSP_DIR_MOUNTABLE}/addons.js" />
-	<copy file="${TMP}/${SC}/prsp-min.js" tofile="${PRSP_DIR_MOUNTABLE}/prsp.js" />
-	<echo file="${PRSP_DIR_MOUNTABLE}/prspfw.ver">${PRSP_VER}</echo>	
-	<copy todir="${PRSP_DIR_MOUNTABLE}">
-		<fileset dir="${TMP}">
-			<include name="lang/*.js" />
-			<include name="compat/*.js" />
-		</fileset>
-	</copy>
-	<copy todir="${PRSP_DIR_MOUNTABLE}/addons">
-		<fileset dir="${TMP}/${SC}/addons">
-			<exclude name="*.js" />
-			<include name="**/*.*" />
-		</fileset>
-	</copy>
+	<!--======================================================================== 
+		Properties
+	========================================================================-->
+	<property name="CORE" value="tmp/core" />
+	<property name="ADDONS" value="tmp/addons" />
+	<property name="SRC.CORE" value="../script/core" />
+	<property name="SRC.ADDONS" value="../script/addons" />
 	
-	<!-- Firmware -->
-	<echo>Creating firmware image</echo>
-	<mkdir dir="${DIST}/PRSPInstaller/prsp"/>
-	<!-- Resources iso (haven't found a way to mount this :() -->
-	<!-- iso basedir="${TMP}/${FW}/${MODEL}/resources" casesensitive="true" destfile="${DIST}/PRSPInstaller/resources.iso"/ -->
-	<!-- Resources cramfs -->
-	<exec executable="tools/mkcramfs">
-		<arg value="-D"/>
-		<arg value="${TMP}/${FW}/${MODEL}/resources.dt"/>
-		<arg value="${TMP}/${FW}/${MODEL}/resources"/>
-		<arg value="${DIST}/PRSPInstaller/prsp/resources.img"/>
-	</exec>
+	<!--======================================================================== 
+		Constants
+	========================================================================-->
+	<property name="FLASHABLE_300" value="true" />
+	<property name="FLASHABLE_505" value="true" />
+	<patternset id="addons_300_505">
+		<include name="**/*" />
+		<exclude name="ScrollbarAlphabet.js" />
+	</patternset>
+	<patternset id="addons_600_x50">
+		<include name="**/*" />
+		<exclude name="MediaTag.js" />
+		<exclude name="MenuCaptions.js" />
+		<exclude name="DictionaryCL" />
+		<exclude name="DictionaryCL/**/*" />
+		<exclude name="DictionaryCL.js" />
+		<exclude name="TextEncoding.js" />
+		<exclude name="TextScale" />
+	</patternset>
+	<patternset id="addons_300">
+		<patternset refid="addons_300_505" />
+	</patternset>
+	<patternset id="addons_505">
+		<patternset refid="addons_300_505" />
+	</patternset>
+	<patternset id="addons_600">
+		<patternset refid="addons_600_x50" />
+	</patternset>
+	<patternset id="addons_350" >
+		<patternset refid="addons_600_x50" />
+	</patternset>
+	<patternset id="addons_650">
+		<patternset refid="addons_600_x50" />
+	</patternset>
+	<patternset id="addons_950">
+		<patternset refid="addons_600_x50" />
+	</patternset>
 	
-	<!-- Test the firmware cramfsck -v -x opt -d opt.dt %1  -->
-	<echo>Testing the image</echo>
-	<delete dir="testopt" failonerror="true"/>
-	<exec executable="tools/cramfsck">
-		<arg value="-x"/>
-		<arg value="testopt"/>
-		<arg value="${DIST}/PRSPInstaller/prsp/resources.img"/>
-	</exec>
-	<resourcecount property="NUM_ORIGINAL">
-		<fileset dir="${TMP}/${FW}/${MODEL}/resources"/>
-	</resourcecount>
-	<resourcecount property="NUM_EXTRACTED">
-		<fileset dir="testopt" />
-	</resourcecount>
-	<fail message="Number of files extracted from cramfs image doesn't equal number of the original files: ${NUM_EXTRACTED} instead of ${NUM_ORIGINAL}.">
-		<condition>
-			<not>
-				<resourcecount count="${NUM_ORIGINAL}">
-					<fileset dir="testopt" />
-				</resourcecount>
-			</not>
-		</condition>
-	</fail>
-	<delete dir="testopt" failonerror="true"/>		
+	<!--======================================================================== 
+		Tasks
+	========================================================================-->
+	<!-- Load build properties -->
+	<loadproperties srcfile="prsp.properties" />
+	<!-- Calls build for all models -->
+	<target name="buildAll" description="Builds PRS+">
+		<antcall target="clear" />
+		<antcall target="buildCore" />
+		<antcall target="buildAddons" />
+		<foreach list="${MODEL}" param="model" target="build" />
+		<foreach list="${MODEL}" param="model" target="buildInstaller" />
+	</target>
 	
-	<copy file="${TMP}/${FW}/${MODEL}/prsp.sh" todir="${DIST}/PRSPInstaller/prsp" />
-	<copy todir="${DIST}/PRSPInstaller/prsp" includeEmptyDirs="false">
-		<fileset dir="${TMP}/${FW}/${MODEL}">
-			<exclude name="*.dt" />
-			<include name="*" />
-		</fileset>
-	</copy>
-	<copy file="${TMP}/${INSTALLER}/installer.sh.${MODEL}" tofile="${DIST}/PRSPInstaller/installer.sh" />
-</target>
-
-<!-- ======================== FLASHABLE ================================= -->
-<!-- Creates firmware for FLASHABLE flashable installs --> 
-<target name="create-firmware.flashable" if="build.FLASHABLE">
-	<!-- Copy script stuff to firmware folder -->
-	<mkdir dir="${FW_DIR}" />
-	<mkdir dir="${PRSP_DIR_FLASHABLE}"/>
-	<copy file="${TMP}/tmp-core-min.js" tofile="${PRSP_DIR_FLASHABLE}/core.js" />
-	<copy file="${TMP}/tmp-addons-min.js" tofile="${PRSP_DIR_FLASHABLE}/addons.js" />
-	<copy file="${TMP}/${SC}/prsp-min.js" tofile="${PRSP_DIR_FLASHABLE}/prsp.js" />
-	<copy todir="${PRSP_DIR_FLASHABLE}">
-		<fileset dir="${TMP}">
-			<include name="lang/*.js" />
-			<include name="compat/*.js" />
-		</fileset>
-	</copy>
-	<copy todir="${PRSP_DIR_FLASHABLE}/addons">
-		<fileset dir="${TMP}/${SC}/addons">
-			<exclude name="*.js" />
-			<include name="**/*.*" />
-		</fileset>
-	</copy>		
+	<target name="clear">
+		<delete dir="tmp" />
+		<delete dir="dist" />
+	</target>
 	
-	<!-- Firmware -->
-	<echo>Creating firmware image</echo>
-	<mkdir dir="${FW_DIR}/${MODEL}" />
-	<echo file="${TMP}/${FW}/${MODEL}/opt/prspfw.ver">${PRSP_VER}</echo>
-	<echo file="${FW_DIR}/${MODEL}/prspfw.ver">${PRSP_VER}</echo>
-	
-	<copy tofile="${FW_DIR}/${MODEL}/fw.ver" file="${TMP}/${FW}/${MODEL}/opt/fw.ver"/>
-			
-	<!-- Links **must** have readonly flag, or crams fails -->
-	<attrib readonly="true" verbose="true">
-		<fileset dir="${TMP}/${FW}/${MODEL}/opt">
-			<include name="**/*.lnk" />
-		</fileset>
-	</attrib>
-	
-	<!-- Mercurial doesn't support empty directories... Not to have unused .dummy files in firmware -->
-	<delete>
-		<fileset dir="${TMP}/${FW}/${MODEL}/opt">
-			<include name="**/.dummy"/>
-		</fileset>
-	</delete>
-	
-	<exec executable="tools/mkcramfs">
-		<arg value="-D"/>
-		<arg value="${TMP}/${FW}/${MODEL}/opt.dt"/>
-		<arg value="${TMP}/${FW}/${MODEL}/opt"/>
-		<arg value="${FW_DIR}/${MODEL}/Fsk.img"/>
-	</exec>
+	<target name="buildInstaller">
+		<echo>Building installation package for model PRS-${model}</echo>
+		<propertycopy name="isFlashable" from="FLASHABLE_${model}" override="true" silent="true" />
 		
-	<!-- Test the firmware cramfsck -v -x opt -d opt.dt %1  -->
-	<echo>Testing the image</echo>
-	<delete dir="testopt" failonerror="true"/>
-	<exec executable="tools/cramfsck">
-		<arg value="-x"/>
-		<arg value="testopt"/>
-		<arg value="${FW_DIR}/${MODEL}/Fsk.img"/>
-	</exec>
-	
-	<resourcecount property="NUM_ORIGINAL">
-		<fileset dir="${TMP}/${FW}/${MODEL}/opt"/>
-	</resourcecount>
-	<resourcecount property="NUM_EXTRACTED">
-		<fileset dir="testopt" />
-	</resourcecount>
-	<fail message="Number of files extracted from cramfs image doesn't equal number of the original files: ${NUM_EXTRACTED} instead of ${NUM_ORIGINAL}.">
-		<condition>
-			<not>
-				<resourcecount count="${NUM_ORIGINAL}">
-					<fileset dir="testopt" />
-				</resourcecount>
-			</not>
-		</condition>
-	</fail>
-	<delete dir="testopt" failonerror="true"/>		
-	
-	<checksum file="${FW_DIR}/${MODEL}/Fsk.img" property="CHECKSUM"/>
-	<echo file="${FW_DIR}/${MODEL}/Fsk.img.md5">${CHECKSUM}</echo>
-	
-	<copy todir="${FW_DIR}/${MODEL}">
-		<fileset dir="${TMP}/${FW}/${MODEL}">
-			<include name="*.root"/>
-			<include name="*.md5"/>
-		</fileset>
-	</copy>
-	
-	<!-- create installer -->
-	<antcall target="installer.flashable"/>	
-</target>
+		<if>
+			<equals arg1="${isFlashable}" arg2="true" />
+			<then>
+				<var name="dist" value="dist/${model}/PRSPInstaller/Sony Reader/software"/>
+				<var name="prspDir" value="${dist}/firmware/${model}/"/>
+				<mkdir dir="${prspDir}"/>
 
-<target name="installer.flashable" if="build.FLASHABLE">
-	<mkdir dir="${PRSPInst}" />
-	<!-- Installer -->
-	<copy todir="${PRSPInst}">
-		<fileset dir="${TMP}/${INSTALLER}">
-			<exclude name=".*"/>
-			<exclude name="**/.hg/**"/>
-		</fileset>
-	</copy>
-
-	<!-- Insert version info -->	
-	<replace encoding="UTF-8" file="${PRSPInst}/autorun.xml" token="@@@" value="${PRSP_VER}" />	
-</target>
-
-<!-- ======================== Common ================================= -->
-<target name="build" description="Builds PRS+ installer">
-	<!-- Prepare -->
-	<delete dir="${TMP}" failonerror="true"/>
-	<mkdir dir="${TMP}"/>	
-	<copy todir="${TMP}">
-		<fileset refid="include_common"/>
-		<fileset refid="include_${MODEL}"/>
-	</copy>
-	<delete dir="${DIST}" failonerror="true"/>
-	<mkdir dir="${DIST}"/>
+				<echo>Copying installer (flashable)</echo>
+				<copy todir="${dist}">
+					<fileset dir="../installer">
+						<exclude name="installer.sh.*" />
+					</fileset>
+				</copy>
+				<!-- Insert version info -->	
+				<replace encoding="UTF-8" file="${dist}/autorun.xml" token="@@@" value="${PRSP_VER}" />	
+			</then>
+			<else>
+				<var name="dist" value="dist/${model}/PRSPInstaller"/>
+				<var name="prspDir" value="${dist}/prsp"/>
+				<mkdir dir="${prspDir}"/>
+				
+				<echo>Copying installer (mountable)</echo>
+				<copy file="../installer/installer.sh.${model}" tofile="${dist}/installer.sh" />
+			</else>
+		</if>
+		
+		<echo>Copying PRS+ files</echo>
+		<copy todir="${prspDir}" includeemptydirs="false">
+			<fileset dir="tmp/${model}">
+				<include name="*"/>
+				<exclude name="*.dt"/>
+			</fileset>
+		</copy>
+		
+		<!-- Release archive -->
+		<echo>Compressing release archive for PRS-${model}</echo>
+		<zip destfile="dist/PRSP_${model}_${PRSP_VER}_Installer.zip">
+			<fileset dir="dist/${model}" />
+		</zip>
+	</target>
 	
-	<!-- Script -->
-	<concat encoding="UTF-8" destfile="${TMP}/tmp-core.js">
-		<fileset dir="${TMP}/${SC}">
-			<include name="**/core/*.js"/>
-		</fileset>
-	</concat>
-	<concat encoding="UTF-8" destfile="${TMP}/tmp-addons.js">
-		<fileset dir="${TMP}/${SC}">
-			<include name="**/addons/*.js"/>
-			<exclude name="**/sandbox_*.js"/>
-		</fileset>
-	</concat>
+	<!-- Builds core*.js files. These are the same for all -->
+	<target name="buildCore">
+		<mkdir dir="${CORE}/lang" />
+		<mkdir dir="${CORE}/compat" />
+		<echo>Combine core files</echo>
+		<concat encoding="UTF-8" destfile="${CORE}/core.js">
+			<fileset dir="${SRC.CORE}">
+				<include name="*.js" />
+			</fileset>
+		</concat>
+		
+		<echo>Copying compat/bootstrap &amp; prsp.js</echo>
+		<copy todir="${CORE}">
+			<fileset dir="${SRC.CORE}">
+				<include name="compat/*" />
+				<exclude name="compat/*_config*" />
+			</fileset>
+			<fileset file="../script/prsp.js"/>
+		</copy>
+		
+		<echo>Optimizing combined core &amp; compat with yui</echo>
+		<optimize.yui folder="${CORE}"/>
+		
+		<echo>Optimizing lang with jsmin (yui fails to compile)</echo>
+		<jsmin force="true" destdir="${CORE}/compat">
+			<fileset dir="${SRC.CORE}">
+				<include name="compat/*_config*" />
+			</fileset>
+		</jsmin>
+		<jsmin force="true" destdir="${CORE}/lang">
+			<fileset dir="${SRC.CORE}">
+				<include name="lang/*" />
+			</fileset>
+		</jsmin>
+	</target>
 	
-	<!-- Minify Javascript -->
-	<yui-compressor munge="true" warn="false" charset="UTF-8" fromdir="${TMP}" todir="${TMP}">
-		<include name="tmp-core.js"/>
-	</yui-compressor>
-	<yui-compressor munge="true" warn="false" charset="UTF-8" fromdir="${TMP}" todir="${TMP}">
-		<include name="tmp-addons.js"/>
-	</yui-compressor>
-	<yui-compressor munge="true" warn="false" charset="UTF-8" fromdir="${TMP}" todir="${TMP}">
-		<include name="${SC}/prsp.js"/>
-	</yui-compressor>
-
-	<!-- YUI compressor is superior to jsmin, but it fails to minify this... (anonymous block with return statement) -->
-	<jsmin force="true" destdir="${TMP}/lang">
-		<fileset dir="${TMP}/${SC}/core/lang">
-			<include name="**/*.js"/>
-			<exclude name="**/Sample.js"/>
-		</fileset>
-	</jsmin>	
-	<jsmin force="true" destdir="${TMP}/compat">
-		<fileset dir="${TMP}/${SC}/core/compat">
-			<include name="**/${MODEL}*.js"/>
-		</fileset>
-	</jsmin>	
-
-	<!-- Firmware -->
-	<antcall target="create-firmware.flashable"/>
-	<antcall target="create-firmware.mountable"/>
+	<!-- Optimizes addon resources -->
+	<target name="buildAddons">
+		<mkdir dir="${ADDONS}" />
+		<echo>Copying common addon files</echo>
+		<copy todir="${ADDONS}">
+			<fileset dir="${SRC.ADDONS}">
+				<exclude name="*.js"/>
+			</fileset>
+		</copy>
+		<echo>Optimizing common addon files with yui</echo>
+		<optimize.yui folder="${ADDONS}"/>
+	</target>
 	
-	<attrib archive="false">
-		<fileset dir="${DIST}"/>
-	</attrib>
+	<!-- Builds release package for particular model -->
+	<target name="build">
+		<echo>Building package for PRS-${model}</echo>
+		<mkdir dir="tmp/${model}" />
+		
+		<echo>Copying firmware files for ${model}</echo>
+		<copy todir="tmp/${model}">
+			<fileset dir="../firmware/${model}" />
+		</copy>
+		<propertycopy name="isFlashable" from="FLASHABLE_${model}" override="true" silent="true" />
+		<if>
+			<equals arg1="${isFlashable}" arg2="true" />
+			<then>
+				<var name="prsp.dir" value="tmp/${model}/Fsk/sony/ebook/application/resources/prsp" />
+			</then>
+			<else>
+				<var name="prsp.dir" value="tmp/${model}/resources/prsp" />
+			</else>
+		</if>
+		
+		<echo>Combining model specific addon files</echo>
+		<concat destfile="${prsp.dir}/addons.js" encoding="UTF-8">
+			<intersect>
+				<fileset dir="${SRC.ADDONS}">
+					<patternset refid="addons_${model}" />
+				</fileset>
+				<fileset dir="${SRC.ADDONS}">
+					<include name="*.js"/>
+				</fileset>
+			</intersect>
+		</concat>
+		
+		<echo>Optimizing addon files</echo>
+		<optimize.yui folder="${prsp.dir}"/>
+		
+		<echo>Copying model specific addon resources</echo>
+		<copy todir="${prsp.dir}/addons">
+			<fileset dir="${ADDONS}" >
+			 	<patternset refid="addons_${model}" />
+			</fileset>
+		</copy>
+		
+		<echo>Copying core files</echo>
+		<copy todir="${prsp.dir}">
+			<fileset dir="${CORE}">
+				<include name="*" />
+				<include name="compat/*${model}*" />
+				<include name="lang/*" />
+			</fileset>
+		</copy>
+		
+		<echo>Creating version info file</echo>
+		<echo file="${prsp.dir}/prspfw.ver">${PRSP_VER}</echo>	
+		
+		<echo>Packaging</echo>
+		<foreach param="dir" target="make.cramfs">
+			<path>
+				<dirset dir="../firmware/${model}" includes="*" />
+			</path>
+		</foreach>
+	</target>
 	
-	<!-- Release archive -->
-	<echo>Compressing release archive</echo>
-	<zip destfile="${DIST}/PRSP_${MODEL}_${PRSP_VER}_Installer.zip">
-		<fileset dir="${DIST}" />
-	</zip>
+	<!--
+		Creates and tests cramfs image from ${dir} and ${dir}.dt
+	-->
+	<target name="make.cramfs">
+		<var name="dt" unset="true" />
+		<basename file="${dir}" property="dt" />
+		<echo>Building cramfs image from dir ${dt}</echo>
+		<!-- Links **must** have readonly flag, or crams fails -->
+		<attrib readonly="true" verbose="true">
+			<fileset dir="tmp/${model}">
+				<include name="**/*.lnk" />
+			</fileset>
+		</attrib>
+		<var name="img" value="tmp/${model}/${dt}.img"/>
+		<exec executable="tools/mkcramfs" failonerror="true">
+			<arg value="-D" />
+			<arg value="tmp/${model}/${dt}.dt" />
+			<arg value="tmp/${model}/${dt}" />
+			<arg value="${img}" />
+		</exec>
+		<test.cramfs file="${img}" folder="tmp/${model}/${dt}" />
+		
+		<echo>Generating checksum</echo>
+		<var name="CHECKSUM" unset="true" />
+		<checksum file="${img}" property="CHECKSUM" /> 
+		<echo file="${img}.md5">${CHECKSUM}</echo>
+	</target>
 	
-	<!-- delete dir="${TMP}" failonerror="false" / -->
-</target>
-
+	<!-- 
+		Tests whether cramfs content matches dir content
+	-->
+	<macrodef name="test.cramfs">
+		<attribute name="file" />
+		<attribute name="folder" />
+		<sequential>
+			<echo>Testing cramfs image @{file}</echo>
+			<delete dir="tmp/test.cramfs" failonerror="true" />
+			<exec executable="tools/cramfsck">
+				<arg value="-x" />
+				<arg value="tmp/test.cramfs" />
+				<arg value="@{file}" />
+			</exec>
+			<var name="diff" unset="true" />
+			<fileset dir="tmp/test.cramfs" id="diff">
+				<different targetdir="@{folder}" ignoreFileTimes="true" />
+				<exclude name="**/*.lnk" />
+			</fileset>
+			<foreach param="error" target="test.cramfs.error">
+				<path>
+					<fileset refid="diff" />
+				</path>
+			</foreach>
+			<delete dir="tmp/test.cramfs" failonerror="true" />
+			<echo>OK</echo>
+		</sequential>
+	</macrodef>
+	<target name="test.cramfs.error">
+		<fail message="Folder comparison has failed ${error}" />
+	</target>
+	
+	<!-- 
+		Optimizes javascript in given folder
+	-->
+	<macrodef name="optimize.yui">
+		<attribute name="folder" />
+		<sequential>
+			<echo>Optimizing files in folder @{folder} with yui</echo>
+			<yui-compressor munge="true" warn="false" charset="UTF-8" fromdir="@{folder}" todir="@{folder}" />
+			<echo>Removing -min postfix from optimized core files</echo>
+			<move todir="@{folder}" includeemptydirs="false">
+				<fileset dir="@{folder}">
+					<include name="**/*-min.js" />
+				</fileset>
+				<mapper type="glob" from="*-min.js" to="*.js" />
+			</move>
+		</sequential>
+	</macrodef>
 </project>
