@@ -104,7 +104,9 @@ History:
 					</fileset>
 				</copy>
 				<!-- Insert version info -->	
-				<replace encoding="UTF-8" file="${dist}/autorun.xml" token="@@@" value="${PRSP_VER}" />	
+				<replace encoding="UTF-8" file="${dist}/autorun.xml" token="@@@" value="${PRSP_VER}" />
+				<replace encoding="UTF-8" file="${dist}/installer.js" token="@@@" value="${PRSP_VER}" />
+				<copy file="tmp/${model}/Fsk/fw.ver" todir="${dist}/firmware/${model}" />
 			</then>
 			<else>
 				<var name="dist" value="dist/${model}/PRSPInstaller"/>
@@ -316,6 +318,12 @@ History:
 					<include name="**/*-min.js" />
 				</fileset>
 				<mapper type="glob" from="*-min.js" to="*.js" />
+			</move>
+			<move todir="@{folder}" includeemptydirs="false">
+				<fileset dir="@{folder}">
+					<include name="**/*-min.css" />
+				</fileset>
+				<mapper type="glob" from="*-min.css" to="*.css" />
 			</move>
 		</sequential>
 	</macrodef>

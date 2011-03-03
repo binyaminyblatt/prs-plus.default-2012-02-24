@@ -17,6 +17,9 @@
 //				Added "shortTitle" field support (text to fit on small buttons of touch readers etc)
 //	2011-01-31 kartu - Added multiPage field (x50) to enable scrollbars
 //	2011-02-06 kartu - Added Core.ui.updateScreen
+//	2011-03-03 kartu - Added "duration" option to showMsg
+//
+
 try {
 	var doCreateContainerNode = function(arg, prototype) {
 		var obj = xs.newInstanceOf(prototype);
@@ -33,7 +36,7 @@ try {
 				obj.name = arg.title;
 			}
 			if (arg.hasOwnProperty("comment") && (typeof arg.comment !== "undefined")) {
-				if (typeof arg.comment == "function") {
+				if (typeof arg.comment === "function") {
 					obj._mycomment = arg.comment;
 				} else {
 					obj.comment = arg.comment;
@@ -41,7 +44,7 @@ try {
 			} else {
 				obj._mycomment = "";
 			}
-			if (typeof arg.icon == "number") {
+			if (typeof arg.icon === "number") {
 				obj.kind = arg.icon;
 			} else {
 				obj.kind = Core.config.compat.NodeKinds.getIcon(arg.icon);
@@ -78,18 +81,23 @@ try {
 			}
 		}
 	};
+
 	// Forces screen update
 	//
 	Core.ui.updateScreen = function() {
 		FskUI.Window.update.call(kbook.model.container.getWindow());
-	}
+	};
 
-	// Shows "msgs" for a second
+	// Shows "msgs" for given amount of time
+	// Note: duration is rather unreliable, and message might hang on the screen until user presses button / touches screen
+	//
 	// Arguments:
 	//	msgs - array of strings
-	Core.ui.showMsg = function (msgs) {
+	//	duration - for how long to show in milliseconds, 0 or negative number means don't wipe. 1000 is the default value.
+	//
+	Core.ui.showMsg = function (msgs, duration) {
 		var cnt, win, gap, spc, ms_w, ms_h, i, b, w, h, x, y, x1, y1;
-		if (typeof msgs == "string") {
+		if (typeof msgs === "string") {
 			msgs = [msgs];
 		}
 		cnt = msgs.length;
@@ -130,15 +138,21 @@ try {
 		}
 		win.endDrawing();
 		// Pause
-		if (typeof this.showMsgTimer == "undefined") {
-			this.showMsgTimer = new Timer();
-			this.showMsgTimer.target = this;
+		if (duration === undefined) {
+			duration = 1000;
 		}
-		this.showMsgTimer.onCallback = function (d) {
-			win.invalidate(x, y, w, h);
-		};
-		this.showMsgTimer.schedule(1000);
+		if (duration > 0) {
+			if (this.showMsgTimer === undefined) {
+				this.showMsgTimer = new Timer();
+				this.showMsgTimer.target = this;
+			}
+			this.showMsgTimer.onCallback = function (d) {
+				win.invalidate(x, y, w, h);
+			};
+			this.showMsgTimer.schedule(duration);
+		}
 	};
+	
 	/**
 	* Blinks with Sony's standard "error" icon
 	*/
@@ -158,14 +172,15 @@ try {
 			return kbook.model.currentNode;
 		}
 	};
+
 	// Little hack to allow easy changing of node title, comment etc
 	// FIXME try to get rid of this
 	var oldGetValue = Fskin.tableData.getValue;
 	Fskin.tableData.getValue = function (node, field) {
 		try {
 			var myVal = node["_my" + field];
-			if (typeof myVal != "undefined") {
-				if (typeof myVal == "function") {
+			if (myVal !== undefined) {
+				if (typeof myVal === "function") {
 					return myVal.call(node);
 				}
 				return myVal;

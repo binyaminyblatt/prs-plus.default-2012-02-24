@@ -339,10 +339,16 @@ var init = function() {
 		versions.ebook.model = getEBookModel();
 		versions.ebook.maxFlashSize = MAX_FLASH_SIZE[versions.ebook.model];
 		versions.ebook.firmware = target.getVariable("FIRMWARE_VERSION");
-		versions.ebook.prspFirmware = getFileContent("/opt/prspfw.ver", "n/a");
+		
+		// new location
+		versions.ebook.prspFirmware = getFileContent("/opt/sony/ebook/application/resources/prsp/prspfw.ver", "n/a");
+		if (versions.ebook.prspFirmware === "n/a") {
+			// if not in new, try old location
+			versions.ebook.prspFirmware = getFileContent("/opt/prspfw.ver", "n/a");
+		}
 		
 		versions.installer.firmware = getFileContent(FIRMWARE_PATH + versions.ebook.model + "/fw.ver", "n/a");
-		versions.installer.prspFirmware = getFileContent(FIRMWARE_PATH + versions.ebook.model + "/prspfw.ver", "n/a");
+		versions.installer.prspFirmware = "@@@"; // replaced by build script
 		
 		versions.firmwareInstallNeeded = (versions.ebook.prspFirmware !== versions.installer.prspFirmware);
 		

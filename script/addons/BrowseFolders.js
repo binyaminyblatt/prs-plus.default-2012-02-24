@@ -23,7 +23,8 @@
 //	2011-02-07 kartu - Implemented # sort by filename, showing filename as comment
 //	2011-02-09 kartu - Fixed # BrowseFolders view not updated when settings change
 //			Removed "mount" option
-
+//	2011-03-03 kartu - Added support for converters/alternative viewers
+//
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
@@ -100,7 +101,6 @@ tmp = function() {
 			if (icon === undefined) {
 				icon = "FOLDER";
 			}
-			// FIXME rename to createNode
 			var node = Core.ui.createContainerNode({
 					title: title,
 					icon: icon,
@@ -149,6 +149,8 @@ tmp = function() {
 			mime = FileSystem.getMIMEType(path);
 			if (supportedMIMEs[mime]) {
 				node = createLazyInitNode(path, title, parent);
+			} else {
+				node = Core.convert.createMediaNode(path, title, parent);
 			}
 		} else if (BrowseFolders.options.sortMode === "filenameAsComment") {
 			node._mycomment = function() {
@@ -430,7 +432,7 @@ tmp = function() {
 				if (current) {
 					current.gotoNode(browseFoldersNode, kbook.model);
 				} else {
-					log.trace("can't find current node");
+					Core.ui.doBlink();
 				}
 			}
 		}],
