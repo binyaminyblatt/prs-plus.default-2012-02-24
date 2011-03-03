@@ -9,9 +9,11 @@
 //				Added findLibrary function
 //				Fixes issue #15 (Maximum number of PRS+ indexed files limited by 1200)
 //	2010-11-11 kartu - Added isImage function
-
+//	2011-03-02 kartu - Added loadMedia, 
+//			createMediaNode assumes path is actually media object, if its type is not string
+//
 tmp = function() {
-	var findLibrary, findMedia, createMediaNode, isImage, startsWith;
+	var findLibrary, findMedia, loadMedia, createMediaNode, isImage, startsWith;
 	// Shortcut
 	startsWith = Core.text.startsWith; 
 	
@@ -50,11 +52,28 @@ tmp = function() {
 	};
 	
 	/**
+	* Loads (unscanned) media file
+	*/
+	loadMedia = function(path) {
+		var library, item;
+		library = findLibrary(path);
+		item = library.makeItemFromFile(path);
+		item.path = path.substring(library.path.length);
+		library.insertRecord(item);
+		return item;
+	};
+
+	
+	/**
 	* Creates media node (book, image, note etc) for media with a given path, returns null if media cannot be found.
 	*/
 	createMediaNode = function (path, parent) {
 		var i, n, node, media, mediaTypes, mediaTypesStr, mediaNodePrototypes;
-		media = findMedia(path);
+		if (typeof path === "string") {
+			media = findMedia(path);
+		} else {
+			media = path;
+		}
 		mediaTypes = Core.config.compat.media.types;
 		mediaTypesStr = Core.config.compat.media.kinds;
 		mediaNodePrototypes = Core.config.compat.media.prototypes;
@@ -87,6 +106,11 @@ tmp = function() {
 		* @returns null, if media cannot be found
 		*/
 		findMedia: findMedia,
+		
+		/**
+		* Loads (unscanned) media file
+		*/
+		loadMedia: loadMedia,
 
 		/**
 		* Finds kinoma "library source" (instance of FskCache.source) corresponding to the given full path

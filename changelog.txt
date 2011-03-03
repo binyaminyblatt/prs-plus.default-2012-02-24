@@ -8,6 +8,9 @@
  * 600: Added rotate by 90 action
  * 600: Added Belorussian / Ukranian chars (as popups) to keyboard
  * 600: Added #47&48 Spanish (by ?) & Catalan (by Alex Castrillo) localizations
+ * 300/505: Added Dictionary (by Clemenseken, lysak, m-land, Mark Nord)
+ * 300: Added #57 Spanish localization (by Carlos)
+ * 300: Fixed #63 author/title sort in 2.0.5alpha not working (patch by vento...@airpost.net)
  * ALL: Added 
  	* Calculator by Mark Nord
  	* Chess by Ben Chenoweth / Stefano Gioffre
@@ -16,9 +19,7 @@
  	* Free Cell by Ben Chenoweth
  	* Mahjong by Clemenseken
  	* Sudoku by Obelix
- * 300/505: Added Dictionary by Clemenseken, lysak, m-land, Mark Nord
- * 300: Added #57 Spanish localization (by Carlos)
- * 300: Fixed #63 author/title sort in 2.0.5alpha not working (patch by vento...@airpost.net)
+ * ALL Integrated fb2toepub converter (by Alexey Bobkov)
 
 === 2.0.9 alpha (bugfixes/enhancements for x50) ===
  * x50: Fixed "Holding option /zoom buttons should call "Go Back in Menus" and "Search" respectively"

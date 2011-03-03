@@ -54,7 +54,7 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		NODE_PRSP_SETTINGS:  "PRS+ Settings",
+		NODE_PRSP_SETTINGS: "PRS+ Settings",
 		NODE_PRSP_SETTINGS_SHORT: "PRS+ Sett.",
 		NODE_OTHERS: "Multimedia",
 		NODE_GAMES_AND_UTILS: "Games & Utilities",
@@ -118,7 +118,7 @@ return {
 		OPTION_TITLE: "TXT and RTF Books Encoding",
 		MSG_RESTART: "Requires restart!",
 		LATIN: "Latin",
-		RUSSIAN:  "Russian (Windows-1251)"
+		RUSSIAN: "Russian (Windows-1251)"
 	},
 
 	KeyBindings: {
@@ -128,9 +128,9 @@ return {
 		DEFAULT_VALUE: "Default",
 
 		// Contexts
-		GLOBAL:  "Global",
+		GLOBAL: "Global",
 		IN_MENU: "When in Menu",
-		IN_BOOK:  "When Reading Book",
+		IN_BOOK: "When Reading Book",
 
 		// Button groups
 		NUM_BUTTONS: "Numeric Buttons",
@@ -144,7 +144,7 @@ return {
 		BN_BL_NEXT: "Bottom Left 'Next'",
 		BN_BL_PREVIOUS: "Bottom Left 'Previous'",
 		BN_SB_NEXT: "Sidebar 'Next'",
-		BN_SB_PREVIOUS:  "Sidebar 'Previous'",
+		BN_SB_PREVIOUS: "Sidebar 'Previous'",
 		BN_MENU: "Menu Button",
 		BN_JP_LEFT: "Joypad Left",
 		BN_JP_RIGHT: "Joypad Right",
@@ -188,9 +188,9 @@ return {
 		BN_VOLUME_UP: "Volume +",
 		BN_H_VOLUME_UP: "Holding Volume +",
 		BN_HOME: "Home Button",
-		BN_H_HOME: "Holding Home Button"		
-	},		
-	
+		BN_H_HOME: "Holding Home Button"
+	},
+
 	StandardActions: {
 		TITLE: "Standard Actions",
 		// Actions
@@ -234,7 +234,7 @@ return {
 	},
 
 	BrowseFolders: {
-		TITLE:  "Browse Folders",
+		TITLE: "Browse Folders",
 		OPTION_SORTING_MODE: "Sorting Mode",
 		VALUE_BY_TITLE: "By title",
 		VALUE_BY_AUTHOR_THEN_TITLE: "By author then title",
@@ -348,7 +348,7 @@ return {
 		VALUE_DISABLED: "Disabled",
 		VALUE_DEFAULT: "Default"
 	},
-	
+
 	MediaTag: {
 		TITLE: "Mark Books",
 		OPTION_POSITION: "Mark Position",
@@ -361,16 +361,22 @@ return {
 		MARK_3: "Mark 4 (square)",
 		MARK_4: "Mark 5 (triangle)"
 	},
-	
+
 	ScrollbarAlphabet: {
 		TITLE: "Scrollbar Alphabet",
 		OPT_ALPHABET: "Alphabet",
 		VALUE_DEFAULT: "default"
 	},
-	
-        Calc: {
-        	TITLE: "Calculator",
-        	DESCRIPTION: ""
-        }
-	
+
+	Calc: {
+		TITLE: "Calculator",
+		DESCRIPTION: ""
+	},
+
+	Converter: {
+		CONVERTING_FB2: "Converting fb2 to epub...",
+		NORMALLY_TAKES: "(normally takes 1-30s)",
+		ERROR: "Error converting",
+		OPENING: "Opening book"
+	}
 };
