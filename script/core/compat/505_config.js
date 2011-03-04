@@ -2,9 +2,10 @@
 // Description: Sony  PRS-505 compatibility layer
 //
 // History:
-//	2010-07-09 kartu - Initial version
+//	2011-03-04 kartu - Initial version
 
 return {
+	// Menu icon indices 
 	NodeKinds: {
 		EMPTY: 1000,
 		BOOK: 2,
@@ -24,6 +25,7 @@ return {
 		INFO: 15,
 		LOCK: 16,
 		BOOKS: 17,
+		BOOK_HISTORY: 17,
 		PICTURES: 18,
 		CROSSED_BOX: 19,
 		DATE: 22,
@@ -37,10 +39,14 @@ return {
 		MS: 34,
 		SD: 35,
 		INTERNAL_MEM: 36,
-		GAME: 38,
+		LANGUAGE: 34,
 		TEXT_SCALE: 2, //FIXME add icon
+		INTERNAL_MEM: 36,
+		FOLDER: 37,
+		GAME: 38,
 		DEFAULT: 37,
-		// 600 and 900 have more than one type of icons
+		
+		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {
 			var kind = this[strKind];
 			if (typeof kind === "undefined") {
@@ -49,12 +55,13 @@ return {
 			return kind;
 		}
 	},
-
+	
 	// PRS+ abstract key code to actual key code, model specific
 	keyCodes: {
 		"1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "0": "0",
 		"1_h": "kHold1", "2_h": "kHold2", "3_h": "kHold3", "4_h": "kHold4", "5_h": "kHold5", "6_h": "kHold6", "7_h": "kHold7", "8_h": "kHold8", "9_h": "kHold9", "0_h": "kHold0",
 		jp_left: "kLeft", jp_right: "kRight", jp_up: "kUp", jp_down: "kDown",
+		jp_left_h: "kLeft-hold", jp_right_h: "kRight-hold", jp_up_h: "kUp-hold", jp_down_h: "kDown-hold",
 		jp_center: "0x27", jp_center_h: "0x27-hold",
 		menu: "0x21", menu_h: "0x21-hold",
 		bookmark: "0x32", bookmark_h: "0x32-hold",
@@ -71,9 +78,14 @@ return {
 	hasVolumeButtons: true,
 	// are there paging buttons
 	hasPagingButtons: true,
+	// are there joypad buttons
+	hasJoypadButtons: true,
+	// are there "other" buttons
+	hasOtherButtons: true,
 	// Are there SD/MS card slots
 	hasCardSlots: true,
 	
+	// Where to find which node, relative to kbook.root
 	standardMenuLayout: {
 		"continue": [0],
 		booksByTitle: [1],
@@ -87,40 +99,57 @@ return {
 		settings: [9],
 		advancedSettings: [9,4]
 	},
-
+	
+	// Menu configuration
 	prspMenu: {
-		// Where to find which node, relative to kbook.root
+		// Container nodes
+		customContainers: [
+			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", icon: "GAME"}
+		],
+		// Nodes assigned to certain nodes
+		customNodes: [
+			{ name: "BookHistory", parent: "gamesAndUtils"},
+			{ name: "DictionaryCL", parent: "gamesAndUtils" },
+			{ name: "Calculator", parent: "gamesAndUtils" },				
+			{ name: "Chess", parent: "gamesAndUtils" },				
+			{ name: "FiveBalls", parent: "gamesAndUtils" },				
+			{ name: "FiveRow", parent: "gamesAndUtils" },				
+			{ name: "FreeCell", parent: "gamesAndUtils" },				
+			{ name: "Mahjong", parent: "gamesAndUtils" },
+			{ name: "Sudoku", parent: "gamesAndUtils" },
+			{ name: "PRSPSettings", parent: "settings", position: 0 }
+		],
 		movableNodes: [1,0 /* by author */,1,1,1,1,1,1,1,1,0 /* settings */],
 		defaultLayout: [
 			{ name: "continue"}, 
 			{ name: "booksByTitle"}, 
 			{ name: "booksByDate"}, 
-			{ name: "booksByAuthor"}, 
-			{ name: "collections"},
+			{ name: "booksByAuthor"},
+			{ name: "BrowseFolders", separator: true},
 			{ name: "bookmarks"}, 
-			{ name: "settings", separator: true }
-			// TODO
+			{ name: "settings"},
+			{ name: "collections"},
+			{ name: "gamesAndUtils"},
+			{ name: "BookHistory"}
 		]
 	},
-
-	// TODO add music and picture types
+	
 	media: {
 		// types to be used to determine media type using "xs.isInstanceOf"
-		types: [FskCache.text,FskCache.text],
+		types: [FskCache.text],
 		// what kind it is, supported are: "book", "picture", "note", "audio"
 		kinds: ["book"],
 		// node prototypes to use when creating media nodes
 		prototypes: [FskCache.tree.bookNode]
-	},
+	}, 
 	
 	compareStrings: function(a, b) {
 		if (a === b) {
 			return 0;
 		}
 		return a > b ? 1 : -1;
-	}	
+	}
 };
-
 	/* TODO model specific
 	// This hook is needed, since the parent node doesn't have a "shuffleList", so default onEnterSong fails
 	//

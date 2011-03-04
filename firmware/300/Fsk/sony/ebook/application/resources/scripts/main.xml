@@ -2,6 +2,7 @@
 <document xmlns="http://www.kinoma.com/fskin/1" href="x-id://model">
 	<assets>
 		<import href="kbookAssets.xml"/>
+
 		<!-- PRS+ stuff -->
 		<texture href="kBookAssets.png">
 			<cutout id="whiteBox" x="630" y="0" width="70" height="70" columns="0" lines="0" />
@@ -42,6 +43,7 @@
 			cutouts="empty,empty,empty,empty,blackBox,empty,empty,empty,empty"
 		/>
 		<!-- End of PRS+ stuff -->
+
 	</assets>
 	<code>
 		<function id="afterModal" params="group">

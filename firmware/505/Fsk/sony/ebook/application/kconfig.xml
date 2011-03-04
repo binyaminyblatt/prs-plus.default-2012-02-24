@@ -18,21 +18,6 @@
 			<variable name="bbebJustification" value="true"/>
 			<variable name="PreferencesDir" value="/opt0/preferences/"/>
 			<variable name="kFskPlatformGrayEffectiveBit" value="3"/>
-
-			<!-- PRS+ stuff -->
-			<variable name="prspPath" value="/opt/sony/ebook/application/resources/prsp/" />
-			<variable name="prspVersionFile" value="[prspPath]prspfw.ver" />
-			<variable name="prspCoreFile" value="[prspPath]core.js" />
-			<variable name="prspAddonsFile" value="[prspPath]addons.js" />
-			<variable name="prspStartupFile" value="[prspPath]prsp.js"/>
-			<variable name="prspSettingsPath" value="/opt0/prsp/"/>
-			<variable name="prspAddonsPath" value="[prspPath]addons/"/>
-			<variable name="prspCorePath" value="[prspPath]"/>
-			<variable name="prspPublicPath" value="/Data/database/system/PRSPlus/"/>
-			<variable name="prspUserCSSPath" value="[prspPublicPath]epub/"/>
-			<variable name="userDictionaryPath" value="[prspPublicPath]dictionary/"/>
-			<variable name="prspUserConfig" value="b:/user.config"/>
-			<variable name="prspSafeModeFile" value="/tmp/safemode"/>
 		</environment>
 
 		<debug>
@@ -55,10 +40,10 @@
 				<!-- RTF names -->
 					<family name="roman" uses="Dutch801 Rm BT"/>
 					<family name="swiss" uses="Swis721 BT"/>
-					<family name="modern" uses="Courier10 Win95BT"/>
+					<family name="modern" uses="Courier10 BT"/>
 					<family name="script" uses="Dutch801 Rm BT"/>
 					<family name="decor" uses="Dutch801 Rm BT"/>
-					<family name="tech" uses="Courier10 Win95BT"/>
+					<family name="tech" uses="Courier10 BT"/>
 			</font>
 		</ui>
 
