@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns="http://www.kinoma.com/fskin/1" href="x-id://model">
 	<assets>
+		<!-- PRS+ stuff -->
+		<texture href="kBookAssets.png">
+			<cutout id="whiteBox" x="630" y="0" width="70" height="70" columns="0" lines="0" />
+			<cutout id="blackBox" x="351" y="0" width="35" height="70" columns="0" lines="0" />
+			<cutout id="greyBox" x="500" y="75" width="35" height="70" columns="0" lines="0" />
+			<cutout id="greyLine" x="70" y="138" width="35" height="2" columns="0" lines="0" />
+			<cutout id="empty" x="0" y="0" width="0" height="0" />
+			
+			<cutout id="blackBorder-tl" x="782" y="110" width="6" height="5"  columns="0" lines="0" />
+			<cutout id="blackBorder-tc" x="788" y="110" width="30" height="5"  columns="0" lines="0" />
+			<cutout id="blackBorder-tr" x="822" y="110" width="6" height="5"  columns="0" lines="0" />
+			
+			<cutout id="blackBorder-cl" x="782" y="115" width="3" height="70"  columns="0" lines="0" />
+			
+			<cutout id="blackBorder-bl" x="782" y="342" width="6" height="5"  columns="0" lines="0" />
+			<cutout id="blackBorder-bc" x="788" y="342" width="30" height="5"  columns="0" lines="0" />
+			<cutout id="blackBorder-br" x="822" y="342" width="6" height="5"  columns="0" lines="0" />
+			
+			<cutout id="markIcon" x="782" y="376" width="21" height="21" />
+		</texture>
+		
+		<style id="popupText" halign="left" valign="top" top="8" left="10" size="30" style="bold"/>
+		<style id="popupTextWhite" halign="left" valign="top" top="8" left="10" size="30" style="bold" color="#FFFFFF"/>
+		
+		<skin id="popup"
+			cutouts="blackBorder-tl,blackBorder-tc,blackBorder-tr,blackBorder-cl,whiteBox,blackBorder-cl,blackBorder-bl,blackBorder-bc,blackBorder-br"
+		/>
+		<skin id="popupText"
+			styles="popupText,popupText,popupText,popupText"
+			cutouts="empty,greyLine,empty,empty,empty,empty,empty,greyLine,empty"
+		/>
+		<skin id="popupIndicator"
+			styles="popupText,popupText,popupText,popupText"
+			cutouts="empty,empty,empty,empty,greyBox,empty,empty,empty,empty"
+		/>
+		<skin id="popupIndicatorSel"
+			styles="popupTextWhite,popupTextWhite,popupTextWhite,popupTextWhite"
+			cutouts="empty,empty,empty,empty,blackBox,empty,empty,empty,empty"
+		/>
+		<!-- End of PRS+ stuff -->
+
 		<string id="infoTitles" value="Cover,Title,Author,Publisher,Category,eBook ID,Kind,Date,Size,Location,File,Digital Rights,Expires"/>
 		<string id="infoNames" value="AlbumArt,title,author,Publisher,Genre,connect:eBookID,mime,date,size,path,path,status,expiration"/>
 		<string id="infoFormats" value="thumbnail,string,string,string,string,string,mime,date,size,location,directory,drm,dateTime"/>
@@ -701,7 +742,6 @@
 		</kbookMenu>
 		<kbookStatus skin="kbookMenuStatus" left="0" right="0" height="33" bottom="0"/>
 		<kbookLabel left="160" right="160" height="30" bottom="0" align="center" variable="MENU_INDEX_COUNT"/>
-		<kbookLabel width="100" right="4" height="30" bottom="0" align="right" variable="SHD_TIME"/>
 	</group>
 	
 	<group id="PAGE_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
@@ -738,7 +778,6 @@
 		<kbookIndicator skin="sizeIndicator" left="90" bottom="0" variable="BOOK_SIZE"/>
 		<kbookIndicator skin="halfPageIndicator" left="120" height="30" bottom="0" variable="BOOK_HALF_PAGE"/>
 		<kbookLabel left="160" right="160" height="30" bottom="0" align="center" variable="BOOK_INDEX_COUNT"/>
-		<kbookLabel width="156" right="4" height="30" bottom="0" align="right" variable="SHD_TIME"/>
 	</group>
 	
 	<group id="GOTO_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
@@ -1069,7 +1108,57 @@
 			<checkbox id="MUTE" skin="volumeCheckBox" width="20" right="55" height="30" bottom="0" variable="MUTE" on="1" off="0"/>
 			<kbookProgress id="VOLUME" skin="volumeProgress" width="55" right="0" height="30" bottom="0" variable="VOLUME"/>
 		</group>
+		<!-- PRS+ stuff -->
+		<kbookLabel id="prspTime" align="right" right="5" bottom="0" height="30" width="120" />
+		<!-- End of PRS+ stuff -->
 	</group>
+	
+	<!-- PRS+ stuff -->
+	<panel id="POPUP_MENU"  skin="popup" left="50" bottom="50" width="0" height="0"  visible="false">
+		<group id="innerGroup" left="6" right="6" top="6" bottom = "6">
+			<group id="panel10" left="0" right="0" height="1" bottom="1" >
+				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="0" />
+			</group>
+			<group id="panel9" left="0" right="0" height="1" bottom="1" >
+				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="9" />
+			</group>
+			<group id="panel8" left="0" right="0" height="1" bottom="1" >
+				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="8" />
+			</group>
+			<group id="panel7" left="0" right="0" height="1" bottom="1" >
+				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="7" />
+			</group>
+			<group id="panel6" left="0" right="0" height="1" bottom="1" >
+				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="6" />
+			</group>
+			<group id="panel5" left="0" right="0" height="1" bottom="1" >
+				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="5" />
+			</group>
+			<group id="panel4" left="0" right="0" height="1" bottom="1" >
+				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="4" />
+			</group>
+			<group id="panel3" left="0" right="0" height="1" bottom="1" >
+				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="3" />
+			</group>
+			<group id="panel2" left="0" right="0" height="1" bottom="1" >
+				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="2" />
+			</group>
+			<group id="panel1" left="0" right="0" height="1" bottom="1" >
+				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="1" />
+			</group>
+		</group>
+	</panel>
+	<!-- End of PRS+ stuff -->
 
 	<group id="INVALID_FORMAT_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
 		<code>

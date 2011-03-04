@@ -141,6 +141,7 @@
 		</function>
 		<function id="initLocalization">
 			try {
+				// TODO
 				if (FileSystem.getFileInfo(System.applyEnvironment('[prspSafeModeFile]')) === undefined) {			
 					var userConfigPath = System.applyEnvironment('[prspUserConfig]');
 					var config = {
