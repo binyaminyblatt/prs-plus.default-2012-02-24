@@ -19,13 +19,13 @@ return {
 		NEXT_PAGE: 9,
 		BOOKMARK: 10,
 		LIST: 11,
+		BOOK_HISTORY: 11,
 		CLOCK: 12,
 		PAUSE: 13,
 		PLAY: 14,
 		INFO: 15,
 		LOCK: 16,
 		BOOKS: 17,
-		BOOK_HISTORY: 17,
 		PICTURES: 18,
 		CROSSED_BOX: 19,
 		DATE: 22,
@@ -50,7 +50,7 @@ return {
 		getIcon: function (strKind, type) {
 			var kind = this[strKind];
 			if (typeof kind === "undefined") {
-				kind = 43;
+				kind = 37;
 			}
 			return kind;
 		}
@@ -61,7 +61,7 @@ return {
 		"1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "0": "0",
 		"1_h": "kHold1", "2_h": "kHold2", "3_h": "kHold3", "4_h": "kHold4", "5_h": "kHold5", "6_h": "kHold6", "7_h": "kHold7", "8_h": "kHold8", "9_h": "kHold9", "0_h": "kHold0",
 		jp_left: "kLeft", jp_right: "kRight", jp_up: "kUp", jp_down: "kDown",
-		jp_left_h: "kLeft-hold", jp_right_h: "kRight-hold", jp_up_h: "kUp-hold", jp_down_h: "kDown-hold",
+		// FIXME: implement #39 jp_left_h: "kLeft-hold", jp_right_h: "kRight-hold", jp_up_h: "kUp-hold", jp_down_h: "kDown-hold",
 		jp_center: "0x27", jp_center_h: "0x27-hold",
 		menu: "0x21", menu_h: "0x21-hold",
 		bookmark: "0x32", bookmark_h: "0x32-hold",
