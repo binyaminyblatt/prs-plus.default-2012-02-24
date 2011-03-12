@@ -33,7 +33,7 @@
 			<style id="button-s" />
 		</style>
 		
-        <texture href="skins/chessLabels.png">
+        <texture href="chessSkins/chessLabels.png">
             <cutout id="HelpT" x="42" y="295" width="516" height="611"/>
 			<cutout id="select" x="1" y="1" width="75" height="75"/>
 			<cutout id="highlight" x="78" y="1" width="75" height="75"/>
@@ -46,16 +46,16 @@
 			<cutout id="colHelp_c" x="20" y="170" width="554" height="52"/>
         </texture>
 
-        <texture href="skins/chessPieces.png">
+        <texture href="chessSkins/chessPieces.png">
             <cutout id="pieces" x="0" y="0" width="75" height="75" columns="75"/>
         </texture>
 		
-		<texture href="skins/chessBoard.png">
+		<texture href="chessSkins/chessBoard.png">
             <cutout id="white" x="0" y="0" width="75" height="75"/>
 			<cutout id="black" x="80" y="0" width="75" height="75"/>
         </texture>
 
-        <texture href="skins/chessMain.png">
+        <texture href="chessSkins/chessMain.png">
             <cutout id="ChessHeader-l" x="350" y="0" width="70" height="70"/>
             <cutout id="ChessHeader-c" x="421" y="0" width="70" height="70"/>
             <cutout id="ChessHeader-r" x="492" y="0" width="70" height="70"/>

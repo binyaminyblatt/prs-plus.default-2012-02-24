@@ -54,7 +54,7 @@
 		</style>
 
 
-<texture href="skins/labels.png">
+<texture href="sudokuSkins/labels.png">
 	<cutout id="fDigit" x="0" y="0" width="44" height="44"/>
 	<cutout id="gCursor" x="0" y="80" width="44" height="44"/>
 	<cutout id="mCursor" x="44" y="190" width="188" height="45"/>
@@ -109,7 +109,7 @@
 
 </texture>
 
-<texture href="skins/skinMain.png">
+<texture href="sudokuSkins/skinMain.png">
 	<cutout id="sudokuHeader-l" x="350" y="0" width="70" height="70"/>
 	<cutout id="sudokuHeader-c" x="421" y="0" width="70" height="70"/>
 	<cutout id="sudokuHeader-r" x="492" y="0" width="70" height="70"/>
