@@ -21,7 +21,9 @@
  	* Sudoku by Obelix
  * ALL: Integrated fb2toepub converter (by Alexey Bobkov)
  * ALL: Added sample folders.cfg / EPUB css file that references LRF fonts
-
+ * 300/505: PRPInstaller folder is deleted automatically after reboot (no need to reboot multiple times to delete it)
+ * 350/650/950: Created "all in one" installer (Windows only)
+ 
 === 2.0.9 alpha (bugfixes/enhancements for x50) ===
  * x50: Fixed "Holding option /zoom buttons should call "Go Back in Menus" and "Search" respectively"
  * 350/650: Fixed "Text Memo open => press root => reboot"
