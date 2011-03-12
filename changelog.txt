@@ -19,7 +19,8 @@
  	* Free Cell by Ben Chenoweth
  	* Mahjong by Clemenseken
  	* Sudoku by Obelix
- * ALL Integrated fb2toepub converter (by Alexey Bobkov)
+ * ALL: Integrated fb2toepub converter (by Alexey Bobkov)
+ * ALL: Added sample folders.cfg / EPUB css file that references LRF fonts
 
 === 2.0.9 alpha (bugfixes/enhancements for x50) ===
  * x50: Fixed "Holding option /zoom buttons should call "Go Back in Menus" and "Search" respectively"

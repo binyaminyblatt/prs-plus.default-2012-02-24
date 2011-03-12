@@ -5,7 +5,8 @@
 # 2010-03-05 kartu - Added porkupan's (aka boroda) "is usb connected"check, if reader is not connected via USB, neither prsp.sh is called, nor LD_PRELOAD is set
 # 2010-03-05 kartu - Fixed LD_PRELOAD error (the problem was wrong path: Latin1ToUTF8.so instead of Latin1toUTF8.so)
 # 2010-04-24 kartu - Amended settings path (/opt0/prsp/TextEncoding.config)
-# 2010-04-24 kartu - /tmp/safemode file is created, if USB is connected on startup (for JS to sniff) 
+# 2010-04-24 kartu - /tmp/safemode file is created, if USB is connected on startup (for JS to sniff)
+# 2011-03-12 kartu - added /Data/runonce.sh support
 
 #ldconfig
 PATH="/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/games:/usr/local/sony/bin:/usr/sbin"
@@ -15,11 +16,17 @@ export PATH LD_LIBRARY_PATH
 # set initial date
 /bin/date 0101000007
 
+#PRS+ call runonce script, if it could be deleted
+/usr/local/sony/bin/mtdmount -t vfat -o utf8 -o shortname=winnt Data /Data
+if [ -f /Data/runonce.sh ]
+then
+	#run runonce if it can be deleted
+	mv /Data/runonce.sh /tmp && chmod oug+x /tmp/runonce.sh && /tmp/runonce.sh
+fi
 # Call custom script if ebook is not connected to USB
 USBCONN=`/bin/cat /proc/usbtg/connect`
 if [ "$USBCONN" == 0 ]
 then
-	/usr/local/sony/bin/mtdmount -t vfat -o utf8 -o shortname=winnt Data /Data
 
 	# win1251 to UTF8 hack, replacing standard FskTextLatin1ToUTF8
 	TEXT_ENCODING_FILE=/opt0/prsp/TextEncoding.config
@@ -33,10 +40,10 @@ then
 	then
 		. /Data/database/system/PRSPlus/prsp.sh
 	fi
-	/bin/umount /Data
 else
 	touch /tmp/safemode	
 fi
+/bin/umount /Data
 
 #start kbook application
 /opt/sony/ebook/application/tinyhttp
