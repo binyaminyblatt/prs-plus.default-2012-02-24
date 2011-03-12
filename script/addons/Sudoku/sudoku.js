@@ -86,7 +86,8 @@ var tmp = function () {
 			target.clock2.setValue(showDuration);
 		} else target.clock2.setValue("");
 	
-		target.clock1.setValue(show);
+		// kartu: commented out as it overlaps with standard clock
+		//target.clock1.setValue(show);
 	
 	};
 	
