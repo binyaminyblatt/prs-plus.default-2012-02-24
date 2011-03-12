@@ -18,7 +18,7 @@
 		<style font="Swis721 BT">
 			<style id="textbtn" size="40" style="bold" color="#FFFFFF"/>
 		</style>
-		<texture href="skins/labels.png">
+		<texture href="dictSkins/labels.png">
 			<!--cutout id="gCursor" x="0" y="80" width="44" height="44"/-->
 			<cutout id="l_Cursor" x="317" y="11" width="48" height="75"/>
 			<cutout id="hGlass" x="249" y="168" width="84" height="84"/>
@@ -37,7 +37,7 @@
 			<cutout id="panel_br" x="45" y="67" width="5" height="5" /> 
 		</texture>
 
-		<texture href="skins/skinMain505.png">
+		<texture href="dictSkins/skinMain505.png">
 			<cutout id="dizioHeader-l" x="350" y="0" width="70" height="65"/>
 			<cutout id="dizioHeader-c" x="421" y="0" width="70" height="65"/>
 			<cutout id="dizioHeader-r" x="492" y="0" width="70" height="65"/>
@@ -49,7 +49,7 @@
 			<cutout id="dizioStatus-r" x="600" y="666" width="0" height="0"/>					
 		</texture>
 
-		<texture href="skins/Empty505.png">
+		<texture href="dictSkins/Empty505.png">
 			<cutout id="xSkin-lt" x="0" y="0" width="9" height="9" lines="10"/>
 			<cutout id="xSkin-ct" x="0" y="0" width="30" height="9" lines="10"/>
 			<cutout id="xSkin-rt" x="0" y="0" width="9" height="9" lines="10"/>

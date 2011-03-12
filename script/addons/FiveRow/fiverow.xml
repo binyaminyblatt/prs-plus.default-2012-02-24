@@ -57,7 +57,7 @@
 		<style id="button-s" />
 	</style>	
 	
-	<texture href="skins/labels.png">
+	<texture href="fiveRowSkins/labels.png">
 		<cutout id="g1Cursor" x="0" y="80" width="70" height="70"/>
 		<cutout id="g2Cursor" x="70" y="80" width="70" height="70"/>
 		<cutout id="buttons" x="0" y="0" width="50" height="50"/>
@@ -93,7 +93,7 @@
 		<cutout id="null" x="0" y="50" width="1" height="1" lines="1"/>
 	</texture>
 
-	<texture href="skins/skinMain.png">
+	<texture href="fiveRowSkins/skinMain.png">
 		<cutout id="FiveBHeader-l" x="350" y="0" width="70" height="70"/>
 		<cutout id="FiveBHeader-c" x="421" y="0" width="70" height="70"/>
 		<cutout id="FiveBHeader-r" x="492" y="0" width="70" height="70"/>

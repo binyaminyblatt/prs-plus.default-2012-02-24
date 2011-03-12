@@ -11,7 +11,7 @@
 
 <document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
 <assets>
-<texture href="skins/CalcMainSkin.png">
+<texture href="calcSkins/CalcMainSkin.png">
 	<cutout id="calcHeader-l" x="350" y="0" width="70" height="70"/>
 	<cutout id="calcHeader-c" x="421" y="0" width="70" height="70"/>
 	<cutout id="calcHeader-r" x="492" y="0" width="70" height="70"/>
