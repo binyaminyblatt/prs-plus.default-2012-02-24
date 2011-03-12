@@ -199,7 +199,8 @@ History:
 			</then>
 			<else>
 				<var name="prsp.dir" value="tmp/${model}/resources/prsp" />
-			</else>
+        <echo file="tmp/${model}/prspfw.ver">${PRSP_VER}</echo>
+      </else>
 		</if>
 		
 		<echo>Combining model specific addon files</echo>
@@ -234,7 +235,7 @@ History:
 		</copy>
 		
 		<echo>Creating version info file</echo>
-		<echo file="${prsp.dir}/prspfw.ver">${PRSP_VER}</echo>	
+		<echo file="${prsp.dir}/prspfw.ver">${PRSP_VER}</echo>
 		
 		<echo>Packaging</echo>
 		<foreach param="dir" target="make.cramfs">
