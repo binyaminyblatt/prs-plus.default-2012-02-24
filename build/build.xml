@@ -46,7 +46,7 @@ History:
 		<exclude name="DictionaryCL/**/*" />
 		<exclude name="DictionaryCL.js" />
 		<exclude name="TextEncoding.js" />
-		<exclude name="TextScale" />
+		<exclude name="TextScale.js" />
 	</patternset>
 	<patternset id="addons_300">
 		<patternset refid="addons_300_505" />
