@@ -115,8 +115,16 @@ History:
 				
 				<echo>Copying installer (mountable)</echo>
 				<copy file="../installer/installer.sh.${model}" tofile="${dist}/installer.sh" />
+				<copy todir="${dist}">
+					<fileset dir="../installer">
+						<include name="data/**/*"/>
+					</fileset>
+				</copy>
 			</else>
 		</if>
+		
+		<echo>Copying changelog</echo>
+		<copy todir="dist/${model}" file="../changelog.txt" />
 		
 		<echo>Copying PRS+ files</echo>
 		<copy todir="${prspDir}" includeemptydirs="false">

@@ -14,6 +14,7 @@
 //	2010-09-03 kartu - Added support for 300
 //	2010-09-07 kartu - Changed 1.1.00.18160 to 1.0.00.18160
 //			disabled flashing root in "flash anyway"
+//	2011-03-12 kartu - Added support for sample files / automatic removal of PRSPInstaller
 
 var SUPPORTED = {
 		"505": {"1.1.00.18040": true},
@@ -27,6 +28,7 @@ var MAX_FLASH_SIZE = {
 
 var FIRMWARE_PATH = target.path + "firmware/";
 var TOOLS_PATH = target.path + "tools"; // trailing / is ommited on purpose
+var DATA_PATH = target.path + "data";
 var OLD_SETTINGS_FOLDER = "/Data/database/system/PRSPlus/settings";
 var OLD_ADDONS_FOLDER = "/Data/database/system/PRSPlus/addons";
 var OLD_FILES = ["/Data/database/system/PRSPlus/prsp.ver", "/Data/database/system/PRSPlus/PRSPlus.js", "/Data/database/system/PRSPlus/user.config.sample"];
@@ -214,9 +216,10 @@ var deleteFolder = function(path) {
 
 // Copies folder with all files and subfolders
 //
-var copyFolder = function(from, to) {
+var copyFolder = function(from, to, skipIfExist) {
 	try {
-		var queue = ["/"];
+		var queue, toTmp;
+		queue = ["/"];
 		while (queue.length > 0) {
 			var dirPath = queue.pop();
 			FileSystem.ensureDirectory(to + dirPath);
@@ -227,7 +230,10 @@ var copyFolder = function(from, to) {
 					queue.push(dirPath + item.path + "/");
 				} else {
 					try {
-						copyFile(from + dirPath + item.path, to + dirPath + item.path);
+						toTmp = to + dirPath + item.path;
+						if (!skipIfExist || (skipIfExist && !(FileSystem.getFileInfo(toTmp))) ) {
+							copyFile(from + dirPath + item.path, toTmp);
+						}
 					} catch (e2) {
 						println("Error copying from " + (from + dirPath + item.path) + " to " + (to + dirPath + item.path));
 						throw e2;
@@ -296,11 +302,17 @@ var flashImage = function(checksum, type) {
 		print("OK\n " + L("CHECKING_PARTITION"));
 		// $nblsdm cmp -i $W_DIR/new_opt.img Fsk
 		exec(nblsdm + " cmp -i " + path + " " + type);
+
+		// Copy data folder content (sample files etc)
+		try {
+			copyFolder(DATA_PATH, "/Data", true);
+		} catch (ignore) {
+		}
 		
 		// Delete flashed image
 		try {
 			FileSystem.deleteFile(path);
-		} catch (ignore) {
+		} catch (ignore1) {
 		}
 
 		exec("sync");
@@ -441,6 +453,7 @@ target.actions.flashFsk = {
 target.actions.moveOldSettings = {
 	confirmMessage : "",
 	perform : function() {
+		var i, n;
 		initTools();
 
 		if (FileSystem.getFileInfo(OLD_SETTINGS_FOLDER + "/")) {
@@ -451,7 +464,7 @@ target.actions.moveOldSettings = {
 		}
 		// Delete old files		
 		deleteFolder(OLD_ADDONS_FOLDER + "/");
-		for (var i = 0, n = OLD_FILES; i < n; i++) {
+		for (i = 0, n = OLD_FILES; i < n; i++) {
 			try {
 				FileSystem.deleteFile(OLD_FILES[i]);
 			} catch (ignore) {

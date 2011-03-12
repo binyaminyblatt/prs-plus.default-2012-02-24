@@ -5,3 +5,6 @@ rm -R /opt1/dict/prsp >> /Data/PRSPInstaller/install.log 2>&1
 cp -r /Data/PRSPInstaller/prsp /opt1/dict  >> /Data/PRSPInstaller/install.log 2>&1
 
 mount -t vfat -o ro,remount /dev/mtdblock13 /opt1/dict  >> /Data/PRSPInstaller/install.log 2>&1
+
+# Copy sample files
+false | cp -iR /Data/PRSPInstaller/data -t /Data > /dev/null 2>&1
