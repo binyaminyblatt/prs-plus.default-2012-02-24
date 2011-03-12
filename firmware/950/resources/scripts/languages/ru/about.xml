@@ -17,10 +17,6 @@
 	</code>
 	<kbookAbout id="ABOUT" left="0" right="0" top="0" bottom="0">
 		<records>
-			<record><number name="kind" value="30"/><string name="text" value="HACK INFORMATION"/></record>
-			<record><number name="kind" value="42"/><string name="text" value="HACK INFORMATION"/></record>
-			<record><number name="kind" value="-2"/><string name="text" value=""/></record>
-
 			<record><number name="kind" value="30"/><string name="text" value="Свободная память"/></record>
 			<record><number name="kind" value="-2"/><string name="text" value=""/></record>
 			<record><number name="kind" value="11"/><string name="text" value="Внутр. память"/></record>
