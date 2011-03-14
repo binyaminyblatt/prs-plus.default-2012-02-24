@@ -129,7 +129,7 @@
 		<string id="STR_UI_MESSAGE_HARDRESETOPERATION" value="¿Quieres borrar todo el contenido, restablecer la configuración de fábrica y eliminar el estado de autorización del DRM?&#xA;&#xA;Sí - Pulsa 5&#xA;No - Pulsa XXRETURNXX(Volver)" />
 		<string id="STR_UI_MESSAGE_LOWBATTERY" value="¡Batería baja!"/>
 		<string id="STR_UI_MESSAGE_NOBATTERY" value="¡Sin batería!"/>
-		<string id="STR_UI_MESSAGE_LOADING" value="Cargando…">
+		<string id="STR_UI_MESSAGE_LOADING" value="Cargando…"/>
 		<string id="STR_UI_MESSAGE_SINGLEPAGE" value="1 de 1"/>
 		<string id="STR_UI_MESSAGE_CANNOTDELETEBOOK" value="No se ha podido borrar el libro."/>
 		<string id="STR_UI_FORMAT_RTF" value="Rich Text Format"/>
