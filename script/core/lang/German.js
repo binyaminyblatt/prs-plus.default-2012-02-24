@@ -1,25 +1,27 @@
 // Language: German
 // Description: Localization file
- // Translator: Duglum, klawong, Mark Nord
+// Translator: Duglum, klawong, Mark Nord
 //
 // History:
-//	2010-04-30 kravitz - Refactored, added new strings
-//	2010-05-01 kartu - Added ACTION_GOTO_LINK
-//	2010-05-01 Duglum, klawong, Mark Nord - translation is corrected
-//	2010-05-02 kartu - Added dictionary strings
-//	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
-//	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
-//	2010-05-06 kartu - Added ppm related translations for PageIndex addon
-//	2010-05-10 kartu - Added German corrections by Duglum/Mark Nord/klawong
-//	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
-//	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
-//	2010-05-15 kartu - Added PAGE (BookHistory)
-//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
-//	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
-//	2010-05-18 kravitz - Added Duglum's translation of OPTION_SKIP_BOOK_MENU
-//	2010-05-20 kartu - Removed script reference from about string
-//	2010-06-29 kartu - Split KeyBindings keys into KeyBindings and StandardActions
-//				Added 0-9 translations
+//      2010-04-30 kravitz - Refactored, added new strings
+//      2010-05-01 kartu - Added ACTION_GOTO_LINK
+//      2010-05-01 Duglum, klawong, Mark Nord - translation is corrected
+//      2010-05-02 kartu - Added dictionary strings
+//      2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
+//      2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
+//      2010-05-06 kartu - Added ppm related translations for PageIndex addon
+//      2010-05-10 kartu - Added German corrections by Duglum/Mark Nord/klawong
+//      2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
+//      2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
+//      2010-05-15 kartu - Added PAGE (BookHistory)
+//      2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//      2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
+//      2010-05-18 kravitz - Added Duglum's translation of OPTION_SKIP_BOOK_MENU
+//      2010-05-20 kartu - Removed script reference from about string
+//      2010-06-29 kartu - Split KeyBindings keys into KeyBindings and StandardActions
+//                              Added 0-9 translations
+//  	2011-03-14 SomeDeepBlue - Translation added for sections: Statusbar, Converter, Calc, Scrollbar Alphabet, MediaTag and MenuCustomizer
+//                                Function names Clock and PageIndex corrected (StatusBar_*)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -96,7 +98,7 @@ return {
 		DEVICE_LOCKED: "Gerät gesperrt",
 
 		// About, translate either all or none
-		ABOUT_PRSP:  "PRS+ @@@firmware@@@\n" + "Autor: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + "igorsk, boroda, obelix, pepak, kravitz und anderer.\n" + "© GNU Lesser General Public License.",
+		ABOUT_PRSP: "PRS+ @@@firmware@@@\n" + "Autor: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + "igorsk, boroda, obelix, pepak, kravitz und anderer.\n" + "© GNU Lesser General Public License.",
 		ABOUT_1: "Copyright ©2006-2008 Sony Corporation",
 		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + " trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
 		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + " MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
@@ -296,7 +298,7 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		NODE_PRSP_SETTINGS:  "PRS+ Einstellungen",
+		NODE_PRSP_SETTINGS: "PRS+ Einstellungen",
 		NODE_OTHERS: "Multimedia",
 		NODE_GAMES_AND_UTILS: "Spiele & Werkzeuge",
 		GROUP_MENU_TITLE: "Menü-Einstellungen",
@@ -357,7 +359,7 @@ return {
 		OPTION_TITLE: "TXT- und RTF-Bücher Codierung",
 		MSG_RESTART: "Benötigt Neustart!",
 		LATIN: "Latin",
-		RUSSIAN:  "Russisch (Windows-1251)"
+		RUSSIAN: "Russisch (Windows-1251)"
 	},
 
 	KeyBindings: {
@@ -367,9 +369,9 @@ return {
 		DEFAULT_VALUE: "Standardwert",
 
 		// Contexts
-		GLOBAL:  "Global",
+		GLOBAL: "Global",
 		IN_MENU: "Im Menü",
-		IN_BOOK:  "Im Buch",
+		IN_BOOK: "Im Buch",
 
 		// Button groups
 		NUM_BUTTONS: "Numerische Tasten",
@@ -383,7 +385,7 @@ return {
 		BN_BL_NEXT: "Unten links 'weiter'",
 		BN_BL_PREVIOUS: "Unten links 'zurück'",
 		BN_SB_NEXT: "Seite 'weiter'",
-		BN_SB_PREVIOUS:  "Seite 'zurück'",
+		BN_SB_PREVIOUS: "Seite 'zurück'",
 		BN_MENU: "Menü-Taste",
 		BN_JP_LEFT: "Joypad links",
 		BN_JP_RIGHT: "Joypad rechts",
@@ -422,8 +424,8 @@ return {
 		BN_H_VOLUME_DOWN: "Lautstärke - halten",
 		BN_VOLUME_UP: "Lautstärke +",
 		BN_H_VOLUME_UP: "Lautstärke + halten"
-	},		
-	
+	},
+
 	StandardActions: {
 		// Actions
 		ACTION_SHUTDOWN: "Gerät ausschalten",
@@ -451,7 +453,7 @@ return {
 	},
 
 	BrowseFolders: {
-		TITLE:  "Verzeichnisse durchsuchen",
+		TITLE: "Verzeichnisse durchsuchen",
 		OPTION_SORTING_MODE: "Sortier-Modus",
 		VALUE_BY_TITLE: "Nach Titel",
 		VALUE_BY_AUTHOR_THEN_TITLE: "Nach Autor, dann Titel",
@@ -478,7 +480,11 @@ return {
 		NODE_SD_CARD_MOUNT: "SD-Karte via mount"
 	},
 
-	Clock: {
+	StatusBar: {
+		TITLE: "Statusbalken"
+	},
+
+	StatusBar_Clock: {
 		TITLE: "Uhr",
 		OPTION_STYLE: "Zeitanzeige",
 		VALUE_24H: "24 Stunden",
@@ -493,7 +499,7 @@ return {
 		PM: "pm"
 	},
 
-	PageIndex: {
+	StatusBar_PageIndex: {
 		TITLE: "Seiten-Index",
 		INDEX_STYLE_BOOK: "Index-Stil in Büchern",
 		INDEX_MODE_BOOK: "Index-Modus in Büchern",
@@ -525,10 +531,10 @@ return {
 		OPTION_SKIP_BOOK_MENU: "Buch-Menü überspringen"
 	},
 
-//ReadMark	ReadMark: {
-//		TITLE_UNREAD: "Buch als gelesen markieren",
-//		TITLE_READ: "Buch als nicht gelesen markieren",
-//	},
+	//ReadMark      ReadMark: {
+	//              TITLE_UNREAD: "Buch als gelesen markieren",
+	//              TITLE_READ: "Buch als nicht gelesen markieren",
+	//      },
 
 	TextScale: {
 		OPTION_SCALE_DEFAULT: "Standardgröße",
@@ -543,6 +549,17 @@ return {
 		OPTION_OUTER: "Oberste Menü-Ebene besteht aus"
 	},
 
+	MenuCustomizer: {
+		TITLE: "Menü anpassen",
+		VALUE_YES: "Ja",
+		VALUE_NO: "Nein",
+		VALUE_DEFAULT: "Default",
+		SLOT: "Slot",
+		UNMOVABLE_SLOT: "Fester slot",
+		MENU_ITEM: "Menüpunkt",
+		MENU_SEPARATOR: "Separator"
+	},
+
 	Dictionary: {
 		TITLE: "Wörterbuch",
 		WARN_DICT_DISABLED: "Wörterbuch ist deaktiviert!",
@@ -550,5 +567,36 @@ return {
 		ACTION_DICTIONARY: "Wörterbuch öffnen",
 		OPTION_DICTIONARY: "Wörterbuch-Datei",
 		VALUE_DISABLED: "Deaktiviert"
+	},
+
+	MediaTag: {
+		TITLE: "Bücher markieren",
+		OPTION_POSITION: "Position markieren",
+		VALUE_OVER_ICON: "Links (über dem Icon)",
+		VALUE_BOTTOM: "Unten",
+		VALUE_RIGHT: "Rechts",
+		MARK_0: "Symbol 1 (Haken)",
+		MARK_1: "Symbol 2 (Stern)",
+		MARK_2: "Symbol 3 (Kreis)",
+		MARK_3: "Symbol 4 (Rechteck)",
+		MARK_4: "Symbol 5 (Dreieck)"
+	},
+
+	ScrollbarAlphabet: {
+		TITLE: "Scrollbar Alphabet",
+		OPT_ALPHABET: "Alphabet",
+		VALUE_DEFAULT: "default"
+	},
+
+	Calc: {
+		TITLE: "Taschenrechner",
+		DESCRIPTION: ""
+	},
+
+	Converter: {
+		CONVERTING_FB2: "Konvertiere fb2 zu epub...",
+		NORMALLY_TAKES: "(normale Dauer 1-30 Sek.)",
+		ERROR: "Fehler bei der Konvertierung",
+		OPENING: "Öffne Buch"
 	}
 };
