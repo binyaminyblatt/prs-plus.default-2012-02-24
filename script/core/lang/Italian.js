@@ -4,6 +4,9 @@
 //
 // History:
 //	2010-09-07 kartu - Initial version by Samhain
+//  2011-03-15 SomeDeepBlue - corrected function names and added newer functions which are missing as of yet.
+//                            newer functions are English only for now and still need to be translated
+
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -467,9 +470,14 @@ return {
 		NODE_MEMORY_STICK_MOUNT: "Memory Stick con Mount",
 		NODE_SD_CARD: "Scheda SD",
 		NODE_SD_CARD_MOUNT: "Scheda SD con Mount"
-	},
+  },
 
-	Clock: {
+  StatusBar: {
+    TITLE: "Status Bar"
+  },
+
+
+  StatusBar_Clock: {
 		TITLE: "Orologio",
 		OPTION_STYLE: "Stile Orologio",
 		VALUE_24H: "24 ore",
@@ -484,7 +492,7 @@ return {
 		PM: "pm"
 	},
 
-	PageIndex: {
+	StatusBar_PageIndex: {
 		TITLE: "Indice Pagine",
 		INDEX_STYLE_BOOK: "Stile Indice in Libri",
 		INDEX_MODE_BOOK: "Modalità Indice in Libri",
@@ -534,6 +542,17 @@ return {
 		OPTION_OUTER: "Menu in alto contiene"
 	},
 
+  MenuCustomizer: {
+    TITLE: "Menu Customizer",
+    VALUE_YES: "yes",
+    VALUE_NO: "no",
+    VALUE_DEFAULT: "default",
+    SLOT: "Slot",
+    UNMOVABLE_SLOT: "Fixed slot",
+    MENU_ITEM: "Menu Item",
+    MENU_SEPARATOR: "Separator"
+  },
+  
 	Dictionary: {
 		TITLE: "Dizionario",
 		WARN_DICT_DISABLED: "Dizionario disabilitato!",
@@ -542,4 +561,35 @@ return {
 		OPTION_DICTIONARY: "File Dizionario",
 		VALUE_DISABLED: "Disabilitato"
 	}
+
+  MediaTag: {
+    TITLE: "Mark Books",
+    OPTION_POSITION: "Mark Position",
+    VALUE_OVER_ICON: "Left (over icon)",
+    VALUE_BOTTOM: "Bottom",
+    VALUE_RIGHT: "Right",
+    MARK_0: "Mark 1 (check)",
+    MARK_1: "Mark 2 (star)",
+    MARK_2: "Mark 3 (circle)",
+    MARK_3: "Mark 4 (square)",
+    MARK_4: "Mark 5 (triangle)"
+  },
+  
+  ScrollbarAlphabet: {
+    TITLE: "Scrollbar Alphabet",
+    OPT_ALPHABET: "Alphabet",
+    VALUE_DEFAULT: "default"
+  },
+  
+  Calc: {
+    TITLE: "Calculator",
+    DESCRIPTION: ""
+  },
+  
+  Converter: {
+    CONVERTING_FB2: "Converting fb2 to epub...",
+    NORMALLY_TAKES: "(normally takes 1-30s)",
+    ERROR: "Error converting",
+    OPENING: "Opening book"
+  }
 };

@@ -21,6 +21,8 @@
 //	2010-05-20 kartu - Removed script reference from about string
 //	2010-06-29 kartu - Split KeyBindings keys into KeyBindings and StandardActions
 //				Added 0-9 translations
+//  2011-03-15 SomeDeepBlue - corrected function names and added newer functions which are missing as of yet.
+//                            newer functions are English only for now and still need to be translated
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -480,7 +482,11 @@ return {
 		NODE_SD_CARD_MOUNT: "Targeta SD a través de muntatge"
 	},
 
-	Clock: {
+  StatusBar: {
+    TITLE: "Status Bar"
+  },
+
+	StatusBar_Clock: {
 		TITLE: "Rellotge",
 		OPTION_STYLE: "Estil Rellotge",
 		VALUE_24H: "Format 24 hores",
@@ -495,7 +501,7 @@ return {
 		PM: "pm"
 	},
 
-	PageIndex: {
+	StatusBar_PageIndex: {
 		TITLE: "Paginació Llibres i Menús",
 		INDEX_STYLE_BOOK: "Format Paginació Llibre",
 		INDEX_MODE_BOOK: "Mostra Paginació Llibre",
@@ -545,6 +551,17 @@ return {
 		OPTION_OUTER: "Opció menú principal"
 	},
 
+  MenuCustomizer: {
+		TITLE: "Menu Customizer",
+		VALUE_YES: "yes",
+		VALUE_NO: "no",
+		VALUE_DEFAULT: "default",
+		SLOT: "Slot",
+		UNMOVABLE_SLOT: "Fixed slot",
+		MENU_ITEM: "Menu Item",
+		MENU_SEPARATOR: "Separator"
+  },
+
 	Dictionary: {
 		TITLE: "Diccionari",
 		WARN_DICT_DISABLED: "Diccionari desactivat!",
@@ -553,4 +570,36 @@ return {
 		OPTION_DICTIONARY: "Arxiu del Diccionari",
 		VALUE_DISABLED: "Desactivat"
 	}
+
+  MediaTag: {
+    TITLE: "Mark Books",
+    OPTION_POSITION: "Mark Position",
+    VALUE_OVER_ICON: "Left (over icon)",
+    VALUE_BOTTOM: "Bottom",
+    VALUE_RIGHT: "Right",
+    MARK_0: "Mark 1 (check)",
+    MARK_1: "Mark 2 (star)",
+    MARK_2: "Mark 3 (circle)",
+    MARK_3: "Mark 4 (square)",
+    MARK_4: "Mark 5 (triangle)"
+  },
+  
+  ScrollbarAlphabet: {
+    TITLE: "Scrollbar Alphabet",
+    OPT_ALPHABET: "Alphabet",
+    VALUE_DEFAULT: "default"
+  },
+  
+  Calc: {
+    TITLE: "Calculator",
+    DESCRIPTION: ""
+  },
+  
+  Converter: {
+    CONVERTING_FB2: "Converting fb2 to epub...",
+    NORMALLY_TAKES: "(normally takes 1-30s)",
+    ERROR: "Error converting",
+    OPENING: "Opening book"
+  }
+
 };
