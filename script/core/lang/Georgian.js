@@ -25,6 +25,8 @@
 //	2010-06-29 kartu - Split KeyBindings keys into KeyBindings and StandardActions
 //				Added 0-9 translations
 //	2010-11-27 kartu - Amended translations with changes up to 2.0.3preview
+//  2011-03-15 SomeDeepBlue - added newer functions which are missing as of yet.
+//                            newer functions are English only for now and still need to be translated
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 0) {
@@ -589,4 +591,22 @@ return {
 		MARK_3: "ნიშანი 4 (კვადრატი)",
 		MARK_4: "ნიშანი 5 (სამკუთხედი)"
 	}	
+
+  ScrollbarAlphabet: {
+    TITLE: "Scrollbar Alphabet",
+    OPT_ALPHABET: "Alphabet",
+    VALUE_DEFAULT: "default"
+  },
+  
+  Calc: {
+    TITLE: "Calculator",
+    DESCRIPTION: ""
+  },
+  
+  Converter: {
+    CONVERTING_FB2: "Converting fb2 to epub...",
+    NORMALLY_TAKES: "(normally takes 1-30s)",
+    ERROR: "Error converting",
+    OPENING: "Opening book"
+  }
 };
