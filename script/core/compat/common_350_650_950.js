@@ -14,6 +14,7 @@
 //		Added Belorussian / Ukranian chars (as popups) to keyboard
 //		Fixed #66 x50: Collection editing broken, if collection node is not in the 4th slot
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
+//	2011-03-16 kartu - Added Georgian translation for 350/650 by rawerfas & kato
 //
 tmp = function() {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -107,6 +108,7 @@ tmp = function() {
 				es: "Spanish.js",
 				fr: "French.js",
 				it: "Italian.js",
+				ka: "Georgian.js",
 				nl: "English.js", // missing Dutch PRS+ translation
 				pt: "English.js", // missing Portuguese PRS+ translation
 				ru: "Russian.js"
@@ -117,6 +119,7 @@ tmp = function() {
 				es: "Español",
 				fr: "Français", 
 				it: "Italiano",
+				ka: "ქართული",
 				nl: "Nederlands",
 				pt: "Português",
 				ru: "Русский"
@@ -248,6 +251,7 @@ tmp = function() {
 			PARAMS.bootLog("error in localize " + e2);
 		}
 	};
+	
 	// Init language related stuff once setLocale was called and strings were loaded
 	oldSetLocale = Fskin.localize.setLocale;
 	Fskin.localize.setLocale = function() {
