@@ -37,6 +37,7 @@ History:
 	<patternset id="addons_300_505">
 		<include name="**/*" />
 		<exclude name="ScrollbarAlphabet.js" />
+		<exclude name="StandardActions_x50.js" />
 	</patternset>
 	<patternset id="addons_600_x50">
 		<include name="**/*" />
@@ -45,6 +46,7 @@ History:
 		<exclude name="DictionaryCL" />
 		<exclude name="DictionaryCL/**/*" />
 		<exclude name="DictionaryCL.js" />
+		<exclude name="StandardActions.js" />
 		<exclude name="TextEncoding.js" />
 		<exclude name="TextScale.js" />
 	</patternset>
@@ -53,6 +55,7 @@ History:
 	</patternset>
 	<patternset id="addons_505">
 		<patternset refid="addons_300_505" />
+		<exclude name="MediaTag.js" />
 	</patternset>
 	<patternset id="addons_600">
 		<patternset refid="addons_600_x50" />
