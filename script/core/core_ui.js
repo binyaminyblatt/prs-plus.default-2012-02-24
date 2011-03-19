@@ -18,6 +18,7 @@
 //	2011-01-31 kartu - Added multiPage field (x50) to enable scrollbars
 //	2011-02-06 kartu - Added Core.ui.updateScreen
 //	2011-03-03 kartu - Added "duration" option to showMsg
+//	2011-03-19 kartu - Changed showMsg, duration is now in seconds, changed "sleep" mechanism, shell command is used
 //
 
 try {
@@ -93,10 +94,13 @@ try {
 	//
 	// Arguments:
 	//	msgs - array of strings
-	//	duration - for how long to show in milliseconds, 0 or negative number means don't wipe. 1000 is the default value.
+	//	duration - for how long to show in seconds, 0 or negative number means don't wipe. 2 is the default value.
 	//
 	Core.ui.showMsg = function (msgs, duration) {
-		var cnt, win, gap, spc, ms_w, ms_h, i, b, w, h, x, y, x1, y1;
+		var cnt, win, gap, spc, ms_w, ms_h, i, b, w, h, x, y, x1, y1,
+			oldTextStyle, oldTextSize, oldPenColor;
+
+		
 		if (typeof msgs === "string") {
 			msgs = [msgs];
 		}
@@ -105,6 +109,12 @@ try {
 			return;
 		}
 		win = kbook.model.container.getWindow();
+		
+		// Save old styles
+		oldTextStyle = win.getTextStyle();
+		oldTextSize = win.getTextSize();
+		oldPenColor = win.getPenColor();
+		
 		// Settings
 		gap = 20;
 		spc = 10;
@@ -137,19 +147,28 @@ try {
 			y1 += ms_h[i] + spc;
 		}
 		win.endDrawing();
+		
+		// Restore pen color, text size & style
+		win.setTextStyle(oldTextStyle);
+		win.setTextSize(oldTextSize);
+		win.setPenColor(oldPenColor);
+		
 		// Pause
 		if (duration === undefined) {
-			duration = 1000;
+			duration = 2;
 		}
+		
 		if (duration > 0) {
-			if (this.showMsgTimer === undefined) {
-				this.showMsgTimer = new Timer();
-				this.showMsgTimer.target = this;
+			try {
+				Core.shell.exec("sleep " + duration);
+				if (kbook.model.currentNode && kbook.model.currentNode.name === "About") {
+					// Crashes in about screen on 650,? if only part of it is invalidated FIXME: figure why
+					win.invalidate();
+				} else {
+					win.invalidate(x, y, w, h);
+				}
+			} catch (ignore) {
 			}
-			this.showMsgTimer.onCallback = function (d) {
-				win.invalidate(x, y, w, h);
-			};
-			this.showMsgTimer.schedule(duration);
 		}
 	};
 	
