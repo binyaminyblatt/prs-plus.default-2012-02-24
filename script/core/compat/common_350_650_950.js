@@ -15,6 +15,7 @@
 //		Fixed #66 x50: Collection editing broken, if collection node is not in the 4th slot
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
 //	2011-03-16 kartu - Added Georgian translation for 350/650 by rawerfas & kato
+//	2011-03-19 kartu - Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
 //
 tmp = function() {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -42,10 +43,14 @@ tmp = function() {
 		};
 		
 		keyboardLayout.isSelectChar = function(key) {
-			if (SEL_CHARS[key] !== undefined) {
-				return true;
+			try {
+				if (SEL_CHARS[key] !== undefined) {
+					return true;
+				}
+				return oldIsSelectChar.apply(this, arguments);
+			} catch (e) {
+				return false;
 			}
-			return oldIsSelectChar.apply(this, arguments);
 		};
 		
 		keyboardLayout.setPopupChar = function (text, popup) {
@@ -58,7 +63,7 @@ tmp = function() {
 				}
 				return n;
 			}
-			return oldIsSelectChar.apply(this, arguments);
+			return oldSetPopupChar.apply(this, arguments);
 		};
 	};
 	localizeKeyboardPopups();
@@ -152,7 +157,7 @@ tmp = function() {
 			try {
 				// Hook comment field
 				kbook.commentField.format = function (item, name) {
-					if (item && '_mycomment' in item) {
+					if (item && item._mycomment !== undefined) {
 						if ((typeof item._mycomment) === "function") {
 							try {
 								return item._mycomment();
@@ -162,7 +167,7 @@ tmp = function() {
 						} else {
 							return item._mycomment;
 						}
-					} else if (item && 'comment' in item) {
+					} else if (item && item.comment !== undefined) {
 						return item.comment;
 					}
 				};

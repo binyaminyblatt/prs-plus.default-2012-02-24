@@ -2,6 +2,7 @@
  * 300: Fixed broken XML in Spanish translation
  * x50/600: TextScale addon was included
  * 300/505: Fixed "actions do not work"
+ * 600/x50: Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
 
 === 2.0.10 alpha  ===
  * x50: Fixed doRotate action
