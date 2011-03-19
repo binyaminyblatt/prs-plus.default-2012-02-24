@@ -17,6 +17,7 @@
 //	2011-02-27 kartu - Added Belorussian / Ukranian chars (as popups) to keyboard
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
 //	2011-03-02 kartu - Added #47&48 Spanish (by ?)  & Catalan (by Alex Castrillo) localizations
+//	2011-03-19 kartu - Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -395,7 +396,7 @@ var tmp = function() {
 				}
 				return n;
 			}
-			return oldIsSelectChar.apply(this, arguments);
+			return oldSetPopupChar.apply(this, arguments);
 		};
 	};
 	localizeKeyboardPopups();
