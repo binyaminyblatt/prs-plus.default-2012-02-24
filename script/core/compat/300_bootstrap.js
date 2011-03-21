@@ -14,6 +14,7 @@
 //	2011-02-06 kartu - Fixed #64 "Wrong german translation file"
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
 //	2011-03-02 kartu - Added #57 Spanish localization (by Carlos)
+//	2011-03-21 kartu - Added Ukrainian localization by Bookoman
 
 var tmp = function() {
 	var oldSetLocale, localize;
@@ -27,7 +28,7 @@ var tmp = function() {
 			currentLang = kbook.model.language;
 	
 			settingsNode = kbook.root.nodes[6];
-			languages = ["en", "es", "de", "fr", "ka", "it", "nl", "ru"];
+			languages = ["en", "es", "de", "fr", "ka", "it", "nl", "ru", "ua"];
 			prspLanguages = {
 				en: "English.js",
 				de: "German.js",
@@ -36,7 +37,8 @@ var tmp = function() {
 				ka: "Georgian.js",
 				it: "Italian.js",
 				nl: "English.js", // missing Dutch PRS+ translation
-				ru: "Russian.js"
+				ru: "Russian.js",
+				ua: "Ukrainian.js"
 			};
 			langNames = {
 				en: "English",
@@ -46,7 +48,8 @@ var tmp = function() {
 				it: "Italiano",	
 				ka: "ქართული",
 				nl: "Nederlands", 
-				ru: "Русский"
+				ru: "Русский",
+				ua: "Українська"
 			};
 	
 			if (currentLang === undefined || prspLanguages[currentLang] === undefined) {

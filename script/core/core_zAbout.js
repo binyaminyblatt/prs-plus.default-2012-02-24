@@ -28,13 +28,14 @@ try {
 			"Translations by:\n" +
 			"     Catalan: surquizu\n" +
 			"     Czech: Hobogen\n" +
-			"     French: VICTORSJG, Duglum, ronnn\n" +
+			"     French: VICTORSJG, Duglum, ronnn, dpierron\n" +
 			"     Georgian: rawerfas, kartu\n" +
 			"     German: Duglum, klawong, Mark Nord\n" +			
 			"     Italian: Samhain, Salvatore Ingala\n" +
 			"     Russian: SLL, boroda, amutin, happyhgy\n" +
 			"     Simplified Chinese: thawk, frank0734\n" +
-			"     Spanish: surquizu, VICTORSJG\n" +
+			"     Spanish: surquizu, VICTORSJG, Carlos\n" +
+			"     Ukrainian: Bookoman\n" +
 			"© GNU Lesser General Public License.";
 		
 		initAbout = function() {
