@@ -3,25 +3,26 @@
 // Translator: Duglum, klawong, Mark Nord
 //
 // History:
-//	2010-04-30 kravitz - Refactored, added new strings
-//	2010-05-01 kartu - Added ACTION_GOTO_LINK
-//	2010-05-01 Duglum, klawong, Mark Nord - translation is corrected
-//	2010-05-02 kartu - Added dictionary strings
-//	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
-//	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
-//	2010-05-06 kartu - Added ppm related translations for PageIndex addon
-//	2010-05-10 kartu - Added German corrections by Duglum/Mark Nord/klawong
-//	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
-//	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
-//	2010-05-15 kartu - Added PAGE (BookHistory)
-//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
-//	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
-//	2010-05-18 kravitz - Added Duglum's translation of OPTION_SKIP_BOOK_MENU
-//	2010-05-20 kartu - Removed script reference from about string
-//	2010-06-29 kartu - Split KeyBindings keys into KeyBindings and StandardActions
-//		Added 0-9 translations
-//	2011-03-14 SomeDeepBlue - Translation added for sections: Statusbar, Converter, Calc, Scrollbar Alphabet, MediaTag and MenuCustomizer
-//		Function names Clock and PageIndex corrected (StatusBar_*)
+//      2010-04-30 kravitz - Refactored, added new strings
+//      2010-05-01 kartu - Added ACTION_GOTO_LINK
+//      2010-05-01 Duglum, klawong, Mark Nord - translation is corrected
+//      2010-05-02 kartu - Added dictionary strings
+//      2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
+//      2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
+//      2010-05-06 kartu - Added ppm related translations for PageIndex addon
+//      2010-05-10 kartu - Added German corrections by Duglum/Mark Nord/klawong
+//      2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
+//      2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
+//      2010-05-15 kartu - Added PAGE (BookHistory)
+//      2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//      2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
+//      2010-05-18 kravitz - Added Duglum's translation of OPTION_SKIP_BOOK_MENU
+//      2010-05-20 kartu - Removed script reference from about string
+//      2010-06-29 kartu - Split KeyBindings keys into KeyBindings and StandardActions
+//                              Added 0-9 translations
+//  	2011-03-14 SomeDeepBlue - Translation added for sections: Statusbar, Converter, Calc, Scrollbar Alphabet, MediaTag and MenuCustomizer
+//                                Function names Clock and PageIndex corrected (StatusBar_*)
+//	2011-03-18 MiK77 - Translation reviewed 
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
@@ -299,10 +300,13 @@ return {
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS: "PRS+ Einstellungen",
+		NODE_PRSP_SETTINGS_SHORT: "PRS+ Einst.",
 		NODE_OTHERS: "Multimedia",
 		NODE_GAMES_AND_UTILS: "Spiele & Werkzeuge",
 		GROUP_MENU_TITLE: "Menü-Einstellungen",
-		GROUP_VIEWER_TITLE: "Darstellungsoptionen"
+		GROUP_VIEWER_TITLE: "Darstellungsoptionen",
+		MSG_RESTART: "Neustarten um Änderungen anzuwenden",
+		NODE_MORE: "Mehr"
 	},
 
 	CoreLang: {
@@ -399,6 +403,10 @@ return {
 		BN_H_MENU: "Menü-Taste halten",
 		BN_H_SB_NEXT: "Seite 'weiter' halten",
 		BN_H_SB_PREVIOUS: "Seite 'zurück' halten",
+		BN_H_JP_LEFT: "Joypad links halten",
+		BN_H_JP_RIGHT: "Joypad rechts halten",
+		BN_H_JP_UP: "Joypad hoch halten",
+		BN_H_JP_DOWN: "Joypad runter halten",
 		BN_H_JP_CENTER: "Joypad Mitte halten",
 		BN_H_1: "1 halten",
 		BN_H_2: "2 halten",
@@ -423,10 +431,13 @@ return {
 		BN_VOLUME_DOWN: "Lautstärke -",
 		BN_H_VOLUME_DOWN: "Lautstärke - halten",
 		BN_VOLUME_UP: "Lautstärke +",
-		BN_H_VOLUME_UP: "Lautstärke + halten"
+		BN_H_VOLUME_UP: "Lautstärke + halten",
+		BN_HOME: "Home-Taste",
+		BN_H_HOME: "Home-Taste halten"
 	},
 
 	StandardActions: {
+		TITLE: "Standardaktionen",
 		// Actions
 		ACTION_SHUTDOWN: "Gerät ausschalten",
 		ACTION_NEXT_PAGE: "Nächste Seite",
@@ -435,7 +446,22 @@ return {
 		ACTION_PREVIOUS_IN_HISTORY: "Vorheriges im Verlauf",
 		ACTION_PREVIOUS_SONG: "Vorheriges Lied",
 		ACTION_NEXT_SONG: "Nächstes Lied",
-		ACTION_GOTO_LINK: "Verknüpfung folgen"
+		ACTION_GOTO_LINK: "Verknüpfung folgen",
+		ACTION_CONTINUE_READING: "Lesen fortsetzen",
+		ACTION_OPEN_TOC: "Inhaltsverzeichnis öffnen",
+		// "Bubble" actions		
+		ACTION_doOption: "Optionen öffnen",
+		ACTION_doSearch: "Suchen",
+		ACTION_doRotate: "Rotieren",
+		ACTION_doRotate0: "Rotiere 0°",
+		ACTION_doRotate90: "Rotiere 90°",
+		ACTION_doRotate180: "Rotiere 180°",
+		ACTION_doRotate270: "Rotiere 270°",
+		ACTION_doRotateCWise: "Rotiere im Uhrzeigersinn",
+		ACTION_doRotateCCWise: "Rotiere gegen Uhrzeigersinn",
+		ACTION_doMenu: "Vorheriges Menü (zurück / hoch)",
+		ACTION_doSize: "Größe",
+		ACTION_doRoot: "Zur Startseite"
 	},
 
 	Screenshot: {
@@ -453,26 +479,29 @@ return {
 	},
 
 	BrowseFolders: {
-		TITLE: "Verzeichnisse durchsuchen",
+		TITLE: "Ordner durchsuchen",
 		OPTION_SORTING_MODE: "Sortier-Modus",
 		VALUE_BY_TITLE: "Nach Titel",
 		VALUE_BY_AUTHOR_THEN_TITLE: "Nach Autor, dann Titel",
 		VALUE_BY_AUTHOR_SWAPPING: "Nach Autor, Namen vertauscht",
 		VALUE_BY_FILENAME: "Nach Dateiname",
+		VALUE_BY_FILENAME_AS_COMMENT: "Nach Dateiname, im Kommentar",
 		OPTION_TITLE_SORTER: "Beim Sortieren 'titleSorter' benutzen",
+		OPTION_FAVOURITE_FOLDERS: "Nur bevorzugte Ordner",
 		ENABLED: "Aktiviert",
 		DISABLED: "Deaktiviert",
-		OPTION_IM_ROOT: "Verzeichnis des internen Speichers",
+		OPTION_IM_ROOT: "Stammverzeichnis interner Speicher",
 		OPTION_CARD_SCAN: "SD/Memory Stick scannen",
 		OPTION_MOUNT: "SD/Memory Stick mounten (experimentell)",
 		NODE_RESCAN_INTERNAL_MEMORY: "Internen Speicher erneut scannen",
 		NODE_COPY_TO_INTERNAL_MEMORY: "In den internen Speicher kopieren",
-		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Kopiert Datei in das Wurzelverzeichnis des internen Speichers",
+		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Kopiert Datei in das Stammverzeichnis des internen Speichers",
 		NODE_COPY_AND_RESCAN: "Kopieren & internen Speicher erneut scannen",
-		NODE_COPY_AND_RESCAN_COMMENT: "Kopiert Datei in das Wurzelverzeichnis des internen Speichers und scannt erneut",
+		NODE_COPY_AND_RESCAN_COMMENT: "Kopiert Datei in das Stammverzeichnis des internen Speichers und scannt erneut",
 		ERROR_TARGET_EXISTS: "Fehler, Zieldatei existiert bereits",
-		NODE_BROWSE_FOLDERS: "Verzeichnisse durchsuchen",
-		NODE_BROWSE_FOLDERS_COMMENT: "",
+		NODE_BROWSE_FOLDERS: "Ordner durchsuchen",
+		NODE_BROWSE_FOLDERS_SHORT: "Ordner",
+		NODE_BROWSE_FOLDERS_COMMENT: "Dateisystem durchsuchen",
 		NODE_INTERNAL_MEMORY: "Interner Speicher",
 		NODE_MEMORY_STICK: "Memory Stick",
 		NODE_MEMORY_STICK_MOUNT: "Memory Stick via mount",
@@ -524,17 +553,17 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Buch-Verlauf",
+		SHORT_TITLE: "Verlauf",
+		VALUE_WHEN_ENTERING_BOOK: "Beim Buch Öffnen",
+		VALUE_WHEN_EXITING_BOOK: "Beim Buch Schließen",
+		VALUE_ALWAYS: "Immer",
+		VALUE_NEVER: "Nie",
 		VALUE_DISABLED: "Deaktiviert",
 		OPTION_REPLACE: "Weiterlesen durch Verlauf ersetzen",
 		VALUE_ON: "Aktiviert",
 		VALUE_OFF: "Deaktiviert",
 		OPTION_SKIP_BOOK_MENU: "Buch-Menü überspringen"
 	},
-
-	//ReadMark      ReadMark: {
-	//              TITLE_UNREAD: "Buch als gelesen markieren",
-	//              TITLE_READ: "Buch als nicht gelesen markieren",
-	//      },
 
 	TextScale: {
 		OPTION_SCALE_DEFAULT: "Standardgröße",
@@ -566,7 +595,8 @@ return {
 		WARN_DICT_DOESNT_EXIST: "Wörterbuch-Datei existiert nicht!",
 		ACTION_DICTIONARY: "Wörterbuch öffnen",
 		OPTION_DICTIONARY: "Wörterbuch-Datei",
-		VALUE_DISABLED: "Deaktiviert"
+		VALUE_DISABLED: "Deaktiviert",
+		VALUE_DEFAULT: "Default"
 	},
 
 	MediaTag: {
