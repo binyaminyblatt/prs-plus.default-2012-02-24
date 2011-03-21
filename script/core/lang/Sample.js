@@ -27,7 +27,7 @@ var FUNC_X_SOMETHING = function (n, s) {
         if (n > 1) {
                 return n + " " + s[0];
         }
-        if (n == 1) {
+        if (n === 1) {
                 return s[1];
         }
         return s[2];

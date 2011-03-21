@@ -3,31 +3,31 @@
 // Translator: Duglum, klawong, Mark Nord
 //
 // History:
-//      2010-04-30 kravitz - Refactored, added new strings
-//      2010-05-01 kartu - Added ACTION_GOTO_LINK
-//      2010-05-01 Duglum, klawong, Mark Nord - translation is corrected
-//      2010-05-02 kartu - Added dictionary strings
-//      2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
-//      2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
-//      2010-05-06 kartu - Added ppm related translations for PageIndex addon
-//      2010-05-10 kartu - Added German corrections by Duglum/Mark Nord/klawong
-//      2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
-//      2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
-//      2010-05-15 kartu - Added PAGE (BookHistory)
-//      2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
-//      2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
-//      2010-05-18 kravitz - Added Duglum's translation of OPTION_SKIP_BOOK_MENU
-//      2010-05-20 kartu - Removed script reference from about string
-//      2010-06-29 kartu - Split KeyBindings keys into KeyBindings and StandardActions
-//                              Added 0-9 translations
-//  	2011-03-14 SomeDeepBlue - Translation added for sections: Statusbar, Converter, Calc, Scrollbar Alphabet, MediaTag and MenuCustomizer
-//                                Function names Clock and PageIndex corrected (StatusBar_*)
+//	2010-04-30 kravitz - Refactored, added new strings
+//	2010-05-01 kartu - Added ACTION_GOTO_LINK
+//	2010-05-01 Duglum, klawong, Mark Nord - translation is corrected
+//	2010-05-02 kartu - Added dictionary strings
+//	2010-05-02 kartu - Added translations and sizes for a number of strings, including "OK"
+//	2010-05-03 kravitz - Renamed ReadingList to BookHistory, added new strings, refactored MenuTuning
+//	2010-05-06 kartu - Added ppm related translations for PageIndex addon
+//	2010-05-10 kartu - Added German corrections by Duglum/Mark Nord/klawong
+//	2010-05-11 kartu - Added VALUE_DEFAULT_DATE (CoreLang)
+//	2010-05-15 kartu - Added OPTION_SKIP_BOOK_MENU (BookHistory)
+//	2010-05-15 kartu - Added PAGE (BookHistory)
+//	2010-05-17 kravitz - Replaced PAGE (BookHistory) with added FUNC_PAGE_X
+//	2010-05-18 kravitz - Replaced PAGE (Sony) with FUNC_PAGE_X
+//	2010-05-18 kravitz - Added Duglum's translation of OPTION_SKIP_BOOK_MENU
+//	2010-05-20 kartu - Removed script reference from about string
+//	2010-06-29 kartu - Split KeyBindings keys into KeyBindings and StandardActions
+//		Added 0-9 translations
+//	2011-03-14 SomeDeepBlue - Translation added for sections: Statusbar, Converter, Calc, Scrollbar Alphabet, MediaTag and MenuCustomizer
+//		Function names Clock and PageIndex corrected (StatusBar_*)
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
 		return n + " " + s[0];
 	}
-	if (n == 1) {
+	if (n === 1) {
 		return s[1];
 	}
 	return s[2];
