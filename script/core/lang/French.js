@@ -19,12 +19,13 @@
 //	2010-06-29 kartu - Changed encoding to UTF-8 from win1250
 //	2010-06-29 kartu - Split KeyBindings keys into KeyBindings and StandardActions
 //				Added 0-9 translations
+//	2011-03-16 dpierron - Corrected french translations, and added missing translations from English.js
 
 var FUNC_X_SOMETHING = function (n, s) {
 	if (n > 1) {
 		return n + " " + s[0];
 	}
-	if (n == 1) {
+	if (n === 1) {
 		return s[1];
 	}
 	return s[2];
@@ -35,11 +36,11 @@ var FUNC_X_BOOKS = function (n) {
 };
 
 var FUNC_X_SETTINGS = function (n) {
-	return FUNC_X_SOMETHING(n, ["paramctres", "1 paramctres", "Aucun paramctres"]);
+	return FUNC_X_SOMETHING(n, ["paramètres", "1 paramètres", "Aucun paramètre"]);
 };
 
 var FUNC_X_ITEMS = function (n) {
-	return FUNC_X_SOMETHING(n, ["éléments", "1 élément", "Aucun paramctres"]);
+	return FUNC_X_SOMETHING(n, ["éléments", "1 élément", "Aucun élément"]);
 };
 
 var FUNC_X_PAGES = function (n) {
@@ -47,7 +48,7 @@ var FUNC_X_PAGES = function (n) {
 };
 
 var FUNC_X_PICTURES = function (n) {
-	return FUNC_X_SOMETHING(n, ["images", "1 image", "Pas de image"]);
+	return FUNC_X_SOMETHING(n, ["images", "1 image", "Pas d'image"]);
 };
 
 var FUNC_X_SONGS = function (n) {
@@ -55,11 +56,11 @@ var FUNC_X_SONGS = function (n) {
 };
 
 var FUNC_X_BOOKMARKS = function (n) {
-	return FUNC_X_SOMETHING(n, ["tous les signets", "1 marque-page", "Aucun marque-pages"]);
+	return FUNC_X_SOMETHING(n, ["tous les signets", "1 marque-page", "Aucun marque-page"]);
 };
 
 var FUNC_X_COLLECTIONS = function (n) {
-	return FUNC_X_SOMETHING(n, ["collections", "1 collections", "Pas de collections"]);
+	return FUNC_X_SOMETHING(n, ["collections", "1 collection", "Pas de collection"]);
 };
 
 var FUNC_PAGE_X = function (n) {
@@ -99,7 +100,7 @@ return {
 		// USB connected
 		DO_NOT_DISCONNECT: "Ne débranchez pas!",
 		USB_CONNECTED: "USB connecté",
-		DEVICE_LOCKED: "Dispositif de verrouillage",
+		DEVICE_LOCKED: "Appareil verrouillé",
 
 		// About, translate either all or none
 		ABOUT_PRSP: "PRS+ @@@firmware@@@\n" + "Author: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + "igorsk, boroda, obelix, pepak, kravitz and others.\n" + "© GNU Lesser General Public License.",
@@ -118,12 +119,12 @@ return {
 		DEVICE_ID: "Device",
 
 		// Mime & card names
-		RICH_TEXT_FORMAT: "Rich Text Format",
+		RICH_TEXT_FORMAT: "Format RTF",
 		ADOBE_PDF: "Adobe PDF",
 		EPUB_DOCUMENT: "Document EPUB",
 		BBEB_BOOK: "Livre BBeB",
 		PLAIN_TEXT: "Texte",
-		INTERNAL_MEMORY: "Mémoire Interne",
+		INTERNAL_MEMORY: "Mémoire interne",
 		MEMORY_STICK: "Memory Stick",
 		SD_CARD: "Carte SD",
 
@@ -132,7 +133,7 @@ return {
 		FORMATTING: "Formatage en cours...",
 		LOADING: "Chargement en cours...",
 		LOW_BATTERY: "Batterie faible!",
-		HR_WARNING: "Vous voulez effacer tout le contenu et restaurer les paramctres initiaux et le paramctrage des verroux numeriques?\n\nOui - Touche 5\nAucun - Touch MENU",
+		HR_WARNING: "Vous voulez effacer tout le contenu et restaurer les paramètres initiaux et le paramétrage du verrouillage?\n\nOui - Touche 5\nAucun - Touch MENU",
 		DEVICE_SHUTDOWN: "Éteindre l'appareil",
 		PRESS_MARK_TO_SHUTDOWN: "Appuyer sur SIGNET pour éteindre",
 		THIS_DEVICE: "l'appareil.",
@@ -141,9 +142,9 @@ return {
 		FORMAT_INTERNAL_MEMORY: "Formater Mémoire Interne",
 		PRESS_MARK_TO_FORMAT: "Appuyer sur SIGNET pour formater",
 		MSG_INTERNAL_MEMORY: "la mémoire Interne.",
-		RESTORE_DEFAULTS: "Restaurer les paramctres par défaut",
+		RESTORE_DEFAULTS: "Restaurer les paramètres par défaut",
 		PRESS_MARK_TO_RESTORE: "Appuyer sur SIGNET pour restaurer",
-		DEFAULT_SETTINGS: "les paramctres par défaut.",
+		DEFAULT_SETTINGS: "les paramètres par défaut.",
 		UPPER_PAGE: "PAGE",
 		ONE_OF_ONE: "1 de 1",
 		NO_BATTERY: "Batterie vide!",
@@ -160,7 +161,7 @@ return {
 		NOW_PLAYING: "Lecture en cours",
 		MUSIC: "Audio",
 		PICTURES: "Images",
-		SETTINGS: "Paramctres",
+		SETTINGS: "Paramètres",
 
 		// In Settings
 		// orientation
@@ -203,11 +204,11 @@ return {
 		// about
 		ABOUT: "R propos de Reader",
 		// reset to factory settings
-		RESET_TO_FACTORY: "Restaurer les paramctres par défaut",
+		RESET_TO_FACTORY: "Restaurer les paramètres par défaut",
 
 
 		// In Advanced Settings
-		ADVANCED_SETTINGS: "Paramctres avancés",
+		ADVANCED_SETTINGS: "Paramètres avancés",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "Verrouillage de l'appareil",
 		SL_OFF: "Oui",
@@ -258,7 +259,7 @@ return {
 		NO_SONG: "Pas de chanson",
 
 		// Info title strings, comma separated, no spaces after comma
-		INFO_TITLES: "Couvrir,Titre,Auteur,Éditeur,Categoria,eBook ID,Type,Date,Taille,Emplacement,Fichier,Des droits numériques,Expire",
+		INFO_TITLES: "Couverture,Titre,Auteur,Éditeur,Catégorie,eBook ID,Type,Date,Taille,Emplacement,Fichier,Droits numériques,Expiration",
 
 		// Titles and criterions for "Books by Title" and "Books by Folder"
 		// title is displayed, "criterion" is used for sorting.
@@ -305,11 +306,14 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
 		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		NODE_PRSP_SETTINGS: "PRS+ paramctres",
+		NODE_PRSP_SETTINGS: "Paramètres PRS+",
+		NODE_PRSP_SETTINGS_SHORT: "Param. PRS+",
 		NODE_OTHERS: "Multimédia",
 		NODE_GAMES_AND_UTILS: "Jeux - Utilitaires",
 		GROUP_MENU_TITLE: "Réglages de menu",
-		GROUP_VIEWER_TITLE: "Paramctres Viewer"
+		GROUP_VIEWER_TITLE: "Paramètres lecteur",
+		MSG_RESTART: "Redémarrer pour appliquer les modifications",
+		NODE_MORE: "Plus"
 	},
 
 	CoreLang: {
@@ -317,14 +321,14 @@ return {
 		COMMENT: "Nécessite un redémarrage",
 		OPTION_LANG: "Langue",
 
-		OPTION_DATE_FORMAT: "Format Date",
+		OPTION_DATE_FORMAT: "Format date",
 		VALUE_DEFAULT_DATE: "Par défaut",
 		ddMMMYY: "31/Jan/99",
 		ddMONTHYY: "31/Janvier/99",
 		ddMMMYYYY: "31/Jan/1999",
 		ddMONTHYYYY: "31/Janvier/1999",
 
-		OPTION_DATE_SEPARATOR: "Séparateur de Date",
+		OPTION_DATE_SEPARATOR: "Séparateur de date",
 		VALUE_SPACE: "Espace",
 		VALUE_NONE: "Aucun",
 
@@ -335,7 +339,7 @@ return {
 		MONTH_SHORT_5: "Mai",
 		MONTH_SHORT_6: "Juin",
 		MONTH_SHORT_7: "Juil",
-		MONTH_SHORT_8: "Aout",
+		MONTH_SHORT_8: "Août",
 		MONTH_SHORT_9: "Sept",
 		MONTH_SHORT_10: "Oct",
 		MONTH_SHORT_11: "Nov",
@@ -348,7 +352,7 @@ return {
 		MONTH_5: "Mai",
 		MONTH_6: "Juin",
 		MONTH_7: "Juillet",
-		MONTH_8: "Aout",
+		MONTH_8: "Août",
 		MONTH_9: "Septembre",
 		MONTH_10: "Octobre",
 		MONTH_11: "Novembre",
@@ -356,14 +360,14 @@ return {
 	},
 
 	MenuCaptions: {
-		OPTION_STYLE: "Menu Légendes Style",
-		VALUE_SONY_DEFAULT: "Original Sony",
-		VALUE_ALWAYS_SMALL: "Toujours petits",
+		OPTION_STYLE: "Style des options du menu",
+		VALUE_SONY_DEFAULT: "Par défaut",
+		VALUE_ALWAYS_SMALL: "Toujours petites",
 		VALUE_ALWAYS_BIG: "Toujours grandes"
 	},
 
 	TextEncoding: {
-		OPTION_TITLE: "TXT et RTF Livres Encoding",
+		OPTION_TITLE: "Encodage des livres TXT et RTF",
 		MSG_RESTART: "Nécessite un redémarrage!",
 		LATIN: "Latin",
 		RUSSIAN: "Russe(Windows-1251)"
@@ -376,7 +380,7 @@ return {
 		DEFAULT_VALUE: "Par défaut",
 
 		// Contexts
-		GLOBAL: "R tout moment",
+		GLOBAL: "À tout moment",
 		IN_MENU: "Dans les menus",
 		IN_BOOK: "Lors de la lecture de livres",
 
@@ -389,24 +393,28 @@ return {
 		// Buttons
 		BN_SIZE: "Zoom",
 		BN_BOOKMARK: "Signet",
-		BN_BL_NEXT: "'Page suivante' r gauche",
-		BN_BL_PREVIOUS: "'Page précédente' r gauche",
-		BN_SB_NEXT: "'Page suivante' sidebar droite",
-		BN_SB_PREVIOUS: "'Page précédente' sidebar droite",
+		BN_BL_NEXT: "'Page suivante' à gauche",
+		BN_BL_PREVIOUS: "'Page précédente' à gauche",
+		BN_SB_NEXT: "'Page suivante' barre de droite",
+		BN_SB_PREVIOUS: "'Page précédente' barre de droite",
 		BN_MENU: "Menu",
 		BN_JP_LEFT: "Joypad gauche",
-		BN_JP_RIGHT: "Joypad droit",
+		BN_JP_RIGHT: "Joypad droite",
 		BN_JP_UP: "Joypad haut ",
 		BN_JP_DOWN: "Joypad bas",
 		BN_JP_CENTER: "Joypad centre",
-		BN_H_SIZE: "Maintenir Zoom",
+		BN_H_SIZE: "Maintenir zoom",
 		BN_H_BOOKMARK: "Maintenir Signet",
-		BN_H_BL_NEXT: "Maintenir 'Page suivante' r gauche",
-		BN_H_BL_PREVIOUS: "Maintenir 'Page précédente' r gauche",
+		BN_H_BL_NEXT: "Maintenir 'Page suivante' à gauche",
+		BN_H_BL_PREVIOUS: "Maintenir 'Page précédente' à gauche",
 		BN_H_MENU: "Maintenir Menu",
-		BN_H_SB_NEXT: "Maintenir 'Page suivante' sidebar",
-		BN_H_SB_PREVIOUS: "Maintenir 'Page précédente' sidebar",
-		BN_H_JP_CENTER: "Maintenir joypad centre",
+		BN_H_SB_NEXT: "Maintenir 'Page suivante' barre de droite",
+		BN_H_SB_PREVIOUS: "Maintenir 'Page précédente' barre de droite",
+		BN_H_JP_LEFT: "Maintenir Joypad Gauche",
+		BN_H_JP_RIGHT: "Maintenir Joypad Droite",
+		BN_H_JP_UP: "Maintenir Joypad Haut",
+		BN_H_JP_DOWN: "Maintenir Joypad Bas",
+		BN_H_JP_CENTER: "Maintenir Joypad Centre",
 		BN_H_1: "Maintenir 1",
 		BN_H_2: "Maintenir 2",
 		BN_H_3: "Maintenir 3",
@@ -430,7 +438,9 @@ return {
 		BN_VOLUME_DOWN: "Volume -",
 		BN_H_VOLUME_DOWN: "Maintenir Volume -",
 		BN_VOLUME_UP: "Volume +",
-		BN_H_VOLUME_UP: "Maintenir Volume +"
+		BN_H_VOLUME_UP: "Maintenir Volume +",
+		BN_HOME: "Bouton Maison",
+		BN_H_HOME: "Maintenir Bouton Maison"
 	},		
 	
 	StandardActions: {
@@ -442,7 +452,22 @@ return {
 		ACTION_PREVIOUS_IN_HISTORY: "Précédent dans l'historique",
 		ACTION_PREVIOUS_SONG: "Chanson précédente",
 		ACTION_NEXT_SONG: "Chanson suivante",
-		ACTION_GOTO_LINK: "Aller au lien"
+		ACTION_GOTO_LINK: "Aller au lien",
+		ACTION_CONTINUE_READING: "Continuer à lire",
+		ACTION_OPEN_TOC: "Ouvrir Table des Matières",
+		// "Bubble" actions		
+		ACTION_doOption: "Ouvrir Options",
+		ACTION_doSearch: "Chercher",
+		ACTION_doRotate: "Tourner",
+		ACTION_doRotate0: "Tourner à 0°",
+		ACTION_doRotate90: "Tourner à 90°",
+		ACTION_doRotate180: "Tourner à 180°",
+		ACTION_doRotate270: "Tourner à 270°",
+		ACTION_doRotateCWise: "Tourner à droite",
+		ACTION_doRotateCCWise: "Tourner à gauche",
+		ACTION_doMenu: "Menu précédent",
+		ACTION_doSize: "Taille",
+		ACTION_doRoot: "Aller au menu principal"
 	},
 
 	Screenshot: {
@@ -466,7 +491,9 @@ return {
 		VALUE_BY_AUTHOR_THEN_TITLE: "Par auteur, puis le titre",
 		VALUE_BY_AUTHOR_SWAPPING: "Par auteur échange Nom / Prénom",
 		VALUE_BY_FILENAME: "Par nom de fichier",
-		OPTION_TITLE_SORTER: "Trier par type d'ordre",
+		VALUE_BY_FILENAME_AS_COMMENT: "Par nom de fichier",
+		OPTION_TITLE_SORTER: "Utiliser le champ 'titleSorter' pour le tri",
+		OPTION_FAVOURITE_FOLDERS: "Dossiers favoris",
 		ENABLED: "Activé",
 		DISABLED: "Désactivé",
 		OPTION_IM_ROOT: "Dossier racine de la mémoire interne",
@@ -474,11 +501,12 @@ return {
 		OPTION_MOUNT: "Utilisez mount avec les cartes SD/MS",
 		NODE_RESCAN_INTERNAL_MEMORY: "Rescan mémoire interne",
 		NODE_COPY_TO_INTERNAL_MEMORY: "Copier dans la mémoire interne",
-		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copie de fichiers r la racine de la mémoire interne",
+		NODE_COPY_TO_INTERNAL_MEMORY_COMMENT: "Copie de fichiers à la racine de la mémoire interne",
 		NODE_COPY_AND_RESCAN: "Copie & Rescan mémoire interne",
-		NODE_COPY_AND_RESCAN_COMMENT: "Copie de fichiers r la racine de la mémoire interne et rescan",
+		NODE_COPY_AND_RESCAN_COMMENT: "Copie de fichiers à la racine de la mémoire interne et rescan",
 		ERROR_TARGET_EXISTS: "Erreur, le fichier existe",
 		NODE_BROWSE_FOLDERS: "Parcourir les dossiers",
+		NODE_BROWSE_FOLDERS_SHORT: "Dossiers",
 		NODE_BROWSE_FOLDERS_COMMENT: "Parcourir le systcme de fichiers",
 		NODE_INTERNAL_MEMORY: "Mémoire interne",
 		NODE_MEMORY_STICK: "Memory Stick",
@@ -487,7 +515,11 @@ return {
 		NODE_SD_CARD_MOUNT: "Carte SD via Mount"
 	},
 
-	Clock: {
+	StatusBar: {
+		TITLE: "Barre d'état"
+	},
+
+	StatusBar_Clock: {
 		TITLE: "Horloge",
 		OPTION_STYLE: "Style de l'Horloge",
 		VALUE_24H: "Format 24 Heures",
@@ -502,25 +534,25 @@ return {
 		PM: "pm"
 	},
 
-	PageIndex: {
+	StatusBar_PageIndex: {
 		TITLE: "Pagination des livres et des menus",
 		INDEX_STYLE_BOOK: "Style de l'index en lecture",
-		INDEX_MODE_BOOK: "Mode de l'Index en lecture",
-		INDEX_MODE_MENU: "Mode de l'Index dans les menu",
-		INDEX_STYLE_MENU: "Style de l'Index dans les menu",
+		INDEX_MODE_BOOK: "Mode de l'index en lecture",
+		INDEX_MODE_MENU: "Mode de l'index dans les menu",
+		INDEX_STYLE_MENU: "Style de l'index dans les menu",
 		OF: "de",
 		ALWAYS_SHOWN: "Toujours visible",
 		NEVER_SHOWN: "Masqué",
-		NOT_SHOWN_IF_SINGLE_PAGE: "Ne figure pas pour les pages uniques",
+		NOT_SHOWN_IF_SINGLE_PAGE: "Masqué sur les pages uniques",
 		VALUE_STATS0: "5 / 100 (pages par minute)",
-		VALUE_STATS1: "5 / 100 (Le temps de terminer)",
-		VALUE_STATS2: "5 / 100 (ppm / Le temps de terminer)"
+		VALUE_STATS1: "5 / 100 (temps pour terminer)",
+		VALUE_STATS2: "5 / 100 (ppm /temps pour terminer)"
 
 	},
 
 	EpubUserStyle: {
 		OPTION_EPUB_CSS_FILE: "Style EPUB utilisateur (Fichier CSS)",
-		MSG_WARNING: "Affecte uniquement les livres ouverts posterieurement!",
+		MSG_WARNING: "Affecte uniquement les livres ouverts après!",
 		VALUE_DISABLED: "Désactivé"
 	},
 
@@ -528,17 +560,16 @@ return {
 		FUNC_X_BOOKS: FUNC_X_BOOKS,
 		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Historique des livres",
+		SHORT_TITLE: "Historique",
+		VALUE_WHEN_ENTERING_BOOK: "Ouverture du livre",
+		VALUE_WHEN_EXITING_BOOK: "Fermeture du livre",
+		VALUE_ALWAYS: "Toujours",
+		VALUE_NEVER: "Jamais",
 		VALUE_DISABLED: "Désactivé",
-		OPTION_REPLACE: "Historique sous Continuer la lecture",
 		VALUE_ON: "On",
 		VALUE_OFF: "Off",
 		OPTION_SKIP_BOOK_MENU: "Passer le menu Livre"
 	},
-
-	//ReadMark      ReadMark: {
-	//              TITLE_UNREAD: "Signets - Déjr lu",
-	//              TITLE_READ: "Signets - Pas encore lu",
-	//      },
 
 	TextScale: {
 		OPTION_SCALE_DEFAULT: "Échelle par défaut",
@@ -549,16 +580,55 @@ return {
 		VALUE_ENABLED: "Activée"
 	},
 
-	MenuTuning: {
-		OPTION_OUTER: "Le menu de niveau supérieur contient"
+	MenuCustomizer: {
+		TITLE: "Paramètre de menu",
+		VALUE_YES: "oui",
+		VALUE_NO: "non",
+		VALUE_DEFAULT: "défaut",
+		SLOT: "Emplacement",
+		UNMOVABLE_SLOT: "Emplacement fixe",
+		MENU_ITEM: "Élement de menu",
+		MENU_SEPARATOR: "Séparateur"
 	},
 
 	Dictionary: {
 		TITLE: "Dictionnaire",
-		WARN_DICT_DISABLED: "Dictionnaire est désactivé!",
-		WARN_DICT_DOESNT_EXIST: "Fichier Dictionnaire inexistant!",
-		ACTION_DICTIONARY: "Lancement dictionnaire",
-		OPTION_DICTIONARY: "Fichier Dictionnaire",
-		VALUE_DISABLED: "Désactivé"
+		WARN_DICT_DISABLED: "Le dictionnaire est désactivé!",
+		WARN_DICT_DOESNT_EXIST: "Le fichier de dictionnaire n'existe pas!",
+		ACTION_DICTIONARY: "Lancer le dictionnaire",
+		OPTION_DICTIONARY: "Fichier de dictionnaire",
+		VALUE_DISABLED: "Désactivé",
+		VALUE_DEFAULT: "Défaut"
+	},
+
+	MediaTag: {
+		TITLE: "Marquer Livres",
+		OPTION_POSITION: "Marquer Position",
+		VALUE_OVER_ICON: "Gauche (sur icône)",
+		VALUE_BOTTOM: "Bas",
+		VALUE_RIGHT: "Droite",
+		MARK_0: "Marque 1 (coche)",
+		MARK_1: "Marque 2 (étoile)",
+		MARK_2: "Marque 3 (cercle)",
+		MARK_3: "Marque 4 (carré)",
+		MARK_4: "Marque 5 (triangle)"
+	},
+
+	ScrollbarAlphabet: {
+		TITLE: "Alphabet de la barre de défilement",
+		OPT_ALPHABET: "Alphabet",
+		VALUE_DEFAULT: "défaut"
+	},
+
+	Calc: {
+		TITLE: "Calculatrice",
+		DESCRIPTION: ""
+	},
+
+	Converter: {
+		CONVERTING_FB2: "Conversion de fb2 vers epub...",
+		NORMALLY_TAKES: "(dure normalement 1-30s)",
+		ERROR: "Erreur de conversion",
+		OPENING: "Ouverture du livre"
 	}
 };
