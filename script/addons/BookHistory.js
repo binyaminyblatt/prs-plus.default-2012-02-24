@@ -40,13 +40,15 @@
 //			Added "short comment" field.
 //			Skip book menu menu option is shown only on older models (with numeric buttons)
 //	2011-02-26 kartu - Fixed #68:  x50: Deleting books opened via Book History is bugged
+//	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
 
 tmp = function() {
-	var L, log, trim, model, BH_TITLE, BH_SHORT_TITLE, BH_FILE, BookHistory, bookList, mustSave, bookHistoryNode,
-		fromParentFlag, createBookNode, enterBook, constructNodes, destructNodes, loadFromFile,
+	var L, LX, log, trim, model, BH_TITLE, BH_SHORT_TITLE, BH_FILE, BookHistory, bookList, mustSave, bookHistoryNode,
+		fromParentFlag, createBookNode, enterBook, constructNodes, loadFromFile,
 		doSave, save, bookChanged, bookDeleted;
 		
 	L = Core.lang.getLocalizer("BookHistory");
+	LX = Core.lang.LX;
 	log = Core.log.getLogger("BookHistory");
 	trim = Core.text.trim;
 	model = kbook.model;
@@ -266,7 +268,7 @@ tmp = function() {
 					title: BH_TITLE,
 					shortName: BH_SHORT_TITLE,
 					icon: "BOOK_HISTORY",
-					comment: function () {return L("FUNC_X_BOOKS", bookList.length); },
+					comment: function () {return LX("BOOKS", bookList.length); },
 					construct: constructNodes
 				});
 
@@ -313,13 +315,13 @@ tmp = function() {
 			values:	["0", "3", "5", "10", "20", "30", "40", "50"],
 			valueTitles: {
 				"0": L("VALUE_DISABLED"),
-				"3": L("FUNC_X_BOOKS", 3),
-				"5": L("FUNC_X_BOOKS", 5),
-				"10": L("FUNC_X_BOOKS", 10),
-				"20": L("FUNC_X_BOOKS", 20),
-				"30": L("FUNC_X_BOOKS", 30),
-				"40": L("FUNC_X_BOOKS", 40),
-				"50": L("FUNC_X_BOOKS", 50)
+				"3": LX("BOOKS", 3),
+				"5": LX("BOOKS", 5),
+				"10": LX("BOOKS", 10),
+				"20": LX("BOOKS", 20),
+				"30": LX("BOOKS", 30),
+				"40": LX("BOOKS", 40),
+				"50": LX("BOOKS", 50)
 			}
 		}],
 

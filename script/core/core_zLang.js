@@ -28,10 +28,81 @@
 //					1) if debug is enabled it will be loged
 //					2) key is returned instead of prefix + key (didn't fit on the screen most of the time anyway)
 //	2010-12-01 kartu - Switched back to returning prefix + key to give user some hint what's behind "TITLE"
+//	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
 
 tmp = function() {
-	var _strings; // whatever is loaded from lang/<language>.js file
-	var langL;
+	var _strings, _X; // whatever is loaded from lang/<language>.js file
+	var isDebug, createLocalizer, x_func, initXFunc;
+
+	createLocalizer = function(str, prefix) {
+		var f;
+		f = function(key) {
+			if (str.hasOwnProperty(key)) {
+				try {
+					return str[key];
+				} catch (ignore) {
+				}
+			}
+			if (isDebug) {
+				log.trace("Missing translation " + prefix + key);
+			}
+			return key;
+		};
+		return f;
+	};
+
+	// Initializes language specific "x of something" function
+	initXFunc = function (lang) {
+		switch (lang) {
+			case "Czech":
+				x_func = function (s, n) {
+					if (n > 4) {
+						return n + " " + s[0];
+					}
+					if (n >= 2 && n <= 4) {
+						return n + " " + s[1];
+					}
+					if (n === 1) {
+						return s[2];
+					}
+					return s[3];
+				};
+				break;
+			case "Georgian":
+				x_func = function (s, n) {
+					if (n > 0) {
+						return n + " " + s[0];
+					}
+					return s[1];
+				};
+				break;
+			case "Russian": // fallthrough
+			case "Ukrainian":
+				var _x_cache = [];
+				var _x_cases = [2, 0, 1, 1, 1, 2];
+				x_func = function (s, n) {
+					if (!n) {
+						return s[3];
+					}
+					if (!_x_cache[n]) {
+						_x_cache[n] = (n % 100 > 4 && n % 100 < 20) ? 2 : _x_cases[Math.min(n % 10, 5)];
+					}
+					return n + " " + s[_x_cache[n]];
+				};
+				break;
+			default:
+				 x_func = function (s, n) {
+					if (n > 1) {
+						return n + " " + s[0];
+					}
+					if (n === 1) {
+						return s[1];
+					}
+					return s[2];
+				};
+				break;
+		}
+	};
 	
 	Core.lang = {
 		/**
@@ -41,14 +112,26 @@ tmp = function() {
 		*/
 		init: function (langFile) {
 			try {
+				isDebug = Core.log.isDebugEnabled();
 				try {
+					// translation strings
 					_strings = Core.system.callScript(langFile, log);
+					// translation strings, passed to functions
+					_X = _strings.X;
+					
+					// Extract lang name
+					var idx = langFile.lastIndexOf("/");
+					var len = langFile.length;
+					
+					this.lang = langFile.substring(idx + 1, len -3);
+					initXFunc(this.lang); // init language specific "x books" function
+					initXFunc = undefined; // no need in this funciton anymore
+
 				} catch (e0) {
 					log.error("Failed to load strings: ", e0);
 				}
 				
 				coreL = this.getLocalizer("Core"); // defined in core
-				langL = this.getLocalizer("CoreLang");
 			} catch (e) {
 				log.error("in Core.lang.init: " + e);
 			}
@@ -68,28 +151,15 @@ tmp = function() {
 		},
 
 		getLocalizer: function (category) {
-			var createLocalizer = function(str, prefix) {
-				var isDebug, f;
-				isDebug = Core.log.isDebugEnabled();
-				
-				f = function(key, param) {
-					if (str.hasOwnProperty(key)) {
-						try {
-							if (typeof str[key] == "function") {
-								return str[key](param);
-							}
-							return str[key];
-						} catch (e) {
-						}
-					}
-					if (isDebug) {
-						log.trace("Missing translation " + prefix + key);
-					}
-					return prefix + key;
-				};
-				return f;
-			};
 			return createLocalizer(this.getStrings(category), category + ".");
+		},
+		
+		LX: function (category, param) {
+			try {
+				return x_func(_X[category], param);
+			} catch (e) {
+				return "error: " + e;
+			}
 		}
 	};
 };
