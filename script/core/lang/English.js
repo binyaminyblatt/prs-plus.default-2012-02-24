@@ -21,39 +21,16 @@
 //	2011-02-07 kartu - Added BrowseFolders.VALUE_BY_FILENAME_AS_COMMENT
 //	2011-02-10 kartu - Added StandarActions translations
 //	2011-02-27 kartu - Added StandarActions translations (rotate)
-
-var FUNC_X_SOMETHING = function (n, s) {
-	if (n > 1) {
-		return n + " " + s[0];
-	}
-	if (n === 1) {
-		return s[1];
-	}
-	return s[2];
-};
-
-var FUNC_X_BOOKS = function (n) {
-	return FUNC_X_SOMETHING(n, ["books", "1 book", "No book"]);
-};
-
-var FUNC_X_SETTINGS = function (n) {
-	return FUNC_X_SOMETHING(n, ["settings", "1 setting", "No setting"]);
-};
-
-var FUNC_X_ITEMS = function (n) {
-	return FUNC_X_SOMETHING(n, ["items", "1 item", "No item"]);
-};
-
-var FUNC_PAGE_X = function (n) {
-	return "Page " + n;
-};
+//	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
 
 return {
+	X: {
+		BOOKS: ["books", "1 book", "No book"],
+		SETTINGS: ["settings", "1 setting", "No setting"]
+	},
+	
 	// PRS+ stuff
 	Core: {
-		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS: "PRS+ Settings",
 		NODE_PRSP_SETTINGS_SHORT: "PRS+ Sett.",
 		NODE_OTHERS: "Multimedia",
@@ -305,8 +282,6 @@ return {
 	},
 
 	BookHistory: {
-		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Book History",
 		SHORT_TITLE: "History",
 		VALUE_WHEN_ENTERING_BOOK: "Entering book",

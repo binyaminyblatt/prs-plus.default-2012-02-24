@@ -12,6 +12,7 @@
 //	2010-05-03 kravitz - Added insertAddonNode(), removeAddonNode()
 //	2010-07-01 kartu - Adapted for 300
 //	2010-11-16 kartu - Added short title to the node (for small buttons on readers with touchscreen)
+//	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -70,11 +71,12 @@ tmp = function() {
 	// Creates value nodes (used in addon settings) for given option definition and addon.
 	//
 	var core_setting_createValueNodes = function(parent, optionDef, addon, options) {
+		var i, n, values, v, node;
 		try {
-			var values = optionDef.values;
-			for (var i = 0, n = values.length; i < n; i++) {
-				var v = values[i];
-				var node = core_setting_createValueNode({
+			values = optionDef.values;
+			for (i = 0, n = values.length; i < n; i++) {
+				v = values[i];
+				node = core_setting_createValueNode({
 					parent: parent,
 					title: core_setting_translateValue(optionDef, v),
 					optionDef: optionDef,
@@ -112,12 +114,13 @@ tmp = function() {
 
 	var doCreateSingleSetting;
 	doCreateAddonSettings = function(parent, optionDefs, addon, ignoreLazy) {
+		var i, n;
 		if (ignoreLazy !== true) {
 			lazyCreateSettings(parent, optionDefs, addon);
 			return;
 		}
 
-		for (var i = 0, n = optionDefs.length; i < n; i++) {
+		for (i = 0, n = optionDefs.length; i < n; i++) {
 			doCreateSingleSetting(parent, optionDefs[i], addon);
 		}
 	};
@@ -132,7 +135,7 @@ tmp = function() {
 					parent: parent,
 					title: optionDef.groupTitle,
 					comment: optionDef.groupComment ? optionDef.groupComment : function () {
-						return coreL("FUNC_X_SETTINGS", optionDef.optionDefs.length);
+						return Core.lang.LX("SETTINGS", optionDef.optionDefs.length);
 					},
 					icon: optionDef.groupIcon
 			});
@@ -165,6 +168,7 @@ tmp = function() {
 	Core.settings = {};
 
 	Core.settings.init = function(addons) {
+		var i, n;
 		// Init settings groups
 		Core.settings.settingsGroupDefs = {
 			menu: {
@@ -177,7 +181,7 @@ tmp = function() {
 			}
 		};
 		// Create addon nodes and addon option nodes
-		for (var i = 0, n = addons.length; i < n; i++) {
+		for (i = 0, n = addons.length; i < n; i++) {
 			Core.settings.createAddonSettings(addons[i]);
 		}
 	};
@@ -192,20 +196,17 @@ tmp = function() {
 				var optionDefs = addon.optionDefs;
 				
 				// Search for settings node with same settingsGroup property
-				var thisSettingsNode;
-				var group;
-				var title, comment;
-				var icon;
+				var thisSettingsNode, group, title, comment, icon, i, n;
 				if (addon.settingsGroup && this.settingsGroupDefs[addon.settingsGroup]) {
 					group = addon.settingsGroup;
-					for (var i = 0, n = prspSettingsNode.nodes.length; i < n; i++) {
+					for (i = 0, n = prspSettingsNode.nodes.length; i < n; i++) {
 						if (prspSettingsNode.nodes[i]._settingsGroup === group) {
 							// ... group found
 							thisSettingsNode = prspSettingsNode.nodes[i];
 							if (thisSettingsNode._settingsCount) {
 								// Group comment is undefined
 								thisSettingsNode._settingsCount += optionDefs.length;
-								 thisSettingsNode._mycomment = coreL("FUNC_X_SETTINGS", thisSettingsNode._settingsCount);
+								 thisSettingsNode._mycomment = Core.lang.LX("SETTINGS", thisSettingsNode._settingsCount);
 							}
 							break;
 						}
@@ -235,7 +236,7 @@ tmp = function() {
 						thisSettingsNode._mycomment = comment;
 					} else {
 						thisSettingsNode._settingsCount = optionDefs.length;
-						thisSettingsNode._mycomment = coreL("FUNC_X_SETTINGS", thisSettingsNode._settingsCount);
+						thisSettingsNode._mycomment = Core.lang.LX("SETTINGS", thisSettingsNode._settingsCount);
 					}
 					prspSettingsNode.nodes.push(thisSettingsNode);
 				}
@@ -255,29 +256,29 @@ tmp = function() {
 	Core.settings.saveOptions = function(addon) {
 		try {
 			FileSystem.ensureDirectory(Core.config.settingsPath);
-			var od;
-			var name;
+			var od,od2,  name, options, optionDefs, optionDefsToSave, gotSomethingToSave, i, defValue, target,
+				stream, globalStr,  ii, str, j, m;
 
 			// Find out which options need to be saved (do not save devault values)
-			var options = addon.options;
-			var optionDefs = addon.optionDefs;
-			var optionDefsToSave = []; // option defs
-			var gotSomethingToSave = false;
-			for (var i = 0; i < optionDefs.length; i++) {
+			options = addon.options;
+			optionDefs = addon.optionDefs;
+			optionDefsToSave = []; // option defs
+			gotSomethingToSave = false;
+			for (i = 0; i < optionDefs.length; i++) {
 				od = optionDefs[i];
 
 				// Add group suboptions
-				if(od.hasOwnProperty("groupTitle")) {
+				if (od.hasOwnProperty("groupTitle")) {
 					optionDefs = optionDefs.concat(od.optionDefs);
 					continue;
 				}
 
 				name = od.name;
-				var defValue = od.defaultValue;
-				var target = od.hasOwnProperty("target") ? od.target : false;
+				defValue = od.defaultValue;
+				target = od.hasOwnProperty("target") ? od.target : false;
 
-				if(target) {
-					if(options.hasOwnProperty(target) && options[target].hasOwnProperty(name) && options[target][name] !== defValue) {
+				if (target) {
+					if (options.hasOwnProperty(target) && options[target].hasOwnProperty(name) && options[target][name] !== defValue) {
 						if (!optionDefsToSave.hasOwnProperty(target)) {
 							optionDefsToSave[target] = {
 								isGroup: true,
@@ -288,7 +289,7 @@ tmp = function() {
 						gotSomethingToSave = true;
 						optionDefsToSave[target].optionDefs.push(od);
 					}
-				} else if(options.hasOwnProperty(name) && options[name] !== defValue) {
+				} else if (options.hasOwnProperty(name) && options[name] !== defValue) {
 					gotSomethingToSave = true;
 					optionDefsToSave.push(od);
 				}
@@ -297,18 +298,18 @@ tmp = function() {
 			// If there is anything to save - save, if not, delete settings file
 			var settingsFile = Core.config.settingsPath + addon.name + ".config";
 			if (gotSomethingToSave) {
-				var stream = new Stream.File(settingsFile, 1, 0);
+				stream = new Stream.File(settingsFile, 1, 0);
 				try {
-					var globalStr = "";
-					for (var ii in optionDefsToSave) {
+					globalStr = "";
+					for (ii in optionDefsToSave) {
 						od = optionDefsToSave[ii];
 						name = od.name;
 
-						var str = null;
+						str = null;
 						if (od.isGroup) {
 							str = "\t\"" + od.target + "\": {\n";
-							for (var j = 0, m = od.optionDefs.length; j < m; j++) {
-								var od2 = od.optionDefs[j];
+							for (j = 0, m = od.optionDefs.length; j < m; j++) {
+								od2 = od.optionDefs[j];
 								str = str +  "\t\t\"" + od2.name + "\":\"" + options[od2.target][od2.name] + "\",\n";
 							}
 							// remove trailing ,\n
@@ -338,12 +339,12 @@ tmp = function() {
 	// Loads addon's options, using default option values, if settings file or value is not present.
 	//
 	Core.settings.loadOptions = function(addon) {
+		var options, settingsFile, optionDefs, i, od;
 		try {
 			if (addon.optionDefs) {
 				// load settings from settings file
-				var options;
 				try {
-					var settingsFile = Core.config.settingsPath + addon.name + ".config";
+					settingsFile = Core.config.settingsPath + addon.name + ".config";
 					options = Core.system.callScript(settingsFile, log);
 				} catch (e0) {
 					log.warn("Failed loading settings file for addon " + addon.name + ": " + e0);
@@ -352,9 +353,9 @@ tmp = function() {
 					options = {};
 				}
 
-				var optionDefs = addon.optionDefs;
-				for (var i = 0; i < optionDefs.length; i++) {
-					var od = optionDefs[i];
+				optionDefs = addon.optionDefs;
+				for (i = 0; i < optionDefs.length; i++) {
+					od = optionDefs[i];
 					if (od.hasOwnProperty("groupTitle")) {
 						optionDefs = optionDefs.concat(od.optionDefs);
 					} else {
@@ -389,7 +390,7 @@ tmp = function() {
 				shortTitle: coreL("NODE_PRSP_SETTINGS_SHORT"),
 				icon: "SETTINGS",
 				comment: function () {
-					return coreL("FUNC_X_SETTINGS", this.nodes.length);
+					return Core.lang.LX("SETTINGS", this.nodes.length);
 				}
 			});
 			

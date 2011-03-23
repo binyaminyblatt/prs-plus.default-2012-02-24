@@ -4,41 +4,16 @@
 //
 // History:
 //	2011-03-21 kartu - Initial version by Bookoman
-
-var _x_cache = [];
-var _x_cases = [2, 0, 1, 1, 1, 2];
-var FUNC_X_SOMETHING = function (n, s) {
-	if (!n) {
-		return s[3];
-	}
-	if (!_x_cache[n]) {
-		_x_cache[n] = (n % 100 > 4 && n % 100 < 20) ? 2 : _x_cases[Math.min(n % 10, 5)];
-	}
-	return n + " " + s[_x_cache[n]];
-};
-
-var FUNC_X_BOOKS = function (n) {
-	return FUNC_X_SOMETHING(n, ["книга", "книги", "книг", "Порожньо"]);
-};
-
-var FUNC_X_SETTINGS = function (n) {
-	return FUNC_X_SOMETHING(n, ["налаштування", "налаштування", "налаштувань", "Порожньо"]);
-};
-
-var FUNC_X_ITEMS = function (n) {
-	return FUNC_X_SOMETHING(n, ["пункт", "пункти", "пунктів", "Порожньо"]);
-};
-
-var FUNC_PAGE_X = function (n) {
-	return "Сторінка " + n;
-};
+//	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
 
 return {
+	X: {
+		BOOKS: ["книга", "книги", "книг", "Порожньо"],
+		SETTINGS: ["налаштування", "налаштування", "налаштувань", "Порожньо"]
+	},
+	
 	// PRS+ stuff
 	Core: {
-		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
 		NODE_PRSP_SETTINGS: "Налаштування PRS+",
 		NODE_PRSP_SETTINGS_SHORT: "PRS+ налашт.",
 		NODE_OTHERS: "Мультимедія",
@@ -47,49 +22,6 @@ return {
 		GROUP_VIEWER_TITLE: "Налаштування перегляду книг",
 		MSG_RESTART: "Перезавантажити для вступу змін у силу",
 		NODE_MORE: "Додатково"
-	},
-
-	CoreLang: {
-		TITLE: "Локолізація",
-		COMMENT: "Потрібне перезавантаження",
-		OPTION_LANG: "Мова",
-
-		OPTION_DATE_FORMAT: "Формат дати",
-		VALUE_DEFAULT_DATE: "За змовчуванням",
-		ddMMMYY: "31/Січ/99",
-		ddMONTHYY: "31/Січень/99",
-		ddMMMYYYY: "31/Січ/1999",
-		ddMONTHYYYY: "31/Січень/1999",
-
-		OPTION_DATE_SEPARATOR: "Роздільник дати",
-		VALUE_SPACE: "проміжок",
-		VALUE_NONE: "відсутній",
-
-		MONTH_SHORT_1: "Січ",
-		MONTH_SHORT_2: "Лют",
-		MONTH_SHORT_3: "Бер",
-		MONTH_SHORT_4: "Кві",
-		MONTH_SHORT_5: "Тра",
-		MONTH_SHORT_6: "Чер",
-		MONTH_SHORT_7: "Лип",
-		MONTH_SHORT_8: "Сер",
-		MONTH_SHORT_9: "Вер",
-		MONTH_SHORT_10: "Жов",
-		MONTH_SHORT_11: "Лис",
-		MONTH_SHORT_12: "Гру",
-
-		MONTH_1: "Січень",
-		MONTH_2: "Лютий",
-		MONTH_3: "Березень",
-		MONTH_4: "Квітень",
-		MONTH_5: "Травень",
-		MONTH_6: "Червень",
-		MONTH_7: "Липень",
-		MONTH_8: "Серпень",
-		MONTH_9: "Вересень",
-		MONTH_10: "Жовтень",
-		MONTH_11: "Листопад",
-		MONTH_12: "Грудень"
 	},
 
 	MenuCaptions: {
@@ -290,8 +222,6 @@ return {
 	},
 
 	BookHistory: {
-		FUNC_X_BOOKS: FUNC_X_BOOKS,
-		FUNC_PAGE_X: FUNC_PAGE_X,
 		TITLE: "Історія книг",
 		SHORT_TITLE: "Історія",
 		VALUE_WHEN_ENTERING_BOOK: "При вході до книги",
