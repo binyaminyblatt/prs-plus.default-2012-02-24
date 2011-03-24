@@ -18,6 +18,7 @@
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
 //	2011-03-02 kartu - Added #47&48 Spanish (by ?)  & Catalan (by Alex Castrillo) localizations
 //	2011-03-19 kartu - Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
+//	2011-03-24 kartu - Added Portuguese localization by OTNeto
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -33,7 +34,7 @@ var tmp = function() {
 				node, prspLanguages, langFile;
 			currentLang = kbook.model.language;
 			settingsNode = kbook.root.nodes[6].nodes[2];
-			languages = ["ca", "en", "es", "de", "fr", "it", "nl", "ka", "ru", "zh"];
+			languages = ["ca", "en", "es", "de", "fr", "it", "nl", "ka", "pt", "ru", "zh"];
 			prspLanguages = {
 				ca: "Catalan.js",
 				en: "English.js",
@@ -42,6 +43,7 @@ var tmp = function() {
 				fr: "French.js",
 				it: "Italian.js",
 				ka: "Georgian.js",
+				pt: "Portuguese.js",
 				nl: "English.js", // missing Dutch PRS+ translation
 				ru: "Russian.js",
 				zh: "SimplifiedChinese.js"
@@ -54,7 +56,8 @@ var tmp = function() {
 				fr: "Français", 
 				it: "Italiano",
 				ka: "ქართული",
-				nl: "Nederlands", 
+				nl: "Nederlands",
+				pt: "Português",
 				ru: "Русский",
 				zh: "简体中文 (Simplified Chinese)"
 			};
