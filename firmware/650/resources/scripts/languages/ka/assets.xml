@@ -561,7 +561,7 @@
 		<string id="STR_UI_RADIOBUTTON_PAGE_STYLE_MARGIN_CUT" value="მინდვრების გარეშე" />
 		<string id="STR_UI_RADIOBUTTON_PAGE_STYLE_2COLUMN_SPLIT" value="2-სვეტად" />
 		<string id="STR_UI_RADIOBUTTON_PAGE_STYLE_3COLUMN_SPLIT" value="3-სვეტად" />
-		<string id="STR_UI_RADIOBUTTON_PAGE_STYLE_FULL_PAGE" value="მთელ გვერდზე"" />
+		<string id="STR_UI_RADIOBUTTON_PAGE_STYLE_FULL_PAGE" value="მთელ გვერდზე" />
 		<string id="STR_UI_MESSAGE_STANDBY" value="რიდერი არის ძილის რეჟიმში. კითხვის რეჟიმში გადასაყვანად მოქაჩეთ მოსრიალე ჩამრთველი." />
 		<string id="STR_UI_MESSAGE_PAGE_STYLE_CHANGE_TO_ORIGINAL" value="&quot;გვერდის ფორმატი&quot; აღდგება &quot;საწყისში&quot;." />
 		<string id="STR_UI_MESSAGE_PAGE_STYLE_CHANGE_WITH_TOOLBAR_DISPLAYED" value="”შენიშვნების შექმნა/რედაქტირება” გამოირთვება." />
