@@ -19,6 +19,7 @@
 //	2011-03-02 kartu - Added #47&48 Spanish (by ?)  & Catalan (by Alex Castrillo) localizations
 //	2011-03-19 kartu - Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
 //	2011-03-24 kartu - Added Portuguese localization by OTNeto
+//	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -31,23 +32,10 @@ var tmp = function() {
 	localize = function(Core) {
 		try {
 			var i, n, currentLang, settingsNode, langNode, languages, langNames, enter, 
-				node, prspLanguages, langFile;
+				node, langFile;
 			currentLang = kbook.model.language;
 			settingsNode = kbook.root.nodes[6].nodes[2];
 			languages = ["ca", "en", "es", "de", "fr", "it", "nl", "ka", "pt", "ru", "zh"];
-			prspLanguages = {
-				ca: "Catalan.js",
-				en: "English.js",
-				es: "Spanish.js",
-				de: "German.js",
-				fr: "French.js",
-				it: "Italian.js",
-				ka: "Georgian.js",
-				pt: "Portuguese.js",
-				nl: "English.js", // missing Dutch PRS+ translation
-				ru: "Russian.js",
-				zh: "SimplifiedChinese.js"
-			};
 			langNames = {
 				ca: "Català",
 				en: "English",
@@ -66,7 +54,7 @@ var tmp = function() {
 			PARAMS.loadCore();
 			
 			// Load PRS+ strings
-			langFile = Core.config.corePath + "lang/" + prspLanguages[currentLang];
+			langFile = Core.config.corePath + "lang/" + currentLang + ".js";
 			Core.lang.init(langFile);
 			
 			// FIXME localize date strings

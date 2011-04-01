@@ -16,6 +16,7 @@
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
 //	2011-03-16 kartu - Added Georgian translation for 350/650 by rawerfas & kato
 //	2011-03-19 kartu - Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
+//	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 //
 tmp = function() {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -100,24 +101,13 @@ tmp = function() {
 	localize = function(Core) {
 		try {
 			var i, n, currentLang, settingsNode, langNode, languages, langNames, enter, 
-				node, prspLanguages, langFile, icon;
+				node, langFile, icon;
 			currentLang = kbook.model.language;
 			settingsNode = kbook.root.getSettingsRootNode();
 			// Fix settings node 
 			settingsNode.multiPage = true;
 			
 			languages = ["de", "en", "es", "fr", "it", "nl", "pt", "ru"];
-			prspLanguages = {
-				de: "German.js",
-				en: "English.js",
-				es: "Spanish.js",
-				fr: "French.js",
-				it: "Italian.js",
-				ka: "Georgian.js",
-				nl: "English.js", // missing Dutch PRS+ translation
-				pt: "English.js", // missing Portuguese PRS+ translation
-				ru: "Russian.js"
-			};
 			langNames = {
 				de: "Deutsch", 
 				en: "English",
@@ -134,7 +124,7 @@ tmp = function() {
 			PARAMS.loadCore();
 			
 			// Load PRS+ strings
-			langFile = Core.config.corePath + "lang/" + prspLanguages[currentLang];
+			langFile = Core.config.corePath + "lang/" + currentLang + ".js";
 			Core.lang.init(langFile);
 
 			// FIXME localize date strings

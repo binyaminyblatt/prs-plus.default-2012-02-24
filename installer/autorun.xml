@@ -10,6 +10,7 @@ History:
 					    Removed "set into upgrade mode" (useless and confusing)
 	2010-09-07 kartu - Reduced piTextBig size to 26
 	2010-09-07 kartu - Fixed frozen UI on startup problem
+	2011-04-01 kartu - Added French localization
 
 -->
 
@@ -296,11 +297,15 @@ History:
 
 		<panel skin="piMenuRowBorderless" left="0" bottom="210" right="0" height="70" />
 		<kbookLabel skin="piRowNum" bottom="210" right="0" width="35" height="70" align="center" text="7" />
-		<kbookLabel skin="piRow" bottom="210" right="0" left="50" height="70" text="Русский" />
+		<kbookLabel skin="piRow" bottom="210" right="0" left="50" height="70" text="Español" />
 
 		<panel skin="piMenuRow" left="0" bottom="140" right="0" height="70" />
 		<kbookLabel skin="piRowNum" bottom="140" right="0" width="35" height="70" align="center" text="8" />
-		<kbookLabel skin="piRow" bottom="140" right="0" left="50" height="70" text="Español" />
+		<kbookLabel skin="piRow" bottom="140" right="0" left="50" height="70" text="French" />
+
+		<panel skin="piMenuRowBorderless" left="0" bottom="70" right="0" height="70" />
+		<kbookLabel skin="piRowNum" bottom="70" right="0" width="35" height="70" align="center" text="9" />
+		<kbookLabel skin="piRow" bottom="70" right="0" left="50" height="70" text="Русский" />
 
 		<panel skin="piMenuRow" left="0" bottom="0" right="0" height="70" />
 		<kbookLabel skin="piRowNum" bottom="0" right="0" width="35" height="70" align="center" text="0" />
@@ -323,11 +328,14 @@ History:
 						// English
 						strings = target.loadScript(target.path + "languages/English.js");
 					} else if (part.key == "7") {
-						// Russian
-						strings = target.loadScript(target.path + "languages/Russian.js");
-					} else if (part.key == "8") {
 						// Spanish
 						strings = target.loadScript(target.path + "languages/Spanish.js");
+					} else if (part.key == "8") {
+						// French
+						strings = target.loadScript(target.path + "languages/French.js");
+					} else if (part.key == "9") {
+						// Russian
+						strings = target.loadScript(target.path + "languages/Russian.js");
 					} else if (part.key == "0") {
 						kbook.model.container.endFullScreen();
 						kbook.autoRunRoot.exitIf(kbook.model);						
