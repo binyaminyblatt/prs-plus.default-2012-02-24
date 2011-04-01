@@ -97,8 +97,7 @@ var tmp = function() {
 					kbook.root.update(kbook.model);
 					kbook.model.writeFilePreference();
 					this.parent.gotoParent(kbook.model);
-					// TODO localize
-					Core.ui.showMsg("Requires restart");					
+					Core.ui.showMsg(Core.lang.L("MSG_RESTART"));					
 				} catch (e) {
 					PARAMS.bootLog("changing language", e);
 				}
@@ -406,5 +405,7 @@ var tmp = function() {
 	
 };
 
-tmp();
-
+try {
+	tmp();
+} catch (ignore) {
+}

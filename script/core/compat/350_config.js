@@ -138,8 +138,6 @@ return {
 	prspMenu: {
 		// Container nodes
 		customContainers: [
-			// TODO add games / calc
-			//{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", icon: "GAME"},
 			{ name: "more", title: "NODE_MORE", icon: "MORE", parent: "root"}
 		],
 		// Nodes assigned to certain nodes

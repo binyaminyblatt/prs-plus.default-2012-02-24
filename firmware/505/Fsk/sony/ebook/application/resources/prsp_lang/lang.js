@@ -1,31 +1,8 @@
-// Description: Localizaiton related code
-// Author: kartu
-//
-// History:
-//	2010-03-17 kartu - Initial version
-//	2010-04-05 kartu - Finished localization
-//	2010-04-10 kartu - Fixed collections localization (reported by kravitz)
-//	2010-04-21 kartu - Localized. Fixed invisible "continue" comment bug.
-//	2010-04-22 kartu - Added date customization
-//	2010-04-24 kartu - Added Catalan, Georgian, German, Russian and Spanish locales
-//	2010-04-24 kartu - Fixed SS_ON related bug (was set to min instead of max field)
-//	2010-04-24 kartu - Changed language order
-//	2010-04-25 kartu - Marked kbook.model.getDateAndClock as constructor
-//	2010-04-25 kartu - Moved default UI localizer into separate file
-//	2010-04-27 kravitz - Localizers are adapted for work with functions
-//	2010-05-04 kravitz - Added French locale
-//	2010-05-06 kartu - Added Czech locale
-//	2010-05-10 kartu - Added Simplified Chineze locale
-//	2010-05-11 kartu - Renamed Chinese to "Simplified Chinese"
-//				Added "VALUE_DEFAULT_DATE" translation (CoreLang)
-//	2010-05-15 kartu - Fixed date bug (when switching from any to English translation)
-//				Fixed English locales date bug (wasn't possible to save date since kbook.model.getDateAndClock wasn't overriden
-//	2010-05-18 kartu - Fixed dateSeparator's default value (spotted by VICTORSJG)
-//	2010-06-27 kartu - Fixed error log message (was refering to core-hook2, instead of lang)
+var log = Core.log.getLogger("initLang505");
 
-tmp = function() {
+var initLang505 = function() {
 	var _strings; // whatever is loaded from lang/<language>.js file
-	var langL;
+	var langL, getLangAddon;
 	
 	// Fix for for kbook.model.getDateAndClock
 	var getDateAndClockFix = function () {
@@ -86,13 +63,15 @@ tmp = function() {
 			}
 		};
 	};
-	Core.lang = {
+	
+	
+	var lang505 = {
 		// "fake" options, used only for loading stuff saved by other addon
 		name: "Localization",
 		optionDefs: [
 			{
 				name: "lang",
-				defaultValue: "English.js"
+				defaultValue: "English"
 			},
 			{
 				name: "dateFormat",
@@ -103,21 +82,26 @@ tmp = function() {
 				defaultValue: "/"
 			}
 		],
-
+		
 		init: function () {
 			try {
 				Core.settings.loadOptions(this);
-
+				// Init standard lang
+				Core.lang.init(Core.config.corePath + "lang/" + this.options.lang + ".js");
 				try {
-					_strings = Core.system.callScript(Core.config.corePath + "lang/" + this.options.lang, log);
+					_strings = Core.system.callScript(langPath505 + this.options.lang + ".js", log);
+					langL = Core.lang.getLocalizer("CoreLang", _strings);
 				} catch (e0) {
-					log.error("Failed to load strings: ", e0);
+					log.error("Failed to load strings", e0);
 				}
-				
-				var isDateCustom = false;
+
+				Core.addAddon(getLangAddon(langL));
+				loadAddons();
+				Core.init();
 
 				// If locale is English, there is nothing to localize
-				if ("English.js" !== this.options.lang) {
+				var isDateCustom = false;
+				if ("English" !== this.options.lang) {
 					isDateCustom = true;
 					try {
 						// Save default toLocaleDateString (needed when switching from non-English to English locale
@@ -126,9 +110,10 @@ tmp = function() {
 						}
 						
 						// localize default ui
-						var code = Core.io.getFileContent(Core.config.corePath + "lang/defaultUILocalizer.js");
-						var localizeDefaultUI = new Function("_strings,Core", code);
-						localizeDefaultUI(_strings, Core);
+						var code = Core.io.getFileContent(langPath505 + "defaultUILocalizer.js");
+						var xFunc = Core.lang.getXFunc(this.options.lang);
+						var localizeDefaultUI = new Function("_strings,xFunc,Core", code);
+						localizeDefaultUI(_strings, xFunc, Core);
 						delete localizeDefaultUI;
 					} catch (e1) {
 						log.error("Failed to localize default UI", e1);
@@ -139,7 +124,7 @@ tmp = function() {
 						Date.prototype.toLocaleDateString = Date.prototype.defaultToLocaleDateString;
 					}					
 				}
-
+				
 				// Date
 				if ("default" !== this.options.dateFormat) {
 					isDateCustom = true;
@@ -166,11 +151,8 @@ tmp = function() {
 				if (isDateCustom) {
 					kbook.model.getDateAndClock = getDateAndClockFix;
 				}
-
-				coreL = this.getLocalizer("Core"); // defined in core
-				langL = this.getLocalizer("CoreLang");
 			} catch (e) {
-				log.error("in Core.lang.init: " + e);
+				log.error("in lang505.init: " + e);
 			}
 		},
 
@@ -192,7 +174,7 @@ tmp = function() {
 				var f = function(key, param) {
 					if (str.hasOwnProperty(key)) {
 						try {
-							if (typeof str[key] == "function") {
+							if (typeof str[key] === "function") {
 								return str[key](param);
 							}
 							return str[key];
@@ -207,74 +189,80 @@ tmp = function() {
 		}
 	};
 
-
-	// Initialize lang
-	Core.lang.init();
-
 	// Language options
-	var LangAddon = {
-		name: "Localization",
-		title:  langL("TITLE"),
-		comment: langL("COMMENT"),
-		optionDefs: [
-			{
-				name: "lang",
-				title: langL("OPTION_LANG"),
-				icon: "LIST",
-				defaultValue: "English.js",
-				values: ["Catalan.js", "Czech.js", "German.js", "English.js", "Spanish.js", "French.js", "Georgian.js", "Russian.js", "SimplifiedChinese.js"],
-				valueTitles: {
-					"Catalan.js": "Català",
-					"Czech.js": "Český",
-					"German.js": "Deutsch",
-					"English.js": "English",
-					"Spanish.js": "Español",
-					"French.js": "Français",
-					"Georgian.js": "ქართული",
-					"Russian.js": "Русский",
-					"SimplifiedChinese.js": "简体中文"
+	getLangAddon = function (langL) {
+		return {
+			name: "Localization",
+			title:  langL("TITLE"),
+			icon: "LANG",
+			comment: langL("COMMENT"),
+					
+			onSettingsChanged: function (propertyName, oldValue, newValue) {
+				if (oldValue === newValue) {
+					return;
 				}
+				Core.ui.showMsg(Core.lang.L("MSG_RESTART"));
 			},
-			{
-				name: "dateFormat",
-				title: langL("OPTION_DATE_FORMAT"),
-				defaultValue: "default",
-				values: ["default", "ddMMYY", "MMddYY", "YYMMdd", "ddMMMYY", "ddMONTHYY", "ddMMYYYY", "MMddYYYY", "YYYYMMdd", "ddMMMYYYY", "ddMONTHYYYY"],
-				valueTitles: {
-					"default": langL("VALUE_DEFAULT_DATE"),
-					ddMMYY: "31/01/99",
-					MMddYY: "01/31/99",
-					YYMMdd: "99/01/31",
-					ddMMMYY: langL("ddMMMYY"),
-					ddMONTHYY: langL("ddMONTHYY"),
-					ddMMYYYY: "31/01/1999",
-					MMddYYYY: "01/31/1999",
-					YYYYMMdd: "1999/01/31",
-					ddMMMYYYY: langL("ddMMMYYYY"),
-					ddMONTHYYYY: langL("ddMONTHYYYY")
+			
+			optionDefs: [
+				{
+					name: "lang",
+					title: langL("OPTION_LANG"),
+					icon: "LIST",
+					defaultValue: "English",
+					values: ["Catalan", "Czech", "German", "English", "Spanish", "French", "Georgian", "Russian", "SimplifiedChinese"],
+					valueTitles: {
+						"Catalan": "Català",
+						"Czech": "Český",
+						"German": "Deutsch",
+						"English": "English",
+						"Spanish": "Español",
+						"French": "Français",
+						"Georgian": "ქართული",
+						"Russian": "Русский",
+						"SimplifiedChinese": "简体中文"
+					}
+				},
+				{
+					name: "dateFormat",
+					title: langL("OPTION_DATE_FORMAT"),
+					icon: "DATE",
+					defaultValue: "default",
+					values: ["default", "ddMMYY", "MMddYY", "YYMMdd", "ddMMMYY", "ddMONTHYY", "ddMMYYYY", "MMddYYYY", "YYYYMMdd", "ddMMMYYYY", "ddMONTHYYYY"],
+					valueTitles: {
+						"default": langL("VALUE_DEFAULT_DATE"),
+						ddMMYY: "31/01/99",
+						MMddYY: "01/31/99",
+						YYMMdd: "99/01/31",
+						ddMMMYY: langL("ddMMMYY"),
+						ddMONTHYY: langL("ddMONTHYY"),
+						ddMMYYYY: "31/01/1999",
+						MMddYYYY: "01/31/1999",
+						YYYYMMdd: "1999/01/31",
+						ddMMMYYYY: langL("ddMMMYYYY"),
+						ddMONTHYYYY: langL("ddMONTHYYYY")
+					}
+				},
+				{
+					name: "dateSeparator",
+					title: langL("OPTION_DATE_SEPARATOR"),
+					icon: "DATE",
+					defaultValue: "default",
+					values: ["default", "minus", "dot", "space", "none"],
+					valueTitles: {
+						"default": "/",
+						"minus": "-",
+						"dot": ".",
+						"space": langL("VALUE_SPACE"),
+						"none": langL("VALUE_NONE")
+					}
 				}
-			},
-			{
-				name: "dateSeparator",
-				title: langL("OPTION_DATE_SEPARATOR"),
-				defaultValue: "default",
-				values: ["default", "minus", "dot", "space", "none"],
-				valueTitles: {
-					"default": "/",
-					"minus": "-",
-					"dot": ".",
-					"space": langL("VALUE_SPACE"),
-					"none": langL("VALUE_NONE")
-				}
-			}
-		]
+			]
+		};
 	};
-
-	Core.addAddon(LangAddon);
+	
+	// Initialize lang
+	lang505.init();
 };
-
-try {
-	tmp();
-} catch (e) {
-	log.error("initializing core-lang", e);
-}
+initLang505();
+initLang505 = undefined;

@@ -32,7 +32,7 @@
 
 tmp = function() {
 	var _strings, _X; // whatever is loaded from lang/<language>.js file
-	var isDebug, createLocalizer, x_func, initXFunc;
+	var isDebug, createLocalizer, x_func, initXFunc, getXFunc;
 
 	createLocalizer = function(str, prefix) {
 		var f;
@@ -51,11 +51,16 @@ tmp = function() {
 		return f;
 	};
 
-	// Initializes language specific "x of something" function
 	initXFunc = function (lang) {
+		x_func = getXFunc (lang);
+	};
+	
+	// Initializes language specific "x of something" function
+	getXFunc = function (lang) {
+		var result;
 		switch (lang) {
 			case "Czech":
-				x_func = function (s, n) {
+				result = function (s, n) {
 					if (n > 4) {
 						return n + " " + s[0];
 					}
@@ -69,7 +74,7 @@ tmp = function() {
 				};
 				break;
 			case "Georgian":
-				x_func = function (s, n) {
+				result = function (s, n) {
 					if (n > 0) {
 						return n + " " + s[0];
 					}
@@ -80,7 +85,7 @@ tmp = function() {
 			case "Ukrainian":
 				var _x_cache = [];
 				var _x_cases = [2, 0, 1, 1, 1, 2];
-				x_func = function (s, n) {
+				result = function (s, n) {
 					if (!n) {
 						return s[3];
 					}
@@ -91,7 +96,7 @@ tmp = function() {
 				};
 				break;
 			default:
-				 x_func = function (s, n) {
+				 result = function (s, n) {
 					if (n > 1) {
 						return n + " " + s[0];
 					}
@@ -102,6 +107,7 @@ tmp = function() {
 				};
 				break;
 		}
+		return result;
 	};
 	
 	Core.lang = {
@@ -116,6 +122,7 @@ tmp = function() {
 				try {
 					// translation strings
 					_strings = Core.system.callScript(langFile, log);
+					
 					// translation strings, passed to functions
 					_X = _strings.X;
 					
@@ -125,22 +132,25 @@ tmp = function() {
 					
 					this.lang = langFile.substring(idx + 1, len -3);
 					initXFunc(this.lang); // init language specific "x books" function
-					initXFunc = undefined; // no need in this funciton anymore
-
 				} catch (e0) {
-					log.error("Failed to load strings: ", e0);
+					log.error("Failed to load strings from file " + langFile, e0);
 				}
 				
 				coreL = this.getLocalizer("Core"); // defined in core
+				this.L = coreL;
 			} catch (e) {
 				log.error("in Core.lang.init: " + e);
 			}
 		},
 
-		getStrings: function (category) {
+		getStrings: function (category, strings) {
 			try {
-				if (_strings !== undefined && _strings[category] !== undefined) {
-					return _strings[category];
+				if (strings === undefined) {
+					strings = _strings;
+				}
+
+				if (strings !== undefined && strings[category] !== undefined) {
+					return strings[category];
 				} else {
 					log.warn("Cannot find strings for category: " + category);
 					return {};
@@ -150,8 +160,8 @@ tmp = function() {
 			}
 		},
 
-		getLocalizer: function (category) {
-			return createLocalizer(this.getStrings(category), category + ".");
+		getLocalizer: function (category, strings) {
+			return createLocalizer(this.getStrings(category, strings), category + ".");
 		},
 		
 		LX: function (category, param) {
@@ -160,7 +170,9 @@ tmp = function() {
 			} catch (e) {
 				return "error: " + e;
 			}
-		}
+		},
+		
+		getXFunc: getXFunc
 	};
 };
 

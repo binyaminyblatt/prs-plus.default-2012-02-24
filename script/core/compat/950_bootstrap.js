@@ -190,4 +190,7 @@ var tmp = function() {
 	}	
 };
 
-tmp();
+try {
+	tmp();
+} catch (ignore) {
+}

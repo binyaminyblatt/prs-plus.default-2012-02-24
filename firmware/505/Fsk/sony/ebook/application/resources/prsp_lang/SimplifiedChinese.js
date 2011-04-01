@@ -1,36 +1,7 @@
-var FUNC_PAGE_X = function (n) {
-	return "第" + n + "页";
-};
-
-// Utility function, no need to localize
-var toDoubleDigit = function (num) {
-	if (num < 10) {
-		return "0" + num;
-	}
-	return num;
-};
-
-var FUNC_GET_DATE = function (date) {
-	var day, month, year;
-	day = toDoubleDigit(date.getDate());
-	month = toDoubleDigit(date.getMonth() + 1);
-	year = date.getFullYear();
-	return month + "/" + day + "/" + year;
-};
-
-var FUNC_GET_TIME = function (date) {
-	var hour, minute;
-	hour = toDoubleDigit(date.getHours());
-	minute = toDoubleDigit(date.getMinutes());
-	return hour + ":" + minute;
-};
-
-var FUNC_GET_DATE_TIME = function (date) {
-	return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
-};
-
 return {
 	X: {
+		BOOKS: ["本", "1 本", "无"],
+		SETTINGS: ["项", "1 项", "无"],
 		PAGES: ["页", "1 页", "无"],
 		PICTURES: ["张", "1 张", "无"],
 		SONGS: ["首", "1 首", "无"],
@@ -195,7 +166,7 @@ return {
 		LAST_YEAR: "去年",
 		OLDER: "更早",
 
-		FUNC_PAGE_X: FUNC_PAGE_X,
+		PAGE: "第",
 		PART: "段",
 		OF: "共",
 		NO_BOOK: "无",
@@ -229,20 +200,7 @@ return {
 		TITLE_9: "X Y Z",
 		CRITERION_9: "XYZxyz",
 		TITLE_0: "Other",
-		CRITERION_0: "",
-
-		FUNC_GET_DATE_TIME: FUNC_GET_DATE_TIME,
-		FUNC_GET_DATE: FUNC_GET_DATE,
-		FUNC_GET_TIME: FUNC_GET_TIME,
-
-		FUNC_X_PAGES: FUNC_X_PAGES,
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
-		FUNC_X_PICTURES: FUNC_X_PICTURES,
-		FUNC_X_SONGS: FUNC_X_SONGS,
-		FUNC_X_BOOKMARKS: FUNC_X_BOOKMARKS,
-		FUNC_X_COLLECTIONS: FUNC_X_COLLECTIONS,
-		FUNC_X_BOOKS: FUNC_X_BOOKS
+		CRITERION_0: ""
 	},
 
 	CoreLang: {
