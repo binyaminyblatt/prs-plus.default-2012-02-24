@@ -104,7 +104,8 @@ return {
 	prspMenu: {
 		// Container nodes
 		customContainers: [
-			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", icon: "GAME"}
+			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", icon: "GAME"},
+			{ name: "multimedia", title: "NODE_OTHERS", icon: "AUDIO"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
@@ -117,9 +118,12 @@ return {
 			{ name: "FreeCell", parent: "gamesAndUtils" },				
 			{ name: "Mahjong", parent: "gamesAndUtils" },
 			{ name: "Sudoku", parent: "gamesAndUtils" },
+			{ name: "nowPlaying", parent: "multimedia" },
+			{ name: "music", parent: "multimedia" },
+			{ name: "pictures", parent: "multimedia" },
 			{ name: "PRSPSettings", parent: "settings" }
 		],
-		movableNodes: [1,0 /* by author */,1,1,1,1,0 /* settings */,1,1,1],
+		movableNodes: [1,0 /* by author */,1,1,1,1,1,1,1,0 /* settings */],
 		defaultLayout: [
 			{ name: "continue"}, 
 			{ name: "booksByTitle"}, 
@@ -127,10 +131,10 @@ return {
 			{ name: "booksByAuthor"},
 			{ name: "BrowseFolders", separator: true},
 			{ name: "bookmarks"}, 
-			{ name: "settings"},
 			{ name: "collections"},
+			{ name: "multimedia"},
 			{ name: "gamesAndUtils"},
-			{ name: "BookHistory"}
+			{ name: "settings"}
 		]
 	},
 	

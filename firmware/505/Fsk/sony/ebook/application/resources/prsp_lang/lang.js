@@ -86,8 +86,15 @@ var initLang505 = function() {
 		init: function () {
 			try {
 				Core.settings.loadOptions(this);
+				
+				// Check if language file actually exists, if not, fallback to en
+				var langPath = Core.config.corePath + "lang/" + this.options.lang + ".js";
+				if (!FileSystem.getFileInfo(langPath)) {
+						this.options.lang = "en";
+				}
+
 				// Init standard lang
-				Core.lang.init(Core.config.corePath + "lang/" + this.options.lang + ".js");
+				Core.lang.init(langPath);
 				try {
 					_strings = Core.system.callScript(langPath505 + this.options.lang + ".js", log);
 					langL = Core.lang.getLocalizer("CoreLang", _strings);
@@ -216,7 +223,7 @@ var initLang505 = function() {
 						"cs": "Český",
 						"de": "Deutsch",
 						"en": "English",
-						"sp": "Español",
+						"es": "Español",
 						"fr": "Français",
 						"ka": "ქართული",
 						"ru": "Русский",

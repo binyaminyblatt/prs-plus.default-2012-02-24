@@ -1,12 +1,13 @@
 === 2.0.11 ===
  * 300: Fixed broken XML in Spanish translation
  * 300: Added Ukrainian localization by Bookoman
- * x50/600: TextScale addon was included
  * 300/505: Fixed "actions do not work"
  * 300/505: Added French localization by sengian (installer)
  * 505: Restored localizations
- * 600/x50: Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
+ * 505: Restored 1.1.3 menu layout with "Multimedia"
  * 600: Added Portuguese localization by OTNeto
+ * 600/x50: Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
+ * 600/x50: TextScale addon was included
 
 === 2.0.10 alpha  ===
  * x50: Fixed doRotate action
