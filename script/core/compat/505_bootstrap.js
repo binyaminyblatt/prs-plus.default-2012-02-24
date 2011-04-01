@@ -8,22 +8,40 @@
 //	2011-03-04 kartu - Initial version
 
 var tmp = function() {
-	var oldReadPreference, oldCallback;
+	var oldReadPreference, oldCallback, bootLog;
+	bootLog = PARAMS.bootLog;
 	
 	// Init core here
 	oldReadPreference = kbook.model.readPreference;
 	kbook.model.readPreference = function() {
+		// Path to 505 specific language files
+		var langPath505 = "/opt/sony/ebook/application/resources/prsp_lang/";
 		try {
 			oldReadPreference.apply(this, arguments);
 			// restore "old" readPreference
 			kbook.model.readPreference = oldReadPreference;
 			
 			PARAMS.loadCore();
-			PARAMS.Core.lang.init(Core.config.corePath + "lang/" + "English.js");
-			PARAMS.loadAddons();
-			PARAMS.Core.init();
+
+			// Init 505 specific lang files
+			try {
+				var code = PARAMS.Core.io.getFileContent(langPath505 + "lang.js", null);
+				if (code !== null) {
+					var lang505 = new Function("Core,loadAddons,langPath505", code);
+					lang505(PARAMS.Core, PARAMS.loadAddons, langPath505);	
+				} else {
+					bootLog("Error loading lang.js");
+				}
+			} catch (e0) {
+				bootLog("error calling initLang505: " + e0);
+			}
+			
+			// Called from lang_505.js
+			//PARAMS.Core.lang.init(Core.config.corePath + "lang/" + "English.js");
+			//PARAMS.loadAddons();
+			//PARAMS.Core.init();
 		} catch (e) {
-			PARAMS.bootLog("in overriden readPreference " + e);
+			bootLog("in overriden readPreference " + e);
 		}
 	};
 	
@@ -38,7 +56,7 @@ var tmp = function() {
 				oldCallback.apply(this, arguments);
 			}
 		} catch (e) {
-			PARAMS.bootLog("Error in callback: " + e);
+			bootLog("Error in callback: " + e);
 			oldCallback.apply(this, arguments);
 		}
 	};
@@ -60,7 +78,6 @@ var tmp = function() {
 	kbook.model.container.sandbox.PAGE_GROUP.sandbox.doDigit = function(part) {
 		try {
 			var c, s, i, container, key;
-			PARAMS.bootLog("sandbox.PAGE is " + this.sandbox.PAGE);
 			c = this.sandbox.PAGE.countPages().toString().length - 1;
 			s = "";
 			for (i = 0; i < c; i++) {
@@ -76,7 +93,7 @@ var tmp = function() {
 			container = kbook.model.container;
 			container.sandbox.beforeModal.call(container, container.sandbox.GOTO_GROUP);
 		} catch (ignore) {
-			PARAMS.bootLog("error in doDigit: " + ignore);
+			bootLog("error in doDigit: " + ignore);
 		}
 	};
 	
@@ -85,6 +102,33 @@ var tmp = function() {
 	String.prototype.localeCompare = function(a) {
 		return compareStrings(this.valueOf(), a);
 	};
+
+	/* 
+	// This hook is needed, since the parent node doesn't have a "shuffleList", so default onEnterSong fails
+	//
+	var oldOnEnterSong = kbook.model.onEnterSong;
+	kbook.model.onEnterSong = function(node) {
+		try {
+			if (xs.isInstanceOf(node, musicPrototype)) {
+				this.currentNode = node;
+				this.STATE = 'SONG';
+				kbook.menuData.setNode(null);
+				if (this.currentSong != node) {
+					this.playSong(node);
+				} else {
+					kbook.movieData.resetDisplayTimer();
+				}			
+			} else {
+				oldOnEnterSong.apply(this, arguments);
+			}
+		} catch (e) {
+			log.trace("Error in onEnterSong: " + e);
+		}
+	}; */
+
 };
 
-tmp();
+try {
+	tmp();
+} catch (ignore) {
+}

@@ -117,9 +117,9 @@ return {
 			{ name: "FreeCell", parent: "gamesAndUtils" },				
 			{ name: "Mahjong", parent: "gamesAndUtils" },
 			{ name: "Sudoku", parent: "gamesAndUtils" },
-			{ name: "PRSPSettings", parent: "settings", position: 0 }
+			{ name: "PRSPSettings", parent: "settings" }
 		],
-		movableNodes: [1,0 /* by author */,1,1,1,1,1,1,1,1,0 /* settings */],
+		movableNodes: [1,0 /* by author */,1,1,1,1,0 /* settings */,1,1,1],
 		defaultLayout: [
 			{ name: "continue"}, 
 			{ name: "booksByTitle"}, 
@@ -150,25 +150,3 @@ return {
 		return a > b ? 1 : -1;
 	}
 };
-	/* TODO model specific
-	// This hook is needed, since the parent node doesn't have a "shuffleList", so default onEnterSong fails
-	//
-	var oldOnEnterSong = kbook.model.onEnterSong;
-	kbook.model.onEnterSong = function(node) {
-		try {
-			if (xs.isInstanceOf(node, musicPrototype)) {
-				this.currentNode = node;
-				this.STATE = 'SONG';
-				kbook.menuData.setNode(null);
-				if (this.currentSong != node) {
-					this.playSong(node);
-				} else {
-					kbook.movieData.resetDisplayTimer();
-				}			
-			} else {
-				oldOnEnterSong.apply(this, arguments);
-			}
-		} catch (e) {
-			log.trace("Error in onEnterSong: " + e);
-		}
-	}; */

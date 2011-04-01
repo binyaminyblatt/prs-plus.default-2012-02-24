@@ -16,8 +16,37 @@ var tmp = function() {
 	//--------------------------------------------------------------------------------------
 	// utility functions
 	//--------------------------------------------------------------------------------------
-	var L, LF, setStr, getPageChangedFunc, settingsComment, localizeDefaultUI;
+	var L, LF, setStr, getPageChangedFunc, settingsComment, localizeDefaultUI, log,
+		toDoubleDigit, FUNC_GET_DATE, FUNC_GET_TIME, FUNC_GET_DATE_TIME;
+	log = Core.log.getLogger("defaultUILocalizer");
 
+	// Utility function, no need to localize
+	toDoubleDigit = function (num) {
+	    if (num < 10) {
+		return "0" + num;
+	    }
+	    return num;
+	};
+	
+	FUNC_GET_DATE = function (date) {
+	    var day, month, year;
+	    day = toDoubleDigit(date.getDate());
+	    month = toDoubleDigit(date.getMonth() + 1);
+	    year = date.getFullYear();
+	    return month + "/" + day + "/" + year;
+	};
+	
+	FUNC_GET_TIME = function (date) {
+	    var hour, minute;
+	    hour = toDoubleDigit(date.getHours());
+	    minute = toDoubleDigit(date.getMinutes());
+	    return hour + ":" + minute;
+	};
+	
+	FUNC_GET_DATE_TIME = function (date) {
+	    return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
+	};	
+	
 	//--------------------------------------------------------------------------------------
 	// "Localizing" functions
 	//--------------------------------------------------------------------------------------
@@ -27,7 +56,7 @@ var tmp = function() {
 		// Set date related stuff
 		//
 		// FIXME side effects!!!
-		if (typeof sony.FUNC_GET_DATE == "function") {
+		if (typeof sony.FUNC_GET_DATE === "function") {
 			Date.prototype.toLocaleDateString = function() {
 				return sony.FUNC_GET_DATE(this);
 			};
@@ -35,117 +64,128 @@ var tmp = function() {
 	};
 
 	var localizeRoot = function() {
-		var nodes = Core.ui.nodes;
-		var getSoValue = Core.system.getSoValue;
-
-		setStr(nodes["continue"], "CONTINUE");
-		nodes["continue"]._mycomment = function (arg) {
-			var bookNode = kbook.model.currentBook;
-			return bookNode !== null ?  getSoValue(bookNode, "media.title") : L("NO_BOOK");
-		};
-
-		// Books by ?
-		setStr(nodes.booksByTitle, "BOOKS_BY_TITLE");
-		setStr(nodes.booksByAuthor, "BOOKS_BY_AUTHOR");
-		setStr(nodes.booksByDate, "BOOKS_BY_DATE");
-		nodes.booksByTitle._mycomment = nodes.booksByAuthor._mycomment = nodes.booksByDate._mycomment = function () {
-			return LF("FUNC_X_BOOKS", this.nodes.length - 10);
-		};
-
-		// Collections
-		setStr(nodes.collections, "COLLECTIONS");
-		nodes.collections._mycomment = function () {
-			return LF("FUNC_X_COLLECTIONS", this.length);
-		};
-		// Books inside collections
-		kbook.root.children.collections.prototype._mycomment = function() {
-			return LF("FUNC_X_BOOKS", this.playlist.items.length);
-		};
-
-		// Bookmarks
-		setStr(nodes.bookmarks, "ALL_BOOKMARKS");
-		nodes.bookmarks._mycomment = function () {
-			return LF("FUNC_X_BOOKMARKS", this.nodes.length);
-		};
-
-		// Now Playing
-		setStr(nodes.nowPlaying, "NOW_PLAYING");
-		nodes.nowPlaying._mycomment = function () {
-			return kbook.model.currentSong === null ? L("NO_SONG") : this.comment();
-		};
-
-		// Music
-		setStr(nodes.music, "MUSIC");
-		nodes.music._mycomment = function () {
-			return LF("FUNC_X_SONGS", this.length);
-		};
-
-		// Pictures
-		setStr(nodes.pictures, "PICTURES");
-		nodes.pictures._mycomment = function () {
-			return LF("FUNC_X_PICTURES", this.length);
-		};
-
-		// Settings
-		setStr(nodes.settings, "SETTINGS");
-		nodes.settings._mycomment = settingsComment;
+		try {
+			var nodes = Core.ui.nodes;
+			var getSoValue = Core.system.getSoValue;
+			
+			setStr(nodes["continue"], "CONTINUE");
+			
+			nodes["continue"]._mycomment = function (arg) {
+				var bookNode = kbook.model.currentBook;
+				return bookNode !== null ?  getSoValue(bookNode, "media.title") : L("NO_BOOK");
+			};
+			
+			// Books by ?
+			setStr(nodes.booksByTitle, "BOOKS_BY_TITLE");
+			setStr(nodes.booksByAuthor, "BOOKS_BY_AUTHOR");
+			setStr(nodes.booksByDate, "BOOKS_BY_DATE");
+			nodes.booksByTitle._mycomment = nodes.booksByAuthor._mycomment = nodes.booksByDate._mycomment = function () {
+				return LF("BOOKS", this.nodes.length - 10);
+			};
+	
+			// Collections
+			setStr(nodes.collections, "COLLECTIONS");
+			nodes.collections._mycomment = function () {
+				return LF("COLLECTIONS", this.length);
+			};
+			// Books inside collections
+			kbook.root.children.collections.prototype._mycomment = function() {
+				return LF("BOOKS", this.playlist.items.length);
+			};
+	
+			// Bookmarks
+			setStr(nodes.bookmarks, "ALL_BOOKMARKS");
+			nodes.bookmarks._mycomment = function () {
+				return LF("BOOKMARKS", this.nodes.length);
+			};
+	
+			// Now Playing
+			setStr(nodes.nowPlaying, "NOW_PLAYING");
+			nodes.nowPlaying._mycomment = function () {
+				return kbook.model.currentSong === null ? L("NO_SONG") : this.comment();
+			};
+	
+			// Music
+			setStr(nodes.music, "MUSIC");
+			nodes.music._mycomment = function () {
+				return LF("SONGS", this.length);
+			};
+	
+			// Pictures
+			setStr(nodes.pictures, "PICTURES");
+			nodes.pictures._mycomment = function () {
+				return LF("PICTURES", this.length);
+			};
+	
+			// Settings
+			setStr(nodes.settings, "SETTINGS");
+			nodes.settings._mycomment = settingsComment;
+		} catch (e) {
+			log.error("localizing root", e);
+		}
 	};
 
 	var localizeSettings = function() {
-		// Settings - Orientation
-		var settingsNode = Core.ui.nodes.settings;
-		var settingsChildren = settingsNode.children;
-		setStr(settingsChildren.orientation, "ORIENTATION");
-		settingsChildren.orientation._mycomment = function () {
-			return kbook.model.container.getVariable('ORIENTATION') ? L("HORIZONTAL") : L("VERTICAL");
-		};
-
-		// Settings - Set Date
-		setStr(settingsChildren.setdate_clock, "SET_DATE");
-		settingsChildren.setdate_clock._mycomment = function() {
-			return LF("FUNC_GET_DATE_TIME", new Date());
-		};
-		var setDateNodes = settingsNode.nodes[1].nodes;
-		setDateNodes[0].name = L("YEAR"); //year
-		setDateNodes[1].name = L("MONTH"); // month
-		setDateNodes[2].name = L("DATE"); // day
-		setDateNodes[3].name = L("HOUR"); // hour
-		setDateNodes[4].name = L("MINUTE"); // minute
-		setDateNodes[5].min = setDateNodes[5].max = L("SETDATE_OK");
-		setDateNodes[5].kind = -parseFloat(L("SETDATE_OK_SIZE", 2));
-
-		// Settings - Slideshow
-		var slideshow = Core.ui.nodes.settings.nodes[2];
-		setStr(slideshow, "SLIDESHOW");
-		slideshow._mycomment = function() {
-			return kbook.model.slideshowFlag ? L("SS_ON") :  L("SS_OFF");
-		};
-		var slideshowNodes = slideshow.nodes;
-		slideshowNodes[0].name= L("SS_TURN");
-		slideshowNodes[0].min = L("SS_OFF") ;
-		slideshowNodes[0].max = L("SS_ON") ;
-		slideshowNodes[0].kind = -parseFloat(L("SS_SIZE", 2));
-		slideshowNodes[1].name= L("SS_DURATION");
-		slideshowNodes[1].comment = L("SECONDS");
-		slideshowNodes[2].min =  slideshowNodes[2].max = L("SS_OK");
-		slideshowNodes[2].kind = -parseFloat(L("SS_OK_SIZE", 2));
-		// Settings - Auto Standby
-		var autoStandby = Core.ui.nodes.settings.nodes[3];
-		setStr(autoStandby, "AUTOSTANDBY");
-		autoStandby._mycomment = function() {
-			return kbook.model.autoStandbyFlag ? L("AS_ON") : L("AS_OFF");
-		};
-		var autoStandbyNodes = autoStandby.nodes;
-		autoStandbyNodes[0].name = L("AS_TURN");
-		autoStandbyNodes[0].min = L("AS_OFF");
-		autoStandbyNodes[0].max = L("AS_ON");
-		autoStandbyNodes[0].kind = -parseFloat(L("AS_SIZE", 2));
-		autoStandbyNodes[1].min = autoStandbyNodes[1].max = L("AS_OK");
-		autoStandbyNodes[1].kind = -parseFloat(L("AS_OK_SIZE", 2));
-
-		// Settings - About
-		setStr(settingsChildren.about, "ABOUT");
-		setStr(settingsChildren.resetToFactorySettings, "RESET_TO_FACTORY");
+		try {
+			// Settings - Orientation
+			var settingsNode = Core.ui.nodes.settings;
+			var settingsChildren = settingsNode.children;
+			setStr(settingsChildren.orientation, "ORIENTATION");
+			settingsChildren.orientation._mycomment = function () {
+				return kbook.model.container.getVariable('ORIENTATION') ? L("HORIZONTAL") : L("VERTICAL");
+			};
+	
+			// Settings - Set Date
+			setStr(settingsChildren.setdate_clock, "SET_DATE");
+			settingsChildren.setdate_clock._mycomment = function() {
+				return FUNC_GET_DATE_TIME(new Date());
+			};
+			var setDateNodes = settingsNode.nodes[1].nodes;
+			setDateNodes[0].name = L("YEAR"); //year
+			setDateNodes[1].name = L("MONTH"); // month
+			setDateNodes[2].name = L("DATE"); // day
+			setDateNodes[3].name = L("HOUR"); // hour
+			setDateNodes[4].name = L("MINUTE"); // minute
+			setDateNodes[5].min = setDateNodes[5].max = L("SETDATE_OK");
+			setDateNodes[5].kind = -parseFloat(L("SETDATE_OK_SIZE", 2));
+	
+			// Settings - Slideshow
+			var slideshow = Core.ui.nodes.settings.nodes[2];
+			setStr(slideshow, "SLIDESHOW");
+			slideshow._mycomment = function() {
+				return kbook.model.slideshowFlag ? L("SS_ON") :  L("SS_OFF");
+			};
+			var slideshowNodes = slideshow.nodes;
+			slideshowNodes[0].name= L("SS_TURN");
+			slideshowNodes[0].min = L("SS_OFF") ;
+			slideshowNodes[0].max = L("SS_ON") ;
+			slideshowNodes[0].kind = -parseFloat(L("SS_SIZE", 2));
+			slideshowNodes[1].name= L("SS_DURATION");
+			slideshowNodes[1].comment = L("SECONDS");
+			slideshowNodes[2].min =  slideshowNodes[2].max = L("SS_OK");
+			slideshowNodes[2].kind = -parseFloat(L("SS_OK_SIZE", 2));
+			
+			// Settings - Auto Standby
+			var autoStandby = Core.ui.nodes.settings.nodes[3];
+			setStr(autoStandby, "AUTOSTANDBY");
+			autoStandby._mycomment = function() {
+				return kbook.model.autoStandbyFlag ? L("AS_ON") : L("AS_OFF");
+			};
+			
+			var autoStandbyNodes = autoStandby.nodes;
+			autoStandbyNodes[0].name = L("AS_TURN");
+			autoStandbyNodes[0].min = L("AS_OFF");
+			autoStandbyNodes[0].max = L("AS_ON");
+			autoStandbyNodes[0].kind = -parseFloat(L("AS_SIZE", 2));
+			autoStandbyNodes[1].min = autoStandbyNodes[1].max = L("AS_OK");
+			autoStandbyNodes[1].kind = -parseFloat(L("AS_OK_SIZE", 2));
+	
+			// Settings - About
+			setStr(settingsChildren.about, "ABOUT");
+			setStr(settingsChildren.resetToFactorySettings, "RESET_TO_FACTORY");
+		} catch (e) {
+			log.error("Error localizing settings", e);
+		}
 	};
 
 	var localizeAdvancedSettings = function() {
@@ -156,7 +196,7 @@ var tmp = function() {
 			setStr(nodes.advancedSettings, "ADVANCED_SETTINGS");
 			nodes.advancedSettings._mycomment = settingsComment;
 			var advancedSettingsChildren = nodes.advancedSettings.children;
-
+			
 			// Settings - Advanced Settings - Screen Lock
 			var screenLockSettings = kbook.screenLock;
 			var screenLockSettingsNodes = screenLockSettings.nodes;
@@ -179,7 +219,7 @@ var tmp = function() {
 			screenLockNodes[0].name = L("SL_CODE");
 			screenLockNodes[1].min = screenLockNodes[1].max = L("SL_OK_UNLOCK");
 			screenLockNodes[1].kind = -parseFloat(L("SL_OK_UNLOCK_SIZE", 2));
-
+			
 			// Shown to unlock device after it was connected to USB / restart
 			var unlockNodes = kbook.screenUnlock.nodes;
 			unlockNodes[0].name = L("SL_CODE");
@@ -188,7 +228,7 @@ var tmp = function() {
 
 			// Settings - Advanced Settings - Format Device
 			setStr(advancedSettingsChildren.formatDevice, "FORMAT_DEVICE");
-
+			
 			// Settings - Advanced Settings - Shutdown
 			setStr(advancedSettingsChildren.deviceShutdown, "DEVICE_SHUTDOWN");
 		} catch (e) {
@@ -205,24 +245,24 @@ var tmp = function() {
 		var getSoValue = Core.system.getSoValue;
 		bookChildren["continue"]._mycomment = bookChildren.begin._mycomment = bookChildren.end._mycomment = function () {
 			if (this.bookmark) {
-				return LF("FUNC_PAGE_X", getSoValue(this.bookmark, "page") + 1);
+				return L("PAGE") + " " + (getSoValue(this.bookmark, "page") + 1);
 			}
 			return "";
 		};
 
 		setStr(bookChildren.bookmarks, "BOOKMARKS");
 		bookChildren.bookmarks._mycomment = function () {
-			return LF("FUNC_X_BOOKMARKS", this.bookmarks.length);
+			return LF("BOOKMARKS", this.bookmarks.length);
 		};
 
 		setStr(bookChildren.contents, "CONTENTS");
 		bookChildren.contents._mycomment = function () {
-			return LF("FUNC_X_ITEMS", this.bookmarks.length);
+			return LF("ITEMS", this.bookmarks.length);
 		};
 
 		setStr(bookChildren.history, "HISTORY");
 		bookChildren.history._mycomment = function () {
-			return LF("FUNC_X_PAGES", this.bookmarks.length);
+			return LF("PAGES", this.bookmarks.length);
 		};
 
 		setStr(bookChildren.info, "INFO");
@@ -238,12 +278,12 @@ var tmp = function() {
 		var getSoValue = Core.system.getSoValue;
 		setStr(bookUtilChildren.removeAllBookmarks, "REMOVE_ALL_BOOKMARKS");
 		bookUtilChildren.removeAllBookmarks._mycomment = function () {
-			return LF("FUNC_X_BOOKMARKS", getSoValue(this.parent.parent, "media.bookmarks.length"));
+			return LF("BOOKMARKS", getSoValue(this.parent.parent, "media.bookmarks.length"));
 		};
 
 		setStr(bookUtilChildren.clearHistory, "CLEAR_HISTORY");
 		bookUtilChildren.clearHistory._mycomment = function () {
-			return LF("FUNC_X_PAGES", getSoValue(this.parent.parent, "media.history.length"));
+			return LF("PAGES", getSoValue(this.parent.parent, "media.history.length"));
 		};
 
 		setStr(bookUtilChildren.deleteBook, "DELETE_BOOK");
@@ -269,15 +309,16 @@ var tmp = function() {
 	};
 
 	var localizeBookByTitleAndAuthor = function() {
+		var setSoValue, childrenTitle, childrenAuthor, i, obj1, obj2, criterion, title;
 		if (L("CUSTOM_SORT") === true) {
-			var setSoValue = Core.system.setSoValue;
-			var childrenTitle = Core.ui.nodes.booksByTitle.children;
-			var childrenAuthor = Core.ui.nodes.booksByAuthor.children;
-			for (var i = 0; i < 10; i++) {
-				var obj1 = childrenTitle["_" + i];
-				var obj2 = childrenAuthor["_" + i];
-				var criterion = L("CRITERION_" + i);
-				var title =  L("TITLE_" + i);
+			setSoValue = Core.system.setSoValue;
+			childrenTitle = Core.ui.nodes.booksByTitle.children;
+			childrenAuthor = Core.ui.nodes.booksByAuthor.children;
+			for (i = 0; i < 10; i++) {
+				obj1 = childrenTitle["_" + i];
+				obj2 = childrenAuthor["_" + i];
+				criterion = L("CRITERION_" + i);
+				title =  L("TITLE_" + i);
 				setSoValue(obj1, "criterion", criterion);
 				setSoValue(obj1, "name", title);
 				setSoValue(obj1, "title", title);
@@ -304,9 +345,9 @@ var tmp = function() {
 			offset = offset - offset % 10;
 			offset = offset / 10;
 			offset++;
-			result = LF("FUNC_X_BOOKS", c);
+			result = LF("BOOKS", c);
 			if (c > 0) {
-				result = result + " - " + LF("FUNC_PAGE_X", offset);
+				result = result + " - " + L("PAGE") + " " + offset;
 			}
 			return result;
 		};
@@ -323,7 +364,7 @@ var tmp = function() {
 			if (part) {
 				comment = comment + ' - ' + L("PART") + ' ' + part;
 			}
-			comment = comment + ' - ' + LF("FUNC_PAGE_X", getFastSoValue(bookmark, "page") + 1) + ' ' + L("OF") + ' ' + getFastSoValue(bookmark, "pages");
+			comment = comment + ' - ' + L("PAGE") + " " + (getFastSoValue(bookmark, "page") + 1) + ' ' + L("OF") + ' ' + getFastSoValue(bookmark, "pages");
 			return comment;
 		};
 
@@ -342,7 +383,7 @@ var tmp = function() {
 				if (part) {
 					result = result + L("PART") + ' ' + part + ' - ';
 				}
-				result = result + LF("FUNC_PAGE_X", page);
+				result = result + L("PAGE") + " " +  page;
 				if (pages) {
 					result = result + ' ' + L("OF") + ' ' + pages;
 				}
@@ -360,82 +401,86 @@ var tmp = function() {
 			page = getFastSoValue(bookmark, "page") + 1;
 			part = getFastSoValue(bookmark, "part");
 			if (part) {
-				return L("PART") + ' ' + part + ' - ' + LF("FUNC_PAGE_X", page);
+				return L("PART") + ' ' + part + ' - ' + L("PAGE") + " " + page;
 			} else {
-				return LF("FUNC_PAGE_X", page);
+				return L("PAGE") + " " +  page;
 			}
 		};
 	};
 
 	var localizeStatic = function() {
-		var obj;
-		var container = kbook.model.container;
-		// Invalid Format!
-		container.INVALID_FORMAT_GROUP.LB_INVALID_FORMAT.setValue(L("INVALID_FORMAT"));
-		// Formatting...
-		container.PROGRESS_GROUP.LB_FORMATTING.setValue(L("FORMATTING"));
-		container.FORMAT_GROUP.LB_FORMATTING.setValue(L("FORMATTING"));
-		// Loading...
-		container.DISK_GROUP.LB_LOADING.setValue(L("LOADING"));
-		// Low Battery!
-		container.LOW_BATTERY_GROUP.LB_LOW_BATTERY.setValue(L("LOW_BATTERY"));
-
-		// Reset All
-		obj = container.HARD_RESET_GROUP;
-		obj.RESET_ALL.setValue(L("RESET_ALL"));
-		// "Do you want to DELETE all content, restore all factory settings,
-		// and clear the DRM authorization state?&#13;&#13;Yes - Press 5&#13;No - Press MENU"
-		obj.HARD_RESET.HR_WARNING.setValue(L("HR_WARNING"));
-
-		// Device Shutdown
-		obj = container.DEVICE_SHUTDOWN_GROUP;
-		obj.LB_TITLE.setValue(L("DEVICE_SHUTDOWN"));
-		// Press MARK to shutdown
-		obj.DEVICE_SHUTDOWN.LB_MESSAGE1.setValue(L("PRESS_MARK_TO_SHUTDOWN"));
-		// this device.
-		obj.DEVICE_SHUTDOWN.LB_MESSAGE2.setValue(L("THIS_DEVICE"));
-
-		// Delete Book
-		obj = container.DELETE_BOOK_GROUP;
-		obj.LB_TITLE.setValue(L("DELETE_BOOK"));
-		// Press MARK to
-		obj.DELETE_BOOK.LB_MESSAGE1.setValue(L("PRESS_MARK_TO_DELETE"));
-		// delete book.
-		obj.DELETE_BOOK.LB_MESSAGE2.setValue(L("THIS_BOOK"));
-
-		// Format Internal Memory
-		obj = container.FORMAT_DEVICE_GROUP;
-		obj.LB_TITLE.setValue(L("FORMAT_INTERNAL_MEMORY"));
-		// Press MARK to format
-		obj.FORMAT_DEVICE.LB_MESSAGE1.setValue(L("PRESS_MARK_TO_FORMAT"));
-		// internal memory.
-		obj.FORMAT_DEVICE.LB_MESSAGE2.setValue(L("MSG_INTERNAL_MEMORY"));
-
-		// Restore Defaults
-		obj = container.SOFT_RESET_GROUP;
-		obj.LB_TITLE.setValue(L("RESTORE_DEFAULTS"));
-		// Press MARK to restore
-		obj.SOFT_RESET.LB_MESSAGE1.setValue(L("PRESS_MARK_TO_RESTORE"));
-		// default settings.
-		obj.SOFT_RESET.LB_MESSAGE2.setValue(L("DEFAULT_SETTINGS"));
-
-		// Now Playing
-		container.SONG_GROUP.LB_TITLE.setValue(L("NOW_PLAYING"));
-		// Uppercase PAGE (goto)
-		container.GOTO_GROUP.GROUP.LB_MESSAGE.setValue(L("UPPER_PAGE"));
-
-		// 1 of 1
-		var oneOfOne = L("ONE_OF_ONE");
-		container.HARD_RESET_GROUP.LB_STATUS.setValue(oneOfOne);
-		container.DEVICE_SHUTDOWN_GROUP.LB_STATUS.setValue(oneOfOne);
-		container.DELETE_BOOK_GROUP.LB_STATUS.setValue(oneOfOne);
-		container.FORMAT_DEVICE_GROUP.LB_STATUS.setValue(oneOfOne);
-		container.SOFT_RESET_GROUP.LB_STATUS.setValue(oneOfOne);
-		container.SETTING_GROUP.LB_STATUS.setValue(oneOfOne);
-
-		// Info page
-		var oldPageChanged = container.INFO_GROUP.INFO.pageChanged;
-		container.INFO_GROUP.INFO.pageChanged = getPageChangedFunc("INFO_INDEX_COUNT", oldPageChanged, L);
+		try {
+			var obj;
+			var container = kbook.model.container;
+			// Invalid Format!
+			container.sandbox.INVALID_FORMAT_GROUP.sandbox.LB_INVALID_FORMAT.setValue(L("INVALID_FORMAT"));
+			// Formatting...
+			container.sandbox.PROGRESS_GROUP.sandbox.LB_FORMATTING.setValue(L("FORMATTING"));
+			container.sandbox.FORMAT_GROUP.sandbox.LB_FORMATTING.setValue(L("FORMATTING"));
+			// Loading...
+			container.sandbox.DISK_GROUP.sandbox.LB_LOADING.setValue(L("LOADING"));
+			// Low Battery!
+			container.sandbox.LOW_BATTERY_GROUP.sandbox.LB_LOW_BATTERY.setValue(L("LOW_BATTERY"));
+			
+			// Reset All
+			obj = container.sandbox.HARD_RESET_GROUP;
+			obj.sandbox.RESET_ALL.setValue(L("RESET_ALL"));
+			// "Do you want to DELETE all content, restore all factory settings,
+			// and clear the DRM authorization state?&#13;&#13;Yes - Press 5&#13;No - Press MENU"
+			obj.sandbox.HARD_RESET.sandbox.HR_WARNING.setValue(L("HR_WARNING"));
+			
+			// Device Shutdown
+			obj = container.sandbox.DEVICE_SHUTDOWN_GROUP;
+			obj.sandbox.LB_TITLE.setValue(L("DEVICE_SHUTDOWN"));
+			// Press MARK to shutdown
+			obj.sandbox.DEVICE_SHUTDOWN.sandbox.LB_MESSAGE1.setValue(L("PRESS_MARK_TO_SHUTDOWN"));
+			// this device.
+			obj.sandbox.DEVICE_SHUTDOWN.sandbox.LB_MESSAGE2.setValue(L("THIS_DEVICE"));
+			
+			// Delete Book
+			obj = container.sandbox.DELETE_BOOK_GROUP;
+			obj.sandbox.LB_TITLE.setValue(L("DELETE_BOOK"));
+			// Press MARK to
+			obj.sandbox.DELETE_BOOK.sandbox.LB_MESSAGE1.setValue(L("PRESS_MARK_TO_DELETE"));
+			// delete book.
+			obj.sandbox.DELETE_BOOK.sandbox.LB_MESSAGE2.setValue(L("THIS_BOOK"));
+			
+			// Format Internal Memory
+			obj = container.sandbox.FORMAT_DEVICE_GROUP;
+			obj.sandbox.LB_TITLE.setValue(L("FORMAT_INTERNAL_MEMORY"));
+			// Press MARK to format
+			obj.sandbox.FORMAT_DEVICE.sandbox.LB_MESSAGE1.setValue(L("PRESS_MARK_TO_FORMAT"));
+			// internal memory.
+			obj.sandbox.FORMAT_DEVICE.sandbox.LB_MESSAGE2.setValue(L("MSG_INTERNAL_MEMORY"));
+			
+			// Restore Defaults
+			obj = container.sandbox.SOFT_RESET_GROUP;
+			obj.sandbox.LB_TITLE.setValue(L("RESTORE_DEFAULTS"));
+			// Press MARK to restore
+			obj.sandbox.SOFT_RESET.sandbox.LB_MESSAGE1.setValue(L("PRESS_MARK_TO_RESTORE"));
+			// default settings.
+			obj.sandbox.SOFT_RESET.sandbox.LB_MESSAGE2.setValue(L("DEFAULT_SETTINGS"));
+			
+			// Now Playing
+			container.sandbox.SONG_GROUP.sandbox.LB_TITLE.setValue(L("NOW_PLAYING"));
+			// Uppercase PAGE (goto)
+			container.sandbox.GOTO_GROUP.sandbox.GROUP.sandbox.LB_MESSAGE.setValue(L("UPPER_PAGE"));
+			
+			// 1 of 1
+			var oneOfOne = L("ONE_OF_ONE");
+			container.sandbox.HARD_RESET_GROUP.sandbox.LB_STATUS.setValue(oneOfOne);
+			container.sandbox.DEVICE_SHUTDOWN_GROUP.sandbox.LB_STATUS.setValue(oneOfOne);
+			container.sandbox.DELETE_BOOK_GROUP.sandbox.LB_STATUS.setValue(oneOfOne);
+			container.sandbox.FORMAT_DEVICE_GROUP.sandbox.LB_STATUS.setValue(oneOfOne);
+			container.sandbox.SOFT_RESET_GROUP.sandbox.LB_STATUS.setValue(oneOfOne);
+			container.sandbox.SETTING_GROUP.sandbox.LB_STATUS.setValue(oneOfOne);
+			
+			// Info page
+			var oldPageChanged = container.sandbox.INFO_GROUP.sandbox.INFO.pageChanged;
+			container.sandbox.INFO_GROUP.sandbox.INFO.pageChanged = getPageChangedFunc("INFO_INDEX_COUNT", oldPageChanged, L);
+		} catch (e) {
+			log.error("localizeStatic", e);
+		}
 	};
 
 	var localizeKbook = function () {
@@ -466,19 +511,19 @@ var tmp = function() {
 		// mime types
 		var obj = Core.system.getSoValue("FskCache.tree.infoListNode.prototypes.mime");
 		var func = function (value) {
-			if (value == 'application/rtf') {
+			if (value === 'application/rtf') {
 				return L("RICH_TEXT_FORMAT");
 			}
-			if (value == 'application/pdf') {
+			if (value === 'application/pdf') {
 				return L("ADOBE_PDF");
 			}
-			if (value == 'application/epub+zip') {
+			if (value === 'application/epub+zip') {
 				return L("EPUB_DOCUMENT");
 			}
-			if (value == 'application/x-sony-bbeb') {
+			if (value === 'application/x-sony-bbeb') {
 				return L("BBEB_BOOK");
 			}
-			if (value == 'text/plain') {
+			if (value === 'text/plain') {
 				return L("PLAIN_TEXT");
 			}
 			return value;
@@ -504,25 +549,28 @@ var tmp = function() {
 	};
 
 	var localizeAbout = function () {
-		var setSoValue = Core.system.setSoValue;
-		var getFastSoValue = Core.system.getFastSoValue;
-		var about = kbook.model.container.ABOUT_GROUP.ABOUT;
+		var setSoValue, getFastSoValue, about, records, i, n, sandbox, key, text;
+		setSoValue = Core.system.setSoValue;
+		getFastSoValue = Core.system.getFastSoValue;
+		about = kbook.model.container.sandbox.ABOUT_GROUP.sandbox.ABOUT;
 
 		// Localize records
-		var records = Core.system.getSoValue(about, "data.records");
-		for (var i = 0, n = records.length; i < n; i++) {
-			var sandbox, key, text;
+		records = Core.system.getSoValue(about, "data.records");
+		for (i = 0, n = records.length; i < n; i++) {
+			
 			sandbox = getFastSoValue(records[i], "sandbox");
 			if (i === 0) {
 				// translate PRSP entry
-				key = "ABOUT_PRSP";
-				text = L(key);
-				text = text.replace("@@@firmware@@@", Core.version.firmware);
+				// kartu: not needed any more, done by core
+				// key = "ABOUT_PRSP";
+				// text = L(key);
+				// text = text.replace("@@@firmware@@@", Core.version.firmware);
 			} else {
 				key = "ABOUT_" + i;
 				text = L(key);
+				setSoValue(sandbox, "text", text);
 			}
-			setSoValue(sandbox, "text", text);
+			
 		}
 
 		var oldGetValue = about.getValue;
@@ -563,7 +611,8 @@ var tmp = function() {
 	};
 
 	localizeDefaultUI = function () {
-		var sony_str = Core.lang.getStrings("Sony");
+		var sony_str =_strings.Sony;
+		var X = _strings.X;
 		// Helper functions
 		L = function (key, defValue) {
 			if (sony_str.hasOwnProperty(key)) {
@@ -578,21 +627,21 @@ var tmp = function() {
 		};
 		LF = function (key, param) {
 			try {
-				if (typeof sony_str[key] == "function") {
-					return sony_str[key](param);
-				} else if (typeof sony_str[key] != "undefined") {
-					return sony_str[key];
+				var strings = X[key]; 
+				if (typeof  strings !== undefined) {
+					return xFunc(strings, param);
 				}
 			} catch (e) {
 				log.error("when calling " + key + " with param " + param + ": " + e);
 			}
 			return key;
 		};
+		
 		setStr = function (node, strID) {
 			node._myname = node.title = L(strID);
 		};
 		settingsComment = function () {
-			return LF("FUNC_X_SETTINGS", this.length);
+			return LF("SETTINGS", this.length);
 		};
 		getPageChangedFunc = function(varName, oldFunc, L) {
 			var model = kbook.model;

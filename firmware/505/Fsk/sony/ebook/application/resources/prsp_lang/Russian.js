@@ -1,32 +1,7 @@
-// Utility function, no need to localize
-var toDoubleDigit = function (num) {
-	if (num < 10) {
-		return "0" + num;
-	}
-	return num;
-};
-
-var FUNC_GET_DATE = function (date) {
-	var day, month, year;
-	day = toDoubleDigit(date.getDate());
-	month = toDoubleDigit(date.getMonth() + 1);
-	year = date.getFullYear();
-	return month + "/" + day + "/" + year;
-};
-
-var FUNC_GET_TIME = function (date) {
-	var hour, minute;
-	hour = toDoubleDigit(date.getHours());
-	minute = toDoubleDigit(date.getMinutes());
-	return hour + ":" + minute;
-};
-
-var FUNC_GET_DATE_TIME = function (date) {
-	return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
-};
-
 return {
 	X: {
+		BOOKS: ["книга", "книги", "книг", "Пусто"],
+		SETTINGS: ["настройка", "настройки", "настроек", "Пусто"],
 		PAGES: ["страница", "страницы", "страниц", "Пусто"],
 		PICTURES: ["изображение", "изображения", "изображений", "Пусто"],
 		SONGS: ["песня", "песни", "песен", "Пусто"],
@@ -43,7 +18,6 @@ return {
 		DEVICE_LOCKED: "Устройство заблокировано",
 
 		// About, translate either all or none
-		ABOUT_PRSP: "PRS+ @@@firmware@@@\n" + "Автор: Михаил Сухиашвили или kartu (kartu3@gmail.com) с использованием работ: " + "igorsk, boroda, obelix, pepak, kravitz и других. Русский перевод: SLL.\n" + "© GNU Lesser General Public License.\n",
 		ABOUT_1: "Авторские права ©2006-2008 Sony Corporation",
 		ABOUT_2: "Adobe, логотип Adobe, Reader и PDF являются зарегистрированными торговыми" + " марками или торговыми марками Adobe Systems Incorporated в США и/или других странах.",
 		ABOUT_3: "Технология аудио-кодирования MPEG Layer-3 и патенты лицензированы Fraunhofer IIS и Thomson." + " Технология аудио-кодирования MPEG-4 AAC лицензирована Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
@@ -192,7 +166,7 @@ return {
 		LAST_YEAR: "За прошлый год",
 		OLDER: "Ещё ранее",
 
-		FUNC_PAGE_X: FUNC_PAGE_X,
+		PAGE: "Страница",
 		PART: "Часть",
 		OF: "из",
 		NO_BOOK: "Пусто",
@@ -225,20 +199,7 @@ return {
 		TITLE_9: "Э Ю Я",
 		CRITERION_9: "ЭЮЯэюя",
 		TITLE_0: "Прочие",
-		CRITERION_0: "",
-
-		FUNC_GET_DATE_TIME: FUNC_GET_DATE_TIME,
-		FUNC_GET_DATE: FUNC_GET_DATE,
-		FUNC_GET_TIME: FUNC_GET_TIME,
-
-		FUNC_X_PAGES: FUNC_X_PAGES,
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
-		FUNC_X_PICTURES: FUNC_X_PICTURES,
-		FUNC_X_SONGS: FUNC_X_SONGS,
-		FUNC_X_BOOKMARKS: FUNC_X_BOOKMARKS,
-		FUNC_X_COLLECTIONS: FUNC_X_COLLECTIONS,
-		FUNC_X_BOOKS: FUNC_X_BOOKS
+		CRITERION_0: ""
 	},
 
 	CoreLang: {

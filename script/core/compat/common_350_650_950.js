@@ -178,8 +178,6 @@ tmp = function() {
 			// Enter function for language children, changes locale and moves to parent
 			enter = function() {
 				try {
-					// TODO use update
-					
 					// find currently selected node
 					var nodes, i, n, idx, tmpKind;
 					nodes = this.parent.nodes;
@@ -205,8 +203,7 @@ tmp = function() {
 						nodes[idx].kind = tmpKind;
 					}
 					
-					// TODO localize
-					Core.ui.showMsg("Requires restart");					
+					Core.ui.showMsg(Core.lang.L("MSG_RESTART"));					
 				} catch (e) {
 					PARAMS.bootLog("changing language", e);
 				}

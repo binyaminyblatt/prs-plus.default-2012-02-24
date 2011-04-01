@@ -1,37 +1,7 @@
-var FUNC_PAGE_X = function (n) {
-	return "Página " + n;
-};
-
-// Utility function, no need to localize
-var toDoubleDigit = function (num) {
-	if (num < 10) {
-		return "0" + num;
-	}
-	return num;
-};
-
-var FUNC_GET_DATE = function (date) {
-	var day, month, year;
-	day = toDoubleDigit(date.getDate());
-	month = toDoubleDigit(date.getMonth() + 1);
-	year = date.getFullYear();
-	return month + "/" + day + "/" + year;
-};
-
-var FUNC_GET_TIME = function (date) {
-	var hour, minute;
-	hour = toDoubleDigit(date.getHours());
-	minute = toDoubleDigit(date.getMinutes());
-	return hour + ":" + minute;
-};
-
-var FUNC_GET_DATE_TIME = function (date) {
-	return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
-};
-
-
 return {
 	X: {
+		BOOKS: ["libros", "1 libro", "Ningún libro"],
+		SETTINGS: ["ajustes", "1 ajuste", "Ningún ajuste"],		
 		PAGES: ["páginas", "1 página", "Ninguna página"],
 		PICTURES: ["imágenes", "1 imagen", "Ninguna imagen"],
 		SONGS: ["canciones", "1 canción", "Ninguna canción"],
@@ -196,7 +166,7 @@ return {
 		LAST_YEAR: "El Año Pasado",
 		OLDER: "Más Antiguo",
 
-		FUNC_PAGE_X: FUNC_PAGE_X,
+		PAGE: "Página",
 		PART: "Parte",
 		OF: "de",
 		NO_BOOK: "Ningún libro",
@@ -229,20 +199,7 @@ return {
 		TITLE_9: "X Y Z",
 		CRITERION_9: "XYZxyz",
 		TITLE_0: "Otro",
-		CRITERION_0: "",
-
-		FUNC_GET_DATE_TIME: FUNC_GET_DATE_TIME,
-		FUNC_GET_DATE: FUNC_GET_DATE,
-		FUNC_GET_TIME: FUNC_GET_TIME,
-
-		FUNC_X_PAGES: FUNC_X_PAGES,
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
-		FUNC_X_PICTURES: FUNC_X_PICTURES,
-		FUNC_X_SONGS: FUNC_X_SONGS,
-		FUNC_X_BOOKMARKS: FUNC_X_BOOKMARKS,
-		FUNC_X_COLLECTIONS: FUNC_X_COLLECTIONS,
-		FUNC_X_BOOKS: FUNC_X_BOOKS
+		CRITERION_0: ""
 	},
 
 	CoreLang: {

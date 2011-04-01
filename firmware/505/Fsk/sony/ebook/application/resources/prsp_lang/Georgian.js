@@ -1,31 +1,3 @@
-// Utility function, no need to localize
-var toDoubleDigit = function (num) {
-	if (num < 10) {
-		return "0" + num;
-	}
-	return num;
-};
-
-var FUNC_GET_DATE = function (date) {
-	var day, month, year;
-	day = toDoubleDigit(date.getDate());
-	month = toDoubleDigit(date.getMonth() + 1);
-	year = date.getFullYear();
-	return month + "/" + day + "/" + year;
-};
-
-var FUNC_GET_TIME = function (date) {
-	var hour, minute;
-	hour = toDoubleDigit(date.getHours());
-	minute = toDoubleDigit(date.getMinutes());
-	return hour + ":" + minute;
-};
-
-var FUNC_GET_DATE_TIME = function (date) {
-	return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
-};
-
-
 var okText = "შენახვა";
 var okSize = 4.5;
 var onText = "ჩართულია";
@@ -36,6 +8,8 @@ var activateText = "სტატუსი";
 
 return {
 	X: {
+		BOOKS: ["წიგნი", "ცარიელი"],
+		SETTINGS: ["ოფცია", "ცარიელი"],		
 		PAGES: ["გვერდი", "ცარიელი"],
 		PICTURES: ["სურათი", "ცარიელი"],
 		SONGS: ["სიმღერა", "ცარიელი"],
@@ -51,7 +25,6 @@ return {
 		DEVICE_LOCKED: "წიგნი დაბლოკილია",
 
 		// About, translate either all or none
-		ABOUT_PRSP: "PRS+ @@@firmware@@@\n" + "ავტორი: მიხეილ სუხიაშვილი aka kartu (kartu3@gmail.com) using work of: " + "igorsk, boroda, obelix, pepak, kravitz და სხვები.\n" + "© GNU Lesser General Public License.",
 		ABOUT_1: "საავტორო უფლებები ©2006-2008 Sony Corporation",
 		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + " trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
 		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + " MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
@@ -192,7 +165,7 @@ return {
 		LAST_YEAR: "შარშან",
 		OLDER: "უფრო ძველი",
 
-		FUNC_PAGE_X: FUNC_PAGE_X,
+		PAGE: "გვერდი",
 		PART: "ნაწილი",
 		OF: "/",
 		NO_BOOK: "ცარიელი",
@@ -225,20 +198,7 @@ return {
 		TITLE_9: "ჩ ც ძ წ ჭ ხ ჯ ჰ",
 		CRITERION_9: "ჩცძწჭხჯჰ",
 		TITLE_0: "სხვა",
-		CRITERION_0: "",
-
-		FUNC_GET_DATE_TIME: FUNC_GET_DATE_TIME,
-		FUNC_GET_DATE: FUNC_GET_DATE,
-		FUNC_GET_TIME: FUNC_GET_TIME,
-
-		FUNC_X_PAGES: FUNC_X_PAGES,
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
-		FUNC_X_PICTURES: FUNC_X_PICTURES,
-		FUNC_X_SONGS: FUNC_X_SONGS,
-		FUNC_X_BOOKMARKS: FUNC_X_BOOKMARKS,
-		FUNC_X_COLLECTIONS: FUNC_X_COLLECTIONS,
-		FUNC_X_BOOKS: FUNC_X_BOOKS
+		CRITERION_0: ""
 	},
 
 	CoreLang: {

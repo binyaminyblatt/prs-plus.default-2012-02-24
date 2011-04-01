@@ -1,32 +1,7 @@
-// Utility function, no need to localize
-var toDoubleDigit = function (num) {
-	if (num < 10) {
-		return "0" + num;
-	}
-	return num;
-};
-
-var FUNC_GET_DATE = function (date) {
-	var day, month, year;
-	day = toDoubleDigit(date.getDate());
-	month = toDoubleDigit(date.getMonth() + 1);
-	year = date.getFullYear();
-	return month + "/" + day + "/" + year;
-};
-
-var FUNC_GET_TIME = function (date) {
-	var hour, minute;
-	hour = toDoubleDigit(date.getHours());
-	minute = toDoubleDigit(date.getMinutes());
-	return hour + ":" + minute;
-};
-
-var FUNC_GET_DATE_TIME = function (date) {
-	return date.toLocaleDateString() + " " + FUNC_GET_TIME(date);
-};
-
 return {
 	X: {
+		BOOKS: ["Bücher", "1 Buch", "Kein Buch"],
+		SETTINGS: ["Einstellungen", "1 Einstellung", "Keine Einstellung"]б		
 		PAGES: ["Seiten", "1 Seite", "Keine Seite"],
 		PICTURES: ["Bilder", "1 Bild", "Kein Bild"],
 		SONGS: ["Lieder", "1 Lied", "Kein Lied"],
@@ -43,7 +18,6 @@ return {
 		DEVICE_LOCKED: "Gerät gesperrt",
 
 		// About, translate either all or none
-		ABOUT_PRSP: "PRS+ @@@firmware@@@\n" + "Autor: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + "igorsk, boroda, obelix, pepak, kravitz und anderer.\n" + "© GNU Lesser General Public License.",
 		ABOUT_1: "Copyright ©2006-2008 Sony Corporation",
 		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + " trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
 		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + " MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
@@ -189,6 +163,7 @@ return {
 		LAST_YEAR: "Letztes Jahr",
 		OLDER: "Älter",
 
+		PAGE: "Seite",
 		PART: "Teil",
 		OF: "von",
 		NO_BOOK: "Kein Buch",
@@ -221,20 +196,7 @@ return {
 		TITLE_9: "X Y Z",
 		CRITERION_9: "XYZxyz",
 		TITLE_0: "Sonstige",
-		CRITERION_0: "",
-
-		FUNC_GET_DATE_TIME: FUNC_GET_DATE_TIME,
-		FUNC_GET_DATE: FUNC_GET_DATE,
-		FUNC_GET_TIME: FUNC_GET_TIME,
-
-		FUNC_X_PAGES: FUNC_X_PAGES,
-		FUNC_X_ITEMS: FUNC_X_ITEMS,
-		FUNC_X_SETTINGS: FUNC_X_SETTINGS,
-		FUNC_X_PICTURES: FUNC_X_PICTURES,
-		FUNC_X_SONGS: FUNC_X_SONGS,
-		FUNC_X_BOOKMARKS: FUNC_X_BOOKMARKS,
-		FUNC_X_COLLECTIONS: FUNC_X_COLLECTIONS,
-		FUNC_X_BOOKS: FUNC_X_BOOKS
+		CRITERION_0: ""
 	},
 	
 	CoreLang: {
