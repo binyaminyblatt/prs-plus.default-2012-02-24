@@ -6,6 +6,7 @@
 //
 // History:
 //	2011-03-04 kartu - Initial version
+//	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 
 var tmp = function() {
 	var oldReadPreference, oldCallback, bootLog;
@@ -35,11 +36,6 @@ var tmp = function() {
 			} catch (e0) {
 				bootLog("error calling initLang505: " + e0);
 			}
-			
-			// Called from lang_505.js
-			//PARAMS.Core.lang.init(Core.config.corePath + "lang/" + "English.js");
-			//PARAMS.loadAddons();
-			//PARAMS.Core.init();
 		} catch (e) {
 			bootLog("in overriden readPreference " + e);
 		}

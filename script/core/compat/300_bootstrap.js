@@ -15,6 +15,7 @@
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
 //	2011-03-02 kartu - Added #57 Spanish localization (by Carlos)
 //	2011-03-21 kartu - Added Ukrainian localization by Bookoman
+//	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 
 var tmp = function() {
 	var oldSetLocale, localize;
@@ -24,22 +25,11 @@ var tmp = function() {
 	//-----------------------------------------------------------------------------------------------------
 	localize = function(Core) {
 		try {
-			var i, n, currentLang, settingsNode, langNode, languages, langNames, enter, node, prspLanguages, langFile;
+			var i, n, currentLang, settingsNode, langNode, languages, langNames, enter, node, langFile;
 			currentLang = kbook.model.language;
 	
 			settingsNode = kbook.root.nodes[6];
 			languages = ["en", "es", "de", "fr", "ka", "it", "nl", "ru", "ua"];
-			prspLanguages = {
-				en: "English.js",
-				de: "German.js",
-				es: "Spanish.js",
-				fr: "French.js",
-				ka: "Georgian.js",
-				it: "Italian.js",
-				nl: "English.js", // missing Dutch PRS+ translation
-				ru: "Russian.js",
-				ua: "Ukrainian.js"
-			};
 			langNames = {
 				en: "English",
 				de: "Deutsch", 
@@ -52,7 +42,7 @@ var tmp = function() {
 				ua: "Українська"
 			};
 	
-			if (currentLang === undefined || prspLanguages[currentLang] === undefined) {
+			if (currentLang === undefined) {
 				currentLang = "en";
 			}
 	
@@ -60,7 +50,7 @@ var tmp = function() {
 			PARAMS.loadCore();
 			
 			// Load PRS+ strings
-			langFile = Core.config.corePath + "lang/" + prspLanguages[currentLang];
+			langFile = Core.config.corePath + "lang/" + currentLang + ".js";
 			Core.lang.init(langFile);
 			
 			// FIXME localize date strings

@@ -71,7 +71,7 @@ var initLang505 = function() {
 		optionDefs: [
 			{
 				name: "lang",
-				defaultValue: "English"
+				defaultValue: "en"
 			},
 			{
 				name: "dateFormat",
@@ -101,7 +101,7 @@ var initLang505 = function() {
 
 				// If locale is English, there is nothing to localize
 				var isDateCustom = false;
-				if ("English" !== this.options.lang) {
+				if ("en" !== this.options.lang) {
 					isDateCustom = true;
 					try {
 						// Save default toLocaleDateString (needed when switching from non-English to English locale
@@ -209,18 +209,18 @@ var initLang505 = function() {
 					name: "lang",
 					title: langL("OPTION_LANG"),
 					icon: "LIST",
-					defaultValue: "English",
-					values: ["Catalan", "Czech", "German", "English", "Spanish", "French", "Georgian", "Russian", "SimplifiedChinese"],
+					defaultValue: "en",
+					values: ["ca", "cs", "de", "en", "es", "fr", "ka", "ru", "zh"],
 					valueTitles: {
-						"Catalan": "Català",
-						"Czech": "Český",
-						"German": "Deutsch",
-						"English": "English",
-						"Spanish": "Español",
-						"French": "Français",
-						"Georgian": "ქართული",
-						"Russian": "Русский",
-						"SimplifiedChinese": "简体中文"
+						"ca": "Català",
+						"cs": "Český",
+						"de": "Deutsch",
+						"en": "English",
+						"sp": "Español",
+						"fr": "Français",
+						"ka": "ქართული",
+						"ru": "Русский",
+						"zh": "简体中文"
 					}
 				},
 				{

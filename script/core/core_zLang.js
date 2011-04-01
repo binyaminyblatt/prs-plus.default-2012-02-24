@@ -59,7 +59,7 @@ tmp = function() {
 	getXFunc = function (lang) {
 		var result;
 		switch (lang) {
-			case "Czech":
+			case "cs": // Czech
 				result = function (s, n) {
 					if (n > 4) {
 						return n + " " + s[0];
@@ -73,7 +73,7 @@ tmp = function() {
 					return s[3];
 				};
 				break;
-			case "Georgian":
+			case "ka": // Georgian
 				result = function (s, n) {
 					if (n > 0) {
 						return n + " " + s[0];
@@ -81,8 +81,8 @@ tmp = function() {
 					return s[1];
 				};
 				break;
-			case "Russian": // fallthrough
-			case "Ukrainian":
+			case "ru": // fallthrough // Russian
+			case "ua": // Ukrainian
 				var _x_cache = [];
 				var _x_cases = [2, 0, 1, 1, 1, 2];
 				result = function (s, n) {
@@ -114,7 +114,7 @@ tmp = function() {
 		/**
 		* Should be called prior to getLocalizer calls
 		* 
-		* @param langFile - full path to the actual language js file (e.g. English.js)
+		* @param langFile - full path to the actual language js file (e.g. en.js)
 		*/
 		init: function (langFile) {
 			try {
