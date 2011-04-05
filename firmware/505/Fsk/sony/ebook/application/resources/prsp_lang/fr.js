@@ -1,7 +1,7 @@
 return {
 	X: {
 		BOOKS: ["livres", "1 livre", "Aucun livre"],
-		SETTINGS: ["paramètres", "1 paramètres", "Aucun paramètre"],		
+		SETTINGS: ["paramètres", "1 paramètre", "Aucun paramètre"],		
 		PAGES: ["pages", "1 page", "Pas de page"],
 		PICTURES: ["images", "1 image", "Pas d'image"],
 		SONGS: ["chansons", "1 chanson", "Pas de chanson"],
@@ -19,18 +19,18 @@ return {
 
 		// About, translate either all or none
 		ABOUT_1: "Copyright ©2006-2008 Sony Corporation",
-		ABOUT_2: "Adobe, the Adobe logo, Reader and PDF are either registered trademarks or" + " trademarks of Adobe Systems Incorporated in the United States and/or other countries.",
-		ABOUT_3: "MPEG Layer-3 audio coding technology and patents licensed by Fraunhofer IIS and Thomson." + " MPEG-4 AAC audio coding technology licensed by Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
-		ABOUT_4: "Application software designed and implemented by Kinoma (www.kinoma.com). Portions Copyright ©2006,2007 Kinoma, Inc.",
-		ABOUT_5: "Bitstream is a registered trademark, and Dutch, Font Fusion, and Swiss are trademarks, of Bitstream, Inc.",
-		ABOUT_6: "Portions of this software are Copyright ©2005 The FreeType Project (www.freetype.org). All rights reserved.",
-		ABOUT_7: "This software is based in part on the work of the Independent JPEG Group.",
-		AUTHORIZED_SONY: "Authorized for the eBook Store.",
-		NOT_AUTHORIZED_SONY: "Not authorized for the eBook Store.",
-		AUTHORIZED_ADOBE: "This device is authorized for Adobe DRM protected content.",
-		NOT_AUTHORIZED_ADOBE: "This device is not authorized for Adobe DRM protected content.",
+		ABOUT_2: "Adobe, le logo Adobe, Reader et PDF sont soit des marques enregistrées ou" + " des marques d'Adobe Systems Incorporated aux États-Unis et/ou dans d'autres pays.",
+		ABOUT_3: "La technologie d'encodage audio MPEG et les brevets associés sont sous licence de Fraunhofer IIS et Thomson." +  " La technologie d'encodage audio MPEG-4 AAC est sous licence de Fraunhofer IIS (www.iis.fraunhofer.de/amm/).",
+		ABOUT_4: "Le logiciel de cette application a été conçu et mis en oeuvre par Kinoma (www.kinoma.com). Parties sous Copyright ©2006,2007 Kinoma, Inc.",
+		ABOUT_5: "Bitstream est une marque enregistrée, et Dutch, Font Fusion, et Swiss sont des marques de Bitstream, Inc.",
+		ABOUT_6: "Des parties de ce logiciel sont sous copyright de The FreeType Project (www.freetype.org) ©2005. Tous droits réservés.",
+		ABOUT_7: "Ce logiciel est basé en partie sur le travail de The Independent JPEG Group.",
+		AUTHORIZED_SONY: "Autorisé pour l'eBook Store.",
+		NOT_AUTHORIZED_SONY: "Non autorisé pour l'eBook Store.",
+		AUTHORIZED_ADOBE: "Cet appareil est autorisé pour le contenu protégé par DRM Adobe.",
+		NOT_AUTHORIZED_ADOBE: "Cet appareil n'est pas autorisé pour le contenu protégé par DRM Adobe.",
 		SONY_FW_VERSION: "Version",
-		DEVICE_ID: "Device",
+		DEVICE_ID: "Appareil",
 
 		// Mime & card names
 		RICH_TEXT_FORMAT: "Format RTF",
@@ -47,13 +47,13 @@ return {
 		FORMATTING: "Formatage en cours...",
 		LOADING: "Chargement en cours...",
 		LOW_BATTERY: "Batterie faible!",
-		HR_WARNING: "Vous voulez effacer tout le contenu et restaurer les paramètres initiaux et le paramétrage du verrouillage?\n\nOui - Touche 5\nAucun - Touch MENU",
+		HR_WARNING: "Vous voulez effacer tout le contenu et restaurer les paramètres initiaux et le paramétrage du verrouillage?\n\nOui - Touche 5\nAucun - Touche MENU",
 		DEVICE_SHUTDOWN: "Éteindre l'appareil",
 		PRESS_MARK_TO_SHUTDOWN: "Appuyer sur SIGNET pour éteindre",
 		THIS_DEVICE: "l'appareil.",
 		PRESS_MARK_TO_DELETE: "Appuyer sur SIGNET pour",
 		THIS_BOOK: "supprimer le livre.",
-		FORMAT_INTERNAL_MEMORY: "Formater Mémoire Interne",
+		FORMAT_INTERNAL_MEMORY: "Formater la Mémoire Interne",
 		PRESS_MARK_TO_FORMAT: "Appuyer sur SIGNET pour formater",
 		MSG_INTERNAL_MEMORY: "la mémoire Interne.",
 		RESTORE_DEFAULTS: "Restaurer les paramètres par défaut",
@@ -62,7 +62,7 @@ return {
 		UPPER_PAGE: "PAGE",
 		ONE_OF_ONE: "1 de 1",
 		NO_BATTERY: "Batterie vide!",
-		FORMATTING_INTERNAL_MEMORY: "Formatage Mémoire Interne en cours...",
+		FORMATTING_INTERNAL_MEMORY: "Formatage de la Mémoire Interne en cours...",
 		SHUTTING_DOWN: "Éteindre l'appareil",
 
 		// Root menu
@@ -116,7 +116,7 @@ return {
 		// width in pixels = ..._SIZE * 35
 		AS_OK_SIZE: 2,
 		// about
-		ABOUT: "R propos de Reader",
+		ABOUT: "A propos de Reader",
 		// reset to factory settings
 		RESET_TO_FACTORY: "Restaurer les paramètres par défaut",
 
@@ -138,13 +138,13 @@ return {
 		// width in pixels = ..._SIZE * 35
 		SL_OK_UNLOCK_SIZE: 2,
 		// format device
-		FORMAT_DEVICE: "Formatage Mémoire Interne",
+		FORMAT_DEVICE: "Formatage de la Mémoire Interne",
 
 		// In Book menu
 		BEGIN: "Début",
 		END: "Fin",
 		BOOKMARKS: "Signets",
-		CONTENTS: "Table des maticres",
+		CONTENTS: "Table des matières",
 		HISTORY: "Historique",
 		INFO: "Infos",
 		UTILITIES: "Utilitaires",
@@ -157,17 +157,17 @@ return {
 		// In Books by Date
 		TODAY: "Aujourd'hui",
 		EARLIER_THIS_WEEK: "Plus tôt cette semaine",
-		LAST_WEEK: "La semaine dernicre",
+		LAST_WEEK: "La semaine dernière",
 		EARLIER_THIS_MONTH: "Plus tôt ce mois-ci",
 		LAST_MONTH: "Mois dernier",
-		EARLIER_THIS_QUARTER: "Antérieures ce trimestre",
+		EARLIER_THIS_QUARTER: "Plus tôt ce trimestre",
 		LAST_QUARTER: "Dernier trimestre",
 		EARLIER_THIS_YEAR: "Plus tôt cette année",
-		LAST_YEAR: "Année dernicre",
+		LAST_YEAR: "Année dernière",
 		OLDER: "Plus",
 
 		PAGE: "Page",
-		PART: "Parte",
+		PART: "Partie",
 		OF: "de",
 		NO_BOOK: "Aucun livre",
 		NO_SONG: "Pas de chanson",
@@ -207,7 +207,7 @@ return {
 		COMMENT: "Nécessite un redémarrage",
 		OPTION_LANG: "Langue",
 
-		OPTION_DATE_FORMAT: "Format date",
+		OPTION_DATE_FORMAT: "Format de Date",
 		VALUE_DEFAULT_DATE: "Par défaut",
 		ddMMMYY: "31/Jan/99",
 		ddMONTHYY: "31/Janvier/99",
