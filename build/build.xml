@@ -78,6 +78,7 @@ History:
 	<!-- Calls build for all models -->
 	<target name="buildAll" description="Builds PRS+">
 		<antcall target="clear" />
+		<ant antfile="build_lang.xml" />
 		<antcall target="buildCore" />
 		<antcall target="buildAddons" />
 		<foreach list="${MODEL}" param="model" target="build" />
@@ -175,7 +176,7 @@ History:
 		</jsmin>
 		<jsmin force="true" destdir="${CORE}/lang">
 			<fileset dir="${SRC.CORE}">
-				<include name="lang/*" />
+				<include name="lang/*.js" />
 			</fileset>
 		</jsmin>
 	</target>
