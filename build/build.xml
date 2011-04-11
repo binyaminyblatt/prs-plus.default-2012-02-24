@@ -194,6 +194,37 @@ History:
 		<optimize.yui folder="${ADDONS}"/>
 	</target>
 	
+	<!-- Calls build for all models -->
+	<target name="build.beta" description="Builds PRS+ beta">
+		<antcall target="clear" />
+		<ant antfile="build_lang.xml" />
+		<foreach list="${MODEL}" param="model" target="dobuild.beta" />
+	</target>	
+	
+	<!-- Builds beta package for particular model -->
+	<target name="dobuild.beta">
+		<echo>Building beta package for PRS-${model}</echo>
+		<var name="beta" value="dist/${model}/Beta" />
+		<var name="src" value="../script"/>
+		<delete dir="${beta}"/>
+		<mkdir dir="${beta}/addons"/>
+		<mkdir dir="${beta}/core"/>
+		
+		<echo>Copying model specific addon resources</echo>
+		<copy todir="${beta}/addons">
+			<fileset dir="${src}/addons" >
+			 	<patternset refid="addons_${model}" />
+			</fileset>
+		</copy>
+		
+		<echo>Copying core</echo>
+		<copy todir="${beta}/core">
+			<fileset dir="${src}/core"/>
+		</copy>
+		<copy todir="${beta}" file="../script/prsp.js"/>
+		<copy tofile="${beta}/user.config" file="${src}/user.config.${model}"/>		
+	</target>
+	
 	<!-- Builds release package for particular model -->
 	<target name="build">
 		<echo>Building package for PRS-${model}</echo>
