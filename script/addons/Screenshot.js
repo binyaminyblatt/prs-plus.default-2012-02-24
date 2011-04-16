@@ -15,6 +15,7 @@
 //	2011-02-06 kartu - Removed timer from confirmation
 //		Changed default save location to internal memory
 //		Switched to using Core.ui.showMsg
+//	2011-04-13 kartu - Captured image is made immediatelly visible to the system
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -101,6 +102,12 @@ tmp = function() {
 						bitmap = kbook.model.container.getWindow().getBitmap();
 						bitmap.writeJPEG(stream);
 						stream.close();
+						
+						// Add image to the library
+						try {
+							Core.media.loadMedia(savePath);
+						} catch (ignore) {
+						}
 					} catch (ee) {
 						msg1 = L("SAVING_TO") + saveToValueTitles[root];					
 						msg2 = L("FAILED_TO_SAVE");
