@@ -96,7 +96,7 @@
 			<style id="label-dicPageNo" size="15" style="bold" color="#000000" halign="right" valign="center" top="2"/>
 			<style id="label-dicTitle" size="18" style="bold" color="#000000" halign="right" valign="center" top="2"/>
 			<style id="label-dictionary" size="32" style="bold" color="#000000" valign="top" top="2"/>
-			<style id="label-statusBar" size="21" style="bold" color="#FFFFFF" valign="top" top="2"/>
+			<style id="label-statusBar" size="19" style="bold" color="#FFFFFF" valign="top" top="2"/>
 			<style id="info-n" size="22" valign="top" top="7" bottom="7" halign="right" right="14" style="bold"/>
 			<style id="info-v" size="22" halign="left" top="9"/>
 			<style id="label-ToneCurve"  size="22" style="bold" color="#000000" halign="right" valign="center"/>
