@@ -1,4 +1,4 @@
-=== 2.0.11 ===
+=== 2.0.11 beta ===
  * 300: Fixed broken XML in Spanish translation
  * 300: Added Ukrainian localization by Bookoman
  * 300/505: Fixed "actions do not work"
@@ -8,8 +8,9 @@
  * 600: Added Portuguese localization by OTNeto
  * 600/x50: Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
  * 600/x50: TextScale addon was included
+ * x50: Reduced statusbar index / clock font size, moved "playing" indicator to the left
 
-=== 2.0.10 alpha  ===
+=== 2.0.10 alpha ===
  * x50: Fixed doRotate action
  * x50: Fixed #68 x50: Deleting books opened via Book History is bugged
  * x50: Fixed #66 x50: Collection editing broken, if collection node is not in the 4th slot
