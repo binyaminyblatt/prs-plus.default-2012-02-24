@@ -24,12 +24,13 @@
 //	2011-02-09 kartu - Fixed # BrowseFolders view not updated when settings change
 //			Removed "mount" option
 //	2011-03-03 kartu - Added support for converters/alternative viewers
+//	2011-04-24 kartu - Added option to disable scanning without loading cache
 //
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
 		compareFields, supportedMIMEs, createLazyInitNode, constructLazyNode, ACTION_ICON,
-		doOpenHere, browseFoldersNode, extractFileName;
+		doCopyAndOpen, doCopy, doOpenHere, browseFoldersNode;
 	log = Core.log.getLogger("BrowseFolders");
 	L = Core.lang.getLocalizer("BrowseFolders");
 	startsWith = Core.text.startsWith;
@@ -117,28 +118,26 @@ tmp = function() {
 	
 	createLazyInitNode = function (path, title, parent) {
 		var node;
-		node = Core.ui.createContainerNode({
-				title: title,
-				icon: "BOOK",
-				parent: parent,
-				construct: constructLazyNode
-		});
+		if (BrowseFolders.options.cardScan === "disabled" && !Core.text.startsWith(path, "/Data")) {
+			// if SD/MS scan is disabled and we are not in internal memory
+			
+			node = Core.ui.createContainerNode({
+					title: title,
+					icon: "BOOK",
+					parent: parent,
+					construct: constructLazyNode
+			});				
+		} else {
+			node = Core.ui.createContainerNode({
+					title: title,
+					icon: "BOOK",
+					parent: parent
+			});
+			node.enter = doOpenHere;
+		}
+		
 		node.path = path;
 		return node;
-	};
-	
-	
-	extractFileName = function(path) {
-		var idx;
-		if (path === undefined) {
-			return undefined;
-		}
-		idx = path.lastIndexOf("/");
-		if (idx > -1) {
-			return path.substring(idx + 1);
-		} else {
-			return path;
-		}
 	};
 	
 	createMediaNode = function (path, title, parent) {
@@ -155,7 +154,7 @@ tmp = function() {
 		} else if (BrowseFolders.options.sortMode === "filenameAsComment") {
 			node._mycomment = function() {
 				try {
-					return extractFileName(this.media.path);
+					return Core.io.extractFileName(this.media.path);
 				} catch (e) {
 					return "error: " + e;
 				}
@@ -163,48 +162,110 @@ tmp = function() {
 		}
 		return node;
 	};
-
+	
 	//-----------------------------------------------------------------------------------------------------------------------------
-	// "Lazy" opening for disabled scanning case
+	// "Lazy" opening of media in place, for disabled scanning with loaded cache case
 	//-----------------------------------------------------------------------------------------------------------------------------	
 	doOpenHere = function() {
-		var i, n, library, path, item, parent, mediaNode, nodes;
+		var path, item, parent, mediaNode;
 		
 		// create media
 		parent = this.parent;
-		path = parent.path;
-		library = Core.media.findLibrary(path);
-		item = library.makeItemFromFile(path);
-		item.path = path.substring(library.path.length);
-		library.insertRecord(item);
+		path = this.path;
+		try {
+			item = Core.media.loadMedia(path);
+		} catch (ignore) {
+			Core.ui.showMsg(L("MSG_ERROR_OPENING_BOOK"));
+		}
 		
-		// create node
-		mediaNode = Core.media.createMediaNode(path, parent.parent);
-
-		// replace parent with media node
-		nodes = parent.parent.nodes;
+		if (item) {
+			// create node
+			mediaNode = Core.media.createMediaNode(item, parent);
+	
+			// replace parent with media node
+			Core.utils.replaceInArray(parent.nodes, this, mediaNode); 
+			
+			this.gotoNode(mediaNode, kbook.model);
+		}
+	};
+	
+	doCopy = function () {
+		var fileName, path;
+		Core.ui.showMsg("MSG_COPYING_BOOK", 1);
+		try {
+			path = this.parent.path;
+			fileName = Core.io.extractFileName(path);
+			// FIXME: ask user first, if he wants to copy the book, if target exists
+			fileName = Core.io.getUnusedPath("/Data" + BrowseFolders.options.imRoot + "/", fileName);
+			Core.io.copyFile(path, fileName);
+			return fileName;
+		} catch (ignore) {
+			Core.ui.showMsg("MSG_ERROR_COPYING_BOOK");	
+		}
+	};
+	
+	doCopyAndOpen = function () {
+		var path, foldersNode, nodes, targetFolder, imNode;
+		// Copy the file and get new filename
+		path = doCopy.call(this);
+		targetFolder = Core.io.extractPath(path); 
+		
+		// find IM root node
+		foldersNode = BrowseFolders.getAddonNode();
+		nodes = foldersNode.nodes;
+		imNode = null;
 		for (i = 0, n = nodes.length; i < n; i++) {
-			if (nodes[i] === parent) {
-				nodes[i] = mediaNode;
+			if (nodes[i].path === targetFolder) {
+				imNode = nodes[i];
+				break;
 			}
 		}
 		
-		this.gotoNode(mediaNode, kbook.model);
+		// If IM root node not found, goto folders node
+		if (imNode) {
+			// goto IM node to allow it to construct children
+			this.gotoNode(imNode, kbook.model);
+			imNode.update();
+			
+			// Find element with matching path, if found, enter
+			nodes = imNode.nodes;
+			for (i = 0, n = nodes.length; i < n; i++) {
+				if (path === nodes[i].path) {
+					imNode.gotoNode(nodes[i], kbook.model);
+					break;
+				}
+			}
+		} else {
+			this.gotoNode(foldersNode, kbook.model);
+		}
 	};
 	
 	//-----------------------------------------------------------------------------------------------------------------------------
 	// Node constructors
 	//-----------------------------------------------------------------------------------------------------------------------------
-	// Construct "open here", "copy to IM and open" node
+	// Construct "copy to IM", "copy to IM and open" node
 	constructLazyNode = function() {
-		var openHereNode;
-		openHereNode = Core.ui.createContainerNode({
-				title: L("OPEN_HERE"),
+		var copyNode, copyAndOpenNode;
+		
+		// Node that copies to IM and opens book
+		copyAndOpenNode = Core.ui.createContainerNode({
+				title: L("NODE_COPY_AND_OPEN"),
+				comment: L("NODE_COPY_AND_OPEN_COMMENT"),
 				parent: this,
 				icon: ACTION_ICON
 		});
-		openHereNode.enter = doOpenHere;
-		this.nodes = [openHereNode];		
+		copyAndOpenNode.enter = doCopyAndOpen;
+		
+		// Node that copies to IM without opening
+		copyNode = Core.ui.createContainerNode({
+				title: L("NODE_COPY_TO_INTERNAL_MEMORY"),
+				comment: L("NODE_COPY_TO_INTERNAL_MEMORY_COMMENT"),
+				parent: this,
+				icon: ACTION_ICON
+		});
+		copyNode.enter = doCopy;
+		
+		this.nodes = [copyAndOpenNode, copyNode];		
 	};
 	
 	// Constructs folder node
@@ -331,7 +392,6 @@ tmp = function() {
 		}
 	};
 	
-	
 	//-----------------------------------------------------------------------------------------------------------------------------
 	// Addon & Option definitions
 	//-----------------------------------------------------------------------------------------------------------------------------
@@ -394,11 +454,12 @@ tmp = function() {
 				defaultValue: "disabled",
 				values: ["enabled", "disabled"],
 				valueTitles: {
-					enabled: L("ENABLED"),
-					disabled: L("DISABLED")
+					enabled: L("VALUE_ENABLED"),
+					disabled: L("VALUE_DISABLED")
 				}				
 			}
 		],
+		
 		onPreInit: function() {
 			// These options make sense only if device has SD/MS card slots 
 			if (Core.config.compat.hasCardSlots) {
@@ -407,19 +468,20 @@ tmp = function() {
 					title: L("OPTION_CARD_SCAN"),
 					icon: "DB",
 					defaultValue: "enabled",
-					values: ["enabled", "disabled"],
+					values: ["enabled", "disabledLoadCache", "disabled"],
 					valueTitles: {
-						enabled: L("ENABLED"),
-						disabled: L("DISABLED")
+						enabled: L("VALUE_ENABLED"),
+						disabledLoadCache: L("VALUE_DISABLED_LOAD_CACHE"),
+						disabled: L("VALUE_DISABLED")
 					}
 	
 				});
 			}
 		},
+		
 		onInit: function() {
-			if (BrowseFolders.options.cardScan === "disabled") {
-				Core.config.disableCardScan = true;
-			}
+			// Bootstrap code knows only Core, not this addon
+			Core.config.cardScanMode = BrowseFolders.options.cardScan;
 		},
 		
 		actions: [{
@@ -441,6 +503,9 @@ tmp = function() {
 			if (oldValue === newValue) {
 				return;
 			}
+			
+			// Bootstrap code knows only Core, not this addon
+			Core.config.cardScanMode = newValue;
 			
 			// Release the node so that it's content can be updated
 			if (browseFoldersNode) {

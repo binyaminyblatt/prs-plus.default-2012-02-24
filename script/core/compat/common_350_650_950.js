@@ -17,10 +17,12 @@
 //	2011-03-16 kartu - Added Georgian translation for 350/650 by rawerfas & kato
 //	2011-03-19 kartu - Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
+//	2011-04-21 kartu - Added option to disable scanning without loading cache
 //
 tmp = function() {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
-		oldChangeKeyboardType, oldReadPreference, oldCallback, makeRootNodesMovable;
+		oldChangeKeyboardType, oldReadPreference, oldCallback, makeRootNodesMovable, bootLog;
+	bootLog = PARAMS.bootLog;
 
 	// Localize "popup" keyboard, that shows after holding button for a couple of secs
 	localizeKeyboardPopups = function() {
@@ -94,7 +96,7 @@ tmp = function() {
 			}
 			
 		} catch (e) {
-			PARAMS.bootLog("In updateSiblings " + e);
+			bootLog("In updateSiblings " + e);
 		}
 	};
 	
@@ -162,7 +164,7 @@ tmp = function() {
 					}
 				};
 			} catch (e) {
-				PARAMS.bootLog("error hooking commendField.format function");
+				bootLog("error hooking commendField.format function");
 			}
 			
 			// Enter function for language children, changes locale and moves to parent
@@ -195,7 +197,7 @@ tmp = function() {
 					
 					Core.ui.showMsg(Core.lang.L("MSG_RESTART"));					
 				} catch (e) {
-					PARAMS.bootLog("changing language", e);
+					bootLog("changing language", e);
 				}
 			};
 			
@@ -226,7 +228,7 @@ tmp = function() {
 			try {
 				localizeKeyboard(Core);
 			} catch (e0) {
-				PARAMS.bootLog("Error localizing keyboard  " + e0);
+				bootLog("Error localizing keyboard  " + e0);
 			}
 			
 			try {
@@ -234,13 +236,13 @@ tmp = function() {
 					PARAMS.fixTimeZones(Core);
 				}
 			} catch (e1) {
-				PARAMS.bootLog("Error fixing timezones " + e1);
+				bootLog("Error fixing timezones " + e1);
 			}
 
 			// self destruct :)
 			localize = null;
 		} catch (e2) {
-			PARAMS.bootLog("error in localize " + e2);
+			bootLog("error in localize " + e2);
 		}
 	};
 	
@@ -254,7 +256,7 @@ tmp = function() {
 			
 			localize(PARAMS.Core);
 		} catch (e) {
-			PARAMS.bootLog("in overriden setLocale " + e);
+			bootLog("in overriden setLocale " + e);
 		}
 	};
 	
@@ -370,14 +372,29 @@ tmp = function() {
 			PARAMS.loadAddons();
 			PARAMS.Core.init();
 		} catch (e) {
-			PARAMS.bootLog("in overriden readPreference " + e);
+			bootLog("in overriden readPreference " + e);
 		}
 	};
 	
+	// Disable card scan
+	var originalCanHandleVolume = FskCache.diskSupport.canHandleVolume;
+	FskCache.diskSupport.canHandleVolume = function (volume) {
+		try {
+			if (PARAMS.Core && PARAMS.Core.config && PARAMS.Core.config.cardScanMode === "disabled") {
+				return false;
+			}
+		} catch (ee) {
+			bootLog("canHandleVolume" + ee);
+		}
+		return originalCanHandleVolume.apply(this, arguments);
+	};	
+	
+	// Disabling scanning, but loading cache
 	oldCallback = FskCache._diskSource.synchronizeCallback;
 	FskCache._diskSource.synchronizeCallback = function() {
 		try {
-			if (PARAMS.Core && PARAMS.Core.config && PARAMS.Core.config.disableCardScan) {
+			if (PARAMS.Core && PARAMS.Core.config 
+				&& PARAMS.Core.config.cardScanMode === "disabledLoadCache") {
 				this.target.synchronizedSource();
 				this.target.synchronizeDone();
 				this.stack.pop();
@@ -385,7 +402,7 @@ tmp = function() {
 				oldCallback.apply(this, arguments);
 			}
 		} catch (e) {
-			PARAMS.bootLog("Error in callback: " + e);
+			bootLog("Error in callback: " + e);
 			oldCallback.apply(this, arguments);
 		}
 	};
