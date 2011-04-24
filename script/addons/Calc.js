@@ -13,7 +13,6 @@ tmp = function() {
 	var Calc = {
 		name: "Calculator",
 		title: L("TITLE"),		// to be added to language asset
-		description: L("DESCRIPTION"),	// to be added to language asset
 		icon: "CALC",			// to be added to Core.config.compat.NodeKinds
 		activate: function () {
 			kbook.autoRunRoot.sandbox._icon = Core.config.compat.NodeKinds.getIcon("CALC",0);

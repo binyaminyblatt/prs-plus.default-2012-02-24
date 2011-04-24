@@ -20,6 +20,7 @@
 //	2011-03-19 kartu - Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
 //	2011-03-24 kartu - Added Portuguese localization by OTNeto
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
+//	2011-04-21 kartu - Added option to disable scanning without loading cache
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -252,10 +253,25 @@ var tmp = function() {
 		}
 	};
 	
+	// Disable card scan
+	var originalCanHandleVolume = FskCache.diskSupport.canHandleVolume;
+	FskCache.diskSupport.canHandleVolume = function (volume) {
+		try {
+			if (PARAMS.Core && PARAMS.Core.config && PARAMS.Core.config.cardScanMode === "disabled") {
+				return false;
+			}
+		} catch (ee) {
+			bootLog("canHandleVolume" + ee);
+		}
+		return originalCanHandleVolume.apply(this, arguments);
+	};	
+	
+	// Disabling scanning, but loading cache
 	oldCallback = FskCache._diskSource.synchronizeCallback;
 	FskCache._diskSource.synchronizeCallback = function() {
 		try {
-			if (PARAMS.Core && PARAMS.Core.config && PARAMS.Core.config.disableCardScan) {
+			if (PARAMS.Core && PARAMS.Core.config
+				&& PARAMS.Core.config.cardScanMode === "disabledLoadCache") {
 				this.target.synchronizedSource();
 				this.target.synchronizeDone();
 				this.stack.pop();
