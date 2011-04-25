@@ -25,12 +25,16 @@
 //			Removed "mount" option
 //	2011-03-03 kartu - Added support for converters/alternative viewers
 //	2011-04-24 kartu - Added option to disable scanning without loading cache
+//	2011-04-25 kartu - Added "via mount" option for SD/MS card access
 //
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
 		compareFields, supportedMIMEs, createLazyInitNode, constructLazyNode, ACTION_ICON,
-		doCopyAndOpen, doCopy, doOpenHere, browseFoldersNode;
+		doCopyAndOpen, doCopy, doOpenHere, browseFoldersNode, ENABLED, DISABLED;
+	
+	ENABLED = "enabled";
+	DISABLED = "disabled";
 	log = Core.log.getLogger("BrowseFolders");
 	L = Core.lang.getLocalizer("BrowseFolders");
 	startsWith = Core.text.startsWith;
@@ -97,7 +101,7 @@ tmp = function() {
 	// Node creation
 	//-----------------------------------------------------------------------------------------------------------------------------
 	
-	createFolderNode = function (path, title, parent, icon) {
+	createFolderNode = function (path, title, parent, icon, needsMount) {
 		try {
 			if (icon === undefined) {
 				icon = "FOLDER";
@@ -110,6 +114,7 @@ tmp = function() {
 			});
 			node.path = path + "/";
 			node.type = "folder";
+			node.needsMount = needsMount;
 			return node;
 		} catch (e) {
 			log.error("in createFolderNode", e);
@@ -118,7 +123,7 @@ tmp = function() {
 	
 	createLazyInitNode = function (path, title, parent) {
 		var node;
-		if (BrowseFolders.options.cardScan === "disabled" && !Core.text.startsWith(path, "/Data")) {
+		if (BrowseFolders.options.cardScan === DISABLED && !Core.text.startsWith(path, "/Data")) {
 			// if SD/MS scan is disabled and we are not in internal memory
 			
 			node = Core.ui.createContainerNode({
@@ -140,7 +145,7 @@ tmp = function() {
 		return node;
 	};
 	
-	createMediaNode = function (path, title, parent) {
+	createMediaNode = function (path, title, parent, dummy, needsMount) {
 		var node, mime;
 		node = Core.media.createMediaNode(path, parent);
 		if (node === null) {
@@ -159,6 +164,9 @@ tmp = function() {
 					return "error: " + e;
 				}
 			};
+		}
+		if (node) {
+			node.needsMount = needsMount;
 		}
 		return node;
 	};
@@ -190,22 +198,32 @@ tmp = function() {
 	};
 	
 	doCopy = function () {
-		var fileName, path;
+		var fileName, path, needsMount;
 		Core.ui.showMsg("MSG_COPYING_BOOK", 1);
 		try {
-			path = this.parent.path;
-			fileName = Core.io.extractFileName(path);
-			// FIXME: ask user first, if he wants to copy the book, if target exists
-			fileName = Core.io.getUnusedPath("/Data" + BrowseFolders.options.imRoot + "/", fileName);
-			Core.io.copyFile(path, fileName);
-			return fileName;
+			// mount, if needed
+			needsMount = this.parent.needsMount;
+			if (needsMount !== undefined) {
+				Core.shell.mount(needsMount);
+			}
+			
+			try {
+				path = this.parent.path;
+				fileName = Core.io.extractFileName(path);
+				// FIXME: ask user first, if he wants to copy the book, if target exists
+				fileName = Core.io.getUnusedPath("/Data" + BrowseFolders.options.imRoot + "/", fileName);
+				Core.io.copyFile(path, fileName);
+				return fileName;
+			} finally {
+				Core.shell.umount(needsMount);
+			}
 		} catch (ignore) {
 			Core.ui.showMsg("MSG_ERROR_COPYING_BOOK");	
 		}
 	};
 	
 	doCopyAndOpen = function () {
-		var path, foldersNode, nodes, targetFolder, imNode;
+		var path, foldersNode, nodes, targetFolder, imNode, i, n;
 		// Copy the file and get new filename
 		path = doCopy.call(this);
 		targetFolder = Core.io.extractPath(path); 
@@ -274,20 +292,32 @@ tmp = function() {
 		path = this.path;
 		nodes = [];
 		try {
-			if (FileSystem.getFileInfo(path)) {
-				iterator = new FileSystem.Iterator(path);
-				while (item = iterator.getNext()) {
-					if (item.type === "directory") {
-						factory = createFolderNode;
-					} else {
-						factory = createMediaNode;
-					}
-					node = factory(path + item.path, item.path, this);
-					if (node !== null) {
-						nodes.push(node);
+			// Mount card, if it's a "mount" node
+			if (this.needsMount !== undefined) {
+				Core.shell.mount(this.needsMount);
+			}
+			try {
+				if (FileSystem.getFileInfo(path)) {
+					// Iterate over item's content
+					iterator = new FileSystem.Iterator(path);
+					while (item = iterator.getNext()) {
+						if (item.type === "directory") {
+							factory = createFolderNode;
+						} else {
+							factory = createMediaNode;
+						}
+						
+						node = factory(path + item.path, item.path, this, undefined, this.needsMount);
+						if (node !== null) {
+							nodes.push(node);
+						}
 					}
 				}
+			} finally {
+				// Unmount card (power drain)
+				Core.shell.umount(this.needsMount);
 			}
+				
 			nodes.sort(sorter);
 		} catch (e) {
 			log.error("in folderConstruct " + e);
@@ -299,7 +329,7 @@ tmp = function() {
 	favourites = null;
 	loadFavFolders = function (roots, rootTitles, rootIcons) {
 		var filePath, content, line, name, path, i, n, icon;
-		if (BrowseFolders.options.favFoldersFile === "enabled") {
+		if (BrowseFolders.options.favFoldersFile === ENABLED) {
 			// load fav file content
 			if (favourites === null) {
 				filePath = Core.config.publicPath + "folders.cfg";
@@ -384,6 +414,28 @@ tmp = function() {
 						nodes.push(createFolderNode(roots[i], rootTitles[i], this, rootIcons[i]));
 					}
 				}
+				
+				// Add "via mount" nodes
+				if (BrowseFolders.options.useMount === ENABLED) {
+					if (FileSystem.getFileInfo("a:/")) {
+						nodes.push(createFolderNode(
+							Core.shell.MS_MOUNT_PATH, 
+							L("NODE_MEMORY_STICK_MOUNT"), 
+							this, 
+							"MS",
+							Core.shell.MS
+						));
+					}
+					if (FileSystem.getFileInfo("b:/")) {
+						nodes.push(createFolderNode(
+							Core.shell.SD_MOUNT_PATH, 
+							L("NODE_SD_CARD_MOUNT"), 
+							this, 
+							"SD",
+							Core.shell.SD
+						));
+					}
+				}
 			}
 
 			this.nodes = nodes;
@@ -451,8 +503,8 @@ tmp = function() {
 				name: "favFoldersFile",
 				title: L("OPTION_FAVOURITE_FOLDERS"),
 				icon: "FOLDER",
-				defaultValue: "disabled",
-				values: ["enabled", "disabled"],
+				defaultValue: DISABLED,
+				values: [ENABLED, DISABLED],
 				valueTitles: {
 					enabled: L("VALUE_ENABLED"),
 					disabled: L("VALUE_DISABLED")
@@ -463,18 +515,30 @@ tmp = function() {
 		onPreInit: function() {
 			// These options make sense only if device has SD/MS card slots 
 			if (Core.config.compat.hasCardSlots) {
+				// Option to enable disable SD/MS card scanning
 				BrowseFolders.optionDefs.push({
 					name: "cardScan",
 					title: L("OPTION_CARD_SCAN"),
 					icon: "DB",
-					defaultValue: "enabled",
-					values: ["enabled", "disabledLoadCache", "disabled"],
+					defaultValue: ENABLED,
+					values: [ENABLED, "disabledLoadCache", DISABLED],
 					valueTitles: {
 						enabled: L("VALUE_ENABLED"),
 						disabledLoadCache: L("VALUE_DISABLED_LOAD_CACHE"),
 						disabled: L("VALUE_DISABLED")
 					}
-	
+				});
+
+				BrowseFolders.optionDefs.push({
+					name: "useMount",
+					title: L("OPTION_MOUNT"),
+					icon: "DB",
+					defaultValue: ENABLED,
+					values: [ENABLED, DISABLED],
+					valueTitles: {
+						enabled: L("VALUE_ENABLED"),
+						disabled: L("VALUE_DISABLED")
+					}
 				});
 			}
 		},
@@ -505,7 +569,9 @@ tmp = function() {
 			}
 			
 			// Bootstrap code knows only Core, not this addon
-			Core.config.cardScanMode = newValue;
+			if (propertyName === "cardScanMode") {
+				Core.config.cardScanMode = newValue;
+			}
 			
 			// Release the node so that it's content can be updated
 			if (browseFoldersNode) {
