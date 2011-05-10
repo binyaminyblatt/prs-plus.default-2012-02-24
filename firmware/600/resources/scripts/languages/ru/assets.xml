@@ -333,7 +333,7 @@
 		<string id="STR_NODE_TITLE_FORMATDEVICE" value="Форматировать" />
 		<string id="STR_NODE_TITLE_FORMAT_INTERNAL" value="Внутреннюю память" />
 		<string id="STR_NODE_TITLE_FORMAT_MS" value="Memory Stick" />
-		<string id="STR_NODE_TITLE_FORMAT_SD" value="карту SD" />
+		<string id="STR_NODE_TITLE_FORMAT_SD" value="карта SD" />
 		<string id="STR_UI_FORMAT_INTERNAL_MEMORY" value="Форматирую..." />
 		<string id="STR_UI_FORMAT_EXTERNAL_MS" value="Форматирую..." />
 		<string id="STR_UI_FORMAT_EXTERNAL_SD" value="Форматирую..." />
