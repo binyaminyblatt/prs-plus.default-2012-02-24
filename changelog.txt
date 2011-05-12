@@ -10,6 +10,7 @@
  * 600/x50: TextScale addon was included
  * x50: Reduced statusbar index / clock font size, moved "playing" indicator to the left
  * x50: Fixed "Periodicals"
+ * 950: Added GMT+10 timezone
  * ALL: Screenshot: captured image is now immediatelly visible to the system
  * ALL: Folders: Added option to disable scanning without loading cache (as it was in 1.1.3)
  * ALL: Folders: Added "via mount" card access (uses Linux "mount" command instead of mtools like buggy utility)
