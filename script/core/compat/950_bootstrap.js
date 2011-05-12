@@ -11,6 +11,7 @@
 //	2011-02-10 kartu - Implemented # Russian phonetic keyboard (keyboard xml by boroda)
 //	2011-02-26 kartu - Refactored, moved code common to x50 models into common_x50.js
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
+//	2011-05-12 kartu - Added "GMT + 10" timezone
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -62,6 +63,8 @@ var tmp = function() {
 		});
 
 		TIMEZONES = {
+			"600": "GMT + 10",
+			"540": "GMT + 9",
 			"480": "GMT + 8",
 			"420": "GMT + 7",
 			"360": "GMT + 6",
@@ -102,7 +105,7 @@ var tmp = function() {
 			updateTime();
 			this.parent.gotoParent(kbook.model);
 		};
-		for (i = -10; i < 8; i++) {
+		for (i = -10; i < 11; i++) {
 			var offset = i * 60;
 			var offsetStr = "" + offset;
 			if (TIMEZONES[offsetStr]) {
