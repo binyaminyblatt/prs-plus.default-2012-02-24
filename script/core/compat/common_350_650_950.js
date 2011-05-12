@@ -18,10 +18,12 @@
 //	2011-03-19 kartu - Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 //	2011-04-21 kartu - Added option to disable scanning without loading cache
+//	2011-05-12 kartu - Fixed "Periodicals"
 //
 tmp = function() {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
-		oldChangeKeyboardType, oldReadPreference, oldCallback, makeRootNodesMovable, bootLog;
+		oldChangeKeyboardType, oldReadPreference, oldCallback, makeRootNodesMovable, bootLog,
+		doGetPeriodicalsKind;
 	bootLog = PARAMS.bootLog;
 
 	// Localize "popup" keyboard, that shows after holding button for a couple of secs
@@ -422,8 +424,6 @@ tmp = function() {
 		periodicalsNode = kbook.root.getDeviceRootNode().getNode(2);
 		collectionsNode = kbook.root.getDeviceRootNode().getNode(3);
 		notesNode = kbook.root.getDeviceRootNode().getNode(4);
-		periodicalsNode.kind = 66; // has no kind by default
-		periodicalsNode.separator = 0; // remove separator line
 		
 		// Helper functions
 		getComment = function (node) {
@@ -461,9 +461,30 @@ tmp = function() {
 			this.currentNode.gotoNode(kbook.root.getDeviceRootNode().getNode(4), this);
 		};
 		
+		// Fix periodicals node
+		// FXME figure why forcing construct is needed for periodicals to work		
+		var getPeriodicalLatestItemCalls = 0;
+		kbook.model.getPeriodicalLatestItem = function (node) {
+			if (!periodicalsNode.latestItem && getPeriodicalLatestItemCalls === 1) {
+				periodicalsNode.construct();
+			} else if (getPeriodicalLatestItemCalls < 3) {
+				getPeriodicalLatestItemCalls++;
+			}
+			return periodicalsNode.latestItem;
+		};
+
+		// Detects periodicals "kind", returning 0 if there are no knew periodicals, or 1 if there are some
+		// is used to select the right icon
+		doGetPeriodicalsKind = function() {
+			var dummy = {
+				nodes: [undefined, undefined, periodicalsNode]
+			};
+			return  kbook.model.getPeriodicalKind(dummy);
+		};
+
 		// Fixing hardcoded periodicals / collections / notes
 		kbook.model.updateDeviceRoot = function (node) {
-			var n, continueTitle, continueAuthor, continueDate, middleItemKind, middleItemTitle, middleItemComment, leftItemKind, leftItemTitle, leftItemComment, centerItemKind, centerItemTitle, centerItemComment, rightItemKind, rightItemTitle, rightItemComment, homeView;
+			var n, dummy, continueTitle, continueAuthor, continueDate, middleItemKind, middleItemTitle, middleItemComment, leftItemKind, leftItemTitle, leftItemComment, centerItemKind, centerItemTitle, centerItemComment, rightItemKind, rightItemTitle, rightItemComment, homeView;
 			this.setHomeCover(node);
 			kbook.menuHomeThumbnailBookData.setNode(kbook.root.getBookThumbnailsNode());
 			continueTitle = this.getContinueComment(node);
@@ -472,11 +493,27 @@ tmp = function() {
 			middleItemKind = this.getBooksKind(node);
 			middleItemTitle = this.getBooksTitle(node);
 			middleItemComment = this.getBooksComment(node);
-			
+
 			n = node.nodes[2];
-			leftItemKind = getKind(n, 0);
+			if (n === periodicalsNode) {
+				// Fix for periodicals in home 
+				dummy = {
+					nodes: [undefined, undefined, periodicalsNode]
+				};
+				leftItemKind = doGetPeriodicalsKind();
+				leftItemTitle = this.getPeriodicalTitle(dummy);
+				leftItemComment = this.getPeriodicalComment(dummy);
+			} else {
+				leftItemKind = getKind(n, 0);
+				leftItemComment = getComment(n);
+
+				// Periodicals shown in unusual place
+				// has no kind by default
+				periodicalsNode.kind = 67 + doGetPeriodicalsKind(); 
+				periodicalsNode.separator = 0; // remove separator line
+
+			}
 			leftItemTitle = n.title;
-			leftItemComment = getComment(n);
 			
 			n = node.nodes[3];
 			centerItemKind = getKind(n, 2);
