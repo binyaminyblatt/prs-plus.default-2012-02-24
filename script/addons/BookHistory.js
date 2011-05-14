@@ -41,6 +41,7 @@
 //			Skip book menu menu option is shown only on older models (with numeric buttons)
 //	2011-02-26 kartu - Fixed #68:  x50: Deleting books opened via Book History is bugged
 //	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
+//	2011-05-14 kartu - Fixed bug related to "Skip book menu" option 
 
 tmp = function() {
 	var L, LX, log, trim, model, BH_TITLE, BH_SHORT_TITLE, BH_FILE, BookHistory, bookList, mustSave, bookHistoryNode,
@@ -237,8 +238,7 @@ tmp = function() {
 		name: "BookHistory",
 		title: BH_TITLE,
 		icon: "LIST",
-		onInit: function() {
-			// FIXME do nothing if disabled
+		onPreInit: function() {
 			if (Core.config.compat.hasNumericButtons) {
 				this.optionDefs.push({
 					name: "skipBookMenu",
@@ -254,7 +254,9 @@ tmp = function() {
 					}
 				});
 			}
-			
+		},
+		onInit: function() {
+			// FIXME do nothing if disabled
 			loadFromFile();
 			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, bookChanged);
 			// Fix for #68 x50: Deleting books opened via Book History is bugged
