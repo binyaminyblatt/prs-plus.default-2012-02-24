@@ -11,6 +11,7 @@
  * 600/x50: TextScale addon was included
  * x50: Reduced statusbar index / clock font size, moved "playing" indicator to the left
  * x50: Fixed "Periodicals"
+ * x50: Fixed sorting in "books" for non latin alphabets
  * 950: Added GMT+10 timezone
  * ALL: Screenshot: captured image is now immediatelly visible to the system
  * ALL: Folders: Added option to disable scanning without loading cache (as it was in 1.1.3)
