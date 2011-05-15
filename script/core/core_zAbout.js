@@ -27,7 +27,7 @@ try {
 			"igorsk, boroda, amutin, obelix, pepak, kravitz, Mark Nord, Ben Chenoweth and others.\n" +
 			"Translations by:\n" +
 			"     Catalan: surquizu\n" +
-			"     Czech: Hobogen\n" +
+			"     Czech: Hobogen, milanv\n" +
 			"     French: VICTORSJG, Duglum, ronnn, dpierron\n" +
 			"     Georgian: rawerfas, kartu\n" +
 			"     German: Duglum, klawong, Mark Nord\n" +			

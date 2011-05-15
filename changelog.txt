@@ -7,6 +7,7 @@
  * 505: Restored localizations
  * 505: Restored 1.1.3 menu layout with "Multimedia"
  * 600: Added Portuguese localization by OTNeto
+ * 600: Added Czech localization by milanv
  * 600/x50: Fixed keyboard: "aaaa" is shown instead of ascented (popup) letters
  * 600/x50: TextScale addon was included
  * x50: Reduced statusbar index / clock font size, moved "playing" indicator to the left

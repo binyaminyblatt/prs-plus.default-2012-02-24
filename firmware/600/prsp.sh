@@ -6,7 +6,7 @@ if [ $? == 0 ]; then
    /bin/mount --bind /tmp/kconfig_1.0.02.13180.xml /opt/sony/ebook/application/kconfig.xml
 fi
 
-# Run prsp.sh shell script located on sd card,
+# Run prsp.sh shell script located in internal memory
 if [ -f /Data/database/system/PRSPlus/prsp.sh ]
 then
 	. /Data/database/system/PRSPlus/prsp.sh
