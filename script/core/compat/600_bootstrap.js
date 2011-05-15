@@ -36,9 +36,10 @@ var tmp = function() {
 				node, langFile;
 			currentLang = kbook.model.language;
 			settingsNode = kbook.root.nodes[6].nodes[2];
-			languages = ["ca", "en", "es", "de", "fr", "it", "nl", "ka", "pt", "ru", "zh"];
+			languages = ["ca", "cs", "en", "es", "de", "fr", "it", "nl", "ka", "pt", "ru", "zh"];
 			langNames = {
 				ca: "Català",
+				cs: "Český",
 				en: "English",
 				es: "Español",
 				de: "Deutsch", 
@@ -136,7 +137,8 @@ var tmp = function() {
 	localizeKeyboard = function (Core) {
 		var i, n, node, advancedSettingsNode, keyboardNode, keyboardTypes, keyboardNames, enter;
 		keyboardTypes = [
-				"French-France", 
+				"Czech",
+				"French-France",
 				"German-Germany", 
 				"Georgian", 
 				"Dutch-Netherlands", 
@@ -145,6 +147,7 @@ var tmp = function() {
 				"English-US" 
 		];
 		keyboardNames = {
+			"Czech": "Český",
 			"French-France": "Français",
 			"German-Germany": "Deutsch",
 			"Georgian": "ქართული",
@@ -206,7 +209,8 @@ var tmp = function() {
 				"German-Germany": "KeyboardLayout129.xml",
 				"Dutch-Netherlands": "KeyboardLayout143.xml",
 				"Russian": "languages/KeyboardLayoutRussian.xml",
-				"Georgian": "languages/KeyboardLayoutGeorgian.xml"
+				"Georgian": "languages/KeyboardLayoutGeorgian.xml",
+				"Czech": "languages/KeyboardLayoutCzech.xml"
 			};
 			path = System.applyEnvironment('[keyboardLayoutPath]') ;
 			url = 'file://' + path + keyboardPaths[langType] ;
