@@ -9,6 +9,7 @@
 //	2010-04-24 kartu - Prepared for merging into single JS
 //	2010-04-25 kartu - Marked onPreInit as constructor
 //	2010-04-27 kravitz - Joined "viewer" settings group
+//	2011-05-16 kartu - Replaced addon's "MSG_RESTART" with core's
 
 // dummy function, to avoid introducing global vars
 tmp = function () {
@@ -39,7 +40,7 @@ tmp = function () {
 			if (oldValue === newValue) {
 				return;
 			}
-			Core.ui.showMsg([L("MSG_RESTART")]);
+			Core.ui.showMsg([Core.lang.L("MSG_RESTART")]);
 		}
 	});
 };
