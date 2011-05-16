@@ -30,10 +30,17 @@ then
 		export LD_PRELOAD=/opt/sony/ebook/application/Latin1toUTF8.so
 	fi
 
-	# Run prsp.sh shell script located on sd card,
+	# Run prsp.sh shell script located in internal mem
 	if [ -f /Data/database/system/PRSPlus/prsp.sh ]
 	then
 		. /Data/database/system/PRSPlus/prsp.sh
+	fi
+	
+	# Mount custom kconfig
+	if [ -f /opt0/prsp/kconfig.xml ]
+	then
+		cp /opt0/prsp/kconfig.xml /tmp
+		mount --bind /tmp/kconfig.xml /opt/sony/ebook/application/kconfig.xml
 	fi
 else
 	touch /tmp/safemode	
