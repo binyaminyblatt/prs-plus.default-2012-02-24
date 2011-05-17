@@ -1,9 +1,14 @@
 // Name: LRFTextScale
 // Description: Options to change default scale factor for LRF files
 // Author: kartu
+//
+// History:
+//	2011-05-17 kartu - 600: Removed "XS" level 
+//		ALL: Restart warning message is shown at most once per hour
 
 tmp = function() {
-	var LRFTextScale, defVal, L, ZOOM_VALUES, ZOOM_VALUE_NAMES, ZOOM_LEVEL_NAMES, scaleMin, scaleMax, updateKconfig,
+	var LRFTextScale, defVal, L, ZOOM_VALUES, ZOOM_VALUE_NAMES, ZOOM_LEVEL_NAMES, scaleMin, scaleMax,
+		updateKconfig, warnUser, warningShownOn,
 		CURRENT_KCONFIG_PATH, KCONFIG_PATH, MARKER, ENV_TAG, OPTION_NAME;
 	L = Core.lang.getLocalizer("LRFTextScale");
 	defVal = "default";
@@ -11,7 +16,6 @@ tmp = function() {
 	ZOOM_VALUE_NAMES = {};
 	ZOOM_VALUE_NAMES[defVal] = L("VALUE_DEFAULT");
 	ZOOM_LEVEL_NAMES = ["XS", "S", "M", "L", "XL", "XXL"];
-	// TODO
 	CURRENT_KCONFIG_PATH = "/opt/sony/ebook/application/kconfig.xml";
 	KCONFIG_PATH = "/opt0/prsp/kconfig.xml";
 	MARKER = "<!--PRSP_LRFTextScale-->";
@@ -33,6 +37,10 @@ tmp = function() {
 				scaleMin = 0;
 				scaleMax = 2;
 				break;
+			case "600":
+				scaleMin = 0;
+				scaleMax = 4;
+				break;
 			default:
 				scaleMin = -1;
 				scaleMax = 4;
@@ -51,10 +59,17 @@ tmp = function() {
 		this.optionDefs = od;
 	};
 	
+	warnUser = function() {
+		if (warningShownOn === undefined || ((new Date()).getTime() - warningShownOn.getTime()) > 3600000) {
+			warningShownOn = new Date();
+			Core.ui.showMsg(Core.lang.L("MSG_RESTART")  + "\n" + L("MSG_DEFAULT"), 5);
+		}
+	};
+	
 	LRFTextScale.onSettingsChanged = function(propertyName, oldValue, newValue) {
 		if (oldValue !== newValue) {
 			updateKconfig(LRFTextScale.options);
-			Core.ui.showMsg(Core.lang.L("MSG_RESTART"));
+			warnUser();
 		}
 	};
 	
