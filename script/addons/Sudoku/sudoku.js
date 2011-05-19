@@ -14,6 +14,7 @@
 //		Core.system.getSoValue =>  kbook.autoRunRoot.getSoValue
 //		Core.system.compile => prsp.compile
 // 	2011-03-01 kartu - Moved into a function, to allow variable name optimizations
+//	2011-05-19 Mark Nord - removed Exit from menu -> exit via home-button; path for savegames is set to /Data/
 
 var tmp = function () {
 	var firstX = 81;
@@ -55,7 +56,7 @@ var tmp = function () {
 	
 	var currentPuzzle = 0;
 	
-	var newEvent = prsp.compile("param", "return new Event(param)");
+	// var newEvent = prsp.compile("param", "return new Event(param)");
 	
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
 	var getSoValue = kbook.autoRunRoot.getSoValue;
@@ -282,13 +283,13 @@ var tmp = function () {
 	};
 	
 	target.ExitQuit = function () {
-		var ev, func, menuBar;
-		ev = newEvent(2048);
-		menuBar = this.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
+	//	var ev, func, menuBar;
+	//	ev = newEvent(2048);
+	//	menuBar = this.findContent("MENUBAR"); // menuBar had to be defined as id="MENUBAR" in XML!!
 		// this.bubble("tracelog","findContent= "+menuBar);
-		func = getSoValue(menuBar,"endLoop");
+	//	func = getSoValue(menuBar,"endLoop");
 		// this.bubble("tracelog","endLoop= "+func);
-		func.call(menuBar,ev);
+	//	func.call(menuBar,ev);
 		kbook.autoRunRoot.exitIf(kbook.model);
 	};
 	
@@ -555,7 +556,8 @@ var tmp = function () {
 	var saveGame = function () {
 	
 		var res = true;
-		var sudokuPath = target.sudokuRoot + 'game';
+		if (kbook.simEnviro){	var sudokuPath = target.sudokuRoot + 'game';}
+		else {	var sudokuPath = '/Data/sudoku.dat';}
 		var fixStr = "";
 		var custStr = "";
 	
@@ -591,7 +593,8 @@ var tmp = function () {
 	
 	var loadGame = function () {
 		var res = true;
-		var sudokuPath = target.sudokuRoot + 'game';
+		if (kbook.simEnviro){	var sudokuPath = target.sudokuRoot + 'game';}
+		else {	var sudokuPath = '/Data/sudoku.dat';}
 		var fixStr = "";
 		var custStr = "";
 	
