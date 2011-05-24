@@ -1,7 +1,7 @@
 return {
 	X: {
 		BOOKS: ["Bücher", "1 Buch", "Kein Buch"],
-		SETTINGS: ["Einstellungen", "1 Einstellung", "Keine Einstellung"]б		
+		SETTINGS: ["Einstellungen", "1 Einstellung", "Keine Einstellung"],		
 		PAGES: ["Seiten", "1 Seite", "Keine Seite"],
 		PICTURES: ["Bilder", "1 Bild", "Kein Bild"],
 		SONGS: ["Lieder", "1 Lied", "Kein Lied"],
