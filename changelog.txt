@@ -1,3 +1,9 @@
+=== 2.0.12 beta ===
+ * 505: Fixed German translation
+ * ALL: Fixed Courier font name
+ * ALL: Sudoku can be exitted by pressing home button
+ * 350/650: Fixed custom CSS path
+
 === 2.0.11 beta ===
  * 300: Fixed broken XML in Spanish translation
  * 300: Added Ukrainian localization by Bookoman
