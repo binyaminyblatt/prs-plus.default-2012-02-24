@@ -128,7 +128,7 @@ var tmp = function () {
 		target.changeResultsSize = function (s) {
 			var te, stf, sk, styles, style, textinv;
 			try {
-				te = Core.system.getSoValue(this.textlines, 'te');
+				te = getSoValue(this.textlines, 'te');
 				stf = getSoValue(te, 'setTextFormat');
 				 sk = getSoValue(this.textlines, 'skin');
 				styles = getSoValue(sk, 'styles');
