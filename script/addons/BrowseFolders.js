@@ -26,6 +26,7 @@
 //	2011-03-03 kartu - Added support for converters/alternative viewers
 //	2011-04-24 kartu - Added option to disable scanning without loading cache
 //	2011-04-25 kartu - Added "via mount" option for SD/MS card access
+//	2011-06-18 kartu - Reverted old "BrowseFolders view not updated" (2011-02-09) fix as it shouldn't be needed with correctly working ContainerNode.update()
 //
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -452,7 +453,6 @@ tmp = function() {
 		title: L("TITLE"),
 		icon: "FOLDER",				
 		getAddonNode: function() {
-			var oldUnlock;
 			if (browseFoldersNode === undefined) {
 				browseFoldersNode = Core.ui.createContainerNode({
 						title: L("NODE_BROWSE_FOLDERS"),
@@ -462,16 +462,6 @@ tmp = function() {
 						parent: kbook.root,
 						construct: folderRootConstruct
 				});
-				
-				// When BrowseFolders settings change, child nodes are detached and unlock is forced.
-				// this could lead to lock value to become negative.
-				oldUnlock = browseFoldersNode.unlock;
-				browseFoldersNode.unlock = function() {
-					oldUnlock.apply(this, arguments);
-					if (this.locked < 0) {
-						this.locked = 0;
-					}
-				};
 			}
 			return browseFoldersNode;
 		},
@@ -575,7 +565,7 @@ tmp = function() {
 			
 			// Release the node so that it's content can be updated
 			if (browseFoldersNode) {
-				browseFoldersNode.unlockPath();
+				browseFoldersNode.update();
 			}
 		}
 		

@@ -20,6 +20,7 @@
 //	2011-03-03 kartu - Added "duration" option to showMsg
 //	2011-03-19 kartu - Changed showMsg, duration is now in seconds, changed "sleep" mechanism, shell command is used
 //	2011-04-24 kartu - Changed showMsg to honor EOLs 
+//	2011-06-18 kartu - Fixed "update() wasn't called by container mode"
 //
 
 try {
@@ -27,6 +28,8 @@ try {
 		var obj = xs.newInstanceOf(prototype);
 		obj.onEnter = "onEnterDefault";
 		obj.onSelect = "onSelectDefault";
+		// Fix for "update()" otherwise code fails not finding "children" field
+		obj.children = {};
 		
 		if (typeof arg !== "undefined") {
 			if (arg.hasOwnProperty("parent")) {obj.parent = arg.parent;}

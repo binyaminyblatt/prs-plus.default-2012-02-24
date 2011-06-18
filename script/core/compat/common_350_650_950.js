@@ -19,6 +19,7 @@
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 //	2011-04-21 kartu - Added option to disable scanning without loading cache
 //	2011-05-12 kartu - Fixed "Periodicals"
+//	2011-06-18 kartu - A bit less ugly fix to "Periodicals"
 //
 tmp = function() {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -462,14 +463,8 @@ tmp = function() {
 		};
 		
 		// Fix periodicals node
-		// FXME figure why forcing construct is needed for periodicals to work		
 		var getPeriodicalLatestItemCalls = 0;
 		kbook.model.getPeriodicalLatestItem = function (node) {
-			if (!periodicalsNode.latestItem && getPeriodicalLatestItemCalls === 1) {
-				periodicalsNode.construct();
-			} else if (getPeriodicalLatestItemCalls < 3) {
-				getPeriodicalLatestItemCalls++;
-			}
 			return periodicalsNode.latestItem;
 		};
 
@@ -485,6 +480,12 @@ tmp = function() {
 		// Fixing hardcoded periodicals / collections / notes
 		kbook.model.updateDeviceRoot = function (node) {
 			var n, dummy, continueTitle, continueAuthor, continueDate, middleItemKind, middleItemTitle, middleItemComment, leftItemKind, leftItemTitle, leftItemComment, centerItemKind, centerItemTitle, centerItemComment, rightItemKind, rightItemTitle, rightItemComment, homeView;
+
+			// If periodicals node was moved, we need to construct it manually, prior to setHomeCover
+			if (node.nodes[2] !== periodicalsNode) {
+				periodicalsNode.construct();
+			}
+			
 			this.setHomeCover(node);
 			kbook.menuHomeThumbnailBookData.setNode(kbook.root.getBookThumbnailsNode());
 			continueTitle = this.getContinueComment(node);

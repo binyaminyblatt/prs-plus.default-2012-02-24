@@ -16,6 +16,7 @@
 //		Changed default save location to internal memory
 //		Switched to using Core.ui.showMsg
 //	2011-04-13 kartu - Captured image is made immediatelly visible to the system
+//	2011-06-18 kartu - Captured image is made immediatelly visible to the user as well
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -106,6 +107,8 @@ tmp = function() {
 						// Add image to the library
 						try {
 							Core.media.loadMedia(savePath);
+							// Update nodes so that new image is visible
+							kbook.root.update();
 						} catch (ignore) {
 						}
 					} catch (ee) {
