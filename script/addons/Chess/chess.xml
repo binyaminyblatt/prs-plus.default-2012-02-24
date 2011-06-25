@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
+    <assets>
+        <behavior id="squareSprite">
+            <script on="mouseUp" params="event">
+				if (this.hitBounds(event.x, event.y))
+					this.bubble("doSquareClick",this);
+            </script>
+        </behavior>	
+        <behavior id="selectSprite">
+            <script on="mouseUp" params="event">
+				if (this.hitBounds(event.x, event.y))
+					this.bubble("doSelectClick",this);
+            </script>
+        </behavior>
+		
+        <style font="Swis721 BT">
+            <style id="sumText" size="40" style="bold" color="#000000"/>
+            <style id="sometext" size="22" style="bold" color="#000000"/>
+            <style id="digits" size="22" style="bold" color="#666666"/>
+            <style id="versText" size="40" style="bold" color="#FFFFFF"/>
+            <style id="klWeis" size="18" style="bold" color="#FFFFFF" align="center"/>
+            <style id="touchText" size="12" style="bold" color="#000000"/>
+        </style>
+
+        <style font="Courier10 BT">
+            <style id="titleText" size="75" style="bold" color="#000000"/>
+        </style>
+		
+		<style id="button-e" size="21" style="bold" halign="center">
+			<style id="button-d" color="#6D6D6D"/>
+			<style id="button-p"/>
+			<style id="button-s" />
+		</style>
+		
+        <texture href="chessSkins/chessLabels.png">
+            <cutout id="HelpT" x="42" y="295" width="516" height="611"/>
+			<cutout id="select" x="1" y="1" width="75" height="75"/>
+			<cutout id="highlight" x="78" y="1" width="75" height="75"/>
+			<cutout id="free" x="73" y="1" width="73" height="96"/>
+			<cutout id="button-l" x="610" y="102" width="16" height="40" lines="60"/>
+			<cutout id="button-c" x="626" y="102" width="20" height="40" lines="60"/>
+			<cutout id="button-r" x="646" y="102" width="16" height="40" lines="60"/>
+			<cutout id="congrat" x="160" y="0" width="411" height="142"/>
+			<cutout id="gCursor" x="610" y="0" width="90" height="100"/>
+			<cutout id="colHelp_c" x="20" y="170" width="554" height="52"/>
+        </texture>
+
+        <texture href="chessSkins/chessPieces.png">
+            <cutout id="pieces" x="0" y="0" width="75" height="75" columns="75"/>
+        </texture>
+		
+		<texture href="chessSkins/chessBoard.png">
+            <cutout id="white" x="0" y="0" width="75" height="75"/>
+			<cutout id="black" x="80" y="0" width="75" height="75"/>
+        </texture>
+
+        <texture href="chessSkins/chessMain.png">
+            <cutout id="ChessHeader-l" x="350" y="0" width="70" height="70"/>
+            <cutout id="ChessHeader-c" x="421" y="0" width="70" height="70"/>
+            <cutout id="ChessHeader-r" x="492" y="0" width="70" height="70"/>
+            <cutout id="ChessInfo-l" x="0" y="70" width="0" height="697"/>
+            <cutout id="ChessInfo-c" x="0" y="70" width="600" height="697"/>
+            <cutout id="ChessInfo-r" x="0" y="70" width="0" height="697"/>
+            <cutout id="ChessStatus-l" x="0" y="766" width="600" height="33"/>
+            <cutout id="ChessStatus-c" x="0" y="766" width="0" height="0"/>
+            <cutout id="ChessStatus-r" x="0" y="766" width="0" height="0"/>
+        </texture>
+
+        <skin id="klWeis" 		styles="klWeis"/>
+        <skin id="sumText" 		styles="sumText"/>
+        <skin id="sometext" 	styles="sometext"/>
+        <skin id="digits" 		styles="digits"/>
+		<skin id="whitesquare" 		cutouts="white"/>
+        <skin id="blacksquare" 		cutouts="black"/>
+		<skin id="piece" 		cutouts="pieces"/>
+		<skin id="selectSquare"	cutouts="select"/>
+		<skin id="highlightSquare"	cutouts="highlight"/>
+        <skin id="hHelpT" 		cutouts="HelpT"/>
+        <skin id="colHelp"	  	cutouts="colHelp_c"/>
+		<skin id="congrats"		cutouts="congrat"/>
+        <skin id="title" styles="versText"/>
+        <skin id="title2" styles="titleText"/>
+        <skin id="versText" 	styles="versText"/>
+        <skin id="touchText" styles="touchText"/>
+        <skin id="ChessSkin" cutouts="ChessHeader-l,ChessHeader-c, ChessHeader-r,ChessInfo-l,ChessInfo-c,ChessInfo-r,
+					ChessStatus-l,ChessStatus-c,ChessStatus-r"/>
+		<skin id="gridCursor" 		cutouts="gCursor"/>	
+		<skin id="button" 
+			cutouts="button-l,button-c,button-r"
+			styles="button-d,button-e,button-p,button-s"/>
+    </assets>
+
+
+    <code>
+		<function id="runJs" params="path,target">
+			try {
+				var f = new Stream.File(path);          
+				var fn = new Function("target", f.toString());
+				fn(target);
+				delete fn;
+			}
+			catch(e)
+			{
+			}
+		</function>
+		<function id="loadScript">
+			if (!this.hasOwnProperty('_scriptLoaded'))
+				this._scriptLoaded = false;
+			if (!this._scriptLoaded)
+			{
+				if(kbook.autoRunRoot.path==undefined){
+					path = this.getBaseURI().slice(7); 		
+					kbook.model=this;
+				}else{
+					path = kbook.autoRunRoot.path;
+				}
+				var index = path.lastIndexOf('/');
+				if (index > 0)
+				   path = path.substring(0, index + 1);
+				this.driveroot = path.substring(0,2);
+				var target = this.AUTORUN_GROUP.AUTORUN;
+				target.driveroot = this.driveroot;
+				target.chessRoot = path;
+				
+				this.runJs(path+"chess.js",target);
+				
+			}
+			this._scriptLoaded = true;
+		</function>
+		<function id="modelChanged">
+			arguments.callee.grammar.call(this);
+			var state = this.getVariable("STATE"); 
+			
+			var target;
+
+			if (this.state != state) {
+				this.focus(true)
+				this.AUTORUN_GROUP.show(false)
+				switch(state) {
+				case "AUTORUN":
+					this.loadScript();
+					this.AUTORUN_GROUP.show(true);
+					target = this.AUTORUN_GROUP.AUTORUN;
+					break;
+				}
+				this.state = state;
+				target.init();
+				if (target.isEnabled()) {  
+				
+					target.focus(true);
+					
+				};
+			}           
+		</function>
+    </code>
+
+    <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
+        <panel skin="ChessSkin" left="0" right="0" top="0" bottom="0"/>
+        <label skin="title" left="10" right="240" top="0" height="70" align="left" text="Chess"/>
+        <group id="AUTORUN" width="600" top="70" bottom="30">
+            <code>
+                <function id="doPrevious">this.doPrev();</function>
+				<function id="doNext">	this.doNext();</function>
+                <function id="doSize">	this.doSize();</function>
+				<function id="doMark">	this.doMark();</function>
+                <function id="doOption">	this.doUndo();</function>
+				<function id="doRoot">	this.doRoot();</function>
+				<function id="doMenu">	this.doUndo();</function>
+				<function id="doCenter">	this.cursorClick();</function>
+				<function id="doLeft">		this.moveCursor("left");</function>
+				<function id="doRight">		this.moveCursor("right");</function>
+				<function id="doUp">	this.moveCursor("up");</function>
+				<function id="doDown">	this.moveCursor("down");</function>		
+				<function id="doDigit" params="part"> this.digitF(part.key);</function> 
+            </code>
+			
+			<button id="BUTTON_RES"		active="true" text="New Game"   left="380" width="130" top="10" height="45" do="doButtonClick"/>
+			<button id="BUTTON_EXT"		active="true" text="Quit"    left="520" width="70" top="10" height="45" do="doButtonClick"/>
+			
+			<sprite id='nonTouch_colHelp'	skin='colHelp' left='20' width='564' top='17' height='52' active='false' canFocus='false'/>
+			
+            <sprite skin='whitesquare' id='square0' left="0" width="75" top="70" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square1' left="75" width="75" top="70" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='whitesquare' id='square2' left="150" width="75" top="70" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square3' left="225" width="75" top="70" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square4' left="300" width="75" top="70" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square5' left="375" width="75" top="70" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='whitesquare' id='square6' left="450" width="75" top="70" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square7' left="525" width="75" top="70" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square8' left="0" width="75" top="145" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square9' left="75" width="75" top="145" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='blacksquare' id='square10' left="150" width="75" top="145" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square11' left="225" width="75" top="145" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square12' left="300" width="75" top="145" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square13' left="375" width="75" top="145" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='blacksquare' id='square14' left="450" width="75" top="145" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square15' left="525" width="75" top="145" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+
+			<sprite skin='whitesquare' id='square16' left="0" width="75" top="220" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square17' left="75" width="75" top="220" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='whitesquare' id='square18' left="150" width="75" top="220" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square19' left="225" width="75" top="220" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square20' left="300" width="75" top="220" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square21' left="375" width="75" top="220" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='whitesquare' id='square22' left="450" width="75" top="220" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square23' left="525" width="75" top="220" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square24' left="0" width="75" top="295" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square25' left="75" width="75" top="295" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='blacksquare' id='square26' left="150" width="75" top="295" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square27' left="225" width="75" top="295" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square28' left="300" width="75" top="295" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square29' left="375" width="75" top="295" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='blacksquare' id='square30' left="450" width="75" top="295" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square31' left="525" width="75" top="295" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			
+            <sprite skin='whitesquare' id='square32' left="0" width="75" top="370" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square33' left="75" width="75" top="370" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='whitesquare' id='square34' left="150" width="75" top="370" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square35' left="225" width="75" top="370" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square36' left="300" width="75" top="370" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square37' left="375" width="75" top="370" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='whitesquare' id='square38' left="450" width="75" top="370" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square39' left="525" width="75" top="370" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square40' left="0" width="75" top="445" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square41' left="75" width="75" top="445" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='blacksquare' id='square42' left="150" width="75" top="445" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square43' left="225" width="75" top="445" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square44' left="300" width="75" top="445" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square45' left="375" width="75" top="445" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='blacksquare' id='square46' left="450" width="75" top="445" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square47' left="525" width="75" top="445" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>			
+			
+			<sprite skin='whitesquare' id='square48' left="0" width="75" top="520" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square49' left="75" width="75" top="520" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='whitesquare' id='square50' left="150" width="75" top="520" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square51' left="225" width="75" top="520" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square52' left="300" width="75" top="520" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square53' left="375" width="75" top="520" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='whitesquare' id='square54' left="450" width="75" top="520" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square55' left="525" width="75" top="520" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square56' left="0" width="75" top="595" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square57' left="75" width="75" top="595" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='blacksquare' id='square58' left="150" width="75" top="595" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square59' left="225" width="75" top="595" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='blacksquare' id='square60' left="300" width="75" top="595" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square61' left="375" width="75" top="595" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			<sprite skin='blacksquare' id='square62' left="450" width="75" top="595" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+            <sprite skin='whitesquare' id='square63' left="525" width="75" top="595" height="75" active="true" canFocus='true' >
+                <behave like="squareSprite"/>
+            </sprite>
+			
+			<sprite id='selection1' skin='selectSquare' left='200' width='75' top='300' height='75' u='0' active="false" canFocus='true' >
+                <behave like="selectSprite"/>
+            </sprite>
+			
+			<sprite id='selection2' skin='highlightSquare' left='200' width='75' top='300' height='75' u='0' active="false" canFocus='true' >		
+            </sprite>
+			
+			<sprite id='selection3' skin='highlightSquare' left='200' width='75' top='300' height='75' u='0' active="false" canFocus='true' >		
+            </sprite>
+			
+			<sprite id='piece0' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece1' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece2' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece3' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece4' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece5' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece6' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece7' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece8' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece9' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece10' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece11' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece12' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece13' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece14' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece15' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece16' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece17' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece18' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece19' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece20' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece21' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece22' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece23' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece24' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece25' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece26' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece27' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece28' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece29' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece30' skin='piece' width='75' height='75' u='0' active='false'/>
+			<sprite id='piece31' skin='piece' width='75' height='75' u='0' active='false'/>		
+			
+          <label id='messageStatus' skin='klWeis' left='240' right='0' top='684' height='60' align='left' text="White's turn"/>
+			<sprite id='congratulations'	skin='congrats' left='94' width='411' top='250' height='142' active='false' canFocus='false'/>
+			<sprite id="gridCursor" skin="selectSquare" left="0" width="75" top="520" height="75" u="0" active="false" canFocus="true"/>
+          <sprite id='touchHelp'  	skin='hHelpT' left='42' width='516' top='50' height='611' active='false' canFocus='false'/>
+			<label id='sometext1' skin='touchText' left='1' right='0' top='648' height='60' align='left' text='[Prev] Pawn promotion to: Queen'/>
+          <label id='touchButtons1'   skin='touchText'    left='1' right='0' top='660' height='60' align='left' text='[Next] AI speed: Medium (Auto ON)'/>
+		  <label id='touchButtons2'   skin='touchText'    left='400' right='0' top='660' height='60' align='left' text='AI move'/>
+		  <label id='touchButtons3'   skin='touchText'    left='525' right='0' top='660' height='60' align='left' text='Undo'/>
+		  <label id='touchButtons4'   skin='touchText'    left='285' right='0' top='660' height='60' align='left' text='Quit'/>
+		  <label id='nonTouch2'   skin='touchText'    left='280' right='0' top='648' height='60' align='left' text='[Menu] for Undo'/>
+		  <label id='nonTouch3'   skin='touchText'    left='280' right='0' top='660' height='60' align='left' text='[Size] for AI move'/>
+			<label id='nonTouch'   skin='touchText'    left='460' right='0' top='648' height='60' align='left' text='[Hold 9] New game'/>
+			<label id='nonTouch4'   skin='touchText'    left='460' right='0' top='660' height='60' align='left' text='[Hold 0] Quit'/>
+			<label id='nonTouch5' skin='touchText' left='1' right='0' top='648' height='60' align='left' text='[9] Pawn promotion to: Queen'/>
+          <label id='nonTouch6'   skin='touchText'    left='1' right='0' top='660' height='60' align='left' text='[0] AI speed: Medium (Auto ON)'/>
+        </group>
+    </group>
+</document>
