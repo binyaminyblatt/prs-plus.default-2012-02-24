@@ -21,15 +21,30 @@
 //	2011-03-19 kartu - Changed showMsg, duration is now in seconds, changed "sleep" mechanism, shell command is used
 //	2011-04-24 kartu - Changed showMsg to honor EOLs 
 //	2011-06-18 kartu - Fixed "update() wasn't called by container mode"
+//	2011-06-26 kartu - Again fixed "update() wasn't called by container mode"
 //
 
 try {
-	var doCreateContainerNode = function(arg, prototype) {
+	// Fix for "update()" otherwise code fails not finding "children" field etc
+	var containerUpdate = function (model) {
+		var i, n, nodes, node;
+		nodes = this.nodes;
+		if (nodes) {
+			for (i = 0, n = nodes.length; i < n; i++) {
+				try {
+					node = nodes[i];
+					node.update(model);
+				} catch (e) {
+					log.error("calling update for node: " + node);
+				}
+			}
+		}
+	};
+	
+	var doCreateContainerNode = function (arg, prototype) {
 		var obj = xs.newInstanceOf(prototype);
 		obj.onEnter = "onEnterDefault";
 		obj.onSelect = "onSelectDefault";
-		// Fix for "update()" otherwise code fails not finding "children" field
-		obj.children = {};
 		
 		if (typeof arg !== "undefined") {
 			if (arg.hasOwnProperty("parent")) {obj.parent = arg.parent;}
@@ -79,17 +94,20 @@ try {
 		//		destructor - method to be called, when child node list can be destroyed
 		//		
 		createContainerNode: function (arg) {
+			var node;
 			if (arg.hasOwnProperty("construct") || arg.hasOwnProperty("destruct")) {
-				return doCreateContainerNode(arg, FskCache.tree.xdbNode);
+				node = doCreateContainerNode(arg, FskCache.tree.xdbNode);
 			} else {
-				return doCreateContainerNode(arg, FskCache.tree.containerNode);
+				node = doCreateContainerNode(arg, FskCache.tree.containerNode);
+				node.update = containerUpdate;
 			}
+			return node;
 		}
 	};
 
 	// Forces screen update
 	//
-	Core.ui.updateScreen = function() {
+	Core.ui.updateScreen = function () {
 		FskUI.Window.update.call(kbook.model.container.getWindow());
 	};
 
@@ -179,14 +197,14 @@ try {
 	/**
 	* Blinks with Sony's standard "error" icon
 	*/
-	Core.ui.doBlink = function() {
+	Core.ui.doBlink = function () {
 		kbook.model.doBlink();
 	};
 	
 	/**
 	* @returns currently focused node
 	*/
-	Core.ui.getCurrentNode = function() {
+	Core.ui.getCurrentNode = function () {
 		if (kbook.model.current) {
 			// 300/505
 			return kbook.model.current;
