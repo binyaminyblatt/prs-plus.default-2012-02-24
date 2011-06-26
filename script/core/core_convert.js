@@ -10,7 +10,7 @@ try {
 		var L, fb2toepub, endsWith, createFB2Node, createImageNode, createMediaNode, enterFB2Node, FB2EPUB, STYLES_DIR, MAX_TMP_SIZE, TMP_FILE;
 		endsWith = Core.text.endsWith;
 		FB2EPUB = System.applyEnvironment("[prspPath]") + "fb2toepub";
-		STYLES_DIR = System.applyEnvironment("[prspPath]") + "/styles";
+		STYLES_DIR = System.applyEnvironment("[prspPath]") + "styles";
 		MAX_TMP_SIZE = 5000000; // max size of the file that can be processed directly in mem
 		TMP_FILE = "prsp_temp_file"; // temporary file
 		

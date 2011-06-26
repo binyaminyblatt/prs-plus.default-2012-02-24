@@ -331,7 +331,7 @@ tmp = function() {
 			name: "BookHistory",
 			title: BH_TITLE,
 			group: "Utils",
-			icon: "CONTINUE",
+			icon: "LIST",
 			action: function () {
 				var current = Core.ui.getCurrentNode();
 				if (current) {

@@ -27,6 +27,7 @@
 //	2011-04-24 kartu - Added option to disable scanning without loading cache
 //	2011-04-25 kartu - Added "via mount" option for SD/MS card access
 //	2011-06-18 kartu - Reverted old "BrowseFolders view not updated" (2011-02-09) fix as it shouldn't be needed with correctly working ContainerNode.update()
+//	2011-06-26 kartu - Applied Shura1oplot's changes (".." item, action grouping, more icons)
 //
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -298,6 +299,17 @@ tmp = function() {
 				Core.shell.mount(this.needsMount);
 			}
 			try {
+				// ".." item
+				if ((BrowseFolders.options.upperDirectoryItem === ENABLED) &&
+						(path !== "/") && ((path !== "/Data" + BrowseFolders.options.imRoot + "/") ||
+						FileSystem.getFileInfo("b:/") || FileSystem.getFileInfo("a:/"))) {
+					node = createFolderNode(path, "..", this, undefined, this.needsMount);
+					node.enter = function() {
+						this.gotoNode(this.parent.parent, kbook.model);
+					};
+					nodes.push(node);
+				}
+				
 				if (FileSystem.getFileInfo(path)) {
 					// Iterate over item's content
 					iterator = new FileSystem.Iterator(path);
@@ -466,6 +478,7 @@ tmp = function() {
 			return browseFoldersNode;
 		},
 		optionDefs: [
+			// How to sort
 			{
 				name: "sortMode",
 				title: L("OPTION_SORTING_MODE"),
@@ -479,6 +492,7 @@ tmp = function() {
 					filenameAsComment:  L("VALUE_BY_FILENAME_AS_COMMENT")
 				}
 			},
+			// What to use as internal memory root
 			{
 				name: "imRoot",
 				title: L("OPTION_IM_ROOT"),
@@ -489,6 +503,7 @@ tmp = function() {
 					"": "/" // yeah! :)
 				}
 			},
+			// Whether to use folders.cfg from [prspPublicPath]
 			{
 				name: "favFoldersFile",
 				title: L("OPTION_FAVOURITE_FOLDERS"),
@@ -499,6 +514,19 @@ tmp = function() {
 					enabled: L("VALUE_ENABLED"),
 					disabled: L("VALUE_DISABLED")
 				}				
+			},
+			// Whether to show ".."
+			{
+				name: "upperDirectoryItem",
+				title: L("OPTION_UPPER_DIRECTORY_ITEM"),
+				icon: "FOLDER",
+				// By default enabled for touch screen devices, disabled for the rest
+				defaultValue: (Core.config.compat.hasNumericButtons ? DISABLED : ENABLED),
+				values: [ENABLED, DISABLED],
+				valueTitles: {
+					enabled: L("VALUE_ENABLED"),
+					disabled: L("VALUE_DISABLED")
+				}
 			}
 		],
 		

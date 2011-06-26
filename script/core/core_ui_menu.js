@@ -22,9 +22,10 @@ tmp = function() {
 	//-------------------------------------------------------------------------------------------------------------
 	// Returns node that has no title / action associated with it, just a placeholder (might be usefull to users who want specific menu layout)
 	getEmptyNode = function() {
+		var L = Core.lang.getLocalizer("MenuCustomizer");
 		if (emptyNode === undefined) {
 			emptyNode = Core.ui.createContainerNode({
-				title: "",
+				title: L("NODE_EMPTY"),
 				icon: "EMPTY",
 				comment: ""
 			});
@@ -50,8 +51,22 @@ tmp = function() {
 	
 	//-------------------------------------------------------------------------------------------------------------
 	// Initializes node map
-	createListOfStandardNodes = function(nodeMap, values, valueTitles) {
-		var standardMenuLayout, key, path, node, j, m;
+	createListOfStandardNodes = function(nodeMap, values, valueTitles, valueIcons) {
+		var standardMenuLayout, standardMenuLayoutIcons, key, path, node, j, m;
+		standardMenuLayoutIcons = {
+			"continue": "CONTINUE",
+			books: "ALL_BOOKS",
+			periodicals: "PERIODICALS",
+			collections: "BOOKS",
+			notes: "NOTES",
+			//newdelivery:
+			//textMemo:
+			//handwriting:
+			audio: "AUDIO",
+			pictures: "PICTURES",
+			apps: "APPLICATIONS",
+			settings: "SETTINGS"
+		};
 		standardMenuLayout = Core.config.compat.standardMenuLayout;
 		// Root node
 		if (Core.config.compat.rootNode) {
@@ -64,6 +79,7 @@ tmp = function() {
 		nodeMap.empty = getEmptyNode();
 		values.push("empty");
 		valueTitles.empty = nodeMap.empty.title;
+		valueIcons["empty"] = "EMPTY";
 		
 		// Standard nodes
 		for (key in  standardMenuLayout) {
@@ -77,18 +93,20 @@ tmp = function() {
 					nodeMap[key] = node;
 					values.push(key);
 					valueTitles[key] = node.title;
+					if (standardMenuLayoutIcons.hasOwnProperty(key)) {
+						valueIcons[key] = standardMenuLayoutIcons[key];
+					}
 				}
 			} catch (e) {
 				log.error("Failed to find node: " + key + " " + e);
 			}
 		}
-		
 	};
 	
 	/** Creates addon nodes,addon can either provide "activate" function, 
 	 * or getAddonNode function, returning node to show
 	 */
-	createListOfAddonNodes = function(addons, addonNodes, values, valueTitles) {
+	createListOfAddonNodes = function(addons, addonNodes, values, valueTitles, valueIcons) {
 		var addon, node, i, n;
 		for (i = 0, n = addons.length; i < n; i++) {
 			addon = addons[i];
@@ -102,13 +120,17 @@ tmp = function() {
 			addonNodes[addon.name] = node;
 			values.push(addon.name);
 			valueTitles[addon.name] = node.title;
+			if (addon.hasOwnProperty("icon")) {
+				valueIcons[addon.name] = addon.icon;
+			}
 		}
 	};
 	
 	MenuCustomizer = {
 		name: "MenuCustomizer",
+		icon: "ROOT_MENU",
 		onPreInit: function() {
-			var L, i, movableNodes, optionValues, optionValueTitles, menuOptionValues, menuOptionValueTitles, values, title;
+			var L, i, movableNodes, optionValues, optionValueTitles, optionValueIcons, menuOptionValues, menuOptionValueTitles, values, title;
 			L = Core.lang.getLocalizer("MenuCustomizer");
 			this.title = L("TITLE");
 			this.optionDefs = [];
@@ -118,6 +140,7 @@ tmp = function() {
 			optionValues = [defVal];
 			optionValueTitles = {};
 			optionValueTitles[defVal] = L("VALUE_DEFAULT");
+			optionValueIcons = {};
 			// whether to show separator
 			menuOptionValues = [defVal, "yes", "no"];
 			menuOptionValueTitles = {
@@ -127,9 +150,9 @@ tmp = function() {
 			menuOptionValueTitles[defVal] = L("VALUE_DEFAULT");
 			
 			// Create list of standard nodes
-			createListOfStandardNodes(nodeMap, optionValues, optionValueTitles);
+			createListOfStandardNodes(nodeMap, optionValues, optionValueTitles, optionValueIcons);
 			// Create list of addon nodes
-			createListOfAddonNodes(Core.addons, nodeMap, optionValues, optionValueTitles);
+			createListOfAddonNodes(Core.addons, nodeMap, optionValues, optionValueTitles, optionValueIcons);
 			
 			this.optionDefs = [];
 			for (i = 0; i < movableNodes.length; i++) {
@@ -154,7 +177,9 @@ tmp = function() {
 									title: L("MENU_ITEM"),
 									defaultValue: defVal,
 									values: values,
-									valueTitles: optionValueTitles
+									valueTitles: optionValueTitles,
+									valueIcons: optionValueIcons,
+									useIcons: true
 								},
 								{
 									name: "slot_sep_" + i,
@@ -171,7 +196,9 @@ tmp = function() {
 						title: title,
 						defaultValue: defVal,
 						values: values,
-						valueTitles: optionValueTitles
+						valueTitles: optionValueTitles,
+						valueIcons: optionValueIcons,
+						useIcons: true
 					});
 				}
 			}

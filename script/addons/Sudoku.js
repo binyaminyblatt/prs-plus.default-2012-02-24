@@ -13,7 +13,7 @@ tmp = function() {
 		name: "Sudoku",
 		title: "Sudoku",
 		description: "Sudoku Game",
-		icon: "GAME",
+		icon: "SUDOKU",
 		activate: function () {
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
@@ -24,7 +24,7 @@ tmp = function() {
 		actions: [{
 			name: "Sudoku",
 			group: "Games",
-			icon: "GAME",
+			icon: "SUDOKU",
 			action: function () {
 				Sudoku.activate();
 			}

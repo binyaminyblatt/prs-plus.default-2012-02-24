@@ -18,6 +18,7 @@ return {
 	// Menu icon indices 
 	NodeKinds: {
 		EMPTY: 1000,
+		ALL_BOOKS: 1,
 		BOOK: 17, // 2
 		FILE: 2,
 		AUDIO: 3,
@@ -28,6 +29,7 @@ return {
 		PREVIOUS_PAGE: 8,
 		NEXT_PAGE: 9,
 		BOOKMARK: 10,
+		NOTES: 10,
 		LIST: 11,
 		BOOK_HISTORY: 11,
 		CLOCK: 12,
@@ -45,13 +47,16 @@ return {
 		DATETIME: 28,
 		DB: 29,
 		SHUTDOWN: 31,
-		TEXT_SCALE: 39,
+		TEXT_SCALE: 124, // 39
+		SEARCH: 39,
 		KEYBOARD: 51,
+		ROOT_MENU: 53,
 		INTERNAL_MEM: 54,
 		MS: 55,
 		SD: 56,
 		LANGUAGE: 57,
 		TIMEZONE: 62,
+		PERIODICALS: 67,
 		HOME: 26, // missing
 		
 		UNCHECKED: 110,
@@ -59,6 +64,23 @@ return {
 		
 		FOLDER: 112,
 		GAME: 113,
+		CALC: 114,
+		CHESS: 117,
+		CARDS: 118,
+		SUDOKU: 119,
+		MAHJONG: 120,
+		FIVEROW: 121,
+		FIVEBALLS: 122,
+		DRAUGHTS: 123,
+		BOMB: 125,
+		
+		FONT: 126,
+		APPLICATIONS: 127,
+		EXECUTABLE: 128,
+		PREVIOUS_SONG: 129,
+		NEXT_SONG: 130,
+		PREVIOUS: 131,
+		NEXT: 132,
 		
 		DEFAULT: 112,
 		

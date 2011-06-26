@@ -18,6 +18,7 @@ return {
 	// Menu icon indices 
 	NodeKinds: {
 		EMPTY: 1000,
+		ALL_BOOKS: 1,
 		BOOK: 17, // 2
 		FILE: 2,
 		AUDIO: 3,
@@ -28,6 +29,7 @@ return {
 		PREVIOUS_PAGE: 8,
 		NEXT_PAGE: 9,
 		BOOKMARK: 10,
+		NOTES: 10,
 		LIST: 11,
 		BOOK_HISTORY: 11,
 		CLOCK: 12,
@@ -45,13 +47,16 @@ return {
 		DATETIME: 28,
 		DB: 29,
 		SHUTDOWN: 31,
-		TEXT_SCALE: 39,
+		TEXT_SCALE: 99, //39
+		SEARCH: 39,
 		KEYBOARD: 51,
+		ROOT_MENU: 53,
 		INTERNAL_MEM: 54,
 		MS: 55,
 		SD: 56,
 		LANGUAGE: 57,
 		TIMEZONE: 62,
+		PERIODICALS: 67,
 		HOME: 26, // missing
 		
 		UNCHECKED: 85,
@@ -59,13 +64,32 @@ return {
 		
 		FOLDER: 87,
 		GAME: 88,
+		CALC: 89,
+		//WORLD: 90,
+		//KEYBOARD: 91,
+		CHESS: 92,
+		CARDS: 93,
+		SUDOKU: 94,
+		MAHJONG: 95,
+		FIVEROW: 96,
+		FIVEBALLS: 97,
+		DRAUGHTS: 98,
+		BOMB: 100,
 		
-		DEFAULT: 112,
+		FONT: 101,
+		APPLICATIONS: 102,
+		EXECUTABLE: 103,
+		PREVIOUS_SONG: 104,
+		NEXT_SONG: 105,
+		PREVIOUS: 106,
+		NEXT: 107,
+		
+		DEFAULT: 87,
 		
 		// big icons shonw in home menu
 		LARGE_BOOK_HISTORY: 2,
 		LARGE_FOLDER: 4,
-		LARGE_MORE: 5,		
+		LARGE_MORE: 5,
 		
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {

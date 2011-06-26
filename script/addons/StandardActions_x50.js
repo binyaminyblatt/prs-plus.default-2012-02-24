@@ -56,14 +56,17 @@ tmp = function() {
 	
 	// Adds "bubblable" actions, if model supports them
 	addBubbleActions = function (actions) {
-		var bubbles, bubble, i, m, n;
-		bubbles = ["doOption", "doSearch", "doRotate", "doMenu", "doSize", "doRoot"];
+		var bubbles, bubble, icons, i, m, n;
+		bubbles = ["doOption", "doSearch", "doRotate", "doMenu", "doSize"    , "doRoot"   ];
+		icons   = ["EMPTY"   , "SEARCH"  , "EMPTY"   , "EMPTY" , "TEXT_SCALE", "ROOT_MENU"];
 		for (i = 0, n = bubbles.length; i < n; i ++) {
 			bubble = bubbles[i];
 			if (model[bubble]) {
 				actions.push( {
 					name: "BubbleAction_" + bubble,
 					title: L("ACTION_" + bubble),
+					group: "Book",
+					icon: icons[i],
 					bubble: bubble,
 					action: doBubbleFunc
 				});
@@ -128,6 +131,7 @@ tmp = function() {
 				actions.push( {
 					name: "BubbleAction_" + bubble,
 					title: L("ACTION_" + bubble),
+					group: "Other",
 					bubble: i, 
 					action: rotateFuncX50
 				});
@@ -151,12 +155,13 @@ tmp = function() {
 	};
 	
 	addOptionalActions = function(actions) {
-		var gotoTOCFunc;
+		var gotoTOCFunc, gotoMyNotes;
 		if (Core.config.compat.hasVolumeButtons) {
 			actions.push({
 				name: "NextSong",
 				title: L("ACTION_NEXT_SONG"),
-				icon: "NEXT_PAGE",
+				group: "Other",
+				icon: "NEXT_SONG",
 				action: function () {
 					model.doGotoNextSong();
 				}
@@ -164,7 +169,8 @@ tmp = function() {
 			actions.push({
 				name: "PreviousSong",
 				title: L("ACTION_PREVIOUS_SONG"),
-				icon: "PREVIOUS_PAGE",
+				group: "Other",
+				icon: "PREVIOUS_SONG",
 				action: function () {
 					model.doGotoPreviousSong();
 				}
@@ -177,6 +183,7 @@ tmp = function() {
 			actions.push({
 				name: "GotoLink",
 				title: L("ACTION_GOTO_LINK"),
+				group: "Book",
 				icon: "NEXT_PAGE",
 				action: function () {
 					if (isBookEnabled()) {
@@ -188,7 +195,7 @@ tmp = function() {
 			});
 		}
 
-		// Goto TOC function		
+		// Goto TOC function
 		if (kbook.bookOptionRoot) {
 			// models with touch screen
 			gotoTOCFunc = function() {
@@ -210,8 +217,32 @@ tmp = function() {
 		actions.push({
 			name: "OpenTOC",
 			title: L("ACTION_OPEN_TOC"),
-			icon: "NEXT_PAGE",
+			group: "Book",
+			icon: "LIST",
 			action: gotoTOCFunc
+		});
+		
+		if (kbook.bookOptionRoot) {
+			gotoMyNotes = function() {
+				var notes;
+				notes = kbook.bookOptionRoot.notes;
+				if (notes) {
+					kbook.model.gotoBookOptionList(notes);
+				} else {
+					model.doBlick();
+				}
+			};
+		} else {
+			gotoMyNotes = function() {
+				model.doBlick();
+			};
+		}
+		actions.push({
+			name: "OpenNotes",
+			title: L("ACTION_OPEN_NOTES_LIST"),
+			group: "Book",
+			icon: "NOTES",
+			action: gotoMyNotes
 		});
 	};
 
@@ -224,6 +255,7 @@ tmp = function() {
 			{
 				name: "Shutdown",
 				title: L("ACTION_SHUTDOWN"),
+				group: "Other",
 				icon: "SHUTDOWN",
 				action: function () {
 					model.doDeviceShutdown();
@@ -232,6 +264,7 @@ tmp = function() {
 			{
 				name: "NextPage",
 				title: L("ACTION_NEXT_PAGE"),
+				group: "Book",
 				icon: "NEXT_PAGE",
 				bubble: "doNext",
 				action: doBubbleFunc				
@@ -239,6 +272,7 @@ tmp = function() {
 			{
 				name: "PreviousPage",
 				title: L("ACTION_PREVIOUS_PAGE"),
+				group: "Book",
 				icon: "PREVIOUS_PAGE",
 				bubble: "doPrevious",
 				action: doBubbleFunc
@@ -246,7 +280,8 @@ tmp = function() {
 			{
 				name: "NextInHistory",
 				title: L("ACTION_NEXT_IN_HISTORY"),
-				icon: "NEXT_PAGE",
+				group: "Book",
+				icon: "NEXT",
 				action: function () {
 					if (isBookEnabled()) {
 						doHistory(-1);
@@ -258,7 +293,8 @@ tmp = function() {
 			{
 				name: "PreviousInHistory",
 				title: L("ACTION_PREVIOUS_IN_HISTORY"),
-				icon: "PREVIOUS_PAGE",
+				group: "Book",
+				icon: "PREVIOUS",
 				action: function () {
 					if (isBookEnabled()) {
 						doHistory(1);
@@ -270,6 +306,7 @@ tmp = function() {
 			{
 				name: "ContinueReading",
 				title: L("ACTION_CONTINUE_READING"),
+				group: "Book",
 				icon: "CONTINUE",
 				action: function () {
 					// Show current book

@@ -11,7 +11,7 @@ tmp = function() {
 		name: "FiveRow",
 		title: "Five In A Row",
 		description: "Game",
-		icon: "GAME",
+		icon: "FIVEROW",
 		activate: function () {
 		   try {
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
@@ -24,7 +24,7 @@ tmp = function() {
 		actions: [{
 			name: "FiveInARow",
 			group: "Games",
-			icon: "GAME",
+			icon: "FIVEROW",
 			action: function () {
 				FiveRow.activate();
 			}

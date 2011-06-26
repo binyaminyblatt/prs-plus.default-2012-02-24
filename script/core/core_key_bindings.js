@@ -10,7 +10,7 @@
 
 tmp = function() {
 	var KeyBindings, STATE_GLOBAL, contexts, contextsLen, defVal, contextLabels,
-		values, valueTitles, actionName2action, L, compat, keyCodes,
+		values, valueTitles, valueIcons, valueGroups, actionName2action, L, compat, keyCodes,
 		oldHandleEvent, options, getBoundAction, handleEvent,
 		handleEvent2, createOptionDef, createValueList, createButtonOptions,
 		createNumericButtonOptions, createJoypadButtonOptions, createVolumeButtonOptions,
@@ -21,6 +21,8 @@ tmp = function() {
 	defVal = "default";
 	values = []; // list of action names, initialized in pre init
 	valueTitles = {}; // localized list of action names, initialized in pre init
+	valueIcons = {};
+	valueGroups = {};
 	actionName2action = {}; // action name to actual function map, initialized in pre init
 	oldHandleEvent = Fskin.device.handleEvent; // saving original event handler
 
@@ -126,7 +128,10 @@ tmp = function() {
 				title: contextLabels[i],
 				defaultValue: defVal,
 				values: values, 
-				valueTitles: valueTitles
+				valueTitles: valueTitles,
+				valueIcons: valueIcons,
+				valueGroups: valueGroups,
+				useIcons: true
 			});
 		}	
 		return group;
@@ -147,8 +152,14 @@ tmp = function() {
 				if (action.hasOwnProperty("title")) {
 					valueTitles[action.name] = action.title;
 				}
+				if (action.hasOwnProperty("icon")) {
+					valueIcons[action.name] = action.icon;
+				}
+				if (action.hasOwnProperty("group")) {
+					valueGroups[action.name] = L("GROUP_" + action.group.toUpperCase());
+				}
 			}
-		}			
+		}
 	};
 	
 	createButtonOptions = function(keys, opDefs) {
@@ -225,7 +236,7 @@ tmp = function() {
 	
 	KeyBindings = {
 		name: "KeyBindings",
-		icon: "SETTINGS",
+		icon: "KEYBOARD",
 		onPreInit: function() {
 			// Initialize options structure
 			L = Core.lang.getLocalizer("KeyBindings");

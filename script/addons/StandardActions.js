@@ -44,8 +44,8 @@ tmp = function() {
 				this.actions.push({
 					name: "NextSong",
 					title: L("ACTION_NEXT_SONG"),
-					group: "Utils",
-					icon: "NEXT_PAGE",
+					group: "Other",
+					icon: "NEXT_SONG",
 					action: function () {
 						model.doGotoNextSong();
 					}
@@ -53,8 +53,8 @@ tmp = function() {
 				this.actions.push({
 					name: "PreviousSong",
 					title: L("ACTION_PREVIOUS_SONG"),
-					group: "Utils",
-					icon: "PREVIOUS_PAGE",
+					group: "Other",
+					icon: "PREVIOUS_SONG",
 					action: function () {
 						model.doGotoPreviousSong();
 					}
@@ -66,7 +66,7 @@ tmp = function() {
 				this.actions.push({
 					name: "GotoLink",
 					title: L("ACTION_GOTO_LINK"),
-					group: "Utils",
+					group: "Book",
 					icon: "NEXT_PAGE",
 					action: function () {
 						if (isBookEnabled()) {
@@ -83,7 +83,7 @@ tmp = function() {
 			{
 				name: "Shutdown",
 				title: L("ACTION_SHUTDOWN"),
-				group: "Utils",
+				group: "Other",
 				icon: "SHUTDOWN",
 				action: function () {
 					model.doDeviceShutdown();
@@ -92,7 +92,7 @@ tmp = function() {
 			{
 				name: "NextPage",
 				title: L("ACTION_NEXT_PAGE"),
-				group: "Utils",
+				group: "Book",
 				icon: "NEXT_PAGE",
 				action: function () {
 					if (isBookEnabled()) {
@@ -105,7 +105,7 @@ tmp = function() {
 			{
 				name: "PreviousPage",
 				title: L("ACTION_PREVIOUS_PAGE"),
-				group: "Utils",
+				group: "Book",
 				icon: "PREVIOUS_PAGE",
 				action: function () {
 					if (isBookEnabled()) {
@@ -118,8 +118,8 @@ tmp = function() {
 			{
 				name: "NextInHistory",
 				title: L("ACTION_NEXT_IN_HISTORY"),
-				group: "Utils",
-				icon: "NEXT_PAGE",
+				group: "Book",
+				icon: "NEXT",
 				action: function () {
 					if (isBookEnabled()) {
 						doHistory(-1);
@@ -131,8 +131,8 @@ tmp = function() {
 			{
 				name: "PreviousInHistory",
 				title: L("ACTION_PREVIOUS_IN_HISTORY"),
-				group: "Utils",
-				icon: "PREVIOUS_PAGE",
+				group: "Book",
+				icon: "PREVIOUS",
 				action: function () {
 					if (isBookEnabled()) {
 						doHistory(1);
@@ -144,7 +144,7 @@ tmp = function() {
 			{
 				name: "ContinueReading",
 				title: L("ACTION_CONTINUE_READING"),
-				group: "Utils",
+				group: "Book",
 				icon: "CONTINUE",
 				action: function () {
 					// Show current book
