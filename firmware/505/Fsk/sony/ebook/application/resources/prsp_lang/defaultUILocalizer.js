@@ -11,14 +11,37 @@
 //	2010-05-15 kartu - Moved getDateAndClock function to core lang (since English locale might also need it)
 //	2010-05-18 kravitz - Replaced "PAGE" with "FUNC_PAGE_X"
 //	2010-05-20 kartu - Removed script reference from about string
+//	2010-06-26 kartu - Removed dependency on menu customizer
 
 var tmp = function() {
 	//--------------------------------------------------------------------------------------
 	// utility functions
 	//--------------------------------------------------------------------------------------
-	var L, LF, setStr, getPageChangedFunc, settingsComment, localizeDefaultUI, log,
+	var L, LF, setStr, getPageChangedFunc, settingsComment, localizeDefaultUI, standardNodes, log,
 		toDoubleDigit, FUNC_GET_DATE, FUNC_GET_TIME, FUNC_GET_DATE_TIME;
 	log = Core.log.getLogger("defaultUILocalizer");
+
+	// Create list of nodes for simpler referencing 
+	standardNodes = {};
+	createListOfStandardNodes = function () {
+		var key, path, node, j, m, standardMenuLayout;
+		standardMenuLayout = Core.config.compat.standardMenuLayout;
+		for (key in standardMenuLayout) {
+			try {
+				path = standardMenuLayout[key];
+				if (path !== undefined) {
+					node = kbook.root;
+					for (j = 0, m = path.length; j < m; j++) {
+						node = node.nodes[path[j]];
+					}
+					standardNodes[key] = node;
+				}
+			} catch (e) {
+				log.error("Failed to find node: " + key + " " + e);
+			}
+		}
+	};
+	createListOfStandardNodes();
 
 	// Utility function, no need to localize
 	toDoubleDigit = function (num) {
@@ -65,7 +88,7 @@ var tmp = function() {
 
 	var localizeRoot = function() {
 		try {
-			var nodes = Core.ui.nodes;
+			var nodes = standardNodes;
 			var getSoValue = Core.system.getSoValue;
 			
 			setStr(nodes["continue"], "CONTINUE");
@@ -128,7 +151,7 @@ var tmp = function() {
 	var localizeSettings = function() {
 		try {
 			// Settings - Orientation
-			var settingsNode = Core.ui.nodes.settings;
+			var settingsNode = standardNodes.settings;
 			var settingsChildren = settingsNode.children;
 			setStr(settingsChildren.orientation, "ORIENTATION");
 			settingsChildren.orientation._mycomment = function () {
@@ -150,7 +173,7 @@ var tmp = function() {
 			setDateNodes[5].kind = -parseFloat(L("SETDATE_OK_SIZE", 2));
 	
 			// Settings - Slideshow
-			var slideshow = Core.ui.nodes.settings.nodes[2];
+			var slideshow = standardNodes.settings.nodes[2];
 			setStr(slideshow, "SLIDESHOW");
 			slideshow._mycomment = function() {
 				return kbook.model.slideshowFlag ? L("SS_ON") :  L("SS_OFF");

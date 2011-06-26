@@ -104,8 +104,7 @@ var initLang505 = function() {
 
 				Core.addAddon(getLangAddon(langL));
 				loadAddons();
-				Core.init();
-
+				
 				// If locale is English, there is nothing to localize
 				var isDateCustom = false;
 				if ("en" !== this.options.lang) {
@@ -158,6 +157,8 @@ var initLang505 = function() {
 				if (isDateCustom) {
 					kbook.model.getDateAndClock = getDateAndClockFix;
 				}
+				
+				Core.init();
 			} catch (e) {
 				log.error("in lang505.init: " + e);
 			}
