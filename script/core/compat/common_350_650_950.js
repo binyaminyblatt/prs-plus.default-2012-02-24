@@ -20,6 +20,7 @@
 //	2011-04-21 kartu - Added option to disable scanning without loading cache
 //	2011-05-12 kartu - Fixed "Periodicals"
 //	2011-06-18 kartu - A bit less ugly fix to "Periodicals"
+//	2011-06-26 kartu - x50 Fixed #120 "No keyboard in SP-EN dictionary"
 //
 tmp = function() {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -273,7 +274,7 @@ tmp = function() {
 				"French-Canada",
 				"German-Germany", 
 				"Dutch-Netherlands",
-				"Spanish-Spain", 
+				"Sapanish-Spain", 
 				"Italian-Italy",
 				"Portuguese-Portugal",				
 				"Georgian", 
@@ -282,7 +283,7 @@ tmp = function() {
 		];
 		keyboardNames = {
 			"German-Germany": "Deutsch",
-			"Spanish-Spain": "Español", 
+			"Sapanish-Spain": "Español", 
 			"French-France": "Français",
 			"French-Canada": "Français canadien",
 			"Italian-Italy": "Italiano",
@@ -338,7 +339,7 @@ tmp = function() {
 
 	oldChangeKeyboardType = Fskin.kbookKeyboard.keyboardLayout.changeKeyboardType;
 	Fskin.kbookKeyboard.keyboardLayout.changeKeyboardType = function (langType) {
-		var url, path, keyboardPaths;
+		var url, path, keyboardPaths, keyboardPath;
 		try {
 			keyboardPaths = {
 				"English-US": "KeyboardLayout103P.xml",
@@ -347,21 +348,29 @@ tmp = function() {
 				"French-Canada": "KeyboardLayout445.xml",
 				"German-Germany": "KeyboardLayout129.xml",
 				"Dutch-Netherlands": "KeyboardLayout143.xml",
-				"Spanish-Spain": "KeyboardLayout173.xml", 
+				// yeah, that's what's written in Sony's firmware, Sapanish
+				"Sapanish-Spain": "KeyboardLayout173.xml", 
 				"Italian-Italy": "KeyboardLayout142.xml",
 				"Portuguese-Portugal": "KeyboardLayout275.xml",
 				"Russian": "languages/KeyboardLayoutRussian.xml",
 				"Russian-Phonetic": "languages/KeyboardLayoutRussianPhonetic.xml",
 				"Georgian": "languages/KeyboardLayoutGeorgian.xml"
 			};
-			path = System.applyEnvironment('[keyboardLayoutPath]') ;
-			url = 'file://' + path + keyboardPaths[langType] ;
-			this.layoutData = null;
-			this.setURI(url);
+			
+			keyboardPath = keyboardPaths[langType]; 
+			if (keyboardPath !== undefined) {
+				path = System.applyEnvironment('[keyboardLayoutPath]') ;
+				url = 'file://' + path + keyboardPath;
+				this.layoutData = null;
+				this.setURI(url);
+				return;
+			}
 		} catch (e) {
-			// call the default version
-			oldChangeKeyboardType.apply(this, arguments);
+			bootLog("Error in changeKeyboardType [" + langType + "] " + e);
 		}
+		
+		// call the default version, since custom way has failed
+		oldChangeKeyboardType.apply(this, arguments);
 	};
 	
 	// Init core here

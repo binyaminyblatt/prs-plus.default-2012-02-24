@@ -1,5 +1,6 @@
 === 2.0.13 beta ===
  * 505: Fixed #126 "images/audio lists are empty"
+ * x50: Fixed #120 "No keyboard in SP-EN dictionary"
  * ALL: Screenshot: captured image is now  visible to the user, not only to the system :)
  * ALL: BrowseFolders:  added optional ".." item (by Shura1oplot)
  * ALL: Action are now grouped and have icons (by Shura1oplot)
