@@ -63,9 +63,16 @@ tmp = function() {
 			//textMemo:
 			//handwriting:
 			audio: "AUDIO",
+			music: "AUDIO",
 			pictures: "PICTURES",
 			apps: "APPLICATIONS",
-			settings: "SETTINGS"
+			settings: "SETTINGS",
+			advancedSettings: "SETTINGS",
+			nowPlaying: "PLAY",
+			booksByTitle:"ALL_BOOKS",
+			booksByDate :"DATE",
+			booksByAuthor:"AUTHOR",
+			bookmarks :"BOOKMARK"
 		};
 		standardMenuLayout = Core.config.compat.standardMenuLayout;
 		// Root node
