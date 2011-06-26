@@ -70,7 +70,7 @@ try {
 		
 			var result = Core.io.getFileContent(RESULT_FILE, "222");
 			if(result !== "0") {
-				throw "Failed to execute " + cmd + "\n" + result;
+				throw "Failed to execute " + cmd + ", exit code: " + result;
 			}
 		};
 		

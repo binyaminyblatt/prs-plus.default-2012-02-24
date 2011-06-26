@@ -26,7 +26,7 @@ tmp = function() {
 		name: "LRFTextScale",
 		title: L("TITLE"),
 		description: L("DESCRIPTION"),
-		icon: "BOOK"
+		icon: "TEXT_SCALE"
 	};
 	
 	LRFTextScale.onPreInit = function() {

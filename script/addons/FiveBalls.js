@@ -15,7 +15,7 @@ tmp = function() {
 		name: "FiveBalls",
 		title: "Five Balls",
 		description: "Game",
-		icon: "GAME",
+		icon: "FIVEBALLS",
 		activate: function () {
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
@@ -26,7 +26,7 @@ tmp = function() {
 		actions: [{
 			name: "FiveBalls",
 			group: "Games",
-			icon: "GAME",
+			icon: "FIVEBALLS",
 			action: function () {
 				FiveBalls.activate();
 			}

@@ -25,6 +25,17 @@
 //
 
 try {
+	var doSetNodeIcon = function (node, icon) {
+		if (typeof icon === "number") {
+			node.kind = icon;
+		} else {
+			node.kind = Core.config.compat.NodeKinds.getIcon(icon);
+			node.homekind = Core.config.compat.NodeKinds.getIcon(icon, "home");
+			node.homelargekind = Core.config.compat.NodeKinds.getIcon(icon, "homeLarge");				
+		}
+	};
+
+
 	// Fix for "update()" otherwise code fails not finding "children" field etc
 	var containerUpdate = function (model) {
 		var i, n, nodes, node;
@@ -64,13 +75,7 @@ try {
 			} else {
 				obj._mycomment = "";
 			}
-			if (typeof arg.icon === "number") {
-				obj.kind = arg.icon;
-			} else {
-				obj.kind = Core.config.compat.NodeKinds.getIcon(arg.icon);
-				obj.homekind = Core.config.compat.NodeKinds.getIcon(arg.icon, "home");
-				obj.homelargekind = Core.config.compat.NodeKinds.getIcon(arg.icon, "homeLarge");				
-			}
+			doSetNodeIcon(obj, arg.icon);
 			if (arg.hasOwnProperty("separator")) {obj.separator = arg.separator;}
 			if (arg.hasOwnProperty("construct")) {obj.construct = arg.construct;}
 			if (arg.hasOwnProperty("destruct")) {obj.destruct = arg.destruct;}
@@ -80,6 +85,7 @@ try {
 
 		return obj;
 	};
+
 	Core.ui = {
 		// Creates "container" node, that displayes nodes in this.nodes[] array
 		// Arguments:
@@ -103,6 +109,10 @@ try {
 			}
 			return node;
 		}
+	};
+
+	Core.ui.setNodeIcon = function (node, icon) {
+		return doSetNodeIcon(node, icon);
 	};
 
 	// Forces screen update

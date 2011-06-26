@@ -24,7 +24,7 @@ tmp = function() {
 		},
 		actions: [{
 			name: "Calc",
-			group: "Games",
+			group: "Utils",
 			icon: "CALC",
 			action: function () {
 				Calc.activate();

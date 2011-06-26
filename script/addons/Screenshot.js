@@ -118,7 +118,7 @@ tmp = function() {
 					
 					if (Screenshot.options.showSaveProgress === "on") {
 						if (msg1 === undefined) {
-							msg1 = L("SAVING_TO") + saveToValueTitles[root];
+							msg1 = L("SAVING_TO") + " " + saveToValueTitles[root];
 							msg2 = saveFilename;
 						}
 						Core.ui.showMsg([msg1, msg2]);

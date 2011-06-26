@@ -69,11 +69,11 @@ tmp = function () {
 		onBookPageChanged: updateDateInBook,
 		optionDefs: [{
 			groupTitle: L("TITLE"),
-			groupIcon: "FOLDER",
+			groupIcon: "CLOCK",
 			optionDefs: [{
 						name: "clockStyle",
 						title: L("OPTION_STYLE"),
-						icon: "CLOCK",
+						icon: "FOLDER",
 						defaultValue: "h24",
 						values: ["h24", "h12"],
 						valueTitles: {
@@ -84,7 +84,7 @@ tmp = function () {
 					{
 						name: "clockMode",
 						title:	L("OPTION_MODE"),
-						icon:	"CLOCK",
+						icon: "FOLDER",
 						defaultValue: "all",
 						values: ["all", "menu", "book", "off"],
 						valueTitles: {

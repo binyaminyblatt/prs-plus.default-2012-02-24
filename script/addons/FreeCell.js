@@ -10,7 +10,7 @@ tmp = function() {
 		name: "FreeCell",
 		title: "Free Cell",
 		description: "Card game",
-		icon: "GAME",
+		icon: "CARDS",
 		activate: function () {
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
@@ -21,7 +21,7 @@ tmp = function() {
 		actions: [{
 			name: "FreeCell",
 			group: "Games",
-			icon: "GAME",
+			icon: "CARDS",
 			action: function () {
 				FreeCell.activate();
 			}

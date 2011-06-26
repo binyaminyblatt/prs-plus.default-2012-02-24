@@ -8,7 +8,7 @@ tmp = function() {
 		name: "Chess",
 		title: "Chess",
 		description: "Board game",
-		icon: "GAME",
+		icon: "CHESS",
 		activate: function () {
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
@@ -19,7 +19,7 @@ tmp = function() {
 		actions: [{
 			name: "Chess",
 			group: "Games",
-			icon: "GAME",
+			icon: "CHESS",
 			action: function () {
 				Chess.activate();
 			}

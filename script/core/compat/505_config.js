@@ -8,6 +8,7 @@ return {
 	// Menu icon indices 
 	NodeKinds: {
 		EMPTY: 1000,
+		ALL_BOOKS: 1,
 		BOOK: 2,
 		FILE: 2,
 		AUDIO: 3,
@@ -18,6 +19,7 @@ return {
 		PREVIOUS_PAGE: 8,
 		NEXT_PAGE: 9,
 		BOOKMARK: 10,
+		NOTES: 10,
 		LIST: 11,
 		BOOK_HISTORY: 11,
 		CLOCK: 12,
@@ -35,16 +37,38 @@ return {
 		DATETIME: 28,
 		DB: 29,
 		SHUTDOWN: 31,
-		FOLDER: 37,
 		MS: 34,
 		SD: 35,
 		INTERNAL_MEM: 36,
-		LANGUAGE: 34,
-		TEXT_SCALE: 2, //FIXME add icon
-		INTERNAL_MEM: 36,
-		FOLDER: 37,
-		GAME: 38,
-		DEFAULT: 37,
+		SEARCH: 37,
+		ROOT_MENU: 38,
+		
+		UNCHECKED: 39,
+		CHECKED: 40,
+		
+		FOLDER: 41,
+		GAME: 42,
+		CALC: 43,
+		LANG: 44,
+		CHESS: 46,
+		CARDS: 47,
+		SUDOKU: 48,
+		MAHJONG: 49,
+		FIVEROW: 50,
+		FIVEBALLS: 51,
+		DRAUGHTS: 52,
+		TEXT_SCALE: 53,
+		BOMB: 54,
+		
+		FONT: 55,
+		EXECUTABLE: 56,
+		APPLICATIONS: 57,
+		PREVIOUS_SONG: 58,
+		NEXT_SONG: 59,
+		PREVIOUS: 60,
+		NEXT: 61,
+		
+		DEFAULT: 41,
 		
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {

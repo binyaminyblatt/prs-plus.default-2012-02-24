@@ -34,7 +34,7 @@ tmp = function() {
 			{
 				name: "epubCssFile",
 				title: L("OPTION_EPUB_CSS_FILE"),
-				icon: "BACK",
+				icon: "FONT",
 				defaultValue: DISABLED,
 				values: [DISABLED],
 				valueTitles: {

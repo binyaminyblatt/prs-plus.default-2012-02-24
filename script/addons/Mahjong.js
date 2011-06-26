@@ -13,7 +13,7 @@ tmp = function() {
 		name: "Mahjong",
 		title: "Mahjong",
 		description: "Game",
-		icon: "GAME",
+		icon: "MAHJONG",
 		activate: function () {
 		   try {
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
@@ -26,7 +26,7 @@ tmp = function() {
 		actions: [{
 			name: "Mahjong",
 			group: "Games",
-			icon: "GAME",
+			icon: "MAHJONG",
 			action: function () {
 				Mahjong.activate();
 			}

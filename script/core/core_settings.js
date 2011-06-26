@@ -34,6 +34,24 @@ tmp = function() {
 		};
 	};
 
+	// Returns option icon for given addon/option definition
+	//
+	var core_setting_translateIcon = function(optionDef, value) {
+		if (optionDef.hasOwnProperty("valueIcons") && optionDef.valueIcons.hasOwnProperty(value)) {
+			return optionDef.valueIcons[value];
+		}
+		return "UNCHECKED";
+	};
+
+	// Returns option group for given addon/option definition
+	//
+	var core_setting_translateGroup = function(optionDef, value) {
+		if (optionDef.hasOwnProperty("valueGroups") && optionDef.valueGroups.hasOwnProperty(value)) {
+			return optionDef.valueGroups[value];
+		}
+		return "";
+	};
+
 	// Creates "value" node (used in settings).
 	// Arguments:
 	//	arg, in addition to fields from createContainerNode, can have the following fields
@@ -56,6 +74,20 @@ tmp = function() {
 					arg.addon.onSettingsChanged(propertyName, oldValue, arg.value, arg.object);
 				}
 
+				if (!optionDef.useIcons) {
+					var i, n, node, nodes, icon;
+					nodes = this.parent.nodes;
+					for (i = 0, n = nodes.length; i < n; i++) {
+						node = nodes[i];
+						if (node === this) {
+							icon = "CHECKED";
+						} else {
+							icon = "UNCHECKED";
+						}
+						Core.ui.setNodeIcon(node, icon);
+					}
+				}
+
 				// Save changes
 				Core.settings.saveOptions(arg.addon);
 
@@ -71,25 +103,61 @@ tmp = function() {
 	// Creates value nodes (used in addon settings) for given option definition and addon.
 	//
 	var core_setting_createValueNodes = function(parent, optionDef, addon, options) {
-		var i, n, values, v, node;
+		var i, n, values, v, node, groups, group, groupTitle;
 		try {
 			values = optionDef.values;
-			for (i = 0, n = values.length; i < n; i++) {
-				v = values[i];
-				node = core_setting_createValueNode({
-					parent: parent,
-					title: core_setting_translateValue(optionDef, v),
-					optionDef: optionDef,
-					value: v,
-					object: options,
-					addon: addon,
-					icon: "CROSSED_BOX",
-					comment: ""
-				});
-				if(v === options[optionDef.name]) {
-					node.selected = true;
+			if (!optionDef.useIcons) {
+				for (i = 0, n = values.length; i < n; i++) {
+					v = values[i];
+					node = core_setting_createValueNode({
+						parent: parent,
+						title: core_setting_translateValue(optionDef, v),
+						optionDef: optionDef,
+						value: v,
+						object: options,
+						addon: addon,
+						icon: "UNCHECKED",
+						comment: ""
+					});
+					if (v === options[optionDef.name]) {
+						node.selected = true;
+						Core.ui.setNodeIcon(node, "CHECKED");
+					}
+					parent.nodes.push(node);
 				}
-				parent.nodes.push(node);
+			} else {
+				groups = {};
+				for (i = 0, n = values.length; i < n; i++) {
+					v = values[i];
+					groupTitle = core_setting_translateGroup(optionDef, v);
+					if (groupTitle !== "") { 
+						if (!groups.hasOwnProperty(groupTitle)) {
+							groups[groupTitle] = Core.ui.createContainerNode({
+								parent: parent,
+								title: groupTitle,
+								icon: "FOLDER"
+							});
+							parent.nodes.push(groups[groupTitle]);
+						}
+						group = groups[groupTitle];
+					} else {
+						group = parent;
+					}
+					node = core_setting_createValueNode({
+						parent: parent,
+						title: core_setting_translateValue(optionDef, v),
+						optionDef: optionDef,
+						value: v,
+						object: options,
+						addon: addon,
+						icon: core_setting_translateIcon(optionDef, v),
+						comment: ""
+					});
+					if (v === options[optionDef.name]) {
+						node.selected = true;
+					}
+					group.nodes.push(node);
+				}
 			}
 		} catch (e) {
 			log.error("in core_setting_createValueNodes for addon " + addon.name + " option " + optionDef.name + ": " + e);
@@ -384,6 +452,7 @@ tmp = function() {
 	
 	Core.addAddon({
 		name: "PRSPSettings",
+		icon: "SETTINGS",
 		onPreInit: function() {
 			prspSettingsNode = Core.ui.createContainerNode({
 				title: coreL("NODE_PRSP_SETTINGS"),
