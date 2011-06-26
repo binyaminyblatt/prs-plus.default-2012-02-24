@@ -49,7 +49,8 @@ return {
 		FOLDER: 41,
 		GAME: 42,
 		CALC: 43,
-		LANG: 44,
+		LANGUAGE: 44,
+		KEYBOARD: 45,
 		CHESS: 46,
 		CARDS: 47,
 		SUDOKU: 48,
@@ -74,7 +75,7 @@ return {
 		getIcon: function (strKind, type) {
 			var kind = this[strKind];
 			if (typeof kind === "undefined") {
-				kind = 37;
+				kind = 41;
 			}
 			return kind;
 		}
@@ -137,15 +138,18 @@ return {
 			{ name: "DictionaryCL", parent: "gamesAndUtils" },
 			{ name: "Calculator", parent: "gamesAndUtils" },				
 			{ name: "Chess", parent: "gamesAndUtils" },				
+			{ name: "Draughts", parent: "gamesAndUtils" },
 			{ name: "FiveBalls", parent: "gamesAndUtils" },				
 			{ name: "FiveRow", parent: "gamesAndUtils" },				
 			{ name: "FreeCell", parent: "gamesAndUtils" },				
 			{ name: "Mahjong", parent: "gamesAndUtils" },
+			{ name: "MineSweeper", parent: "gamesAndUtils" },
 			{ name: "Sudoku", parent: "gamesAndUtils" },
+			{ name: "XOCubed", parent: "gamesAndUtils" },						
 			{ name: "nowPlaying", parent: "multimedia" },
 			{ name: "music", parent: "multimedia" },
 			{ name: "pictures", parent: "multimedia" },
-			{ name: "PRSPSettings", parent: "settings" }
+			{ name: "PRSPSettings", parent: "settings", position: 0 }
 		],
 		movableNodes: [1,0 /* by author */,1,1,1,1,1,1,1,0 /* settings */],
 		defaultLayout: [
