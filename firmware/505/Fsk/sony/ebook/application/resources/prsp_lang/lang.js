@@ -201,7 +201,7 @@ var initLang505 = function() {
 		return {
 			name: "Localization",
 			title:  langL("TITLE"),
-			icon: "LANG",
+			icon: "LANGUAGE",
 			comment: langL("COMMENT"),
 					
 			onSettingsChanged: function (propertyName, oldValue, newValue) {
