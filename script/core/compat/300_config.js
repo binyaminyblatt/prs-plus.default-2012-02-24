@@ -15,6 +15,10 @@
 //		Mahjong by Clemenseken
 //		Sudoku by Obelix
 //		Dictionary by Clemenseken, lysak, m-land, Mark Nord
+//  2011-06-29 Ben Chenoweth - ALL: Updated existing games/calculator to use AppAssets and added
+//      Draughts by Ben Chenoweth
+//      MineSweeper by Mark Nord / D. Shep Poor
+//      XO-Cubed by Ben Chenoweth
 
 return {
 	// Menu icon indices 
@@ -139,12 +143,15 @@ return {
 			{ name: "BookHistory", parent: "gamesAndUtils"},
 			{ name: "DictionaryCL", parent: "gamesAndUtils" },
 			{ name: "Calculator", parent: "gamesAndUtils" },				
-			{ name: "Chess", parent: "gamesAndUtils" },				
+			{ name: "Chess", parent: "gamesAndUtils" },
+			{ name: "Draughts", parent: "gamesAndUtils" },
 			{ name: "FiveBalls", parent: "gamesAndUtils" },				
 			{ name: "FiveRow", parent: "gamesAndUtils" },				
 			{ name: "FreeCell", parent: "gamesAndUtils" },				
 			{ name: "Mahjong", parent: "gamesAndUtils" },
+			{ name: "MineSweeper", parent: "gamesAndUtils" },
 			{ name: "Sudoku", parent: "gamesAndUtils" },
+			{ name: "XOCubed", parent: "gamesAndUtils" },
 			{ name: "PRSPSettings", parent: "settings", position: 8 }
 		],
 		movableNodes: [1,0 /* by author */,1,1,1,/* all bookmarks */ 0, /* settings */ 0, 1,1,1],

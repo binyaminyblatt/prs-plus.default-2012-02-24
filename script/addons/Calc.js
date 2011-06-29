@@ -9,10 +9,13 @@
 //			       Translation and Icon to be added
 
 tmp = function() {
-	var L = Core.lang.getLocalizer("Calc");
+	//var L = Core.lang.getLocalizer("Calc");
 	var Calc = {
 		name: "Calculator",
-		title: L("TITLE"),		// to be added to language asset
+		//title: L("TITLE"),		// to be added to language asset
+		//description: L("DESCRIPTION"),	// to be added to language asset
+		title: "Calculator",
+		description: "Scientific calculator",
 		icon: "CALC",			// to be added to Core.config.compat.NodeKinds
 		activate: function () {
 			kbook.autoRunRoot.sandbox._icon = Core.config.compat.NodeKinds.getIcon("CALC",0);
@@ -24,7 +27,7 @@ tmp = function() {
 		},
 		actions: [{
 			name: "Calc",
-			group: "Utils",
+			group: "Games",
 			icon: "CALC",
 			action: function () {
 				Calc.activate();

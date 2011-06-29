@@ -14,10 +14,21 @@
 //	2011-01-30 Ben Chenoweth - Fixed the discovering if in checkmate / stalemate issue
 //	2011-01-31 Ben Chenoweth - Changed the default AI level to "Medium"
 //	2011-02-06 Ben Chenoweth - HOME button now quits game.  There is now an Auto Mode (on by default).  NEXT cycles AI Speed and Auto Mode on/off.
-//		1-level undo implemeted (OPTIONS on touch, MENU on non-touch).  Some slight changes made to labels (touch version).
+//		1-level undo implemented (OPTIONS on touch, MENU on non-touch).  Some slight changes made to labels (touch version).
 //	2011-02-28 Ben Chenoweth - Changed buttons for non-touch (since 300 does not have NEXT and PREV buttons)
 //	2011-03-01 kartu - Reformatted
 // 		Moved into a function, to allow variable name optimizations
+//  2011-03-20 Ben Chenoweth - Moved all labels out of status bar.
+//  2011-03-23 Ben Chenoweth - Added icon; implemented 10-depth undo.
+//  2011-03-25 Ben Chenoweth - Skins changed over to use common AppAssests.
+//  2011-03-27 Ben Chenoweth - Fixed labels for PRS-950.
+//  2011-04-03 Ben Chenoweth - Moved all labels around slightly; switched Prev and Next function for Touch.
+//  2011-06-07 Ben Chenoweth - Added Save/Load; 'in check' message.
+//  2011-06-08 Ben Chenoweth - Fixed a checking for checkmate bug; changed the touch labels slightly.
+//  2011-06-10 Ben Chenoweth - Added success/fail message on save; further checking for checkmate/stalemate fixes.
+//  2011-06-11 Ben Chenoweth - Added pop-up puzzle panel! 30 checkmate in 2 moves; 30 checkmate in 3 moves; 15 checkmate in 4 moves.
+//  2011-06-12 Ben Chenoweth - Added (white) move counter during puzzles.
+//  2011-06-14 Ben Chenoweth - Added more puzzles: total of 90 checkmate in 2 moves; 180 checkmate in 3 moves; 45 checkmate in 4 moves.
 
 var tmp = function () {
 	var sMovesList;
@@ -43,10 +54,14 @@ var tmp = function () {
 	var cursorY = 520;
 	
 	/* Core workaround 
-	var newEvent = prsp.compile("param", "return new Event(param)");
+	var newEvent = prsp.compile("param", "return new Event(param)"); */
+	var newEvent;
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-	var getSoValue = kbook.autoRunRoot.getSoValue; */
-	var getSoValue, hasNumericButtons, newEvent;
+	var isNT = kbook.autoRunRoot.hasNumericButtons;
+	var getSoValue = kbook.autoRunRoot.getSoValue;
+	var setSoValue = kbook.autoRunRoot.setSoValue;	
+	var mouseLeave = getSoValue( target.PUZZLE_DIALOG.btn_Cancel,'mouseLeave');
+	var mouseEnter = getSoValue( target.PUZZLE_DIALOG.btn_Cancel,'mouseEnter');
 	
 	// variables for AI
 	var bmove = 0; // the moving player 0=white 8=black
@@ -84,51 +99,77 @@ var tmp = function () {
 	var level = 2; // "Medium"
 	var automode = true; // reader controls the black pieces
 	
-	// 1-level undo
-	var oldundo = [];
-	var newundo = [];
+	// Undo
+	var undoboard;
+	var currundo;
+	var undodepth;	
+	
+	// Save/Load
+	var datPath;
+	
+	// Puzzles
+	var puzPath;
+	var puzDatPath;
+	var maxMateIn2 = 90;
+	var maxMateIn3 = 180;
+	var maxMateIn4 = 45;
+	var puzzDlgOpen = false;
+	var doingPuzzle = false;
+	var puzzleMoves;
+	var datPath;
+	var datPath0 = kbook.autoRunRoot.gamesSavePath+'Chess/';
+
 	
 	target.init = function () {
-	
-		/* temporary Core workaround  for PRS+ v1.1.3 */
-	
-		if (!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue) {
-			if (kbook.simEnviro) { /*Sim without handover code */
-				getSoValue = _Core.system.getSoValue;
-				hasNumericButtons = _Core.config.compat.hasNumericButtons;
-			} else { /* PRS-505 */
-				getSoValue = function (obj, propName) {
-					return FskCache.mediaMaster.getInstance.call(obj, propName);
-				};
-				hasNumericButtons = true;
+		/* set translated appTitle and appIcon */
+		this.appTitle.setValue(kbook.autoRunRoot._title);
+		this.appIcon.u = kbook.autoRunRoot._icon;
+
+		FileSystem.ensureDirectory(datPath0);  		
+		datPath = datPath0+'chess.dat';
+		puzPath = target.chessRoot + 'puzzles/';
+		puzDatPath = datPath0+'chess2.dat';
+
+		// load current puzzle numbers (if they exist)
+		try {
+			if (FileSystem.getFileInfo(puzDatPath)) {
+				var stream = new Stream.File(puzDatPath);
+				var tempnum = stream.readLine();
+				var cMateIn2 = Math.floor(tempnum); // convert string to integer
+				tempnum = stream.readLine();
+				var cMateIn3 = Math.floor(tempnum); // convert string to integer
+				tempnum = stream.readLine();
+				var cMateIn4 = Math.floor(tempnum); // convert string to integer
+				stream.close();
+				target.setVariable("checkmate_2",cMateIn2);
+				target.setVariable("checkmate_3",cMateIn3);
+				target.setVariable("checkmate_4",cMateIn4);			
 			}
-			try {
-				var compile = getSoValue(prsp, "compile");
-				newEvent = compile("param", "return new Event(param)");
-			} catch (ignore) {}
-		} else { /* code is ok with PRS-600 */
-			getSoValue = kbook.autoRunRoot.getSoValue;
-			// newEvent = prsp.compile("param", "return new Event(param)"); // no menu no need for newEvent
-			hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-		}
+		}  catch (e) {}
 	
 		// hide unwanted graphics
-		this.touchHelp.changeLayout(0, 0, uD, 0, 0, uD);
 		this.congratulations.changeLayout(0, 0, uD, 0, 0, uD);
 		this.selection1.changeLayout(0, 0, uD, 0, 0, uD);
 		this.selection2.changeLayout(0, 0, uD, 0, 0, uD);
 		this.selection3.changeLayout(0, 0, uD, 0, 0, uD);
-	
+		this.checkStatus.setValue("");
+		this.puzzleName.setValue("");
+		this.puzzleSource.setValue("");
+		this.puzzleMoves.setValue("");
 	
 		if (hasNumericButtons) {
 			this.BUTTON_RES.show(false);
-			this.BUTTON_EXT.show(false);
+			this.BUTTON_SAV.show(false);
+			this.BUTTON_LOA.show(false);
+			this.BUTTON_PUZ.show(false);
 			this.gridCursor.changeLayout(cursorX, 75, uD, cursorY, 75, uD);
+			this.touchButtons0.show(false);
+			this.touchButtons1.show(false);			
 			this.touchButtons2.show(false);
 			this.touchButtons3.show(false);
 			this.touchButtons4.show(false);
 			this.sometext1.show(false);
-			this.touchButtons1.show(false);
+			this.sometext2.show(false);
 		} else {
 			this.gridCursor.changeLayout(0, 0, uD, 0, 0, uD);
 			this.nonTouch.show(false);
@@ -137,6 +178,9 @@ var tmp = function () {
 			this.nonTouch4.show(false);
 			this.nonTouch5.show(false);
 			this.nonTouch6.show(false);
+			this.nonTouch7.show(false);
+			this.nonTouch8.show(false);
+			this.nonTouch9.show(false);
 			this.nonTouch_colHelp.show(false);
 		}
 	
@@ -165,12 +209,16 @@ var tmp = function () {
 		// initiate new game
 		this.resetBoard();
 		this.writePieces();
-	
-		// initial undo
-		for (x = 0; x < 120; x++) {
-			oldundo[x] = etc.aBoard[x];
-			newundo[x] = etc.aBoard[x];
+		
+		// set up undo arrays
+		undodepth=11; // this allows for 10 undos
+		currundo=0;
+		undoboard=new Array(undodepth);
+		for (t=0; t<undodepth; t++)
+		{
+			undoboard[t]=new Array(120);
 		}
+		this.updateUndo();
 		return;
 	};
 	
@@ -186,6 +234,11 @@ var tmp = function () {
 			//this.bubble("tracelog","iPosition="+iPosition+", etc.aBoard="+etc.aBoard[iPosition - 1]);
 		}
 		sMovesList = "";
+		this.checkStatus.setValue("");
+		this.puzzleName.setValue("");
+		this.puzzleSource.setValue("");
+		this.puzzleMoves.setValue("");
+		doingPuzzle = false;
 	};
 	
 	target.writePieces = function () {
@@ -261,10 +314,7 @@ var tmp = function () {
 			destx = nSquareId % 10 - 2;
 			desty = (nSquareId - nSquareId % 10) / 10 - 2;
 			//this.bubble("tracelog","x="+x+", y="+y+", destx="+destx+", desty="+desty);
-			if (target.isValidMove(x, y, destx, desty)) {
-				for (xundo = 0; xundo < 120; xundo++) {
-					oldundo[xundo] = newundo[xundo];
-				}
+			if (this.isValidMove(x, y, destx, desty, false, -1, true)) {
 				nScndFocus = nSquareId;
 				fourBtsLastPc = etc.aBoard[nFrstFocus] & 15;
 	
@@ -309,6 +359,7 @@ var tmp = function () {
 	
 				// redraw board
 				this.writePieces();
+				this.updateUndo();
 	
 				// check for checkmate
 				if (nPieceType == 2) {
@@ -349,6 +400,11 @@ var tmp = function () {
 				//this.bubble("tracelog","kings="+kings);			
 				this.prepare(); // get stuff ready for next move
 				moveno++;
+				if (doingPuzzle) {
+					// update number of moves for puzzle
+					puzzleMoves=Math.floor((moveno+1)/2);
+					this.puzzleMoves.setValue(puzzleMoves);
+				}
 	
 				if (automode) {
 					FskUI.Window.update.call(kbook.model.container.getWindow());
@@ -370,7 +426,7 @@ var tmp = function () {
 			destx = nSquareId % 10 - 2;
 			desty = (nSquareId - nSquareId % 10) / 10 - 2;
 			//this.bubble("tracelog","x="+x+", y="+y+", destx="+destx+", desty="+desty);
-			if (target.isValidMove(x, y, destx, desty)) {
+			if (this.isValidMove(x, y, destx, desty, false, -1, true)) {
 				nScndFocus = nSquareId;
 				fourBtsLastPc = etc.aBoard[nFrstFocus] - 16;
 	
@@ -417,6 +473,7 @@ var tmp = function () {
 	
 				// redraw board
 				this.writePieces();
+				this.updateUndo();
 	
 				// check for checkmate
 				if (nPieceType == 2) {
@@ -457,8 +514,10 @@ var tmp = function () {
 				//this.bubble("tracelog","kings="+kings);
 				this.prepare(); // get stuff ready for next move
 				moveno++;
-				for (xundo = 0; xundo < 120; xundo++) {
-					newundo[xundo] = etc.aBoard[xundo];
+				if (doingPuzzle) {
+					// update number of moves for puzzle
+					puzzleMoves=Math.floor((moveno+1)/2);
+					this.puzzleMoves.setValue(puzzleMoves);
 				}
 			}
 		}
@@ -491,88 +550,71 @@ var tmp = function () {
 		return;
 	}
 	
-	target.isValidMove = function (nPosX, nPosY, nTargetX, nTargetY) {
+	target.isValidMove = function (nPosX, nPosY, nTargetX, nTargetY, inCheck, colorPcInCheck, firstMove) {
 		var startSq, nPiece, endSq, nTarget, nPieceType, flagPcColor, flagTgColor, nWay, nDiffX, nDiffY;
-		//this.bubble("tracelog","isValidMove");
+		//this.bubble("tracelog","isValidMove?");
 		startSq = nPosY * 10 + nPosX + 22;
 		nPiece = etc.aBoard[startSq];
-		//this.bubble("tracelog","startSq="+startSq+", nPiece="+nPiece);
 		if (nPiece === 0) {
+			//this.bubble("tracelog","No piece there!");
 			return (true);
 		}
 		endSq = nTargetY * 10 + nTargetX + 22;
 		nTarget = etc.aBoard[endSq];
-		//this.bubble("tracelog","endSq="+endSq+", nTarget="+nTarget);
 		nPieceType = nPiece & 7;
 		flagPcColor = nPiece & 8;
+		//this.bubble("tracelog","startSq="+startSq+", nPiece="+nPiece+", nPieceType="+nPieceType+", flagPcColor="+flagPcColor);
 		bHasMoved = Boolean(nPiece & 16 ^ 16);
 		flagTgColor = nTarget & 8;
+		//this.bubble("tracelog","endSq="+endSq+", nTarget="+nTarget+", flagTgColor="+flagTgColor);
 		nWay = 4 - flagPcColor >> 2;
 		nDiffX = nTargetX - nPosX;
 		nDiffY = nTargetY - nPosY;
 		switch (nPieceType) {
 		case 1:
 			// pawn
-			//this.bubble("tracelog","moving pawn");
 			if (((nDiffY | 7) - 3) >> 2 !== nWay) {
+				//this.bubble("tracelog","Invalid move for pawn");
 				return (false);
 			}
 			if (nDiffX === 0) {
 				if ((nDiffY + 1 | 2) !== 2 && (nDiffY + 2 | 4) !== 4) {
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 				if (nTarget > 0) {
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 				if (nTargetY === nPosY + (2 * nWay)) {
 					if (bHasMoved) {
+						//this.bubble("tracelog","Invalid move for pawn");
 						return (false);
 					}
 					if (etc.lookAt(nTargetX, nTargetY - nWay) > 0) {
+						//this.bubble("tracelog","Invalid move for pawn");
 						return (false);
 					}
 				}
 				if ((nDiffY == -2) && (nPosY != 6)) {
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 				if ((nDiffY == 2) && (nPosY != 1)) {
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 			} else if ((nDiffX + 1 | 2) === 2) {
 				if (nDiffY !== nWay) {
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 				if ((nTarget < 1 || flagTgColor === flagPcColor) && ( /* not en passant: */ nPosY !== 7 + nWay >> 1)) {
+					//this.bubble("tracelog","Invalid move for pawn");
 					return (false);
 				}
 			} else {
-				return (false);
-			}
-			break;
-		case 3:
-			// knight
-			if (((nDiffY + 1 | 2) - 2 | (nDiffX + 2 | 4) - 2) !== 2 && ((nDiffY + 2 | 4) - 2 | (nDiffX + 1 | 2) - 2) !== 2) {
-				return (false);
-			}
-			if (nTarget > 0 && flagTgColor === flagPcColor) {
-				return (false);
-			}
-			break;
-		case 6:
-			// queen
-			if (nTargetY !== nPosY && nTargetX !== nPosX && Math.abs(nDiffX) !== Math.abs(nDiffY)) {
-				return (false);
-			}
-			break;
-		case 5:
-			// rook
-			if (nTargetY !== nPosY && nTargetX !== nPosX) {
-				return (false);
-			}
-			break;
-		case 4:
-			// bishop
-			if (Math.abs(nDiffX) !== Math.abs(nDiffY)) {
+				//this.bubble("tracelog","Invalid move for pawn");
 				return (false);
 			}
 			break;
@@ -581,34 +623,74 @@ var tmp = function () {
 			var ourRook;
 			if ((nDiffY === 0 || (nDiffY + 1 | 2) === 2) && (nDiffX === 0 || (nDiffX + 1 | 2) === 2)) {
 				if (nTarget > 0 && flagTgColor === flagPcColor) {
+					//this.bubble("tracelog","Invalid move for king");
 					return (false);
 				}
 			} else if (ourRook = etc.lookAt(30 - nDiffX >> 2 & 7, nTargetY), (nDiffX + 2 | 4) === 4 && nDiffY === 0 && !bCheck && !bHasMoved && ourRook > 0 && Boolean(ourRook & 16)) { // castling
 				for (var passX = nDiffX * 3 + 14 >> 2; passX < nDiffX * 3 + 22 >> 2; passX++) {
 					if (etc.lookAt(passX, nTargetY) > 0 || this.isThreatened(passX, nTargetY, nTargetY / 7 << 3 ^ 1)) {
+						//this.bubble("tracelog","Invalid move for king");
 						return (false);
 					}
 				}
 				if (nDiffX + 2 === 0 && etc.aBoard[nTargetY * 10 + 1 + 22] > 0) {
+					//this.bubble("tracelog","Invalid move for king");
 					return (false);
 				}
 			} else {
+				//this.bubble("tracelog","Invalid move for king");
 				return (false);
 			}
-			//this.bubble("tracelog","valid move for king");
+			break;
+		case 3:
+			// knight
+			if (((nDiffY + 1 | 2) - 2 | (nDiffX + 2 | 4) - 2) !== 2 && ((nDiffY + 2 | 4) - 2 | (nDiffX + 1 | 2) - 2) !== 2) {
+				//this.bubble("tracelog","Invalid move for knight");
+				return (false);
+			}
+			if (nTarget > 0 && flagTgColor === flagPcColor) {
+				//this.bubble("tracelog","Invalid move for knight");
+				return (false);
+			}
+			break;
+		case 4:
+			// bishop
+			if (Math.abs(nDiffX) !== Math.abs(nDiffY)) {
+				//this.bubble("tracelog","Invalid move for bishop");
+				return (false);
+			}
+			break;
+		case 5:
+			// rook
+			if (nTargetY !== nPosY && nTargetX !== nPosX) {
+				//this.bubble("tracelog","Invalid move for rook");
+				return (false);
+			}
+			break;
+		case 6:
+			// queen
+			if (nTargetY !== nPosY && nTargetX !== nPosX && Math.abs(nDiffX) !== Math.abs(nDiffY)) {
+				//this.bubble("tracelog","Invalid move for queen");
+				return (false);
+			}
 			break;
 		}
+		
+		// additional checks
 		if (nPieceType === 5 || nPieceType === 6) {
+			// check to see if all squares between start and end are clear for rook or queen
 			if (nTargetY === nPosY) {
 				if (nPosX < nTargetX) {
 					for (var iOrthogX = nPosX + 1; iOrthogX < nTargetX; iOrthogX++) {
 						if (etc.lookAt(iOrthogX, nTargetY) > 0) {
+							//this.bubble("tracelog","Invalid move for rook or queen");
 							return (false);
 						}
 					}
 				} else {
 					for (var iOrthogX = nPosX - 1; iOrthogX > nTargetX; iOrthogX--) {
 						if (etc.lookAt(iOrthogX, nTargetY) > 0) {
+							//this.bubble("tracelog","Invalid move for rook or queen");
 							return (false);
 						}
 					}
@@ -618,27 +700,33 @@ var tmp = function () {
 				if (nPosY < nTargetY) {
 					for (var iOrthogY = nPosY + 1; iOrthogY < nTargetY; iOrthogY++) {
 						if (etc.lookAt(nTargetX, iOrthogY) > 0) {
+							//this.bubble("tracelog","Invalid move for rook or queen");
 							return (false);
 						}
 					}
 				} else {
 					for (var iOrthogY = nPosY - 1; iOrthogY > nTargetY; iOrthogY--) {
 						if (etc.lookAt(nTargetX, iOrthogY) > 0) {
+							//this.bubble("tracelog","Invalid move for rook or queen");
 							return (false);
 						}
 					}
 				}
 			}
 			if (nTarget > 0 && flagTgColor === flagPcColor) {
+				//this.bubble("tracelog","Invalid move for rook or queen");
 				return (false);
 			}
 		}
+		
 		if (nPieceType === 4 || nPieceType === 6) {
+			// check to see if all squares between start and end are clear for bishop or queen
 			if (nTargetY > nPosY) {
 				var iObliqueY = nPosY + 1;
 				if (nPosX < nTargetX) {
 					for (var iObliqueX = nPosX + 1; iObliqueX < nTargetX; iObliqueX++) {
 						if (etc.lookAt(iObliqueX, iObliqueY) > 0) {
+							//this.bubble("tracelog","Invalid move for bishop or queen");
 							return (false);
 						}
 						iObliqueY++;
@@ -646,6 +734,7 @@ var tmp = function () {
 				} else {
 					for (var iObliqueX = nPosX - 1; iObliqueX > nTargetX; iObliqueX--) {
 						if (etc.lookAt(iObliqueX, iObliqueY) > 0) {
+							//this.bubble("tracelog","Invalid move for bishop or queen");
 							return (false);
 						}
 						iObliqueY++;
@@ -657,6 +746,7 @@ var tmp = function () {
 				if (nPosX < nTargetX) {
 					for (var iObliqueX = nPosX + 1; iObliqueX < nTargetX; iObliqueX++) {
 						if (etc.lookAt(iObliqueX, iObliqueY) > 0) {
+							//this.bubble("tracelog","Invalid move for bishop or queen");
 							return (false);
 						}
 						iObliqueY--;
@@ -664,6 +754,7 @@ var tmp = function () {
 				} else {
 					for (var iObliqueX = nPosX - 1; iObliqueX > nTargetX; iObliqueX--) {
 						if (etc.lookAt(iObliqueX, iObliqueY) > 0) {
+							//this.bubble("tracelog","Invalid move for bishop or queen");
 							return (false);
 						}
 						iObliqueY--;
@@ -671,35 +762,72 @@ var tmp = function () {
 				}
 			}
 			if (nTarget > 0 && flagTgColor === flagPcColor) {
+				//this.bubble("tracelog","Invalid move for bishop or queen");
 				return (false);
 			}
-		} /* If the king takes the piece that currently has him in check, need to see if that still has him in check  */
-		if (nTarget + 6 & 7) {
+		}
+		
+		if (nPieceType==2) {
+			// if king moves (possibly taking the piece that currently has him in check), will he still be in check?
 			var bKingInCheck = false;
-			var oKing = nPieceType === 2 ? endSq : kings[flagPcColor >> 3];
-			//this.bubble("tracelog","oKing="+oKing+", endSq="+endSq);
 			etc.aBoard[startSq] = 0;
 			etc.aBoard[endSq] = nPiece;
-			if (this.isThreatened(oKing % 10 - 2, (oKing - oKing % 10) / 10 - 2, flagPcColor ^ 8)) {
+			if (this.isThreatened(endSq % 10 - 2, (endSq - endSq % 10) / 10 - 2, flagPcColor ^ 8)) {
 				bKingInCheck = true;
 			}
 			etc.aBoard[startSq] = nPiece;
 			etc.aBoard[endSq] = nTarget;
 			if (bKingInCheck) {
+				//this.bubble("tracelog","Invalid move for king");
+				return (false);
+			}
+		} else {
+			// if piece other than king moves, will king still be in check?
+			//this.bubble("tracelog","inCheck="+inCheck+", flagPcColor="+flagPcColor+", colorPcInCheck="+colorPcInCheck);
+			if ((inCheck) && (flagPcColor != colorPcInCheck)) {
+				// no need to do this if opponent's piece is already in check
+				//this.bubble("tracelog","Invalid move, because opponent's piece is already in check");
+				return (false);
+			}
+			var oKing = kings[flagPcColor >> 3];
+			etc.aBoard[startSq] = 0;
+			etc.aBoard[endSq] = nPiece;
+			//this.bubble("tracelog","Move piece of color "+flagPcColor+" from "+startSq+" to "+endSq+" with king at "+oKing);
+			if ((inCheck) && (flagPcColor == colorPcInCheck)) {
+				// if already in check and trying to find a move to get out of check
+				if (this.isThreatened(oKing % 10 - 2, (oKing - oKing % 10) / 10 - 2, flagPcColor ^ 8)) {
+					//this.bubble("tracelog","King will (still) be in check");
+					bKingInCheck = true;
+				}
+			} else {
+				if (firstMove) {
+					// see if moving this piece will place you in check
+					if (this.isThreatened(oKing % 10 - 2, (oKing - oKing % 10) / 10 - 2, flagPcColor ^ 8)) {
+						//this.bubble("tracelog","King will be in check");
+						bKingInCheck = true;
+					}
+				}
+			}
+			etc.aBoard[startSq] = nPiece;
+			etc.aBoard[endSq] = nTarget;
+			if (bKingInCheck) {
+				//this.bubble("tracelog","Invalid move because king is still (or will be) in check");
 				return (false);
 			}
 		}
+		//this.bubble("tracelog","Valid move");
 		return (true);
 	}
 	
 	target.isThreatened = function (nPieceX, nPieceY, flagFromColor) {
-		//this.bubble("tracelog","isThreatened: flagFromColor="+flagFromColor);
+		//this.bubble("tracelog","isThreatened?: X="+nPieceX+", Y="+nPieceY+", By color="+flagFromColor);
 		var iMenacing, bIsThrtnd = false;
 		for (var iMenaceY = 0; iMenaceY < 8; iMenaceY++) {
 			for (var iMenaceX = 0; iMenaceX < 8; iMenaceX++) {
 				iMenacing = etc.aBoard[iMenaceY * 10 + iMenaceX + 22];
-				if (iMenacing > 0 && (iMenacing & 8) === flagFromColor && this.isValidMove(iMenaceX, iMenaceY, nPieceX, nPieceY)) {
+				if (iMenacing > 0 && (iMenacing & 8) === flagFromColor && this.isValidMove(iMenaceX, iMenaceY, nPieceX, nPieceY, false, -1, false)) {
 					bIsThrtnd = true;
+					//this.bubble("tracelog","Piece is threatened by piece at X="+iMenaceX+", Y="+iMenaceY);
 					break;
 				}
 			}
@@ -707,6 +835,7 @@ var tmp = function () {
 				break;
 			}
 		}
+		//if (!bIsThrtnd) this.bubble("tracelog","Piece is not being threatened");
 		return (bIsThrtnd);
 	}
 	
@@ -720,16 +849,76 @@ var tmp = function () {
 	}
 	
 	target.doMark = function (sender) {
+		this.loadGame(datPath, false);
+		return;
+	}
+	
+	target.doHoldMark = function (sender) {
+		this.saveGame();
+		return;
+	}
+	
+	target.updateUndo = function () {
+		// update undo
+		if (currundo < undodepth) {
+			// increment current undo if possible
+			currundo++;
+		}
+		else {
+			// if not possible, then shift all previous undos, losing oldest one
+			for (s=1; s<undodepth; s++)
+			{
+				for (t=0; t<120; t++)
+				{
+					undoboard[s-1][t]=undoboard[s][t];
+				}
+			}
+		}
+
+		// store current board
+		for (t=0; t<120; t++)
+		{
+			undoboard[currundo-1][t]=etc.aBoard[t];
+		}
 		return;
 	}
 	
 	target.doUndo = function (sender) {
-		// revert board back to oldundo state
-		for (xundo = 0; xundo < 120; xundo++) {
-			etc.aBoard[xundo] = oldundo[xundo];
-		}
-		this.writePieces();
+		if (!bGameNotOver) return;
 	
+		// do undo
+		if (currundo<2) return;
+		
+		// retrieve most recent undo
+		for (t=0; t<120; t++)
+		{
+			if (automode) {
+				etc.aBoard[t]=undoboard[currundo-3][t];
+				if (etc.aBoard[t] == 18) kings[0] = t;
+				if (etc.aBoard[t] == 26) kings[1] = t;				
+			} else {
+				etc.aBoard[t]=undoboard[currundo-2][t];
+				if (etc.aBoard[t] == 18) kings[0] = t;
+				if (etc.aBoard[t] == 26) kings[1] = t;								
+			}
+		}
+		
+		// decrement current undo
+		currundo--;
+		if (automode) currundo--;
+		
+		// update board
+		this.writePieces();
+		if (!automode) {
+			etc.bBlackSide=!etc.bBlackSide;
+			flagWhoMoved ^= 8;
+		}
+		if (etc.bBlackSide) {
+			this.messageStatus.setValue("Black's turn");
+		} else {
+			this.messageStatus.setValue("White's turn");
+		}
+
 		// update AI board
 		z = 0;
 		for (y = 20; y < 100; y += 10) {
@@ -755,32 +944,48 @@ var tmp = function () {
 			}
 		}
 		this.prepare(); // get stuff ready for next move
-		moveno = moveno - 2;
+		if (automode) {
+			moveno = moveno - 2;
+		} else {
+			moveno = moveno - 1;
+		}
+		if (doingPuzzle) {
+			// update number of moves for puzzle
+			puzzleMoves=Math.floor((moveno+1)/2);
+			this.puzzleMoves.setValue(puzzleMoves);
+		}
 	
 		// remove what moved highlights
 		this['selection1'].changeLayout(0, 0, uD, 0, 0, uD);
 		this['selection2'].changeLayout(0, 0, uD, 0, 0, uD);
 		this['selection3'].changeLayout(0, 0, uD, 0, 0, uD);
-	
-		// make sure it is White's turn
-		etc.bBlackSide = false;
-		flagWhoMoved = 8;
-		this.messageStatus.setValue("White's turn");
-		for (xundo = 0; xundo < 120; xundo++) {
-			newundo[xundo] = oldundo[xundo];
-		}
-		bGameNotOver = true;
+		
+		// check for check
+		flagWhoMoved ^= 8;
+		etc.bBlackSide = !etc.bBlackSide;
+		this.getInCheckPieces();
+		flagWhoMoved ^= 8;
+		etc.bBlackSide = !etc.bBlackSide;		
 		return;
 	}
 	
 	target.getInCheckPieces = function () {
-		var iExamX, iExamY, iExamPc, bNoMoreMoves = true,
-			myKing = kings[flagWhoMoved >> 3 ^ 1];
-	
+		var iExamX, iExamY, iExamPc, bNoMoreMoves = true;
+		var myKing = kings[flagWhoMoved >> 3 ^ 1];
+		
 		bCheck = this.isThreatened(myKing % 10 - 2, (myKing - myKing % 10) / 10 - 2, flagWhoMoved);
-		//if (bCheck) { this.bubble("tracelog","Check!"); }
-	
+		if (bCheck) {
+			if (flagWhoMoved==0) {
+				this.checkStatus.setValue("White king is in check!");
+			} else {
+				this.checkStatus.setValue("Black king is in check!");
+			}
+		} else {
+			this.checkStatus.setValue("");
+		}
+		var pcInCheckColor = flagWhoMoved ^ 8;
 		for (var iExamSq = 22; iExamSq <= 99; iExamSq++) {
+			// search the board
 			if (iExamSq % 10 < 2) {
 				continue;
 			}
@@ -790,32 +995,34 @@ var tmp = function () {
 			//iExamX = iExamSq % 10 - 2;
 			//iExamY = (iExamSq - iExamSq % 10) / 10 - 2;
 			iExamPc = etc.aBoard[iExamSq];
-			if (bNoMoreMoves && iExamPc > 0 && (iExamPc & 8 ^ 8) === flagWhoMoved) {
-				//this.bubble("tracelog","Piece "+iExamPc+" found at="+iExamSq);
+			if ((bNoMoreMoves && iExamPc > 0) && ((iExamPc & 8 ^ 8) === flagWhoMoved)) {
+				// found a piece of the side whose king is in check
+				//this.bubble("tracelog","Piece "+iExamPc+" found at="+iExamSq+" of color "+pcInCheckColor);
 				for (var iWaySq = 22; iWaySq <= 99; iWaySq++) {
+					// search the board looking for a valid move that will get them out of check
 					if (iWaySq % 10 < 2) {
 						continue;
 					}
 					//this.bubble("tracelog","iWaySq="+iWaySq);
 					iTempX = (iWaySq - 2) % 10;
 					iTempY = Math.floor((iWaySq - 22) / 10);
-					if (this.isValidMove(iExamX, iExamY, iTempX, iTempY)) {
+					if (this.isValidMove(iExamX, iExamY, iTempX, iTempY, bCheck, pcInCheckColor, false)) {
+						//this.bubble("tracelog","Apparently, this is a valid move.  Piece at X="+iExamX+", Y="+iExamY+", to X="+iTempX+", Y="+iTempY);
 						bNoMoreMoves = false;
 						break;
 					}
 				}
 			}
 		}
+		//this.bubble("tracelog","bNoMoreMoves="+bNoMoreMoves+", bCheck="+bCheck);
 		if (bNoMoreMoves) {
 			if (bCheck) {
 				var sWinner = etc.bBlackSide ? "Black" : "White";
-				this.messageStatus.setValue("Checkmate! " + sWinner + " wins.");
+				this.checkStatus.setValue("Checkmate! " + sWinner + " wins.");
 				bGameNotOver = false;
-				sMovesList = sMovesList.rethis(); // this line is necessary to make it work!  (Is it because it causes the thread to exit unexpectedly?)
 			} else {
-				this.messageStatus.setValue("Stalemate!");
+				this.checkStatus.setValue("Stalemate!");
 				bGameNotOver = false;
-				sMovesList = sMovesList.rethis(); // this line is necessary to make it work!  (Is it because it causes the thread to exit unexpectedly?)
 			}
 		} else {
 			bGameNotOver = true;
@@ -880,19 +1087,145 @@ var tmp = function () {
 			this.writePieces();
 	
 			// initial undo
-			for (x = 0; x < 120; x++) {
-				oldundo[x] = etc.aBoard[x];
-				newundo[x] = etc.aBoard[x];
-			}
+			currundo=0;
+			this.updateUndo();			
 			return;
 		}
 		if (n == "EXT") {
 			kbook.autoRunRoot.exitIf(kbook.model);
 			return;
 		}
+		if (n == "LOA") {
+			this.loadGame(datPath, false);
+			return;
+		}
+		if (n == "SAV") {
+			this.saveGame();
+			return;
+		}
+		if (n == "PUZ") {
+			this.PUZZLE_DIALOG.open();
+			return;
+		}
+	}
+
+	target.saveGame = function () {
+		try {
+			if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
+			stream = new Stream.File(datPath, 1);
+			// save board to file
+			for (t=22; t<=99; t++)
+			{
+				if (t % 10 > 1) {
+					stream.writeLine(etc.aBoard[t]);
+				}
+			}
+			stream.writeLine(etc.bBlackSide);
+			stream.writeLine(moveno);
+			stream.close();
+			this.checkStatus.setValue("Game saved successfully");
+		} catch (e) { this.checkStatus.setValue("Game save failed"); }	
+	}
+	
+	target.loadGame = function (filePath, isPuzzle) {
+		try {
+			if (FileSystem.getFileInfo(filePath)) {
+				var stream = new Stream.File(filePath);
+
+				// load board from save file
+				for (t=22; t<=99; t++)
+				{
+					if (t % 10 > 1) {
+						tempnum = stream.readLine();
+						etc.aBoard[t] = Math.floor(tempnum); // convert string to integer
+						if (etc.aBoard[t] == 18) kings[0] = t;
+						if (etc.aBoard[t] == 26) kings[1] = t;
+					}
+				}
+				 tempboolean = stream.readLine();
+				 if (tempboolean=="true") {
+					etc.bBlackSide = true;
+					flagWhoMoved = 0;
+					this.messageStatus.setValue("Black's turn");
+				} else {
+					etc.bBlackSide = false;
+					flagWhoMoved = 8;
+					this.messageStatus.setValue("White's turn");
+				}
+				moveno = stream.readLine();
+				
+				if (isPuzzle) {
+					// load extra information
+					tempstring = stream.readLine(); //blank line
+					var puzzleName = stream.readLine();
+					var puzzleSource = stream.readLine();
+					this.puzzleName.setValue(puzzleName);
+					this.puzzleSource.setValue(puzzleSource);
+					puzzleMoves=0;
+					doingPuzzle = true;
+					this.puzzleMoves.setValue(puzzleMoves);
+				} else {
+					this.puzzleName.setValue("");
+					this.puzzleSource.setValue("");
+					this.puzzleMoves.setValue("");
+					doingPuzzle = false;
+				}
+				
+				stream.close();
+
+				// update board
+				this.writePieces();
+
+				// reset undo
+				currundo=0;
+				this.updateUndo();
+				
+				// update AI board
+				z = 0;
+				for (y = 20; y < 100; y += 10) {
+					for (x = 1; x < 9; x++) {
+						z = etc.aBoard[y + x + 1];
+						if (z == 25) z = 1;
+						if (z == 29) z = 2;
+						if (z == 27) z = 3;
+						if (z == 28) z = 4;
+						if (z == 30) z = 5;
+						if (z == 26) z = 6;
+						if (z == 17) z = 9;
+						if (z == 21) z = 10;
+						if (z == 19) z = 11;
+						if (z == 20) z = 12;
+						if (z == 22) z = 13;
+						if (z == 18) z = 14;
+						newy = 110 - y;
+						board[newy + x] = z;
+						// update the position of the kings in the special king array
+						if (z == 6) kp[0] = newy + x;
+						if (z == 14) kp[1] = newy + x;
+					}
+				}
+				this.prepare(); // get stuff ready for next move
+			
+				// remove what moved highlights
+				this['selection1'].changeLayout(0, 0, uD, 0, 0, uD);
+				this['selection2'].changeLayout(0, 0, uD, 0, 0, uD);
+				this['selection3'].changeLayout(0, 0, uD, 0, 0, uD);
+
+				// check for checkmate/stalemate
+				flagWhoMoved ^= 8;
+				etc.bBlackSide = !etc.bBlackSide;
+				this.getInCheckPieces();
+				flagWhoMoved ^= 8;
+				etc.bBlackSide = !etc.bBlackSide;
+			}
+		} catch (e) { this.checkStatus.setValue("Game load failed"); }	
 	}
 	
 	target.moveCursor = function (dir) {
+		if (puzzDlgOpen) {
+			this.PUZZLE_DIALOG.moveCursor(dir);
+			return;
+		}
 		switch (dir) {
 		case "down":
 			{
@@ -932,6 +1265,10 @@ var tmp = function () {
 	
 	target.cursorClick = function () {
 		var x, y, iPosition, sMove;
+		if (puzzDlgOpen) {
+			this.PUZZLE_DIALOG.doCenterF();
+			return;
+		}
 		x = cursorX / 75; // find column
 		y = (cursorY - 70) / 75; // find row
 		iPosition = (y + 2) * 10 + 2 + x;
@@ -1045,10 +1382,8 @@ var tmp = function () {
 		this.writePieces();
 	
 		// initial undo
-		for (x = 0; x < 120; x++) {
-			oldundo[x] = etc.aBoard[x];
-			newundo[x] = etc.aBoard[x];
-		}
+		currundo=0;
+		this.updateUndo();		
 		return;
 	}
 	
@@ -1056,10 +1391,15 @@ var tmp = function () {
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
 	}
+
+	target.doHold1 = function () {
+		this.PUZZLE_DIALOG.open();
+		return;
+	}
 	
-	target.doNext = function () {
+	target.doPrev = function () {
 		if (hasNumericButtons) {
-			this.moveCursor("right");
+			this.moveCursor("left");
 			return;
 		}
 		// This indicates the AI level. It can be 1: "very stupid", 2: "slow, stupid", or 3: "very slow".
@@ -1070,31 +1410,31 @@ var tmp = function () {
 		}
 		if (level == 1) {
 			if (automode) {
-				this.touchButtons1.setValue("[Next] AI speed: Fast (Auto ON)");
+				this.touchButtons1.setValue("Fast (Auto ON)");
 			} else {
-				this.touchButtons1.setValue("[Next] AI speed: Fast (Auto OFF)");
+				this.touchButtons1.setValue("Fast (Auto OFF)");
 			}
 		}
 		if (level == 2) {
 			if (automode) {
-				this.touchButtons1.setValue("[Next] AI speed: Medium (Auto ON)");
+				this.touchButtons1.setValue("Medium (Auto ON)");
 			} else {
-				this.touchButtons1.setValue("[Next] AI speed: Medium (Auto OFF)");
+				this.touchButtons1.setValue("Medium (Auto OFF)");
 			}
 		}
 		if (level == 3) {
 			if (automode) {
-				this.touchButtons1.setValue("[Next] AI speed: Slow (Auto ON)");
+				this.touchButtons1.setValue("Slow (Auto ON)");
 			} else {
-				this.touchButtons1.setValue("[Next] AI speed: Slow (Auto OFF)");
+				this.touchButtons1.setValue("Slow (Auto OFF)");
 			}
 		}
 		return;
 	}
 	
-	target.doPrev = function () {
+	target.doNext = function () {
 		if (hasNumericButtons) {
-			this.moveCursor("left");
+			this.moveCursor("right");
 			return;
 		}
 		etc.nPromotion++;
@@ -1102,16 +1442,16 @@ var tmp = function () {
 			etc.nPromotion = 0;
 		}
 		if (etc.nPromotion == 0) {
-			this.sometext1.setValue("[Prev] Pawn promotion to: Queen");
+			this.sometext2.setValue("Queen");
 		}
 		if (etc.nPromotion == 1) {
-			this.sometext1.setValue("[Prev] Pawn promotion to: Rook");
+			this.sometext2.setValue("Rook");
 		}
 		if (etc.nPromotion == 2) {
-			this.sometext1.setValue("[Prev] Pawn promotion to: Bishop");
+			this.sometext2.setValue("Bishop");
 		}
 		if (etc.nPromotion == 3) {
-			this.sometext1.setValue("[Prev] Pawn promotion to: Knight");
+			this.sometext2.setValue("Knight");
 		}
 		return;
 	}
@@ -1121,11 +1461,7 @@ var tmp = function () {
 		if (!bGameNotOver) {
 			return;
 		}
-		if (!etc.bBlackSide) {
-			for (xundo = 0; xundo < 120; xundo++) {
-				oldundo[xundo] = newundo[xundo];
-			}
-		}
+
 		// call AI routine to calculate move for whichever player is currently supposed to be making a move
 		if (this.findmove()) {
 			// update aBoard
@@ -1153,12 +1489,8 @@ var tmp = function () {
 				}
 			}
 			this.writePieces();
-	
-			if (!etc.bBlackSide) {
-				for (xundo = 0; xundo < 120; xundo++) {
-					newundo[xundo] = etc.aBoard[xundo];
-				}
-			}
+			this.updateUndo();
+
 			// check for checkmate / stalemate
 			this.getInCheckPieces();
 			if (bGameNotOver) {
@@ -1169,6 +1501,7 @@ var tmp = function () {
 				etc.bBlackSide = !etc.bBlackSide;
 			}
 	
+			// black needs to do an automove if game not over and in automode
 			if ((bGameNotOver) && (automode) && (etc.bBlackSide)) {
 				FskUI.Window.update.call(kbook.model.container.getWindow());
 				this.doSize();
@@ -1177,7 +1510,7 @@ var tmp = function () {
 			//this.bubble("tracelog","kp="+kp);
 			//this.bubble("tracelog","kings="+kings);
 		} else {
-			// check for checkmate / stalemate
+			// couldn't find a move, so check for checkmate / stalemate
 			this.getInCheckPieces();
 			if (bGameNotOver) {
 				flagWhoMoved ^= 8;
@@ -1434,6 +1767,11 @@ var tmp = function () {
 		this.shift(s, e);
 		this.prepare(); // get stuff ready for next move
 		moveno++;
+		if (doingPuzzle) {
+			// update number of moves for puzzle
+			puzzleMoves=Math.floor((moveno+1)/2);
+			this.puzzleMoves.setValue(puzzleMoves);
+		}		
 	
 		// the move is done 
 		//so give the other side a turn.
@@ -1481,13 +1819,14 @@ var tmp = function () {
 	
 		//themove=this.treeclimber(0,0,0,120,120,Al,Bt,ep);
 		//if (themove[0]>400){
-		//	this.bubble("tracelog","black in check");
+		//	//this.bubble("tracelog","black in check");
 		//}
 	
 		//themove=this.treeclimber(0,8,0,120,120,Al,Bt,ep);
 		//if (themove[0]>400){
-		//	this.bubble("tracelog","white in check");
-		//}	
+		//	//this.bubble("tracelog","white in check");
+		//}
+		return;
 	}
 	
 	target.parse = function (bm, EP, tpn) {
@@ -1634,6 +1973,187 @@ var tmp = function () {
 		for (z = 0; z < p.length; z++) {
 			if (p[z][1] = s) p[z][1] = e;
 		}
+	}
+	
+	// Puzzle pop-up panel stuff
+    target.PUZZLE_DIALOG.open = function() {
+	   if (isNT) {
+		target.PUZZLE_DIALOG.checkmateIn_2.enable(true);
+	   	custSel = 0; 
+	   	ntHandlePuzzDlg();
+	   }
+	   puzzDlgOpen = true;
+       target.PUZZLE_DIALOG.show(true);
+    }
+	
+	var ntHandlePuzzDlg = function () {
+		if (custSel === 0) {
+			target.PUZZLE_DIALOG.checkmateIn_2.enable(true);
+			target.PUZZLE_DIALOG.checkmateIn_3.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_4.enable(false);
+			mouseLeave.call(target.PUZZLE_DIALOG.btn_Ok);
+		}
+		if (custSel === 1) {
+			target.PUZZLE_DIALOG.checkmateIn_2.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_3.enable(true);
+			target.PUZZLE_DIALOG.checkmateIn_4.enable(false);
+			mouseLeave.call(target.PUZZLE_DIALOG.btn_Ok);
+		}			
+		if (custSel === 2) {
+			target.PUZZLE_DIALOG.checkmateIn_2.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_3.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_4.enable(true);
+			mouseLeave.call(target.PUZZLE_DIALOG.btn_Ok);	
+		}
+		if (custSel === 3) {				
+			target.PUZZLE_DIALOG.checkmateIn_2.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_3.enable(false);
+			target.PUZZLE_DIALOG.checkmateIn_4.enable(false);
+			mouseLeave.call(target.PUZZLE_DIALOG.btn_Cancel);
+			mouseEnter.call(target.PUZZLE_DIALOG.btn_Ok);	
+		}			
+		if (custSel === 4) {				 		
+			mouseLeave.call(target.PUZZLE_DIALOG.btn_Ok);
+			mouseEnter.call(target.PUZZLE_DIALOG.btn_Cancel);	
+		}								
+	}
+
+	target.PUZZLE_DIALOG.moveCursor = function (direction) {
+	switch (direction) {
+		case "up" : {
+			if (custSel>0) {
+				custSel --;
+				ntHandlePuzzDlg();
+				}
+			break
+		}
+		case "down" : {
+			if (custSel<4) {
+				custSel ++;
+				ntHandlePuzzDlg();
+				}
+			break
+		}
+		case "left" : {
+			if (custSel === 0) target.PUZZLE_DIALOG["checkmateIn_2-"].click();
+			if (custSel === 1) target.PUZZLE_DIALOG["checkmateIn_3-"].click();
+			if (custSel === 2) target.PUZZLE_DIALOG["checkmateIn_4-"].click();
+			break
+		}		
+		case "right" : {
+			if (custSel === 0) target.PUZZLE_DIALOG["checkmateIn_2+"].click();
+			if (custSel === 1) target.PUZZLE_DIALOG["checkmateIn_3+"].click();
+			if (custSel === 2) target.PUZZLE_DIALOG["checkmateIn_4+"].click();
+			break
+		}
+	  }	
+	}
+	
+	target.PUZZLE_DIALOG.doCenterF = function () {
+		if (custSel === 0) target.setVariable("puzzle_selected","2");
+		if (custSel === 1) target.setVariable("puzzle_selected","3");
+		if (custSel === 2) target.setVariable("puzzle_selected","4");
+		if (custSel === 3) target.PUZZLE_DIALOG.btn_Ok.click();	
+		if (custSel === 4) target.PUZZLE_DIALOG.btn_Cancel.click();	
+	}
+	
+	target.PUZZLE_DIALOG.doPlusMinus = function(sender) {
+	   var senderID, cMateIn2;
+	   senderID = getSoValue(sender,"id");
+	   step = ( senderID.lastIndexOf("+") != -1) ? 1 : -1;
+	   senderID = senderID.slice(0,senderID.length-1);
+	   cMateIn2 = parseInt(target.getVariable("checkmate_2"));
+	   cMateIn3 = parseInt(target.getVariable("checkmate_3"));
+	   cMateIn4 = parseInt(target.getVariable("checkmate_4"));
+	   this.bubble("tracelog","senderID="+senderID+", step="+step+", cMateIn2="+cMateIn2+", cMateIn3="+cMateIn3+", cMateIn4="+cMateIn4);
+	   switch (senderID) {
+			case "checkmateIn_2" :
+			{
+				if (cMateIn2<=maxMateIn2-step && cMateIn2>0-step) {
+					cMateIn2 = cMateIn2+step;
+				}
+				this.container.setVariable("checkmate_2",cMateIn2);
+				break;
+			}
+			case "checkmateIn_3" :
+			{
+				if (cMateIn3<=maxMateIn3-step && cMateIn3>0-step) {
+					cMateIn3 = cMateIn3+step;
+				}
+				this.container.setVariable("checkmate_3",cMateIn3);
+				break;
+			}
+			case "checkmateIn_4" :
+			{
+				if (cMateIn4<=maxMateIn4-step && cMateIn4>0-step) {
+					cMateIn4 = cMateIn4+step;
+				}
+				this.container.setVariable("checkmate_4",cMateIn4);
+				break;
+			}
+	   }	 
+	}
+	
+	target.PUZZLE_DIALOG.setPuzzleType = function (t) {
+		/*target.bubble("tracelog",t);
+		if ( t == "2" || t == "3" || t == "4" )
+		{
+			target.setVariable("puzzle_selected",t);
+		} 
+		else {
+			t = target.getVariable("puzzle_selected");
+		}*/
+		return;
+	}
+	
+	target.closeDlg = function () {
+		puzzDlgOpen = false;
+		return;
+	}
+	
+	target.loadPuzzle = function () {
+		puzzDlgOpen = false;
+		var t = target.getVariable("puzzle_selected");
+		//target.bubble("tracelog",t);
+		var cMateIn2 = parseInt(target.getVariable("checkmate_2"));
+		var cMateIn3 = parseInt(target.getVariable("checkmate_3"));
+		var cMateIn4 = parseInt(target.getVariable("checkmate_4"));
+		
+		if (t == "2") {
+			if (cMateIn2<10) {
+				fileToLoad = puzPath+"mate_in_two_moves_0"+cMateIn2+".dat"
+			} else {
+				fileToLoad = puzPath+"mate_in_two_moves_"+cMateIn2+".dat"
+			}
+		}
+		if (t == "3") {
+			if (cMateIn3<10) {
+				fileToLoad = puzPath+"mate_in_three_moves_0"+cMateIn3+".dat"
+			} else {
+				fileToLoad = puzPath+"mate_in_three_moves_"+cMateIn3+".dat"
+			}
+		}
+		if (t == "4") {
+			if (cMateIn4<10) {
+				fileToLoad = puzPath+"mate_in_four_moves_0"+cMateIn4+".dat"
+			} else {
+				fileToLoad = puzPath+"mate_in_four_moves_"+cMateIn4+".dat"
+			}
+		}
+		
+		// save current puzzle numbers to puzDatPath
+		try {
+			if (FileSystem.getFileInfo(puzDatPath)) FileSystem.deleteFile(puzDatPath);
+			stream = new Stream.File(puzDatPath, 1);
+			stream.writeLine(cMateIn2);
+			stream.writeLine(cMateIn3);
+			stream.writeLine(cMateIn4);
+			stream.close();
+		} catch (e) { }	
+		
+		//this.bubble("tracelog","load puzzle "+fileToLoad);
+		this.loadGame(fileToLoad, true);
+		return;
 	};
 };
 tmp();
