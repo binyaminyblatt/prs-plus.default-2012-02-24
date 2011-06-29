@@ -8,6 +8,8 @@
 // 	2011-02-07 Ben Chenoweth - HOME button how quits game; force screen update before reader's move.
 // 	2011-02-10 Ben Chenoweth - Replaced small menu with buttons (touch version).
 // 	2011-03-01 kartu - Moved into a function, to allow variable name optimizations
+//  2011-03-20 Ben Chenoweth - Moved all labels out of the status bar.
+//  2011-03-25 Ben Chenoweth - Skins changed over to use common AppAssests.
 
 var tmp = function () {
 	var Exiting;
@@ -16,7 +18,7 @@ var tmp = function () {
 	var player1turn;
 	var firstX = 15;
 	var curDX = 50;
-	var firstY = 16;
+	var firstY = 0;
 	var curDY = 50;
 	var posX;
 	var posY;
@@ -122,6 +124,8 @@ var tmp = function () {
 	}
 	
 	target.init = function () {
+		this.appIcon.u = kbook.autoRunRoot._icon;
+	
 	/* Mark Nord - temporary Core workaround  for PRS+ v1.1.3 */
 	
 		if(!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue){ 
@@ -143,10 +147,6 @@ var tmp = function () {
 			hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
 		}
 	
-		Exiting = 0;
-		this.backGrd.show(Exiting);
-		this.CloseGame1.show(Exiting);
-		this.CloseGame2.show(Exiting);
 		if (!hasNumericButtons) {
 			isTouch = true;
 			this.grid1Cursor.show(false);
@@ -154,7 +154,7 @@ var tmp = function () {
 			this.instr1.show(false);
 			this.instr2.show(false);
 			this.instr3.show(false);
-			this.instr4.show(false);
+			this.instr4.setValue("HOME: Quit");
 			//this.Touch.MENUBAR.show(true);
 			
 		} else {
@@ -164,9 +164,9 @@ var tmp = function () {
 			this.instr1.show(true);
 			this.instr2.show(true);
 			this.instr3.show(true);
-			this.instr4.show(true);
+			this.instr4.setValue("0: Quit");
 			//this.Touch.MENUBAR.show(false);
-			this.BUTTON_EXT.show(false);
+			// this.BUTTON_EXT.show(false);
 			this.BUTTON_ONE.show(false);
 			this.BUTTON_TWO.show(false);
 		}
@@ -2030,10 +2030,10 @@ var tmp = function () {
 		var id;
 	    id = getSoValue(sender, "id");
 		n = id.substring(7, 10);
-		if (n == "EXT") {
+/*		if (n == "EXT") {
 			kbook.autoRunRoot.exitIf(kbook.model);
 			return;
-		}
+		} */
 		if (n == "ONE") {
 			this.GameOnePlayer();
 			return;
@@ -2078,20 +2078,6 @@ var tmp = function () {
 		}
 	}
 	
-	target.ExitQuit = function () {
-	   try	{
-		var ev, func, menuBar;
-		ev = newEvent(2048);
-		menuBar = this.findContent("MENUBAR");
-		func = getSoValue(menuBar,"endLoop");
-		func.call(menuBar,ev);
-		}
-	   catch(ignore){}
-	   finally {
-		kbook.autoRunRoot.exitIf(kbook.model);}
-	}
-	
-	
 	target.doRoot = function (sender) {
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
@@ -2114,10 +2100,6 @@ var tmp = function () {
 			this.grid1Cursor.show(true);
 			this.grid2Cursor.show(false);
 		}
-		Exiting = 0;
-		this.backGrd.show(false);
-		this.CloseGame1.show(false);
-		this.CloseGame2.show(false);
 	}
 	
 	target.GameTwoPlayers = function () {
@@ -2137,10 +2119,6 @@ var tmp = function () {
 			this.grid1Cursor.show(true);
 			this.grid2Cursor.show(false);
 		}
-		Exiting = 0;
-		this.backGrd.show(false);
-		this.CloseGame1.show(false);
-		this.CloseGame2.show(false);
 	}
 	
 	target.newGame = function (digit) {
@@ -2163,10 +2141,6 @@ var tmp = function () {
 					this.grid1Cursor.show(true);
 					this.grid2Cursor.show(false);
 				}
-				Exiting = 0;
-				this.backGrd.show(false);
-				this.CloseGame1.show(false);
-				this.CloseGame2.show(false);
 				return;
 			}
 		case 2:
@@ -2187,10 +2161,6 @@ var tmp = function () {
 					this.grid1Cursor.show(true);
 					this.grid2Cursor.show(false);
 				}
-				Exiting = 0;
-				this.backGrd.show(false);
-				this.CloseGame1.show(false);
-				this.CloseGame2.show(false);
 				return;
 			}
 		case 0:
@@ -2202,10 +2172,6 @@ var tmp = function () {
 	}
 	
 	target.doCenterF = function () {
-		//Exiting = Math.abs(Exiting - 1);
-		//this.backGrd.show(Exiting);
-		//this.CloseGame1.show(Exiting);
-		//this.CloseGame2.show(Exiting);
 		return;
 	}
 };

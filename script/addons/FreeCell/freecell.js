@@ -1,5 +1,5 @@
 /* 
- Free Cell for PRS (Touch version)
+ Free Cell for PRS
  Original version: (c) 2010 Ben Chenoweth
  
  Loosely based on code obtained from http://www.mikekohn.net/stuff/psp.php
@@ -10,6 +10,15 @@
  2011-01-05 Ben Chenoweth: added undo
  2011-02-07 Ben Chenoweth: added screen refresh during automove to home cells (so you can sort of see it happening!)
  2011-02-10 Ben Chenoweth: added using 9 for new deal and 0 for quit (non-touch).
+ 2011-02-28 Ben Chenoweth: changed addon name to CamelCase
+ 2011-03-17 Ben Chenoweth: added ability to move more than one card at a time (if freecells available)
+ 2011-03-19 Mark Nord: cloneObject, SnapShotIndicator move stack of cards also for 505/300
+ 2011-03-20 Mark Nord: <text> based Help
+ 2011-03-24 Mark Nord: skins changed over to use common AppAssests
+ 2011-03-25 Ben Chenoweth: made a few small adjustments to AppAssests skins; added copyright label
+ 2011-03-29 Ben Chenoweth: small fix for non-Touch: better handles unselecting card
+ 2011-04-01 Ben Chenoweth: Reinstated better shuffling routine that got lost in transition to repository
+ 2011-04-03 Ben Chenoweth: Moved all labels around slightly
 */
 
 
@@ -31,62 +40,47 @@ var ycursor=[];
 var cursor;
 var uD; // undefinded;
 var win;
+var selectedCard = {	selected: false,
+			t: -1,
+			r: -1,
+			max_r:-1};
 
-/* Core workaround 
-var newEvent = prsp.compile("param", "return new Event(param)");
 var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-var getSoValue = kbook.autoRunRoot.getSoValue; */
-var getSoValue, hasNumericButtons, newEvent;
+var getSoValue = kbook.autoRunRoot.getSoValue; 
+var getFileContent = kbook.autoRunRoot.getFileContent;
+
+var cloneObject = function (obj){
+  var newObj = (obj instanceof Array) ? [] : {};
+  for (var i in obj) {
+    if (obj[i] && typeof obj[i] == "object" ) 
+      newObj[i] = cloneObject(obj[i]);
+    else
+      newObj[i] = obj[i];
+  }
+  return newObj;
+}
 
 target.init = function () {
     var t,r,l,c;
     //var credits;
     var tempxcursor, tempycursor;
+    
+    /* set translated appTitle and appIcon */
+    this.appTitle.setValue(kbook.autoRunRoot._title);
+    this.appIcon.u = kbook.autoRunRoot._icon;
 
-/* temporary Core workaround  for PRS+ v1.1.3 */
-
-      	if(!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue){ 
-      	  		if (kbook.simEnviro) { /*Sim without handover code */
-	      	  		getSoValue = _Core.system.getSoValue;
-				hasNumericButtons = _Core.config.compat.hasNumericButtons;
-      	  		} else {/* PRS-505 */
-        	  		getSoValue = function (obj, propName) {
-        			return FskCache.mediaMaster.getInstance.call(obj, propName);};
- 				hasNumericButtons = true;
-      			}
-			try{
-        			var compile = getSoValue(prsp,"compile");
-        			newEvent = compile("param", "return new Event(param)");
-        		} catch(ignore) {}	
-	 }else { /* code is ok with PRS-600 */
-		getSoValue = kbook.autoRunRoot.getSoValue;
-		// newEvent = prsp.compile("param", "return new Event(param)"); // no menu no need for newEvent
-		hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-	}	
-	
-	
     deck=new Array(52);
     rows=new Array(8);
     frees=new Array(8);
 	
-	snapshotrows=new Array(8);
-	snapshotfrees=new Array(8);
+    snapshotrows=new Array(8);
+    snapshotfrees=new Array(8);
 	
-	// set up undo arrays
-	undodepth=11; // this allows for 10 undos
-	currundo=0;
-	undorows=new Array(undodepth);
-	undofrees=new Array(undodepth);
-	for (t=0; t<undodepth; t++)
-	{
-		undorows[t]=new Array(8);
-		undofrees[t]=new Array(8);
-		for (r=0; r<8; r++)
-		{
-			undorows[t][r]=new Array(52);
-			undofrees[t][r]=-1;
-		}
-	}
+    // set up undo arrays
+    undodepth=11; // this allows for 10 undos
+    currundo=0;
+    undorows=new Array(undodepth);
+    undofrees=new Array(undodepth);
     
     stack_spacing=30;  // number of pixels from the top needed to display number and suit of a card
     curr_selected=-1;
@@ -100,7 +94,6 @@ target.init = function () {
     {
         frees[t]=-1;
         rows[t]=new Array(52);
-		snapshotrows[t]=new Array(52);
 
         for (r=0; r<l; r++)
         {
@@ -119,35 +112,30 @@ target.init = function () {
     while (this.check_auto_free());
 	
 	win=false;
+	selectedCard.selected = false;
 	
 	// set up first level of undo
 	this.updateUndo();
 	
-	// save initial snapshot
-    for (t=0; t<8; t++)
-    {
-        snapshotfrees[t]=frees[t];
+	// save initial snapshot (19.3.2011 Mark Nord - use of cloneObject)
+	snapshotfrees = cloneObject(frees);
+	snapshotrows  = cloneObject(rows);
 
-        for (r=0; r<52; r++)
-        {
-            snapshotrows[t][r]=rows[t][r];
-			if (rows[t][r]==-1) {
-				break;
-			}
-        }
-    }
-    
 	// hide unwanted graphics
 	this.messageStatus.show(false);
 	this.sometext1.show(false);
+	//this.SnapShotIndicator.show(false);
+	this.SnapShotIndicator.changeLayout(0,0,uD,0,0,uD);
 	
-	// hide instructions
-	this.touchHelp.changeLayout(0,0,uD,0,0,uD);
+	// load helptext and hide instructions
+	this.helpText.setValue(getFileContent(this.fiverowRoot.concat('FreeCell_Help_EN.txt'),'help.txt missing')); 
+	this.helpText.show(false);
 	displayHelp=false;
 	
 	// hide selection sprite
-	this.selection.changeLayout(-100,uD,uD,uD,uD,uD);
-    	curr_selected=-1;
+	this.selection.changeLayout(0,0,uD,0,0,uD);
+	this.smallselection.changeLayout(0,0,uD,0,0,uD);
+   	curr_selected=-1;
 	
 	// hide congratulations sprite
 	this.congratulations.changeLayout(0,0,uD,0,0,uD);
@@ -200,11 +188,14 @@ target.init = function () {
 		tempxcursor=xcursor[cursor];
 		tempycursor=this.get_y_position(cursor);
 		this.gridCursor.changeLayout(tempxcursor,90,uD,tempycursor,100,uD);
+		this.BUTTON_RES.show(false);
+		this.BUTTON_RAN.show(false);
 	} else {
 		this.gridCursor.show(false);
 		this.nonTouch_colHelp.show(false);
 		this.nonTouch.show(false);
 		this.instr4.show(false);
+		this.instr5.show(false);
 	}
 	return;  
 }
@@ -229,7 +220,8 @@ target.get_y_position = function (location) {
 
 target.unselect = function () {
 	// hide selection sprite
-	this.selection.changeLayout(-100,uD,uD,uD,uD,uD);
+	this.selection.changeLayout(0,0,uD,0,0,uD);
+	this.smallselection.changeLayout(0,0,uD,0,0,uD);
 	curr_selected=-1;
 	return;
 }
@@ -321,6 +313,9 @@ target.add_card_to_row = function (n,t) {
 
 target.open_click = function (t) {
 	var r;
+	var column,foundcard,numabovecards;
+	var abovecards=[];
+	
 	// check that there is a selected card
 	if (curr_selected<0) return;
 	
@@ -338,10 +333,114 @@ target.open_click = function (t) {
 			}
 		}
 	}	
-
+	
 	// check to make sure selected card is top of a column
-    if (this.card_is_top(curr_selected)==false) return;
-
+    if (this.card_is_top(curr_selected)==false)
+	{
+		column=this.get_row(curr_selected);
+		if (column!=-1)
+		{
+			// check to see how many cards are above selected (and store them for easy access)
+			foundcard=false;
+			numabovecards=0;
+			for (r=0; r<52; r++)
+			{
+				if (rows[column][r]==-1) break;
+				if (rows[column][r]==curr_selected)
+				{
+					foundcard=true;
+					continue;
+				}
+				else
+				{
+					if (foundcard)
+					{
+						abovecards[numabovecards]=rows[column][r];
+						numabovecards++;
+					}
+				}
+			}
+			
+			// check to see if enough freecells are available
+			freecells=0;
+			for (r = 0; r<4; r++) {
+				if (frees[r] == -1) freecells++;
+			}
+			
+			if (numabovecards<=freecells) {
+				// check if cards above selected card are correctly sorted
+				cardsinorder=true;
+				for (r=numabovecards-1;r>0;r--)
+				{
+					highercard=abovecards[r-1];
+					lowercard=abovecards[r];
+					if ((((highercard%4)<=1 && (lowercard%4)>=2) ||
+					((highercard%4)>=2 && (lowercard%4)<=1)) &&
+					(Math.floor(highercard/4)-1)==Math.floor(lowercard/4))
+					{
+						// everything is fine!
+					}
+					else
+					{
+						cardsinorder=false;
+					}
+				}
+				highercard=curr_selected;
+				lowercard=abovecards[0];
+				if ((((highercard%4)<=1 && (lowercard%4)>=2) ||
+				((highercard%4)>=2 && (lowercard%4)<=1)) &&
+				(Math.floor(highercard/4)-1)==Math.floor(lowercard/4))
+				{
+					// everything is fine!
+				}
+				else
+				{
+					cardsinorder=false;
+				}
+				
+				if (cardsinorder)
+				{
+					// remove cards in reverse order
+					for (r=numabovecards-1;r>=0;r--)
+					{
+						this.remove_from_row(abovecards[r]);
+					}
+					this.remove_from_row(curr_selected);
+					
+					// add cards in order
+					rows[t][0]=curr_selected;
+					rows[t][1]=-1;
+					for (r=0;r<numabovecards;r++)
+					{
+						rows[t][r+1]=abovecards[r];
+						rows[t][r+2]=-1;
+					}
+					
+					this.unselect();
+					this.draw_board();			
+					while (this.check_auto_free());
+					this.updateUndo();
+					return;
+				}
+				else
+				{
+					this.unselect();
+					return;
+				}
+			}
+			else
+			{
+				this.unselect();
+				return;
+			}
+		}
+		else
+		{
+			this.unselect();
+			return;
+		}
+	}
+	
 	// move the selected card to the open column
     if (this.add_card_to_row(curr_selected,t)==true)
     {
@@ -358,7 +457,7 @@ target.move_to_home = function (t,n) {
 
 	frees[n]=t;
 	
-	// recalculate the lowest freeable card value
+    // recalculate the lowest freeable card value
     lowest_free=13;
     for (r=4; r<8; r++)
     {
@@ -396,11 +495,14 @@ target.get_suit = function (n) {
 
 target.card_click = function (n) {
     var t,r,u,sum,rspace;
+	var foundcard,numabovecards,freecells,cardsinorder;
+	var abovecards=[];
 	//this.bubble("tracelog","curr_selected="+curr_selected+", n="+n);
     if (curr_selected==n)
     {
 		// unselect the currently selected card when it is clicked again
         this.unselect();
+		selectedCard.selected=false;
         return;
     }
 
@@ -428,13 +530,11 @@ target.card_click = function (n) {
 							return;	
 						}
 					}
-					
-					
 				}				
 			}
 		}
 		
-        if (this.card_is_top(t)==false) return;
+        //if (this.card_is_top(t)==false) return;
 		
 	// check to see if card that was clicked is one less than value of the selected card and the same suit as the selected card
         if (Math.floor(t/4)-1==Math.floor(n/4) && (t%4)==(n%4))
@@ -459,22 +559,128 @@ target.card_click = function (n) {
     {
         if (this.card_is_top(n)==true)
         {
-            r=this.get_row(n);
-            if (r!=-1)
-            {
-                if (this.add_card_to_row(t,r)==true)
-                {
-		    // card successfully moved to a new row
-                    this.unselect();
-					this.draw_board();
-                    while (this.check_auto_free());
-					this.updateUndo();
-                    return;
-                }
-            }
+			if (this.card_is_top(t)==false)
+			{
+				column=this.get_row(t);
+				if (column!=-1)
+				{
+					// check to see how many cards are above selected (and store them for easy access)
+					foundcard=false;
+					numabovecards=0;
+					for (r=0; r<52; r++)
+					{
+						if (rows[column][r]==-1) break;
+						if (rows[column][r]==t)
+						{
+							foundcard=true;
+							continue;
+						}
+						else
+						{
+							if (foundcard)
+							{
+								abovecards[numabovecards]=rows[column][r];
+								numabovecards++;
+							}
+						}
+					}
+					
+					// check to see if enough freecells are available
+					freecells=0;
+					for (r = 0; r<4; r++)
+					{
+						if (frees[r] == -1) freecells++;
+					}
+
+					if (numabovecards<=freecells) {
+						// check if cards above selected card are correctly sorted
+						cardsinorder=true;
+						for (r=numabovecards-1;r>0;r--)
+						{
+							highercard=abovecards[r-1];
+							lowercard=abovecards[r];
+							if ((((highercard%4)<=1 && (lowercard%4)>=2) ||
+							((highercard%4)>=2 && (lowercard%4)<=1)) &&
+							(Math.floor(highercard/4)-1)==Math.floor(lowercard/4))
+							{
+								// everything is fine!
+							}
+							else
+							{
+								cardsinorder=false;
+							}
+						}
+						highercard=t;
+						lowercard=abovecards[0];
+						if ((((highercard%4)<=1 && (lowercard%4)>=2) ||
+						((highercard%4)>=2 && (lowercard%4)<=1)) &&
+						(Math.floor(highercard/4)-1)==Math.floor(lowercard/4))
+						{
+							// everything is fine!
+						}
+						else
+						{
+							cardsinorder=false;
+						}
+					
+						if (cardsinorder)
+						{
+							// check to see if selected card can move onto clicked card
+							if ((((n%4)<=1 && (t%4)>=2) ||
+								((n%4)>=2 && (t%4)<=1)) &&
+								(Math.floor(n/4)-1)==Math.floor(t/4))
+							{
+								// find top card in destination row
+								dest=this.get_row(n);
+								for (s=0; s<52; s++)
+								{
+									if (rows[dest][s]==-1) break;
+								}
+		
+								// remove cards in reverse order
+								for (r=numabovecards-1;r>=0;r--)
+								{
+									this.remove_from_row(abovecards[r]);
+								}
+								this.remove_from_row(t);
+								
+								// add cards in order
+								rows[dest][s]=t;
+								rows[dest][s+1]=-1;
+								for (r=0;r<numabovecards;r++)
+								{
+									rows[dest][s+1+r]=abovecards[r];
+									rows[dest][s+1+r+1]=-1;
+								}
+								
+								this.unselect();
+								this.draw_board();			
+								while (this.check_auto_free());
+								this.updateUndo();
+								return;
+							}
+						}
+					}
+				}			
+			}
+			else
+			{
+				r=this.get_row(n);
+				if (r!=-1)
+				{
+					if (this.add_card_to_row(t,r)==true)
+					{
+						// card successfully moved to a new row
+						this.unselect();
+						this.draw_board();
+						while (this.check_auto_free());
+						this.updateUndo();
+						return;
+					}
+				}
+			}
         }
     }
-
 
     if (curr_selected!=-1)
     {
@@ -498,10 +704,8 @@ target.card_click = function (n) {
     }
     else
     {
-		if (this.card_is_top(n)==false) return;
-		
 		// select the card just clicked
-       		curr_selected=n;
+       	curr_selected=n;
 		t=this.get_row(n);
 		sum=t*73+t+4;
 		
@@ -515,7 +719,13 @@ target.card_click = function (n) {
 				continue;
 			} else {
 				// update position of selection sprite
-				this.selection.changeLayout(sum,73,uD,rspace,96,uD);
+				if (this.card_is_top(n)==false) {
+					this.smallselection.changeLayout(sum,73,uD,rspace,30,uD);
+				}
+				else
+				{
+					this.selection.changeLayout(sum,73,uD,rspace,96,uD);
+				}
 				return;
 			}
 		}
@@ -706,6 +916,8 @@ target.draw_board = function () {
 
     id=-1;
 	
+    selectedCard.selected = false;	
+	
     for (t=0; t<8; t++)
     {
         rspace=110;
@@ -798,39 +1010,23 @@ target.get_row = function (n) {
 }
 
 target.shuffle_deck = function () {
-    var temp_deck;
-    var t,c;
-
-    temp_deck=new Array(52);
-
-    //this.unselect();
-    lowest_free=1;
-
-    for (t=0; t<52; t++)
-    {
-        temp_deck[t]=t;
-    }
+	var j,k,tempcard;
 
     for (t=0; t<52; t++)
     {
         this['card'+1*t].free=false;
+		deck[t]=t;
     }
-
-    for (t=0; t<52; t++)
-    {
-        c=Math.floor(Math.random()*52);
-        if (c<0) c=-c;
-
-        while(temp_deck[c]==-1)
-        {
-            c++;
-            if (c>=52) c=0;
-        }
-
-        deck[t]=c;
-        temp_deck[c]=-1;
-    }
-  // deck_count=0;
+	
+	// Knuth Shuffle (see http://tekpool.wordpress.com/2006/10/06/shuffling-shuffle-a-deck-of-cards-knuth-shuffle/)
+	for (j=51; j>=0; j--)
+	{
+		k=Math.floor(Math.random()*j);
+		tempcard=deck[j];
+		deck[j]=deck[k];
+		deck[k]=tempcard;
+	}
+	
 	return;
 }
 
@@ -910,27 +1106,23 @@ target.doButtonClick = function (sender) {
 		this.updateUndo();
 		
 		// hide selection sprite
-		this.selection.changeLayout(-100,uD,uD,uD,uD,uD);
+		this.selection.changeLayout(0,0,uD,0,0,uD);
+		this.smallselection.changeLayout(0,0,uD,0,0,uD);
 		curr_selected=-1;
 
 		// hide congratulations sprite
 		this.congratulations.changeLayout(0,0,uD,0,0,uD);
 		return;
 	}
-	if (n == "EXT") {
+/*	if (n == "EXT") {
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
-	}
+	} */
 }
 
 target.showHelp = function () {
-    if (!displayHelp) {
-        displayHelp = true;
-        this.touchHelp.changeLayout(42,516,uD,50,611,uD);
-    } else {
-        displayHelp = false;
-        this.touchHelp.changeLayout(0,0,uD,0,0,uD);
-    }	
+    displayHelp = !displayHelp;
+    this.helpText.show(displayHelp);
 }
 
 target.quitGame = function () {
@@ -942,22 +1134,16 @@ target.doNext = function () {
 	if (win==true) return;
 
 	// save snapshot
-    for (t=0; t<8; t++)
-    {
-        snapshotfrees[t]=frees[t];
+	snapshotfrees=cloneObject(frees);
+	snapshotrows =cloneObject(rows);
 
-        for (r=0; r<52; r++)
-        {
-            snapshotrows[t][r]=rows[t][r];
-			if (rows[t][r]==-1) {
-				break;
-			}
-        }
-    }
 	this.draw_board();
 	
 	// hide selection sprite
-	this.selection.changeLayout(-100,uD,uD,uD,uD,uD);
+	this.selection.changeLayout(0,0,uD,0,0,uD);
+	this.smallselection.changeLayout(0,0,uD,0,0,uD);
+	//this.SnapShotIndicator.show(true);
+	this.SnapShotIndicator.changeLayout(15,50,uD,645,35,uD);
 	curr_selected=-1;
 
 	// hide congratulations sprite
@@ -970,18 +1156,9 @@ target.doPrev = function () {
 	if (win==true) return;
 
 	// open snapshot
-    for (t=0; t<8; t++)
-    {
-        frees[t]=snapshotfrees[t];
+	frees = cloneObject(snapshotfrees);		
+	rows  = cloneObject(snapshotrows);
 
-        for (r=0; r<52; r++)
-        {
-            rows[t][r]=snapshotrows[t][r];
-			if (snapshotrows[t][r]==-1) {
-				break;
-			}
-        }
-    }
 	this.draw_board();
 	
 	// reset undo history
@@ -991,7 +1168,9 @@ target.doPrev = function () {
 	this.updateUndo();
 	
 	// hide selection sprite
-	this.selection.changeLayout(-100,uD,uD,uD,uD,uD);
+	this.selection.changeLayout(0,0,uD,0,0,uD);
+	this.smallselection.changeLayout(0,0,uD,0,0,uD);
+	// this.SnapShotIndicator.show(false); // snapshot is still accessible after recalling it
 	curr_selected=-1;
 
 	// hide congratulations sprite
@@ -1005,20 +1184,10 @@ target.doSize = function () {
 	
 	// do undo
 	if (currundo==1) return;
-	
-	// retrieve most recent undo
-	for (t=0; t<8; t++)
-	{
-		frees[t]=undofrees[currundo-2][t];
 
-		for (r=0; r<52; r++)
-		{
-			rows[t][r]=undorows[currundo-2][t][r];
-			if (undorows[currundo-2][t][r]==-1) {
-				break;
-			}
-		}
-	}	
+	// retrieve most recent undo
+	frees = cloneObject(undofrees[currundo-2]);
+	rows = cloneObject(undorows[currundo-2]);
 	
 	// decrement current undo
 	currundo--;
@@ -1027,7 +1196,8 @@ target.doSize = function () {
 	this.draw_board();
 	
 	// hide selection sprite
-	this.selection.changeLayout(-100,uD,uD,uD,uD,uD);
+	this.selection.changeLayout(0,0,uD,0,0,uD);
+	this.smallselection.changeLayout(0,0,uD,0,0,uD);
 	curr_selected=-1;
 
 	// hide congratulations sprite
@@ -1044,34 +1214,14 @@ target.updateUndo = function () {
 	else {
 		// if not possible, then shift all previous undos, losing oldest one
 		for (s=1; s<undodepth; s++)
-		{
-			for (t=0; t<8; t++)
-			{
-				undofrees[s-1][t]=undofrees[s][t];
-
-				for (r=0; r<52; r++)
-				{
-					undorows[s-1][t][r]=undorows[s][t][r];
-					if (undorows[s][t][r]==-1) {
-						break;
-					}
-				}
-			}
+		{	undofrees[s-1] = cloneObject(undofrees[s]); 
+			undorows[s-1] = cloneObject(undorows[s]);
 		}
 	}
 	// store current layout
-	for (t=0; t<8; t++)
-	{
-		undofrees[currundo-1][t]=frees[t];
+	undofrees[currundo-1] = cloneObject(frees);
+	undorows[currundo-1]  = cloneObject(rows);
 
-		for (r=0; r<52; r++)
-		{
-			undorows[currundo-1][t][r]=rows[t][r];
-			if (rows[t][r]==-1) {
-				break;
-			}
-		}
-	}
 	return;
 }
 
@@ -1091,24 +1241,36 @@ target.moveCursor = function (dir) {
 	switch (dir) {
 	case "down":
 		{
-			cursor+=8;
-			if (cursor>18) {
-				cursor=18;
+			if (selectedCard.selected) {
+				if (selectedCard.r<selectedCard.max_r) selectedCard.r++;
+				this.card_click(rows[selectedCard.t][selectedCard.r]);				
+			} else {
+        			cursor+=8;
+        			if (cursor>18) {
+        				cursor=18;
+				}
 			}
 			break;
 		}
 	case "up":
 		{
-			cursor-=8;
-			if (cursor<0) {
-				cursor=0;
+			if (selectedCard.selected) {
+				if (selectedCard.r>0 && (selectedCard.max_r-selectedCard.r)<4) {
+					selectedCard.r--;
+					this.card_click(rows[selectedCard.t][selectedCard.r]);				
+				}	
+			} else { 
+        			cursor-=8;
+        			if (cursor<3) {
+        				cursor=3;
+        			}	
 			}
 			break;
 		}
 	case "left":
 		{
 			cursor--;
-			if (cursor<0) {
+			if (cursor<3) {
 				cursor=18;
 			}
 			break;
@@ -1117,7 +1279,7 @@ target.moveCursor = function (dir) {
 		{
 			cursor++;
 			if (cursor>18) {
-				cursor=0;
+				cursor=3;
 			}
 			break;
 		}
@@ -1191,10 +1353,11 @@ target.doHold8 = function() {
 
 target.cursorClick = function () {
 	var l,c,t,r,n;
-	var tempxcursor,tempycursor,temp;
+	var tempxcursor,tempycursor; //,temp;
 
 	// deal with buttons first
-	if (cursor==0) {
+	selectedCard.selected = false;
+/*	if (cursor==0) {
 		l=7;
 		c=0;
 
@@ -1225,7 +1388,8 @@ target.cursorClick = function () {
 		this.updateUndo();
 		
 		// hide selection sprite
-		this.selection.changeLayout(-100,uD,uD,uD,uD,uD);
+		this.selection.changeLayout(0,0,uD,0,0,uD);
+		this.smallselection.changeLayout(0,0,uD,0,0,uD);
 		curr_selected=-1;
 
 		// hide congratulations sprite
@@ -1243,10 +1407,10 @@ target.cursorClick = function () {
 	if (cursor==2) {
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
-	}
+	} */
 	
 	if ((cursor>2) && (cursor<7)) {
-		temp=cursor-3;
+		//temp=cursor-3;
 		// clicking in a free cell
 		n=cursor-3;
 		
@@ -1268,14 +1432,14 @@ target.cursorClick = function () {
 		// check to see if free cell is empty
 		if (frees[n]!=-1) {
 			// clicked on a card in a free cell
-			temp=frees[n];
+			//temp=frees[n];
 			this.card_click(frees[n]);
 		}
 		return;
 	}
 	
 	if ((cursor>10) && (cursor<19)) {
-		temp=cursor-11;
+		//temp=cursor-11;
 		// clicking in a column
 		t=cursor-11;
 		
@@ -1290,8 +1454,12 @@ target.cursorClick = function () {
         {
             if (rows[t][r]==-1) break;
         }
-        r--;
-		temp=rows[t][r];
+		r--;	
+		//temp=rows[t][r];
+		selectedCard.selected = true;
+		selectedCard.t = t;
+		selectedCard.r = r;
+		selectedCard.max_r = r; 
 		this.card_click(rows[t][r]);
 		return;
 	}

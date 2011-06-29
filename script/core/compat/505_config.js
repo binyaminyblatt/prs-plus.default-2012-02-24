@@ -3,6 +3,10 @@
 //
 // History:
 //	2011-03-04 kartu - Initial version
+//  2011-06-29 Ben Chenoweth - ALL: Updated existing games/calculator to use AppAssets and added
+//      Draughts by Ben Chenoweth
+//      MineSweeper by Mark Nord / D. Shep Poor
+//      XO-Cubed by Ben Chenoweth
 
 return {
 	// Menu icon indices 

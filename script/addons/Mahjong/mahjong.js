@@ -1,12 +1,30 @@
+// Name: Mahjong game
+//   Original code (c) '08 Clemenseken
+//
+//	History:
+//	2010-12-03 Ben Chenoweth - Touch adaptation and startup Code for PRS+
+//	2010-12-14 Ben Chenoweth - Removed some unnecessary graphics from the top of the screen.
+//	2010-12-15 Ben Chenoweth - Fixed the menu bug in the non-Touch, and added two buttons to the Touch version: "New layout" and "Easy/Normal"
+//	2011-02-10 Ben Chenoweth - Digit "0" quits (non-Touch); added Quit button (Touch)
+//  2011-03-01 kartu - Moved into a function, to allow variable name optimizations
+//  2011-03-20 Beb Chenoweth - Moved all labels out of status bar; moved this changelog from startup script into main script
+//  2011-03-22 Mark Nord - <text> based Help
+//  2011-03-26 Ben Chenoweth - Added congratulations upon completion
+//  2011-05-15 Ben Chenoweth - Added remember last layout; reordered existing layouts and added new layout (Aztec); hid test layout.
+//  2011-05-28 Ben Chenoweth - Added new layout (BigHole).
+
 var tmp = function () {
-/* Core workaround
-	var newEvent = prsp.compile("param", "return new Event(param)");
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-	var getSoValue = kbook.autoRunRoot.getSoValue; */
-	var getSoValue, hasNumericButtons, newEvent;
+	var getSoValue = kbook.autoRunRoot.getSoValue; 
+	var getFileContent = kbook.autoRunRoot.getFileContent;
 	var displayHelp = false;
-	target.L0 = 54;
-	target.T0 = 0;
+
+	var datPath0 = kbook.autoRunRoot.gamesSavePath+'Mahjong/';
+	FileSystem.ensureDirectory(datPath0);  
+	var datPath  = datPath0 + 'mahjong.dat';
+	
+	target.L0 = 54; 
+	target.T0 = 30;
 	target.curDX = 62;
 	target.curDY = 70;
 	target.posX = 0;
@@ -33,17 +51,21 @@ var tmp = function () {
 	target.China_Plan = [20, 7, 30, 6, 40, 4, 50, 3, 60, 4, 11, 5, 21, 4, 31, 2, 41, 2, 51, 1, 61, 1, 71, 3, 12, 6, 22, 2, 32, 6, 42, 4, 52, 3, 62, 1, 72, 2, 3, 4, 13, 2, 23, 2, 33, 4, 63, 2, 73, 3, 4, 3, 14, 2, 24, 2, 34, 3, 5, 2, 15, 1, 25, 1, 35, 2, 65, 2, 75, 3, 6, 1, 16, 3, 26, 1, 36, 3, 46, 2, 56, 3, 66, 1, 76, 1, 17, 2, 27, 1, 37, 1, 47, 1, 57, 1, 67, 1, 77, 1, 28, 3, 38, 2, 48, 3, 58, 2, 68, 3];
 	target.China2Luft = [0, 2, 10, 12, 12, 12, 20, 21, 21, 21, 34, 40, 40, 41, 41, 42, 42, 50, 50, 50, 51, 51, 51, 52, 52, 52, 60, 60, 61, 61, 62, 62, 65, 67, 68, 70, 71, 71, 72, 75, 75, 76, 77, 77];
 	target.China2_Plan = [0, 5, 10, 3, 20, 5, 30, 2, 40, 2, 50, 2, 60, 2, 70, 2, 1, 4, 11, 2, 21, 1, 31, 1, 41, 1, 51, 1, 61, 1, 71, 3, 2, 5, 12, 1, 22, 5, 32, 2, 42, 2, 52, 2, 62, 2, 72, 2, 3, 3, 13, 1, 23, 1, 33, 2, 4, 2, 14, 1, 24, 1, 34, 2, 5, 3, 15, 1, 25, 1, 35, 2, 65, 3, 75, 3, 16, 4, 26, 1, 36, 4, 46, 3, 56, 5, 66, 3, 76, 3, 17, 3, 27, 2, 37, 2, 47, 2, 57, 2, 67, 2, 77, 3, 28, 4, 38, 3, 48, 4, 58, 3, 68, 3];
-	target.Hoechster_RadLuft = [44, 44, 44];
-	target.Hoechster_Rad_Plan = [0, 2, 40, 2, 21, 3, 31, 4, 41, 4, 51, 4, 61, 3, 12, 3, 32, 5, 52, 5, 72, 3, 13, 4, 43, 6, 73, 4, 4, 3, 14, 4, 24, 5, 34, 6, 44, 6, 54, 6, 64, 5, 74, 4, 15, 4, 45, 6, 75, 4, 16, 3, 36, 5, 56, 5, 76, 3, 27, 3, 37, 4, 47, 4, 57, 4, 67, 3, 8, 2, 48, 3];
+	target.WheelLuft = [44, 44, 44];
+	target.Wheel_Plan = [0, 2, 40, 2, 21, 3, 31, 4, 41, 4, 51, 4, 61, 3, 12, 3, 32, 5, 52, 5, 72, 3, 13, 4, 43, 6, 73, 4, 4, 3, 14, 4, 24, 5, 34, 6, 44, 6, 54, 6, 64, 5, 74, 4, 15, 4, 45, 6, 75, 4, 16, 3, 36, 5, 56, 5, 76, 3, 27, 3, 37, 4, 47, 4, 57, 4, 67, 3, 8, 2, 48, 3];
 	target.CastleLuft = [30, 34, 34, 38, 40, 40, 40, 48, 48, 48, 50, 54, 54, 58];
 	target.Castle_Plan = [10, 5, 20, 3, 30, 3, 40, 3, 50, 3, 60, 3, 70, 5, 11, 3, 71, 3, 12, 3, 72, 3, 13, 3, 33, 4, 43, 3, 53, 4, 73, 3, 14, 4, 34, 2, 54, 2, 74, 4, 15, 3, 35, 4, 45, 3, 55, 4, 75, 3, 16, 3, 76, 3, 17, 3, 77, 3, 18, 5, 28, 3, 38, 3, 48, 3, 58, 3, 68, 3, 78, 5];
-	target.plaName = ['China2', 'Hoechster_Rad', 'China', 'Italia2', 'Castleum', 'Italia', 'Castle', 'Glyphe', 'Dragon', 'Test'];
+	target.AztecLuft = [23, 43, 34, 25, 45];
+	target.Aztec_Plan = [30, 1, 70, 2, 21, 1, 31, 3, 41, 1, 12, 1, 22, 3, 32, 5, 42, 3, 52, 1, 3, 1, 13, 3, 23, 4, 33, 7, 43, 4, 53, 3, 63, 1, 14, 3, 24, 5, 34, 8, 44, 5, 54, 3, 5, 1, 15, 3, 25, 4, 35, 7, 45, 4, 55, 3, 65, 1, 16, 1, 26, 3, 36, 5, 46, 3, 56, 1, 27, 1, 37, 3, 47, 1, 38, 1];
+	target.BigHoleLuft = [];
+	target.BigHole_Plan = [2, 4, 12, 4, 22, 4, 32, 4, 42, 4, 52, 4, 62, 4, 72, 4, 3, 1, 13, 3, 23, 4, 33, 4, 43, 4, 53, 4, 63, 3, 73, 1, 4, 1, 14, 3, 24, 4, 54, 4, 64, 3, 74, 1, 5, 1, 15, 3, 25, 4, 55, 4, 65, 3, 75, 1, 6, 1, 16, 3, 26, 4, 36, 4, 46, 4, 56, 4, 66, 3, 76, 1, 7, 4, 17, 4, 27, 4, 37, 4, 47, 4, 57, 4, 67, 4, 77, 4];
+	target.plaName = ['China', 'Wheel', 'China2', 'Castle', 'Italia', 'Castleum', 'Italia2', 'Glyphe', 'Dragon', 'Aztec', 'BigHole'];
 	target.planNr = 0;
-	target.sometext1.setValue('China2');
+	target.sometext1.setValue('China');
 	target.Des = [];
-	target.Des = target.China2_Plan;
+	target.Des = target.China_Plan;
 	target.Nul = [];
-	target.Nul = target.China2Luft;
+	target.Nul = target.ChinaLuft;
 	target.MahjoNrs_i = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44];
 	target.StoneAll = [];
 	target.mJall = [];
@@ -56,27 +78,25 @@ var tmp = function () {
 	target.BAK2 = [];
 
 	target.init = function () {
-		this.prepMahJong();
-		this.helpHelp.changeLayout(0, 600 * this.hH, uD, -55, 800 * this.hH, uD);
-		if (!kbook || !kbook.autoRunRoot || !kbook.autoRunRoot.getSoValue) {
-			if (kbook.simEnviro) { /*Sim without handover code */
-				getSoValue = _Core.system.getSoValue;
-				hasNumericButtons = _Core.config.compat.hasNumericButtons;
-			} else { /* PRS-505 */
-				getSoValue = function (obj, propName) {
-					return FskCache.mediaMaster.getInstance.call(obj, propName);
-				};
-				hasNumericButtons = true;
+		this.appIcon.u = kbook.autoRunRoot._icon;
+		
+		// Load previous layout from save file
+		try {
+			if (FileSystem.getFileInfo(datPath)) {
+				var stream = new Stream.File(datPath);
+				this.planNr = stream.readLine() * 1;
+				stream.close();
+				bilder = this.plaName[this.planNr];
+				this.Des = this[bilder + '_Plan'];
+				this.Nul = this[bilder + 'Luft'];
+				this.marker2.changeLayout(-100, 57, uD, 0, 63, uD);
+				this.sometext1.setValue(bilder);
+				this.weg = 0;
+				this.drawGridCursor(this.posX, this.posY);				
 			}
-			try {
-				var compile = getSoValue(prsp, "compile");
-				newEvent = compile("param", "return new Event(param)");
-			} catch (ignore) {}
-		} else { /* code is ok with PRS-600 */
-			getSoValue = kbook.autoRunRoot.getSoValue;
-			newEvent = prsp.compile("param", "return new Event(param)");
-			hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
-		}
+		} catch (e) {}
+		
+		this.prepMahJong();
 
 		if (!hasNumericButtons) {
 			this.gridCursor.show(false);
@@ -90,12 +110,20 @@ var tmp = function () {
 		} else {
 			this.BUTTON_NEW.show(false);
 			this.BUTTON_DIF.show(false);
-			this.BUTTON_EXT.show(false);
+			//this.BUTTON_EXT.show(false);
 			this.touchButtons1.show(false);
 		}
 		this.numCurrent.show(false);
 		this.numRecords.show(false);
-		this.touchHelp.changeLayout(0, 0, uD, 0, 0, uD);
+		
+		// hide congratulations sprite
+		this.congratulations.changeLayout(0,0,uD,0,0,uD);		
+		
+	//	this.touchHelp.changeLayout(0, 0, uD, 0, 0, uD);
+		this.helpText.setValue(getFileContent(this.mahjongroot.concat('MahJong_Help_EN.txt'),'help.txt missing')); 
+		this.helpText.show(false);
+		
+		return;		
 	};
 
 	target.prepMahJong = function () {
@@ -149,12 +177,13 @@ var tmp = function () {
 	target.doMenuF = function () {
 		this.menuKlapp = Math.abs(this.menuKlapp - 1);
 		if (this.menuKlapp == 1 & this.hH == 0) {
-			this.menuAll.changeLayout(437, 150, uD, -33, 185, uD);
-			this.menuCur.changeLayout(440, 22, uD, -26, 22, uD);
+			this.menuAll.changeLayout(437, 150, uD, -33+this.T0, 185, uD);
+			this.menuCur.changeLayout(440, 22, uD, -26+this.T0, 22, uD);
 		} else {
-			this.menuAll.changeLayout(437, 150, uD, -233, 185, uD);
+			this.menuAll.changeLayout(437, 150, uD, -253, 185, uD);
 			this.menuCur.changeLayout(440, 22, uD, -226, 22, uD);
-			this.helpHelp.changeLayout(0, 0, uD, 0, 0, uD);
+			//this.helpHelp.changeLayout(0, 0, uD, 0, 0, uD);
+			this.helpText.show(false);
 			this.hH = 0;
 			this.menuID = 'bild';
 			this.menuPos = 0;
@@ -247,6 +276,11 @@ var tmp = function () {
 			if (such[m] == 'F') aeh -= 1;
 		}
 		this.currentNum.setValue('Rest ' + this.restL + '/' + aeh);
+		//this.bubble("tracelog","this.restL="+this.restL);
+		// check for win
+		if (this.restL == 0) {
+			this.congratulations.changeLayout(94,411,uD,250,142,uD);
+		}
 	};
 	target.undoDel = function (BAK1, BAK2) {
 		if (BAK1.length > 0 & BAK2.length > 0) {
@@ -276,7 +310,7 @@ var tmp = function () {
 			case "neu":
 				this.menuKlapp = 1;
 				this.doMenuF();
-				this.init();
+				this.prepMahJong();
 				this.marker2.changeLayout(-100, 57, uD, 0, 63, uD);
 				this.drawGridCursor(this.posX, this.posY);
 				break;
@@ -284,13 +318,14 @@ var tmp = function () {
 				this.weg = Math.abs(this.weg - 1);
 				this.menuKlapp = 1;
 				this.doMenuF();
-				this.init();
+				this.prepMahJong();
 				this.marker2.changeLayout(-100, 57, uD, 0, 63, uD);
 				this.drawGridCursor(this.posX, this.posY);
 				break;
 			case "hilf":
 				this.hH = 1;
-				this.helpHelp.changeLayout(0, 600, uD, -55, 800, uD);
+				//this.helpHelp.changeLayout(0, 600, uD, -55, 800, uD);
+				this.helpText.show(true);
 				this.menuAll.changeLayout(437, 150, uD, -233, 185, uD);
 				this.menuCur.changeLayout(440, 22, uD, -226, 22, uD);
 				this.menuPos = 0;
@@ -298,6 +333,12 @@ var tmp = function () {
 				this.menuID = "bild";
 				break;
 			case "quit":
+				try {
+					if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
+					stream = new Stream.File(datPath, 1);
+					stream.writeLine(this.planNr);		
+					stream.close();
+				} catch (e) {}				
 				kbook.autoRunRoot.exitIf(kbook.model);
 				return;
 				break;
@@ -306,6 +347,12 @@ var tmp = function () {
 	};
 	target.goRow = function (key) {
 		if (key == 0) {
+			try {
+				if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
+				stream = new Stream.File(datPath, 1);
+				stream.writeLine(this.planNr);		
+				stream.close();
+			} catch (e) {}			
 			kbook.autoRunRoot.exitIf(kbook.model);
 			return;
 		}
@@ -327,7 +374,7 @@ var tmp = function () {
 				break;
 			case "left":
 				if (!hasNumericButtons) {
-					if (direction == "left") linKrex = -1;
+					linKrex = -1;
 					this.planNr = (this.plaName.length + this.planNr + linKrex) % this.plaName.length;
 					bilder = this.plaName[this.planNr];
 					this.Des = this[bilder + '_Plan'];
@@ -335,7 +382,7 @@ var tmp = function () {
 					this.marker2.changeLayout(-100, 57, uD, 0, 63, uD);
 					this.sometext1.setValue(bilder);
 					this.weg = 0;
-					this.init();
+					this.prepMahJong();
 					this.drawGridCursor(this.posX, this.posY);
 					break;
 				}
@@ -343,7 +390,6 @@ var tmp = function () {
 				break;
 			case "right":
 				if (!hasNumericButtons) {
-					if (direction == "left") linKrex = -1;
 					this.planNr = (this.plaName.length + this.planNr + linKrex) % this.plaName.length;
 					bilder = this.plaName[this.planNr];
 					this.Des = this[bilder + '_Plan'];
@@ -351,7 +397,7 @@ var tmp = function () {
 					this.marker2.changeLayout(-100, 57, uD, 0, 63, uD);
 					this.sometext1.setValue(bilder);
 					this.weg = 0;
-					this.init();
+					this.prepMahJong();
 					this.drawGridCursor(this.posX, this.posY);
 					break;
 				}
@@ -378,12 +424,12 @@ var tmp = function () {
 						this.marker2.changeLayout(-100, 57, uD, 0, 63, uD);
 						this.sometext1.setValue(bilder);
 						this.weg = 0;
-						this.init();
+						this.prepMahJong();
 						this.drawGridCursor(this.posX, this.posY);
 					}
 					break;
 				}
-				var mI = -26 + this.menuPos * 36;
+				var mI = -26 +this.T0+ this.menuPos * 36;
 				this.menuID = this.menuName[this.menuPos * 1];
 				this.menuCur.changeLayout(440, 22, uD, mI, 22, uD);
 			}
@@ -405,7 +451,7 @@ var tmp = function () {
 		}
 		this.gridCursor.changeLayout(xG - xyLeer * 8 + 7, uD, uD, yG - xyLeer * 7 + 10, uD, uD);
 		this.helpCur.changeLayout(0, 600, uD, yG + 27, 5, uD);
-		this.helpCur2.changeLayout(xG + 23, 5, uD, -37, 680, uD);
+		this.helpCur2.changeLayout(xG + 23, 5, uD, -37+this.T0, 680, uD);
 		this.numRecords.setValue(pX + "," + pY);
 		this.drawMarker(pX, pY);
 	};
@@ -457,7 +503,7 @@ var tmp = function () {
 		if (n == "NEW") {
 			this.menuKlapp = 1;
 			this.doMenuF();
-			this.init();
+			this.prepMahJong();
 			this.marker2.changeLayout(-100, 57, uD, 0, 63, uD);
 			this.drawGridCursor(this.posX, this.posY);
 			return;
@@ -466,28 +512,35 @@ var tmp = function () {
 			this.weg = Math.abs(this.weg - 1);
 			this.menuKlapp = 1;
 			this.doMenuF();
-			this.init();
+			this.prepMahJong();
 			this.marker2.changeLayout(-100, 57, uD, 0, 63, uD);
 			this.drawGridCursor(this.posX, this.posY);
 			return;
 		}
-		if (n == "EXT") {
+	/*	if (n == "EXT") {
+			try {
+				if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
+				stream = new Stream.File(datPath, 1);
+				stream.writeLine(this.planNr);		
+				stream.close();
+			} catch (e) {}		
 			kbook.autoRunRoot.exitIf(kbook.model);
 			return;
-		}
+		} */
 	};
 
-	target.showHelp = function () {
-		if (!displayHelp) {
-			displayHelp = true;
-			this.touchHelp.changeLayout(42, 516, uD, 0, 611, uD);
-		} else {
-			displayHelp = false;
-			this.touchHelp.changeLayout(0, 0, uD, 0, 0, uD);
-		}
-	};
+        target.showHelp = function () {
+            displayHelp = !displayHelp;
+            this.helpText.show(displayHelp);
+        }
 
 	target.quitGame = function () {
+		try {
+			if (FileSystem.getFileInfo(datPath)) FileSystem.deleteFile(datPath);
+			stream = new Stream.File(datPath, 1);
+			stream.writeLine(this.planNr);		
+			stream.close();
+		} catch (e) {}	
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
 	};

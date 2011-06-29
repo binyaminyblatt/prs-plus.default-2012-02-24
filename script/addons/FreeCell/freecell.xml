@@ -2,78 +2,55 @@
 <document xmlns="http://www.kinoma.com/fskin/1" id="DOCUMENT">
 
     <assets>
+		<import href="../AppAssets/AppAssets.xml"/>
 
         <behavior id="cardSprite">
             <script on="mouseUp" params="event">
-		if (this.hitBounds(event.x, event.y))
-			this.bubble("doCardClick",this);
+           		if (this.hitBounds(event.x, event.y))
+					this.bubble("doCardClick",this);
             </script>
         </behavior>
         <behavior id="freeSprite">
             <script on="mouseUp" params="event">
-		if (this.hitBounds(event.x, event.y))
-			this.bubble("doFreeClick",this);
+				if (this.hitBounds(event.x, event.y))
+					this.bubble("doFreeClick",this);
             </script>
         </behavior>
         <behavior id="openSprite">
             <script on="mouseUp" params="event">
-		if (this.hitBounds(event.x, event.y))
-			this.bubble("doOpenClick",this);
+				if (this.hitBounds(event.x, event.y))
+					this.bubble("doOpenClick",this);
             </script>
-        </behavior>		
+        </behavior>	
         <behavior id="selectSprite">
             <script on="mouseUp" params="event">
-		if (this.hitBounds(event.x, event.y))
-			this.bubble("doSelectClick",this);
+				if (this.hitBounds(event.x, event.y))
+					this.bubble("doSelectClick",this);
             </script>
         </behavior>
-		
+		<!--behavior id="iconSprite">
+		    <script on="mouseUp" params="event">
+				if (this.hitBounds(event.x, event.y))
+					this.bubble("quitGame",this);
+		    </script>
+		</behavior-->			
         <style font="Swis721 BT">
             <style id="sumText" size="40" style="bold" color="#000000"/>
             <style id="sometext" size="22" style="bold" color="#000000"/>
             <style id="digits" size="22" style="bold" color="#666666"/>
-			<style id="quitinstr" size="18" style="" color="#FFFFFF"/>
+		     <style id="quitinstr" size="18" style="bold" color="#000000"/>
             <style id="versText" size="40" style="bold" color="#FFFFFF"/>
             <style id="klWeis" size="40" style="bold" color="#FFFFFF" align="center"/>
             <style id="touchText" size="12" style="bold" color="#000000"/>
+			<style id="copyText" size="11" style="" color="#BBBBBB"/>
         </style>
 
         <style font="Courier10 BT">
             <style id="titleText" size="75" style="bold" color="#000000"/>
         </style>
 		
-		<style id="button-e" size="21" style="bold" halign="center">
-			<style id="button-d" color="#6D6D6D"/>
-			<style id="button-p"/>
-			<style id="button-s" />
-		</style>
-		
-        <texture href="freeCellSkins/freecellLabels.png">
-            <cutout id="HelpT" x="42" y="295" width="516" height="611"/>
-			<cutout id="select" x="0" y="1" width="73" height="96"/>
-			<cutout id="free" x="73" y="1" width="73" height="96"/>
-			<cutout id="button-l" x="610" y="102" width="16" height="40" lines="60"/>
-			<cutout id="button-c" x="626" y="102" width="20" height="40" lines="60"/>
-			<cutout id="button-r" x="646" y="102" width="16" height="40" lines="60"/>
-			<cutout id="congrat" x="160" y="0" width="411" height="142"/>
-			<cutout id="gCursor" x="610" y="0" width="90" height="100"/>
-			<cutout id="colHelp_c" x="20" y="170" width="554" height="52"/>
-        </texture>
-
         <texture href="freeCellSkins/freecellCards.png">
             <cutout id="cards" x="0" y="1" width="73" height="98" columns="80"/>
-        </texture>
-
-        <texture href="freeCellSkins/freecellMain.png">
-            <cutout id="FreeCellHeader-l" x="350" y="0" width="70" height="70"/>
-            <cutout id="FreeCellHeader-c" x="421" y="0" width="70" height="70"/>
-            <cutout id="FreeCellHeader-r" x="492" y="0" width="70" height="70"/>
-            <cutout id="FreeCellInfo-l" x="0" y="70" width="0" height="697"/>
-            <cutout id="FreeCellInfo-c" x="0" y="70" width="600" height="697"/>
-            <cutout id="FreeCellInfo-r" x="0" y="70" width="0" height="697"/>
-            <cutout id="FreeCellStatus-l" x="0" y="766" width="600" height="33"/>
-            <cutout id="FreeCellStatus-c" x="0" y="766" width="0" height="0"/>
-            <cutout id="FreeCellStatus-r" x="0" y="766" width="0" height="0"/>
         </texture>
 
         <skin id="klWeis" 		styles="klWeis"/>
@@ -82,21 +59,16 @@
         <skin id="digits" 		styles="digits"/>
 		<skin id="quitinstr" 	styles="quitinstr"/>
         <skin id="card" 		cutouts="cards"/>
-		<skin id="selectCard"	cutouts="select"/>
+		<skin id="selectCard"	cutouts="selectcard"/>
+		<skin id="selectHiddenCard"	cutouts="smallselect"/>
 		<skin id="freeCell"		cutouts="free"/>
-        <skin id="hHelpT" 		cutouts="HelpT"/>
-        <skin id="colHelp"	  	cutouts="colHelp_c"/>
-		<skin id="congrats"		cutouts="congrat"/>
+        <skin id="camera"	  	cutouts="camera_c"/>
         <skin id="title" styles="versText"/>
         <skin id="title2" styles="titleText"/>
         <skin id="versText" 	styles="versText"/>
         <skin id="touchText" styles="touchText"/>
-        <skin id="FreeCellSkin" cutouts="FreeCellHeader-l,FreeCellHeader-c, FreeCellHeader-r,FreeCellInfo-l,FreeCellInfo-c,FreeCellInfo-r,
-					FreeCellStatus-l,FreeCellStatus-c,FreeCellStatus-r"/>
+		<skin id="copyText" styles="copyText"/>
 		<skin id="gridCursor" 		cutouts="gCursor"/>	
-		<skin id="button" 
-			cutouts="button-l,button-c,button-r"
-			styles="button-d,button-e,button-p,button-s"/>
     </assets>
 
 
@@ -164,10 +136,14 @@
     </code>
 
     <group id="AUTORUN_GROUP" left="0" right="0" top="0" bottom="0" visible="false">
-        <panel skin="FreeCellSkin" left="0" right="0" top="0" bottom="0"/>
-        <label skin="title" left="10" right="240" top="0" height="70" align="left" text="Free Cell"/>
+        <panel skin="AppMainSkin" left="0" right="0" top="0" bottom="0"/>
         <group id="AUTORUN" width="600" top="70" bottom="30">
-            <code>
+        	<sprite id="appIcon" skin="kbookMenuIcon" left="0" width="70" top="-70" height="70" u="0" v="1"/>   
+		   	    <!--behave like="iconSprite"/>
+		    </sprite-->        	
+       	<label id="appTitle" skin="title" left="70" right="0" top="-70" height="70" align="left" text="Free Cell"/>
+			<label id="copyright" skin="copyText" left="70" right="0" top="-20" height="20" align="left" text="(C) Ben Chenoweth 2010"/>
+          <code>
                 <function id="doPrevious">this.doPrev();</function>
 				<function id="doNext">	this.doNext();</function>
                 <function id="doSize">	this.doSize();</function>
@@ -183,9 +159,9 @@
 				<function id="doDigit" params="part"> this.digitF(part.key);</function> 
             </code>
 			
-			<button id="BUTTON_RES"		active="true" text="Restart"    left="310" width="100" top="-57" height="45" do="doButtonClick"/>
-			<button id="BUTTON_RAN"		active="true" text="New Deal"   left="420" width="100" top="-57" height="45" do="doButtonClick"/>
-			<button id="BUTTON_EXT"		active="true" text="Quit"    left="530" width="60" top="-57" height="45" do="doButtonClick"/>
+			<button id="BUTTON_RES"		active="true" text="Restart"    left="380" width="100" top="-57" height="45" do="doButtonClick"/>
+			<button id="BUTTON_RAN"		active="true" text="New Deal"   left="490" width="100" top="-57" height="45" do="doButtonClick"/>
+			<!--button id="BUTTON_EXT"		active="true" text="Quit"    left="530" width="60" top="-57" height="45" do="doButtonClick"/-->
 			
 			<sprite skin='freeCell' id='free0' left="2" width="73" top="0" height="96" active="true" canFocus='true' >
 				<behave like="freeSprite"/>
@@ -199,6 +175,11 @@
 			<sprite skin='freeCell' id='free3' left="224" width="73" top="0" height="96" active="true" canFocus='true' >
 				<behave like="freeSprite"/>
 			</sprite>
+
+			<sprite skin='freeCell' left="302" width="73" top="0" height="96" active="true" />
+			<sprite skin='freeCell' left="376" width="73" top="0" height="96" active="true" />
+			<sprite skin='freeCell' left="450" width="73" top="0" height="96" active="true" />
+			<sprite skin='freeCell' left="524" width="73" top="0" height="96" active="true" />
 
 			<sprite skin='freeCell' id='open0' left="4" width="73" top="110" height="96" active="true" canFocus='true' >
 				<behave like="openSprite"/>
@@ -386,18 +367,24 @@
 			<sprite id='selection' skin='selectCard' left='200' width='73' top='300' height='96' u='0' active="false" canFocus='true' >
                 <behave like="selectSprite"/>
             </sprite>
-		
+			<sprite id='smallselection' skin='selectHiddenCard' left='200' width='73' top='300' height='30' u='0' active="false" canFocus='true' >
+                <behave like="selectSprite"/>
+            </sprite>
+			
             <label id='messageStatus' skin='klWeis' left='200' right='0' top='684' height='60' align='left' text='Your move...'/>
 
             <label id='sometext1' skin='versText' left='400' right='0' top='635' height='60' align='left' text='#'/>
 
 			<sprite id='congratulations'	skin='congrats' left='94' width='411' top='250' height='142' active='false' canFocus='false'/>
-
-			<sprite skin="gridCursor" id="gridCursor"  left="522" width="90" top="605" height="100" u="0" active="false" canFocus="true"/>
-            <sprite id='touchHelp'  	skin='hHelpT' left='42' width='516' top='50' height='611' active='false' canFocus='false'/>		
-            <label id='touchButtons1'   skin='touchText'    left='1' right='0' top='665' height='60' align='left' text='Open snapshot       Save snapshot                Quit                        Undo                     Help'/>
-			<label id='nonTouch'   skin='touchText'    left='1' right='0' top='665' height='60' align='left' text='PREV to open and NEXT to save snapshot     -     SIZE to undo     -     MENU to show/hide help'/>
-			<label id="instr4" skin="quitinstr" left="420" right="0" top="705" height="20" align="left" text="9: New Deal   0: Quit"/>
+			<sprite id='SnapShotIndicator' skin='camera' left='15' width='50' top='645' height='35' visible='true' active='false' canFocus='false'/>
+			<sprite id='gridCursor' skin='gridCursor' left='522' width='90' top='605' height='100' u='0' active='false' canFocus='true'/>
+			<label id="instr4" skin="quitinstr" right="10" top="600" width="200" height="20" align="right" text="9: New Deal"/>
+			<label id="instr5" skin="quitinstr" right="10" top="660" width="200" height="20" align="right" text="0: Quit"/>			
+            <!--sprite id='touchHelp'  	skin='hHelpT' left='42' width='516' top='50' height='611' active='false' canFocus='false'/-->
+            <text id='helpText' skin='helpText' left='42' right='42' top='50' bottom='50' active='false' visible='false' />		
+            <label id='touchButtons1'   skin='touchText'    left='1' right='0' bottom='3' height='15' align='left' text='Open snapshot       Save snapshot                Quit                        Undo                     Help'/>
+			<label id='nonTouch'   skin='touchText'    left='1' right='0' bottom='3' height='15' align='left' text='PREV to open and NEXT to save snapshot           SIZE to undo           MENU to show/hide help'/>
+			<button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doRoot"/>
         </group>
     </group>
 </document>
