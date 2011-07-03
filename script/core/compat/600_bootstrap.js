@@ -323,43 +323,66 @@ var tmp = function() {
 	// Standby image
 	standbyImage.draw = function() {
 		var window, path, bitmap, temp, port, x, y, bounds, ratio, width, height, ditheredBitmap, color;
+		var newpath, mime, newbitmap, mode, dither;
 		window = this.root.window;
-		path = getRandomWallpaper();
+		mode = Core.addonByName.StandbyImage.options.mode;
+		dither = Core.addonByName.StandbyImage.options.dither === "true";
+		try {
+      			if (mode === 'cover') {
+			// attempt to use current book cover
+			newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+			mime = FileSystem.getMIMEType(newpath);
+			newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
+			ditheredBitmap = newbitmap.dither(true);
+			newbitmap.close();			
+			}					
+       		} catch (e) { }
 		
-		if (FileSystem.getFileInfo(path)) {
-			try {
-				bitmap = new Bitmap(path);
-				temp = new Bitmap(this.width, this.height, 12);
-				port = new Port(temp);
-				port.setPenColor(Color.white);
-				port.fillRectangle(0, 0, this.width, this.height);
-				x = 0;
-				y = 0;
-				bounds = bitmap.getBounds();
-				ratio = (bounds.height > bounds.width)?this.height / bounds.height:this.width / bounds.width;
-				width = Math.floor(bounds.width * ratio);
-				height = Math.floor(bounds.height * ratio);
-				if (height > width) {
-					x = Math.floor(this.width - width) / 2;
-				} else {
-					y = Math.floor(this.height - height) / 2;
-				}
-				bitmap.draw(port, x, y, width, height);
-				bitmap.close();
-				ditheredBitmap = temp.dither(true);
-				port.close();
-				temp.close();
-				window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
-				ditheredBitmap.close();
-			} catch (e) {
-				PARAMS.bootLog("Exception in standby image draw " + e);
+		if (!newbitmap && (mode === 'random' || mode === 'cover')) {
+			// if no book cover, then use random wallpaper
+			path = getRandomWallpaper();
+			if (FileSystem.getFileInfo(path)) {
+				try {
+					bitmap = new Bitmap(path);
+					temp = new Bitmap(this.width, this.height, 12);
+					port = new Port(temp);
+					port.setPenColor(Color.white);
+					port.fillRectangle(0, 0, this.width, this.height);
+					x = 0;
+					y = 0;
+					bounds = bitmap.getBounds();
+					ratio = (bounds.height > bounds.width)?this.height / bounds.height:this.width / bounds.width;
+					width = Math.floor(bounds.width * ratio);
+					height = Math.floor(bounds.height * ratio);
+					if (height > width) {
+						x = Math.floor(this.width - width) / 2;
+					} else {
+						y = Math.floor(this.height - height) / 2;
+					}
+					bitmap.draw(port, x, y, width, height);
+					ditheredBitmap = temp.dither(true);
+					bitmap.close();
+					port.close();
+					temp.close();				
+				} catch (e) { PARAMS.bootLog("Exception in standby image draw " + e); }
 			}
-		} else {
+		}
+		if (!ditheredBitmap &&  mode !=='act_page'){
+		try {			
 			color = window.getPenColor();
 			window.setPenColor(this.color);
 			window.fillRectangle(this);
 			window.setPenColor(color);
-		}
+		} catch (e) {PARAMS.bootLog("Exception in blank " + e, 'error'); }        			
+		}		
+		if (ditheredBitmap) {
+			window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
+			ditheredBitmap.close();		
+			}
+		if (mode === 'act_page') {
+			Core.addonByName.StatusBar.setBookIndex('sleeping');
+			Core.ui.updateScreen();
+			}
 	};
 	
 	// Fix sorting (unicode order)

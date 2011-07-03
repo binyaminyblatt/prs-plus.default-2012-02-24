@@ -90,14 +90,15 @@ return {
 		"1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "0": "0",
 		"1_h": "kHold1", "2_h": "kHold2", "3_h": "kHold3", "4_h": "kHold4", "5_h": "kHold5", "6_h": "kHold6", "7_h": "kHold7", "8_h": "kHold8", "9_h": "kHold9", "0_h": "kHold0",
 		jp_left: "kLeft", jp_right: "kRight", jp_up: "kUp", jp_down: "kDown",
-		// FIXME: implement #39 jp_left_h: "kLeft-hold", jp_right_h: "kRight-hold", jp_up_h: "kUp-hold", jp_down_h: "kDown-hold",
+		// FIXME: implement #39 
+		jp_left_h: "kLeft-hold", jp_right_h: "kRight-hold", jp_up_h: "kUp-hold", jp_down_h: "kDown-hold",
 		jp_center: "0x27", jp_center_h: "0x27-hold",
 		menu: "0x21", menu_h: "0x21-hold",
 		bookmark: "0x32", bookmark_h: "0x32-hold",
 		size: "0x42", size_h: "0x42-hold",
 		volume_down: "0x41", volume_down_h: "0x41-hold", volume_up: "0x40", volume_up_h: "0x40-hold",
 		// Bottom left next/prev page
-		bl_next: "0x30", bl_next_h: "0x30-hold", bl_previous: "0x31", bl_previous_h: "0x31h",
+		bl_next: "0x30", bl_next_h: "0x30-hold", bl_previous: "0x31", bl_previous_h: "0x31-hold",
 		// Sidebar next/prev page
 		sb_next: "kNext", sb_next_h: "kLast", sb_previous: "kPrevious", sb_previous_h: "kFirst"
 	},

@@ -1182,4 +1182,5 @@
 		<kbookLabel id="LB_INVALID_FORMAT" left="210" right="210" height="30" bottom="0" align="center" text="Invalid Format!"/>
 	</group>
 
+	<group id="STANDBY_IMAGE" left="0" right="0" top="0" bottom="0" active="false" visible="false"/>
 </document>
