@@ -13,10 +13,6 @@
 //		Free Cell by Ben Chenoweth
 //		Mahjong by Clemenseken
 //		Sudoku by Obelix
-//  2011-06-29 Ben Chenoweth - ALL: Updated existing games/calculator to use AppAssets and added
-//      Draughts by Ben Chenoweth
-//      MineSweeper by Mark Nord / D. Shep Poor
-//      XO-Cubed by Ben Chenoweth
 
 return {
 	// Menu icon indices 
@@ -62,6 +58,8 @@ return {
 		TIMEZONE: 62,
 		PERIODICALS: 67,
 		HOME: 26, // missing
+		
+		STANDBY: 79,
 		
 		UNCHECKED: 85,
 		CHECKED: 86,
@@ -176,14 +174,11 @@ return {
 			{ name: "notes", parent: "more" },
 			{ name: "Calculator", parent: "more" },	
 			{ name: "Chess", parent: "more" },
-			{ name: "Draughts", parent: "more" },
 			{ name: "FiveBalls", parent: "more" },	
 			{ name: "FiveRow", parent: "more" },	
 			{ name: "FreeCell", parent: "more" },
 			{ name: "Mahjong", parent: "more" },
-			{ name: "MineSweeper", parent: "more" },
-			{ name: "Sudoku", parent: "more" },
-			{ name: "XOCubed", parent: "more" }			
+			{ name: "Sudoku", parent: "more" }		
 		],
 		movableNodes: [0, 0, 1, 1, 1],
 		defaultLayout: [

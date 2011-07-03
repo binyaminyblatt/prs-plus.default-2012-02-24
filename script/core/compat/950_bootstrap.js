@@ -19,6 +19,41 @@
 //-----------------------------------------------------------------------------------------------------
 
 var tmp = function() {
+
+	// Standby image
+	var oldStandbyImageDraw = standbyImage.draw;
+	
+	standbyImage.draw = function() {
+		var window, ditheredBitmap;
+		var newpath, mime, newbitmap, mode, dither;
+		window = this.root.window;
+		mode = Core.addonByName.StandbyImage.options.mode;
+		dither = Core.addonByName.StandbyImage.options.dither === "true";		
+		try {
+			if (mode === 'cover') {
+        			// attempt to use current book cover
+        			newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+        			mime = FileSystem.getMIMEType(newpath);
+        			newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
+        			ditheredBitmap = newbitmap.dither(dither);
+        			newbitmap.close();			
+				if (ditheredBitmap) {
+					window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
+					ditheredBitmap.close();	
+        				}
+        			}	
+		} catch (ignore) {}
+		
+		if (!newbitmap && (mode !== 'act_page')) {
+			oldStandbyImageDraw.apply(this);	
+		} else {
+			if (mode === 'act_page') {
+			Core.addonByName.StatusBar.setBookIndex('sleeping');
+			Core.ui.updateScreen();
+			}	
+		}
+	};
+
 	var fixTimeZones, updateSiblings;
 	
 	// Updates node siblings (used for setting selected / unselected icon)

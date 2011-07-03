@@ -204,7 +204,7 @@ return {
 
 	CoreLang: {
 		TITLE: "Localización",
-		COMMENT: "Requiere reincio",
+		COMMENT: "Requiere reinicio", //modificado 
 		OPTION_LANG: "Idioma",
 
 		OPTION_DATE_FORMAT: "Formato fecha",

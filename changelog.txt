@@ -2,6 +2,9 @@
  * 505: Fixed #126 "images/audio lists are empty"
  * 505: Fixed #139 "Menu customizer values are not translated"
  * x50: Fixed #120 "No keyboard in SP-EN dictionary"
+ * 300/505: Fixed #38 "Standby image"
+ * 505: Fixed #39 "Hold joypad arrows events"
+ * ALL: Fixed #24 "Displaying first page of the book on standby"
  * ALL: Screenshot: captured image is now  visible to the user, not only to the system :)
  * ALL: BrowseFolders:  added optional ".." item (by Shura1oplot)
  * ALL: Action are now grouped and have icons (by Shura1oplot)

@@ -8,16 +8,14 @@
 //	2011-02-28 kartu -  ALL: Added 
 //		Calculator by Mark Nord
 //		Chess by Ben Chenoweth / Stefano Gioffre
+//		Draughts by Ben Chenoweth
 //		Five in a Row by Ben Chenoweth
 //		Five Balls by Clemenseken
 //		Free Cell by Ben Chenoweth
 //		Mahjong by Clemenseken
+//		MineSweeper by Microsoft; JS-Version by D. Shep Poor; adapted for Sony PRS by Mark Nord
 //		Sudoku by Obelix
-//  2011-06-29 Ben Chenoweth - ALL: Updated existing games/calculator to use AppAssets and added
-//      Draughts by Ben Chenoweth
-//      MineSweeper by Mark Nord / D. Shep Poor
-//      XO-Cubed by Ben Chenoweth
-
+//		XOCubed by Ben Chenoweth
 
 return {
 	// Menu icon indices 
@@ -63,6 +61,8 @@ return {
 		TIMEZONE: 62,
 		PERIODICALS: 67,
 		HOME: 26, // missing
+		
+		STANDBY: 79,
 		
 		UNCHECKED: 85,
 		CHECKED: 86,
@@ -184,7 +184,7 @@ return {
 			{ name: "Mahjong", parent: "more" },
 			{ name: "MineSweeper", parent: "more" },
 			{ name: "Sudoku", parent: "more" },
-			{ name: "XOCubed", parent: "more" }
+			{ name: "XOCubed", parent: "more" }	
 		],
 		movableNodes: [0, 0, 1, 1, 1],
 		defaultLayout: [

@@ -127,6 +127,151 @@ var tmp = function() {
 			PARAMS.bootLog("in overriden setLocale", e);
 		}
 	};
+
+	createTextThumbnail = function (path) {
+		var bitmap, viewer, bounds;
+		bitmap = null;
+		viewer = null;
+		try {
+		//	bounds = this.scratchRectangle;
+			bounds = new Rectangle();
+			viewer = new Document.Viewer.URL('file://' + path, FileSystem.getMIMEType(path));
+			bounds.set(0, 0, 584, 754);
+			viewer.set(Document.Property.dimensions, bounds);
+			viewer.set(Document.Property.textEngine, 'FreeType');
+			viewer.set(Document.Property.font, 'Dutch801 Rm BT');
+			bitmap = viewer.render();
+		}
+		catch (e)
+		{PARAMS.bootLog("createTextThumbnail e:"+e, "error");
+		}
+		finally {
+			if (viewer) {
+				viewer.close();
+			}
+		}
+		return bitmap;
+	};	
+	
+	
+	getRandomWallpaper = function() {
+		var  path, folder, idx, list;
+		try {
+			if (kbook.model.container.getVariable('ORIENTATION')) {
+				// horizontal layout, use another set of pictures
+				folder = System.applyEnvironment("[prspPublicPath]wallpaper/landscape/");
+				if (!landscapeWallpapers) {
+					landscapeWallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
+				}
+				list = landscapeWallpapers;
+			} else {
+				folder = System.applyEnvironment("[prspPublicPath]wallpaper/");
+				//folder = "/Data/";
+				if (!wallpapers) {
+					wallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
+				}
+				list = wallpapers;
+			}
+
+			while (list.length > 0) {
+				idx = Math.floor(Math.random() * list.length);
+				path = list[idx];
+				if (PARAMS.Core.media.isImage(path)) {
+					return folder + path;
+				} else {
+					list.splice(idx, 1);
+				}
+			}
+		} catch (e) {
+			PARAMS.bootLog("error in random image " + e);
+		}
+	};
+
+	// Standby image
+	kbook.model.container.sandbox.doSuspend = function() {
+		var log, standbyImage;
+	try {	
+		log = Core.log.getLogger("doSuspend");
+	//	log.trace("entering doSuspend", "trace");
+	//	log.trace("StandbyImage "+Core.debug.dumpToString(Core.addonByName.StandbyImage,' ',3), "trace");
+		
+		standbyImage = kbook.model.container.findContent('STANDBY_IMAGE');
+
+		standbyImage.draw = function() {
+        		var window, path, bitmap, temp, port, x, y, bounds, ratio, width, height, ditheredBitmap, color;
+        		var newpath, mime, newbitmap, mode, dither;
+        		window = this.root.window;
+			mode = Core.addonByName.StandbyImage.options.mode;
+			dither = Core.addonByName.StandbyImage.options.dither === "true";
+        		try {
+      			if (mode === 'cover') {
+              			// attempt to use current book cover
+              			newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+              			mime = FileSystem.getMIMEType(newpath);
+              			newbitmap = createTextThumbnail(newpath);
+              			ditheredBitmap = newbitmap.dither(dither);
+              			newbitmap.close();	
+              			}		
+        		} catch (e) {log.error("createFileThumbnail", "error"); }
+        		
+        		if (!newbitmap && (mode === 'random' || mode === 'cover')) {
+        			// if no book cover, then use random wallpaper
+        			path = getRandomWallpaper();
+        			if (FileSystem.getFileInfo(path)) {
+        				try {
+        					bitmap = new Bitmap(path);
+        					temp = new Bitmap(this.width, this.height, 12);
+        					port = new Port(temp);
+        					port.setPenColor(Color.white);
+        					port.fillRectangle(0, 0, this.width, this.height);
+        					x = 0;
+        					y = 0;
+        					bounds = bitmap.getBounds();
+        					ratio = (bounds.height > bounds.width)?this.height / bounds.height:this.width / bounds.width;
+        					width = Math.floor(bounds.width * ratio);
+        					height = Math.floor(bounds.height * ratio);
+        					if (height > width) {
+        						x = Math.floor(this.width - width) / 2;
+        					} else {
+        						y = Math.floor(this.height - height) / 2;
+        					}
+        					bitmap.draw(port, x, y, width, height);
+        					ditheredBitmap = temp.dither(dither);
+        					bitmap.close();
+        					port.close();
+        					temp.close();		
+        				} catch (e) { log.error("Exception in random image draw " + e, 'error'); }
+        			}
+        		}
+			if (!ditheredBitmap || mode ==="blank"){
+			try {			
+				temp = new Bitmap(600, 800, 12);
+				port = new Port(temp);
+        			port.setPenColor(Color.white);
+        			port.fillRectangle(0, 0, 600, 800);			
+        			ditheredBitmap = temp.dither(false);
+        			port.close();
+        			temp.close(); 
+			} catch (e) { log.error("Exception create blank " + e, 'error'); }        			
+			}
+		if (ditheredBitmap) {
+			window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
+			ditheredBitmap.close();		
+			Core.ui.updateScreen();
+		} 
+		if (mode === 'act_page') {
+			Core.addonByName.StatusBar.setBookIndex('sleeping');
+			Core.ui.updateScreen();
+			}
+		};
+	
+		standbyImage.draw();
+
+	} catch (e1){log.trace("Exception in standby image draw " + e1)};	
+
+		this.getModel().suspend();
+		this.getDevice().doneSuspend();
+	}; 
 	
 	/*
 		<function id="doDigit" params="part"><![CDATA[
