@@ -21,6 +21,8 @@
 //	2011-03-24 kartu - Added Portuguese localization by OTNeto
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 //	2011-04-21 kartu - Added option to disable scanning without loading cache
+//	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
+//
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -336,7 +338,8 @@ var tmp = function() {
 			ditheredBitmap = newbitmap.dither(true);
 			newbitmap.close();			
 			}					
-       		} catch (e) { }
+       		} catch (ignore) {
+       		}
 		
 		if (!newbitmap && (mode === 'random' || mode === 'cover')) {
 			// if no book cover, then use random wallpaper
@@ -364,7 +367,9 @@ var tmp = function() {
 					bitmap.close();
 					port.close();
 					temp.close();				
-				} catch (e) { PARAMS.bootLog("Exception in standby image draw " + e); }
+				} catch (e) {
+					PARAMS.bootLog("Exception in standby image draw " + e);
+					}
 			}
 		}
 		if (!ditheredBitmap &&  mode !=='act_page'){
@@ -373,7 +378,9 @@ var tmp = function() {
 			window.setPenColor(this.color);
 			window.fillRectangle(this);
 			window.setPenColor(color);
-		} catch (e) {PARAMS.bootLog("Exception in blank " + e, 'error'); }        			
+		} catch (e) {
+			PARAMS.bootLog("Exception in blank " + e, 'error'); 
+			}        			
 		}		
 		if (ditheredBitmap) {
 			window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);

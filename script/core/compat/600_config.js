@@ -18,6 +18,7 @@
 //      Draughts by Ben Chenoweth
 //      MineSweeper by Mark Nord / D. Shep Poor
 //      XO-Cubed by Ben Chenoweth
+//	2011-07-03 Mark Nord - Added NodeKinds.STANDBY	
 
 return {
 	// Menu icon indices 
@@ -61,6 +62,8 @@ return {
 		SD: 56,
 		LANGUAGE: 57,
 		HOME: 26, // missing
+		
+		STANDBY: 83,
 		
 		UNCHECKED: 60,
 		CHECKED: 61,
