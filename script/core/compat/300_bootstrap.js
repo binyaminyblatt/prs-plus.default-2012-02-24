@@ -16,6 +16,9 @@
 //	2011-03-02 kartu - Added #57 Spanish localization (by Carlos)
 //	2011-03-21 kartu - Added Ukrainian localization by Bookoman
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
+//	2011-07-04 Mark Nord - Added #38 "Standby image"
+//	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
+
 
 var tmp = function() {
 	var oldSetLocale, localize;
@@ -128,12 +131,12 @@ var tmp = function() {
 		}
 	};
 
+	// renders actial books first page, copy 'n past from 600's BookUtil
 	createTextThumbnail = function (path) {
 		var bitmap, viewer, bounds;
 		bitmap = null;
 		viewer = null;
 		try {
-		//	bounds = this.scratchRectangle;
 			bounds = new Rectangle();
 			viewer = new Document.Viewer.URL('file://' + path, FileSystem.getMIMEType(path));
 			bounds.set(0, 0, 584, 754);
@@ -142,8 +145,8 @@ var tmp = function() {
 			viewer.set(Document.Property.font, 'Dutch801 Rm BT');
 			bitmap = viewer.render();
 		}
-		catch (e)
-		{PARAMS.bootLog("createTextThumbnail e:"+e, "error");
+		catch (e){
+			PARAMS.bootLog("createTextThumbnail e:"+e, "error");
 		}
 		finally {
 			if (viewer) {
@@ -166,7 +169,6 @@ var tmp = function() {
 				list = landscapeWallpapers;
 			} else {
 				folder = System.applyEnvironment("[prspPublicPath]wallpaper/");
-				//folder = "/Data/";
 				if (!wallpapers) {
 					wallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
 				}
@@ -192,8 +194,6 @@ var tmp = function() {
 		var log, standbyImage;
 	try {	
 		log = Core.log.getLogger("doSuspend");
-	//	log.trace("entering doSuspend", "trace");
-	//	log.trace("StandbyImage "+Core.debug.dumpToString(Core.addonByName.StandbyImage,' ',3), "trace");
 		
 		standbyImage = kbook.model.container.findContent('STANDBY_IMAGE');
 
@@ -212,7 +212,9 @@ var tmp = function() {
               			ditheredBitmap = newbitmap.dither(dither);
               			newbitmap.close();	
               			}		
-        		} catch (e) {log.error("createFileThumbnail", "error"); }
+        		} catch (e) {
+        			log.error("createFileThumbnail", "error"); 
+        			}
         		
         		if (!newbitmap && (mode === 'random' || mode === 'cover')) {
         			// if no book cover, then use random wallpaper
@@ -240,10 +242,13 @@ var tmp = function() {
         					bitmap.close();
         					port.close();
         					temp.close();		
-        				} catch (e) { log.error("Exception in random image draw " + e, 'error'); }
+        				} catch (e) {
+        					log.error("Exception in random image draw " + e, 'error'); 
+        					}
         			}
         		}
 			if (!ditheredBitmap || mode ==="blank"){
+			// generate blank bitmap
 			try {			
 				temp = new Bitmap(600, 800, 12);
 				port = new Port(temp);
@@ -252,9 +257,12 @@ var tmp = function() {
         			ditheredBitmap = temp.dither(false);
         			port.close();
         			temp.close(); 
-			} catch (e) { log.error("Exception create blank " + e, 'error'); }        			
+			} catch (e) {
+				log.error("Exception create blank " + e, 'error'); 
+				}        			
 			}
 		if (ditheredBitmap) {
+		// if there is any standbyImage display it
 			window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
 			ditheredBitmap.close();		
 			Core.ui.updateScreen();
@@ -267,7 +275,9 @@ var tmp = function() {
 	
 		standbyImage.draw();
 
-	} catch (e1){log.trace("Exception in standby image draw " + e1)};	
+	} catch (e1){
+		log.trace("Exception in standby image draw " + e1)
+		}	
 
 		this.getModel().suspend();
 		this.getDevice().doneSuspend();

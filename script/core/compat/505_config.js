@@ -7,6 +7,9 @@
 //      Draughts by Ben Chenoweth
 //      MineSweeper by Mark Nord / D. Shep Poor
 //      XO-Cubed by Ben Chenoweth
+//	2011-07-04 Mark Nord - Added #39 "Hold joypad arrows events"
+//	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" & #38 "Standby image"
+//	2011-07-03 Mark Nord - Added NodeKinds.STANDBY	
 
 return {
 	// Menu icon indices 
@@ -46,7 +49,9 @@ return {
 		INTERNAL_MEM: 36,
 		SEARCH: 37,
 		ROOT_MENU: 38,
-		
+
+		STANDBY: 18, // FIXME include Icon in kbookIcon.png; use PICTURES in the meantime		
+
 		UNCHECKED: 39,
 		CHECKED: 40,
 		
@@ -90,7 +95,6 @@ return {
 		"1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "0": "0",
 		"1_h": "kHold1", "2_h": "kHold2", "3_h": "kHold3", "4_h": "kHold4", "5_h": "kHold5", "6_h": "kHold6", "7_h": "kHold7", "8_h": "kHold8", "9_h": "kHold9", "0_h": "kHold0",
 		jp_left: "kLeft", jp_right: "kRight", jp_up: "kUp", jp_down: "kDown",
-		// FIXME: implement #39 
 		jp_left_h: "kLeft-hold", jp_right_h: "kRight-hold", jp_up_h: "kUp-hold", jp_down_h: "kDown-hold",
 		jp_center: "0x27", jp_center_h: "0x27-hold",
 		menu: "0x21", menu_h: "0x21-hold",

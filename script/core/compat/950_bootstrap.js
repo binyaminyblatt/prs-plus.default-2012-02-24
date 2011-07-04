@@ -12,6 +12,7 @@
 //	2011-02-26 kartu - Refactored, moved code common to x50 models into common_x50.js
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
 //	2011-05-12 kartu - Added "GMT + 10" timezone
+//	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -31,25 +32,26 @@ var tmp = function() {
 		dither = Core.addonByName.StandbyImage.options.dither === "true";		
 		try {
 			if (mode === 'cover') {
-        			// attempt to use current book cover
-        			newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
-        			mime = FileSystem.getMIMEType(newpath);
-        			newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
-        			ditheredBitmap = newbitmap.dither(dither);
-        			newbitmap.close();			
+				// attempt to use current book cover
+				newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+				mime = FileSystem.getMIMEType(newpath);
+				newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
+				ditheredBitmap = newbitmap.dither(dither);
+				newbitmap.close();			
 				if (ditheredBitmap) {
 					window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
 					ditheredBitmap.close();	
-        				}
+					}
         			}	
-		} catch (ignore) {}
+		} catch (ignore) {
+		}
 		
 		if (!newbitmap && (mode !== 'act_page')) {
 			oldStandbyImageDraw.apply(this);	
 		} else {
 			if (mode === 'act_page') {
-			Core.addonByName.StatusBar.setBookIndex('sleeping');
-			Core.ui.updateScreen();
+				Core.addonByName.StatusBar.setBookIndex('sleeping');
+				Core.ui.updateScreen();
 			}	
 		}
 	};

@@ -8,6 +8,8 @@
 //	2011-03-04 kartu - Initial version
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 //	2011-04-21 kartu - Added option to disable scanning without loading cache
+//	2011-07-04 Mark Nord - Added #38 "Standby image"
+//	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
 //
 
 var tmp = function() {
@@ -73,13 +75,13 @@ var tmp = function() {
 			oldCallback.apply(this, arguments);
 		}
 	};
-	
+
+	// renders actial books first page, copy 'n past from 600's BookUtil	
 	createTextThumbnail = function (path) {
 		var bitmap, viewer, bounds;
 		bitmap = null;
 		viewer = null;
 		try {
-		//	bounds = this.scratchRectangle;
 			bounds = new Rectangle();
 			viewer = new Document.Viewer.URL('file://' + path, FileSystem.getMIMEType(path));
 			bounds.set(0, 0, 584, 754);
@@ -89,7 +91,7 @@ var tmp = function() {
 			bitmap = viewer.render();
 		}
 		catch (e)
-		{PARAMS.bootLog("createTextThumbnail e:"+e, "error");
+			{PARAMS.bootLog("createTextThumbnail e:"+e, "error");
 		}
 		finally {
 			if (viewer) {
@@ -138,58 +140,61 @@ var tmp = function() {
 		var log, standbyImage;
 	try {	
 		log = Core.log.getLogger("doSuspend");
-	//	log.trace("entering doSuspend", "trace");
-	//	log.trace("StandbyImage "+Core.debug.dumpToString(Core.addonByName.StandbyImage,' ',3), "trace");
 		
 		standbyImage = kbook.model.container.findContent('STANDBY_IMAGE');
 
 		standbyImage.draw = function() {
-        		var window, path, bitmap, temp, port, x, y, bounds, ratio, width, height, ditheredBitmap, color;
-        		var newpath, mime, newbitmap, mode, dither;
-        		window = this.root.window;
+			var window, path, bitmap, temp, port, x, y, bounds, ratio, width, height, ditheredBitmap, color;
+			var newpath, mime, newbitmap, mode, dither;
+			window = this.root.window;
 			mode = Core.addonByName.StandbyImage.options.mode;
 			dither = Core.addonByName.StandbyImage.options.dither === "true";
-        		try {
-      			if (mode === 'cover') {
-              			// attempt to use current book cover
-              			newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
-              			mime = FileSystem.getMIMEType(newpath);
-              			newbitmap = createTextThumbnail(newpath);
-              			ditheredBitmap = newbitmap.dither(dither);
-              			newbitmap.close();	
-              			}		
-        		} catch (e) {log.error("createFileThumbnail", "error"); }
-        		
-        		if (!newbitmap && (mode === 'random' || mode === 'cover')) {
-        			// if no book cover, then use random wallpaper
-        			path = getRandomWallpaper();
-        			if (FileSystem.getFileInfo(path)) {
-        				try {
-        					bitmap = new Bitmap(path);
-        					temp = new Bitmap(this.width, this.height, 12);
-        					port = new Port(temp);
-        					port.setPenColor(Color.white);
-        					port.fillRectangle(0, 0, this.width, this.height);
-        					x = 0;
-        					y = 0;
-        					bounds = bitmap.getBounds();
-        					ratio = (bounds.height > bounds.width)?this.height / bounds.height:this.width / bounds.width;
-        					width = Math.floor(bounds.width * ratio);
-        					height = Math.floor(bounds.height * ratio);
-        					if (height > width) {
-        						x = Math.floor(this.width - width) / 2;
-        					} else {
-        						y = Math.floor(this.height - height) / 2;
-        					}
-        					bitmap.draw(port, x, y, width, height);
-        					ditheredBitmap = temp.dither(dither);
-        					bitmap.close();
-        					port.close();
-        					temp.close();		
-        				} catch (e) { log.error("Exception in random image draw " + e, 'error'); }
-        			}
-        		}
+			try {
+			if (mode === 'cover') {
+				// attempt to use current book cover
+				newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+				mime = FileSystem.getMIMEType(newpath);
+				newbitmap = createTextThumbnail(newpath);
+				ditheredBitmap = newbitmap.dither(dither);
+				newbitmap.close();	
+				}		
+			} catch (e) {
+				log.error("createFileThumbnail", "error"); 
+				}
+        			
+			if (!newbitmap && (mode === 'random' || mode === 'cover')) {
+				// if no book cover, then use random wallpaper
+				path = getRandomWallpaper();
+				if (FileSystem.getFileInfo(path)) {
+					try {
+						bitmap = new Bitmap(path);
+						temp = new Bitmap(this.width, this.height, 12);
+						port = new Port(temp);
+						port.setPenColor(Color.white);
+						port.fillRectangle(0, 0, this.width, this.height);
+						x = 0;
+						y = 0;
+						bounds = bitmap.getBounds();
+						ratio = (bounds.height > bounds.width)?this.height / bounds.height:this.width / bounds.width;
+						width = Math.floor(bounds.width * ratio);
+						height = Math.floor(bounds.height * ratio);
+						if (height > width) {
+							x = Math.floor(this.width - width) / 2;
+						} else {
+	       						y = Math.floor(this.height - height) / 2;
+						}
+						bitmap.draw(port, x, y, width, height);
+						ditheredBitmap = temp.dither(dither);
+						bitmap.close();
+						port.close();
+						temp.close();		
+					} catch (e) { 
+						log.error("Exception in random image draw " + e, 'error'); 
+						}
+				}
+			}
 			if (!ditheredBitmap && mode !=='act_page'){
+			// generate blank bitmap
 			try {			
 				temp = new Bitmap(600, 800, 12);
 				port = new Port(temp);
@@ -198,9 +203,12 @@ var tmp = function() {
         			ditheredBitmap = temp.dither(false);
         			port.close();
         			temp.close(); 
-			} catch (e) { log.error("Exception create blank " + e, 'error'); }        			
+			} catch (e) { 
+				log.error("Exception create blank " + e, 'error'); 
+				}        			
 			}
 			if (ditheredBitmap) {
+			// if there is any standbyImage display it
 				window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
 				ditheredBitmap.close();		
 				Core.ui.updateScreen();
@@ -213,7 +221,9 @@ var tmp = function() {
 	
 		standbyImage.draw();
 
-	} catch (e1){log.trace("Exception in standby image draw " + e1)};	
+	} catch (e1){
+		log.trace("Exception in standby image draw " + e1)
+		}	
 
 		this.getModel().suspend();
 		this.getDevice().doneSuspend();
