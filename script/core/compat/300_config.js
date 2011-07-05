@@ -19,7 +19,8 @@
 //      Draughts by Ben Chenoweth
 //      MineSweeper by Mark Nord / D. Shep Poor
 //      XO-Cubed by Ben Chenoweth
-//	2011-07-03 Mark Nord - Added NodeKinds.STANDBY	
+//	2011-07-03 Mark Nord - Added NodeKinds.STANDBY
+//  2011-07-05 Ben Chenoweth - Added STANDBY icon
 
 return {
 	// Menu icon indices 
@@ -60,7 +61,7 @@ return {
 		SEARCH: 43,
 		ROOT_MENU: 44,
 		
-		STANDBY: 18, // FIXME include Icon in kbookIcon.png; use PICTURES in the meantime
+		STANDBY: 68,
 		
 		UNCHECKED: 45,
 		CHECKED: 46,

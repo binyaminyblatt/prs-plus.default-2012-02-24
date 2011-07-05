@@ -9,7 +9,8 @@
 //      XO-Cubed by Ben Chenoweth
 //	2011-07-04 Mark Nord - Added #39 "Hold joypad arrows events"
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" & #38 "Standby image"
-//	2011-07-03 Mark Nord - Added NodeKinds.STANDBY	
+//	2011-07-03 Mark Nord - Added NodeKinds.STANDBY
+//  2011-07-05 Ben Chenoweth - Added STANDBY icon
 
 return {
 	// Menu icon indices 
@@ -50,7 +51,7 @@ return {
 		SEARCH: 37,
 		ROOT_MENU: 38,
 
-		STANDBY: 18, // FIXME include Icon in kbookIcon.png; use PICTURES in the meantime		
+		STANDBY: 62,
 
 		UNCHECKED: 39,
 		CHECKED: 40,
