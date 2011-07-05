@@ -3,7 +3,8 @@
 // Author: Mark Nord
 //
 // History:
-//	2010-07-03 Mark Nord - Initial version
+//	2011-07-03 Mark Nord - Initial version
+//  2011-07-05 Ben Chenoweth - minor corrections
 
 
 tmp = function() {
@@ -19,7 +20,7 @@ tmp = function() {
 	case "600":
         	var StandbyImage = {
         		name: "StandbyImage",
-        		tile: L("TITLE"),
+        		title: L("TITLE"),
         		icon: "STANDBY",
         		optionDefs: [
         			{
@@ -57,8 +58,8 @@ tmp = function() {
 		break;
 	default:        	
 		var StandbyImage = {
-        		name: "StandbyImage",
-			tile: L("TITLE"),
+        	name: "StandbyImage",
+			title: L("TITLE"),
 			icon: "STANDBY",
 			optionDefs: [
 				{
