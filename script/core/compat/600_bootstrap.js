@@ -22,6 +22,7 @@
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 //	2011-04-21 kartu - Added option to disable scanning without loading cache
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
+//  2011-07-05 Ben Chenoweth - Minor fix to prevent crash when showing actual page on standby
 //
 //
 //-----------------------------------------------------------------------------------------------------
@@ -325,21 +326,19 @@ var tmp = function() {
 	// Standby image
 	standbyImage.draw = function() {
 		var window, path, bitmap, temp, port, x, y, bounds, ratio, width, height, ditheredBitmap, color;
-		var newpath, mime, newbitmap, mode, dither;
+		var newpath, newbitmap, mode, dither;
 		window = this.root.window;
 		mode = Core.addonByName.StandbyImage.options.mode;
 		dither = Core.addonByName.StandbyImage.options.dither === "true";
 		try {
       			if (mode === 'cover') {
-			// attempt to use current book cover
-			newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
-			mime = FileSystem.getMIMEType(newpath);
-			newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
-			ditheredBitmap = newbitmap.dither(true);
-			newbitmap.close();			
-			}					
-       		} catch (ignore) {
-       		}
+					// attempt to use current book cover
+					newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+					newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
+					ditheredBitmap = newbitmap.dither(dither);
+					newbitmap.close();			
+				}					
+       		} catch (e) { }
 		
 		if (!newbitmap && (mode === 'random' || mode === 'cover')) {
 			// if no book cover, then use random wallpaper
@@ -363,33 +362,29 @@ var tmp = function() {
 						y = Math.floor(this.height - height) / 2;
 					}
 					bitmap.draw(port, x, y, width, height);
-					ditheredBitmap = temp.dither(true);
+					ditheredBitmap = temp.dither(dither);
 					bitmap.close();
 					port.close();
 					temp.close();				
-				} catch (e) {
-					PARAMS.bootLog("Exception in standby image draw " + e);
-					}
+				} catch (e) { PARAMS.bootLog("Exception in standby image draw " + e); }
 			}
 		}
 		if (!ditheredBitmap &&  mode !=='act_page'){
-		try {			
-			color = window.getPenColor();
-			window.setPenColor(this.color);
-			window.fillRectangle(this);
-			window.setPenColor(color);
-		} catch (e) {
-			PARAMS.bootLog("Exception in blank " + e, 'error'); 
-			}        			
+			try {			
+				color = window.getPenColor();
+				window.setPenColor(this.color);
+				window.fillRectangle(this);
+				window.setPenColor(color);
+			} catch (e) {PARAMS.bootLog("Exception in blank " + e, 'error'); }        			
 		}		
 		if (ditheredBitmap) {
 			window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
 			ditheredBitmap.close();		
-			}
+		}
 		if (mode === 'act_page') {
-			Core.addonByName.StatusBar.setBookIndex('sleeping');
-			Core.ui.updateScreen();
-			}
+			//Core.addonByName.StatusBar.setBookIndex("Sleeping...");
+			//Core.ui.updateScreen();
+		}
 	};
 	
 	// Fix sorting (unicode order)
