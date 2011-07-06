@@ -18,6 +18,7 @@
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 //	2011-07-04 Mark Nord - Added #38 "Standby image"
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
+//  2011-07-06 Ben Chenoweth - Minor fix to StandbyImage (mime not needed)
 
 
 var tmp = function() {
@@ -199,7 +200,7 @@ var tmp = function() {
 
 		standbyImage.draw = function() {
         		var window, path, bitmap, temp, port, x, y, bounds, ratio, width, height, ditheredBitmap, color;
-        		var newpath, mime, newbitmap, mode, dither;
+        		var newpath, newbitmap, mode, dither;
         		window = this.root.window;
 			mode = Core.addonByName.StandbyImage.options.mode;
 			dither = Core.addonByName.StandbyImage.options.dither === "true";
@@ -207,7 +208,6 @@ var tmp = function() {
       			if (mode === 'cover') {
               			// attempt to use current book cover
               			newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
-              			mime = FileSystem.getMIMEType(newpath);
               			newbitmap = createTextThumbnail(newpath);
               			ditheredBitmap = newbitmap.dither(dither);
               			newbitmap.close();	

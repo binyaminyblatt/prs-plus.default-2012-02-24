@@ -13,6 +13,7 @@
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
 //	2011-05-12 kartu - Added "GMT + 10" timezone
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
+//  2011-07-06 Ben Chenoweth - Minor fix to StandbyImage (mime not needed)
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -26,7 +27,7 @@ var tmp = function() {
 	
 	standbyImage.draw = function() {
 		var window, ditheredBitmap;
-		var newpath, mime, newbitmap, mode, dither;
+		var newpath, newbitmap, mode, dither;
 		window = this.root.window;
 		mode = Core.addonByName.StandbyImage.options.mode;
 		dither = Core.addonByName.StandbyImage.options.dither === "true";		
@@ -34,7 +35,6 @@ var tmp = function() {
 			if (mode === 'cover') {
 				// attempt to use current book cover
 				newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
-				mime = FileSystem.getMIMEType(newpath);
 				newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
 				ditheredBitmap = newbitmap.dither(dither);
 				newbitmap.close();			
