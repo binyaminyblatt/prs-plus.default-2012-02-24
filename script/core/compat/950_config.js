@@ -18,6 +18,9 @@
 //      MineSweeper by Mark Nord / D. Shep Poor
 //      XO-Cubed by Ben Chenoweth
 //	2011-07-03 Mark Nord - Added NodeKinds.STANDBY
+//  2011-08-03 Ben Chenoweth - ALL: Added
+//      Calendar by Ben Chenoweth
+//      Solitaire by Ben Chenoweth
 
 return {
 	// Menu icon indices 
@@ -176,7 +179,8 @@ return {
 			{ name: "collections", parent: "more" },
 			{ name: "periodicals", parent: "more" },
 			{ name: "notes", parent: "more" },
-			{ name: "Calculator", parent: "more" },	
+			{ name: "Calculator", parent: "more" },
+			{ name: "Calendar", parent: "more" },	
 			{ name: "Chess", parent: "more" },
 			{ name: "Draughts", parent: "more" },
 			{ name: "FiveBalls", parent: "more" },	
@@ -184,6 +188,7 @@ return {
 			{ name: "FreeCell", parent: "more" },
 			{ name: "Mahjong", parent: "more" },
 			{ name: "MineSweeper", parent: "more" },
+			{ name: "Solitaire", parent: "more" },	
 			{ name: "Sudoku", parent: "more" },
 			{ name: "XOCubed", parent: "more" }			
 		],

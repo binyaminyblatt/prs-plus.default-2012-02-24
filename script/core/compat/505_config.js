@@ -11,6 +11,9 @@
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" & #38 "Standby image"
 //	2011-07-03 Mark Nord - Added NodeKinds.STANDBY
 //  2011-07-05 Ben Chenoweth - Added STANDBY icon
+//  2011-08-03 Ben Chenoweth - ALL: Added
+//      Calendar by Ben Chenoweth
+//      Solitaire by Ben Chenoweth
 
 return {
 	// Menu icon indices 
@@ -146,7 +149,8 @@ return {
 		customNodes: [
 			{ name: "BookHistory", parent: "gamesAndUtils"},
 			{ name: "DictionaryCL", parent: "gamesAndUtils" },
-			{ name: "Calculator", parent: "gamesAndUtils" },				
+			{ name: "Calculator", parent: "gamesAndUtils" },
+			{ name: "Calendar", parent: "gamesAndUtils" },			
 			{ name: "Chess", parent: "gamesAndUtils" },				
 			{ name: "Draughts", parent: "gamesAndUtils" },
 			{ name: "FiveBalls", parent: "gamesAndUtils" },				
@@ -154,6 +158,7 @@ return {
 			{ name: "FreeCell", parent: "gamesAndUtils" },				
 			{ name: "Mahjong", parent: "gamesAndUtils" },
 			{ name: "MineSweeper", parent: "gamesAndUtils" },
+			{ name: "Solitaire", parent: "gamesAndUtils" },
 			{ name: "Sudoku", parent: "gamesAndUtils" },
 			{ name: "XOCubed", parent: "gamesAndUtils" },						
 			{ name: "nowPlaying", parent: "multimedia" },
