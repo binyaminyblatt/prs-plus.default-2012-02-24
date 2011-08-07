@@ -143,6 +143,7 @@ var tmp = function() {
 			// Settings
 			setStr(nodes.settings, "SETTINGS");
 			nodes.settings._mycomment = settingsComment;
+				
 		} catch (e) {
 			log.error("localizing root", e);
 		}
@@ -189,7 +190,7 @@ var tmp = function() {
 			slideshowNodes[2].kind = -parseFloat(L("SS_OK_SIZE", 2));
 			
 			// Settings - Auto Standby
-			var autoStandby = Core.ui.nodes.settings.nodes[3];
+			var autoStandby = standardNodes.settings.nodes[3];
 			setStr(autoStandby, "AUTOSTANDBY");
 			autoStandby._mycomment = function() {
 				return kbook.model.autoStandbyFlag ? L("AS_ON") : L("AS_OFF");
@@ -213,7 +214,7 @@ var tmp = function() {
 
 	var localizeAdvancedSettings = function() {
 		try {
-			var nodes = Core.ui.nodes;
+			var nodes = standardNodes;
 
 			// Settings - Advanced Settings
 			setStr(nodes.advancedSettings, "ADVANCED_SETTINGS");
@@ -233,7 +234,7 @@ var tmp = function() {
 			screenLockSettingsNodes[2].kind = -parseFloat(L("SL_OK_SIZE", 2));
 
 			// Shown to unlock settings
-			var screenLock = Core.ui.nodes.advancedSettings.nodes[0];
+			var screenLock = standardNodes.advancedSettings.nodes[0];
 			var screenLockNodes = screenLock.nodes;
 			screenLock._mycomment = function () {
 				return kbook.model.screenLockFlag ? L("SL_ON") : L("SL_OFF");
@@ -315,7 +316,7 @@ var tmp = function() {
 	var localizeBookByDate = function() {
 		try {
 			// BooksByDate child children
-			var children = Core.ui.nodes.booksByDate.children;
+			var children = standardNodes.booksByDate.children;
 			setStr(children._1, "TODAY");
 			setStr(children._2, "EARLIER_THIS_WEEK");
 			setStr(children._3, "LAST_WEEK");
@@ -333,10 +334,11 @@ var tmp = function() {
 
 	var localizeBookByTitleAndAuthor = function() {
 		var setSoValue, childrenTitle, childrenAuthor, i, obj1, obj2, criterion, title;
+		try {
 		if (L("CUSTOM_SORT") === true) {
 			setSoValue = Core.system.setSoValue;
-			childrenTitle = Core.ui.nodes.booksByTitle.children;
-			childrenAuthor = Core.ui.nodes.booksByAuthor.children;
+			childrenTitle = standardNodes.booksByTitle.children;
+			childrenAuthor = standardNodes.booksByAuthor.children;
 			for (i = 0; i < 10; i++) {
 				obj1 = childrenTitle["_" + i];
 				obj2 = childrenAuthor["_" + i];
@@ -349,6 +351,9 @@ var tmp = function() {
 				setSoValue(obj2, "name", title);
 				setSoValue(obj2, "title", title);
 			}
+		}
+		} catch (e) {
+			log.error("In localizeBookByTitleAndAuthor: " + e);
 		}
 	};
 

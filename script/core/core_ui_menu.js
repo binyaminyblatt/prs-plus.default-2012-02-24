@@ -7,7 +7,9 @@
 //	2011-02-05 kartu - Added support for "Core.config.compat.rootNode" parameter (target node for menu customizer)
 //				"Separator" option is not shown, if model doesn't have numeric button.
 //				Fixed #34 ALL: MenuCustomizer should put unassigned nodes into default one.
-//					Unmodifiable slots got different title.
+//				Unmodifiable slots got different title.
+//	2011-06    Shura1oplot - assign Icons to menu-options
+//	2011-08-01 Mark Nord -  include Core.config.compat.prspMenu.customContainers
 
 var MenuCustomizer;
 tmp = function() {
@@ -52,7 +54,8 @@ tmp = function() {
 	//-------------------------------------------------------------------------------------------------------------
 	// Initializes node map
 	createListOfStandardNodes = function(nodeMap, values, valueTitles, valueIcons) {
-		var standardMenuLayout, standardMenuLayoutIcons, key, path, node, j, m;
+		var L,standardMenuLayout, standardMenuLayoutIcons, prspMenu, key, path, node, j, m;
+		L = Core.lang.getLocalizer("Core");
 		standardMenuLayoutIcons = {
 			"continue": "CONTINUE",
 			books: "ALL_BOOKS",
@@ -107,7 +110,18 @@ tmp = function() {
 			} catch (e) {
 				log.error("Failed to find node: " + key + " " + e);
 			}
-		}
+		}	
+			//include Core.config.compat.prspMenu.customContainers
+			try {
+				prspMenu = Core.config.compat.prspMenu;
+				for (key in prspMenu.customContainers) {
+					values.push(prspMenu.customContainers[key].name);
+					valueTitles[prspMenu.customContainers[key].name] = L(prspMenu.customContainers[key].title); 
+					valueIcons[prspMenu.customContainers[key].name] = prspMenu.customContainers[key].icon;
+					} 
+			} catch (e) {
+				log.error("Failed to find customContainers: " + key + " " + e);
+			} 
 	};
 	
 	/** Creates addon nodes,addon can either provide "activate" function, 

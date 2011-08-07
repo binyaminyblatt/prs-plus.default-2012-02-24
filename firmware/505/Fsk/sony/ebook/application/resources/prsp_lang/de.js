@@ -99,10 +99,10 @@ return {
 		SS_TURN: "Aktivieren",
 		SS_DURATION: "Intervall",
 		// width in pixels = ..._SIZE * 35
-		SS_SIZE: 2,
+		SS_SIZE: "3",
 		SS_OK: "OK",
 		// width in pixels = ..._SIZE * 35
-		SS_OK_SIZE: 2,
+		SS_OK_SIZE: "2",
 		SECONDS: "Sekunden",
 		// auto standby (aka sleep mode)
 		AUTOSTANDBY: "Schlaf-Modus",
@@ -110,10 +110,10 @@ return {
 		AS_OFF: "Nein",
 		AS_TURN: "Aktivieren",
 		// width in pixels = ..._SIZE * 35
-		AS_SIZE: 2,
+		AS_SIZE: "3",
 		AS_OK: "OK",
 		// width in pixels = ..._SIZE * 35
-		AS_OK_SIZE: 2,
+		AS_OK_SIZE: "2",
 		// about
 		ABOUT: "Über",
 		// reset to factory settings
@@ -123,17 +123,17 @@ return {
 		ADVANCED_SETTINGS: "Erweiterte Einstellungen",
 		// screen lock (aka device lock)
 		SCREEN_LOCK: "Gerätesperre",
-		SL_OFF: "Ja",
-		SL_ON: "Nein",
+		SL_OFF: "Aus",
+		SL_ON: "Ein",
 		SL_CODE: "Code eingeben",
 		SL_TURN: "Aktivieren",
 		// width in pixels = ..._SIZE * 35
-		SL_SIZE: 2,
+		SL_SIZE: "3",
 		SL_OK: "OK",
-		SL_OK_SIZE: 2,
+		SL_OK_SIZE: "2",
 		SL_OK_UNLOCK: "OK", // unlock
 		// width in pixels = ..._SIZE * 35
-		SL_OK_UNLOCK_SIZE: 2,
+		SL_OK_UNLOCK_SIZE: "2",
 		// format device
 		FORMAT_DEVICE: "Gerät formatieren",
 
