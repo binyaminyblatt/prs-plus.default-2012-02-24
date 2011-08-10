@@ -11,6 +11,9 @@
  * ALL: BrowseFolders:  added optional ".." item (by Shura1oplot)
  * ALL: Action are now grouped and have icons (by Shura1oplot)
  * ALL: New icons for utils and games (by surquizu, Shura1oplot, ?)
+ * ALL: Updated existing games (Chess now comes with puzzles)
+ * ALL: Added MineSweeper (by Mark Nord), Draughts, XO-Cubed and Solitaire (by Ben Chenoweth)
+ * ALL: Added Calendar app (By Ben Chenoweth)
 
 === 2.0.12 beta ===
  * 505: Fixed German translation
