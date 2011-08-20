@@ -22,8 +22,8 @@
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 //	2011-04-21 kartu - Added option to disable scanning without loading cache
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
-//  2011-07-05 Ben Chenoweth - Minor fix to prevent crash when showing actual page on standby
-//
+//	2011-07-05 Ben Chenoweth - Minor fix to prevent crash when showing actual page on standby
+//	2011-08-18 Mark Nord - fixed current page as StandbyImage + display of localised "sleeping.." instead of the clock
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -382,9 +382,26 @@ var tmp = function() {
 			ditheredBitmap.close();		
 		}
 		if (mode === 'act_page') {
-			//Core.addonByName.StatusBar.setBookIndex("Sleeping...");
-			//Core.ui.updateScreen();
-		}
+			L = Core.lang.getLocalizer("StandbyImage");
+			// Save old styles
+			oldTextStyle = window.getTextStyle();
+			oldTextSize = window.getTextSize();
+			oldPenColor = window.getPenColor();
+			// Settings
+			window.setTextStyle("bold");
+			window.setTextSize(22);
+			// Drawing
+			window.beginDrawing();
+			window.setPenColor(Color.black);
+			window.fillRectangle(450, 770, 150, 30);
+			window.setPenColor(Color.white);
+			window.drawText(L("VALUE_SLEEPING"), 450, 770, 100, 30);
+			window.endDrawing();
+			// Restore pen color, text size & style
+			window.setTextStyle(oldTextStyle);
+			window.setTextSize(oldTextSize);
+			window.setPenColor(oldPenColor);
+			}	
 	};
 	
 	// Fix sorting (unicode order)
