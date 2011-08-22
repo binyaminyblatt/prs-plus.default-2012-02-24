@@ -38,6 +38,7 @@ History:
 		<include name="**/*" />
 		<exclude name="ScrollbarAlphabet.js" />
 		<exclude name="StandardActions_x50.js" />
+		<exclude name="x50_ViewerSetting.js" />
 	</patternset>
 	<patternset id="addons_600_x50">
 		<include name="**/*" />
@@ -81,6 +82,7 @@ History:
 		<ant antfile="build_lang.xml" />
 		<antcall target="buildCore" />
 		<antcall target="buildAddons" />
+		<!--antcall target="build.beta" /-->
 		<foreach list="${MODEL}" param="model" target="build" />
 		<foreach list="${MODEL}" param="model" target="buildInstaller" />
 	</target>

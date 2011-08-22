@@ -13,6 +13,7 @@
 //	2010-07-01 kartu - Adapted for 300
 //	2010-11-16 kartu - Added short title to the node (for small buttons on readers with touchscreen)
 //	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
+//	2011-08-23 Mark Nord - added PRS+ advanced Settings Group -> 11th Group -> 2 Settings Pages -> reorganize PRS+ Settings?
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -243,6 +244,10 @@ tmp = function() {
 				title: coreL("GROUP_MENU_TITLE"),
 				icon: "LIST"
 			},
+			advanced: {
+				title: coreL("GROUP_ADV_SETTINGS_TITLE"),
+				icon: "SETTINGS"
+			},			
 			viewer: {
 				title: coreL("GROUP_VIEWER_TITLE"),
 				icon: "BOOK"
