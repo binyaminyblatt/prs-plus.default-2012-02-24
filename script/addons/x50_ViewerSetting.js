@@ -8,7 +8,7 @@
 //
 // History:
 //	2011-08-21 Mark Nord - Initial version
-
+//	2011-08-23 Mark Nord - changed strategy to prevent dictionary (thanks quisvir)
 
 tmp = function() {
 
@@ -26,19 +26,19 @@ tmp = function() {
 
 	// Constants
 
+	// overload kbook.kbookPage.doSelectWord called by kbook.kbookPage.readingTracker.doubleTap to disable Dictionary
+	var oldDoSelectWord = kbook.kbookPage.doSelectWord;
+	var doSelectWord = function (){
+		if (Core.addonByName.x50_ViewerSettings.options.NoDictionary === "false") {
+			return oldDoSelectWord.apply(this, arguments);
+			
+		}
+	}
 	// overload kbookPage.draw to peek into
 	var oldKbookPageDraw = kbook.kbookPage.draw;
-	
 	var draw = function (event) {
-		var log = Core.log.getLogger('kbookPageDraw');
 		try {
-			log.trace('entering kbookPageDraw',t);
-			log.trace('NotMarkOverlapArea1: '+this.NotMarkOverlapArea,t);
 			this.NotMarkOverlapArea = Core.addonByName.x50_ViewerSettings.options.NotMarkOverlapArea === "true";
-			log.trace('NotMarkOverlapArea2: '+this.NotMarkOverlapArea,t);
-		//	log.trace('isZooming: '+this.isZooming,t);
-		//	log.trace('isScrollView: '+this.isScrollView(),t);
-		//	log.trace('monochrome.isRunning(): '+this.monochrome.isRunning(),t);
 		} catch (ignore) {
 		}
 		
@@ -48,7 +48,7 @@ tmp = function() {
 
 	var x50_ViewerSettings = {
 		name: "x50_ViewerSettings",
-		settingsGroup: "viewer", //"advSettings",
+		settingsGroup: "advanced", //"viewer",
 		optionDefs: [
 			{
 				name: "NotMarkOverlapArea",
@@ -101,17 +101,12 @@ tmp = function() {
 		onPreInit: function () {
 		},
 		onInit: function () {
-			/* this isn't working here !? -> patch kbook.kbookPage.draw 
-			kbook.kbookPage.NotMarkOverlapArea = x50_ViewerSettings.options.NotMarkOverlapArea === "true";  */
 			kbook.kbookPage.draw = draw;
+			kbook.kbookPage.doSelectWord = doSelectWord;
 			this.onSettingsChanged();
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-		//	var log = Core.log.getLogger("x50_ViewerSettings");
-		//	kbook.kbookPage.NotMarkOverlapArea = x50_ViewerSettings.options.NotMarkOverlapArea === "true";
-			kbook.kbookPage.canDoubleTap = (x50_ViewerSettings.options.NoDictionary ==="true") ? function () {return false;} : function () {return true;};
 			kbook.kbookPage.canLine = (x50_ViewerSettings.options.NoGesturePageTurn ==="true") ? function () {return false;} : function () {return !this.preventLine;};
-		//	log.trace("kbook.kbookPage.canDoubleTap "+kbook.kbookPage.canDoubleTap.call() , "trace");
 			if (x50_ViewerSettings.options.BorderColor ==='grey') 
 				{kbook.kbookPage.borderColor=Color.rgb.parse('#6D6D6D')
 			} else { kbook.kbookPage.borderColor=Color.rgb.parse('white')
@@ -123,12 +118,12 @@ tmp = function() {
 			group: "Utils",
 			icon: "SETTINGS",
 			action: function () {
-				if (x50_ViewerSettings.options.NoGesturePageTurn === "true") {
-					x50_ViewerSettings.options.NoGesturePageTurn="false";
+				if (Core.addonByName.x50_ViewerSettings.options.options.NoGesturePageTurn === "true") {
+					Core.addonByName.x50_ViewerSettings.options.NoGesturePageTurn="false";
 				}else {
-					x50_ViewerSettings.options.NoGesturePageTurn = "true");
+					Core.addonByName.x50_ViewerSettings.options.NoGesturePageTurn = "true");
 				}
-			kbook.kbookPage.canLine = (x50_ViewerSettings.options.NoGesturePageTurn ==="true") ? function () {return false;} : function () {return !this.preventLine;};
+			kbook.kbookPage.canLine = (Core.addonByName.x50_ViewerSettings.options.NoGesturePageTurn ==="true") ? function () {return false;} : function () {return !this.preventLine;};
 			}
 		}] 	*/	
 	};
