@@ -3,6 +3,7 @@
  * 505: Fixed #139 "Menu customizer values are not translated"
  * x50: Fixed #120 "No keyboard in SP-EN dictionary"
  * 300/505: Added #38 "Standby image"
+ * ALL: Added Korean alphabet (3131-314E unicode range)
  * 505: Fixed #150 "Some options in the setup menu are not translated" needs reflash! not working with beta-pack on SD-Card
  * 505: Added #39 "Hold joypad arrows events"
  * ALL: Added #70 "Make node containers accessible via menu customizer" 
