@@ -24,6 +24,7 @@
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
 //	2011-07-05 Ben Chenoweth - Minor fix to prevent crash when showing actual page on standby
 //	2011-08-18 Mark Nord - fixed current page as StandbyImage + display of localised "sleeping.." instead of the clock
+//  2011-08-27 Ben Chenoweth - Minor fix to 'Sleeping...' text location
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -393,9 +394,9 @@ var tmp = function() {
 			// Drawing
 			window.beginDrawing();
 			window.setPenColor(Color.black);
-			window.fillRectangle(450, 770, 150, 30);
+			window.fillRectangle(445, 770, 150, 30);
 			window.setPenColor(Color.white);
-			window.drawText(L("VALUE_SLEEPING"), 450, 770, 100, 30);
+			window.drawText(L("VALUE_SLEEPING"), 465, 770, 120, 30);
 			window.endDrawing();
 			// Restore pen color, text size & style
 			window.setTextStyle(oldTextStyle);
