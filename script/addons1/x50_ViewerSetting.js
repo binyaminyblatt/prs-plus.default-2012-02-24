@@ -48,7 +48,7 @@ tmp = function() {
 
 	var x50_ViewerSettings = {
 		name: "x50_ViewerSettings",
-		settingsGroup: "advanced", //"viewer",
+		settingsGroup: "viewer", //"advanced",
 		optionDefs: [
 			{
 				name: "NotMarkOverlapArea",
