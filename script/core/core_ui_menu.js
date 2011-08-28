@@ -10,6 +10,7 @@
 //				Unmodifiable slots got different title.
 //	2011-06    Shura1oplot - assign Icons to menu-options
 //	2011-08-01 Mark Nord -  include Core.config.compat.prspMenu.customContainers
+//  2011-08-28 Ben Chenoweth - Custom containers can now have a short name and a comment
 
 var MenuCustomizer;
 tmp = function() {
@@ -247,8 +248,10 @@ tmp = function() {
 					container = customContainers[i];
 					nodeMap[container.name] = Core.ui.createContainerNode({
 						title: coreL(container.title),
+						shortName: container.shortName,
 						kind: container.kind,
-						icon: container.icon
+						icon: container.icon,
+						comment: container.comment
 					});					
 				}
 				

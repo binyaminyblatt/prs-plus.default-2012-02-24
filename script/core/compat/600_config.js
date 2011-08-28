@@ -22,6 +22,7 @@
 //  2011-08-03 Ben Chenoweth - ALL: Added
 //      Calendar by Ben Chenoweth
 //      Solitaire by Ben Chenoweth
+//  2011-08-28 Ben Chenoweth - Moved games into Games node
 
 return {
 	// Menu icon indices 
@@ -162,27 +163,28 @@ return {
 	prspMenu: {
 		// Container nodes
 		customContainers: [
-			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", icon: "GAME"}
+			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", shortName: "Games", icon: "GAME", comment: "10 items"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
 			{ name: "BookHistory", parent: "more"},
 			{ name: "BrowseFolders", parent: "more"},
+			{ name: "gamesAndUtils", parent: "more" },
 			{ name: "collections", parent: "more" },
 			{ name: "notes", parent: "more"},
 			{ name: "PRSPSettings", parent: "more" },
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },
-			{ name: "Chess", parent: "more" },
-			{ name: "Draughts", parent: "more" },
-			{ name: "FiveBalls", parent: "more" },	
-			{ name: "FiveRow", parent: "more" },	
-			{ name: "FreeCell", parent: "more" },
-			{ name: "Mahjong", parent: "more" },
-			{ name: "MineSweeper", parent: "more" },
-			{ name: "Solitaire", parent: "more" },
-			{ name: "Sudoku", parent: "more" },
-			{ name: "XOCubed", parent: "more" }
+			{ name: "Chess", parent: "gamesAndUtils" },
+			{ name: "Draughts", parent: "gamesAndUtils" },
+			{ name: "FiveBalls", parent: "gamesAndUtils" },	
+			{ name: "FiveRow", parent: "gamesAndUtils" },	
+			{ name: "FreeCell", parent: "gamesAndUtils" },
+			{ name: "Mahjong", parent: "gamesAndUtils" },
+			{ name: "MineSweeper", parent: "gamesAndUtils" },
+			{ name: "Solitaire", parent: "gamesAndUtils" },
+			{ name: "Sudoku", parent: "gamesAndUtils" },
+			{ name: "XOCubed", parent: "gamesAndUtils" }
 		],
 		movableNodes: [0, 0, 1, 1, 1, 1],
 		defaultLayout: [
