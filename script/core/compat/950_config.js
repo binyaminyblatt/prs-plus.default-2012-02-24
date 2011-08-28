@@ -173,7 +173,7 @@ return {
 		// Container nodes
 		customContainers: [
 			{ name: "more", title: "NODE_MORE", icon: "MORE", parent: "root"},
-			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", shortName: "Games", icon: "GAME", comment: "10 items"}
+			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", shortName: "Games", icon: "GAME"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [

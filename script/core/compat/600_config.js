@@ -163,7 +163,7 @@ return {
 	prspMenu: {
 		// Container nodes
 		customContainers: [
-			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", shortName: "Games", icon: "GAME", comment: "10 items"}
+			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", shortName: "Games", icon: "GAME"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
