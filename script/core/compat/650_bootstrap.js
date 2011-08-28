@@ -64,9 +64,9 @@ var tmp = function() {
 				// Drawing
 				window.beginDrawing();
 				window.setPenColor(Color.black);
-				window.fillRectangle(450, 770, 150, 30);
+				window.fillRectangle(445, 770, 155, 30);
 				window.setPenColor(Color.white);
-				window.drawText(L("VALUE_SLEEPING"), 450, 770, 100, 30);
+				window.drawText(L("VALUE_SLEEPING"), 455, 770, 135, 30);				
 				window.endDrawing();
 				// Restore pen color, text size & style
 				window.setTextStyle(oldTextStyle);

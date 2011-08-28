@@ -6,7 +6,7 @@
 //	2011-02-26 kartu - Added compatPath & getFileContent params to bootstrap call
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
 //	2011-08-27 kartu - Added "addons1" folder, to fix "script too big" problem
-//  2011-08-27 Mark Nord - Fixed "addonpath" in case of folder (as addonsPath ends with "/" simply adding +1 will fail)
+//	2011-08-27 Mark Nord - Fixed "addonpath1" in case of folder (as addonsPath ends with "/" simply adding +"1" will fail)
 
 if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 	var bootLog;
@@ -151,7 +151,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 				if (addonsPath.indexOf(jsPostfix) === lenDiff) {
 					addonsPath1 = addonsPath.substring(0, lenDiff) + "1" + jsPostfix;
 				} else {
-            addonsPath1 = addonsPath.substring(0, addonsPath.lastIndexOf("/")) + "1/";
+					addonsPath1 = addonsPath.substring(0, addonsPath.lastIndexOf("/")) + "1/";
 				}
 				addonCode = getFileContentEx(addonsPath1, ".js");
 				addons = new Function("Core,log,tmp", addonCode);
