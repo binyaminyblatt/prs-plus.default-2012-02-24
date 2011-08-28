@@ -15,6 +15,7 @@
  * ALL: Updated existing games (Chess now comes with puzzles)
  * ALL: Added MineSweeper (by Mark Nord), Draughts, XO-Cubed and Solitaire (by Ben Chenoweth)
  * ALL: Added Calendar app (By Ben Chenoweth)
+ * 600/x50: Games moved into Games node
 
 === 2.0.12 beta ===
  * 505: Fixed German translation
