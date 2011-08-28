@@ -210,11 +210,17 @@ History:
 		<var name="src" value="../script"/>
 		<delete dir="${beta}"/>
 		<mkdir dir="${beta}/addons"/>
+		<mkdir dir="${beta}/addons1"/>
 		<mkdir dir="${beta}/core"/>
 		
 		<echo>Copying model specific addon resources</echo>
 		<copy todir="${beta}/addons">
 			<fileset dir="${src}/addons" >
+			 	<patternset refid="addons_${model}" />
+			</fileset>
+		</copy>
+		<copy todir="${beta}/addons1">
+			<fileset dir="${src}/addons1" >
 			 	<patternset refid="addons_${model}" />
 			</fileset>
 		</copy>
@@ -244,17 +250,29 @@ History:
 			</then>
 			<else>
 				<var name="prsp.dir" value="tmp/${model}/resources/prsp" />
-        <echo file="tmp/${model}/prspfw.ver">${PRSP_VER}</echo>
-      </else>
+				<echo file="tmp/${model}/prspfw.ver">${PRSP_VER}</echo>
+			</else>
 		</if>
 		
 		<echo>Combining model specific addon files</echo>
+		<!-- addons folder -->
 		<concat destfile="${prsp.dir}/addons.js" encoding="UTF-8">
 			<intersect>
 				<fileset dir="${SRC.ADDONS}">
 					<patternset refid="addons_${model}" />
 				</fileset>
 				<fileset dir="${SRC.ADDONS}">
+					<include name="*.js"/>
+				</fileset>
+			</intersect>
+		</concat>
+		<!-- addons 1 folder -->
+		<concat destfile="${prsp.dir}/addons1.js" encoding="UTF-8">
+			<intersect>
+				<fileset dir="${SRC.ADDONS}1">
+					<patternset refid="addons_${model}" />
+				</fileset>
+				<fileset dir="${SRC.ADDONS}1">
 					<include name="*.js"/>
 				</fileset>
 			</intersect>

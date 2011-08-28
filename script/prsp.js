@@ -5,6 +5,7 @@
 //	2010-06-26 kartu - Initial version, based on 505
 //	2011-02-26 kartu - Added compatPath & getFileContent params to bootstrap call
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
+//	2011-08-27 kartu - Added "addons1" folder, to fix "script too big" problem
 
 if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 	var bootLog;
@@ -131,15 +132,31 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 		
 		// Load addons, called by model specific bootstrap
 		loadAddons = function() {
-			var addonCode, log, addons;
+			var addonCode, log, addons, addonsPath, addonsPath1, jsPostfix;
+			jsPostfix = ".js";
+			addonsPath = config.addonsFile;
 			// Call addons
 			try {
-				addonCode = getFileContentEx(config.addonsFile, ".js");
+				addonCode = getFileContentEx(addonsPath, jsPostfix);
 				log = Core.log.getLogger("addons");
 				addons = new Function("Core,log,tmp", addonCode);
 				addons(Core, log, undefined);
 			} catch (e) {
 				bootLog("Failed to load addons " + e);
+			}
+			// Call addons1
+			try {
+				var lenDiff = addonsPath.length - jsPostfix.length;
+				if (addonsPath.indexOf(jsPostfix) === lenDiff) {
+					addonsPath1 = addonsPath.substring(0, lenDiff) + "1" + jsPostfix;
+				} else {
+					addonsPath1 = addonsPath + "1";
+				}
+				addonCode = getFileContentEx(addonsPath1, ".js");
+				addons = new Function("Core,log,tmp", addonCode);
+				addons(Core, log, undefined);
+			} catch (e) {
+				bootLog("Failed to load addons1 " + e);
 			}
 		};
 
