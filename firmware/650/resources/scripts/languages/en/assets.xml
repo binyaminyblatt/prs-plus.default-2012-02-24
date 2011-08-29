@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns="http://www.kinoma.com/fskin/1">
 	<assets>
+		<!-- PRS+ start -->
+		<string id="STR_UI_MENU_MARKASREAD" value="Mark Book as Read" />
+		<string id="STR_UI_MENU_MARKASUNREAD" value="Mark Book as Unread" />
+		<!-- PRS+ end -->
 		<string id="STR_NODE_TITLE_CONTINUEREADINGBOOK" value="Continue Reading" />
 		<string id="STR_NODE_TITLE_TOC" value="Table of Contents" />
 		<string id="STR_NODE_TITLE_INFO" value="Info" />
