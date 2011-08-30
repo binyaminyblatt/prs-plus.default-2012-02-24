@@ -1,4 +1,4 @@
-// Name: x50_ViewerSettings
+// Name: ViewerSettings_x50
 // Description: Allows to 
 //	choose if Overlap in 2page mode is masked, 
 //	disables doubleTapAction and so dictionary
@@ -10,6 +10,8 @@
 //	2011-08-21 Mark Nord - Initial version
 //	2011-08-23 Mark Nord - changed strategy to prevent dictionary (thanks quisvir)
 //	2011-08-29 Mark Nord - fix: masking of overlap works now correct in landscape-mode
+//	2011-08-30 Mark Nord - renamed to ViewerSetting_x50; default for mask-overlap set to mask overlap
+//				keybindable action to switch gesture-pageturn on/off
 
 tmp = function() {
 
@@ -23,21 +25,20 @@ tmp = function() {
 	}
 
 	// Localize	 	
-	var L = Core.lang.getLocalizer("x50_ViewerSettings");
+	var L = Core.lang.getLocalizer("ViewerSettings_x50");
 
 	// Constants
 
 	// overload kbook.kbookPage.doSelectWord called by kbook.kbookPage.readingTracker.doubleTap to disable Dictionary
 	var oldDoSelectWord = kbook.kbookPage.doSelectWord;
 	var doSelectWord = function (){
-		if (Core.addonByName.x50_ViewerSettings.options.NoDictionary === "false") {
+		if (Core.addonByName.ViewerSettings_x50.options.NoDictionary === "false") {
 			return oldDoSelectWord.apply(this, arguments);
 			
 		}
 	}
 
-	// overload kbookPage.draw to peek into
-
+	// overload kbookPage.draw to peek into & patch
 	var draw = function (event) {
 		var data, window, x, y, width, height, cache, naturalBounds, range, ratioX, ratioY, rct, state, backup, bitmap, cutout, u, xMin, xSize, yMin, ySize, size, minOverlap, maxOverlap, yMinN, yMaxN, parts, j, half, mark1, mark2, span, bounds, c, minSpan, maxSpan, i, bound, bound_y, update;
 		minOverlap =[];
@@ -108,7 +109,7 @@ tmp = function() {
 			cache.bitmap.close();
 			cache.bitmap = backup;
 		}
-		if (Core.addonByName.x50_ViewerSettings.options.NotMarkOverlapArea === "false") {
+		if (Core.addonByName.ViewerSettings_x50.options.NotMarkOverlapArea === "false") {
 			bitmap = cache.bitmap;
 			if (bitmap && !cache.error) {
 				if (!this.isZooming && (this.isScrollView() && !this.monochrome.isRunning()) ) {
@@ -226,7 +227,7 @@ tmp = function() {
 					}
 					catch (e)
 					{
-						log.error("in MarkOverlap "+e, "error");	
+						log.error("in MarkOverlap ", e);	
 					}
 				}
 			}
@@ -237,15 +238,15 @@ tmp = function() {
 		}
 	};
 
-	var x50_ViewerSettings = {
-		name: "x50_ViewerSettings",
+	var ViewerSettings_x50 = {
+		name: "ViewerSettings_x50",
 		settingsGroup: "viewer", // "advanced",
 		optionDefs: [
 			{
 				name: "NotMarkOverlapArea",
 				title: L("OPTION_NOTMARKOVERLAP"),
 				icon: "SETTINGS",
-				defaultValue: "true",
+				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
 					"true": L("VALUE_TRUE"),
@@ -295,33 +296,34 @@ tmp = function() {
 			this.onSettingsChanged();
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			kbook.kbookPage.canLine = (x50_ViewerSettings.options.NoGesturePageTurn ==="true") ? function () {return false;} : function () {return !this.preventLine;};
-			if (x50_ViewerSettings.options.BorderColor ==='grey') 
+			kbook.kbookPage.canLine = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+			if (ViewerSettings_x50.options.BorderColor === 'grey') 
 				{kbook.kbookPage.borderColor=Color.rgb.parse('#6D6D6D')
 			} else { kbook.kbookPage.borderColor=Color.rgb.parse('white')
 			}		
-		}/*,
+		},
 		actions: [{
 			name: "toggleGestureOnOff",
 			title: L("ACTION_toggleGestureOnOff"),
 			group: "Utils",
 			icon: "SETTINGS",
 			action: function () {
-				if (Core.addonByName.x50_ViewerSettings.options.options.NoGesturePageTurn === "true") {
-					Core.addonByName.x50_ViewerSettings.options.NoGesturePageTurn="false";
-				}else {
-					Core.addonByName.x50_ViewerSettings.options.NoGesturePageTurn = "true");
+				if (ViewerSettings_x50.options.NoGesturePageTurn === "true") {
+					ViewerSettings_x50.options.NoGesturePageTurn = "false";
 				}
-			kbook.kbookPage.canLine = (Core.addonByName.x50_ViewerSettings.options.NoGesturePageTurn ==="true") ? function () {return false;} : function () {return !this.preventLine;};
+				else {
+					ViewerSettings_x50.options.NoGesturePageTurn = "true";
+				}
+			kbook.kbookPage.canLine = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
 			}
-		}] 	*/	
+		}] 	
 	};
 
-	Core.addAddon(x50_ViewerSettings);
+	Core.addAddon(ViewerSettings_x50);
 };
 try {
 	tmp();
 } catch (e) {
 	// Core's log
-	log.error("in x50_ViewerSettings.js", e);
+	log.error("in ViewerSettings_x50.js", e);
 }
