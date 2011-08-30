@@ -1,11 +1,12 @@
 // Name: BookManagement
-// Description: Allows to mark books as read 
+// Description: Allows to set 'new' flag manually 
 //	and to hide default collections
 // 
 // Author: quisvir
 //
 // History:
 //	2011-08-29 quisvir - Initial version
+//  2011-08-31 quisvir - Avoid assets.xml and change terminology
 
 tmp = function() {
 
@@ -19,29 +20,34 @@ tmp = function() {
 	}
 
 	var L = Core.lang.getLocalizer("BookManagement");
-
-	// Don't allow automatic marking of books as opened, keep value as is
+	
+	// Keep new flag as is on opening book
 	var oldonChangeBook = kbook.model.onChangeBook;
 	kbook.model.onChangeBook = function (node) {
-	var bookread = node.opened;
+	var newflag = node.opened;
 	oldonChangeBook.apply(this, arguments);
-	if (Core.addonByName.BookManagement.options.ManualAsReadMarking == "true") { node.opened = pageOptionOverlayModel.VAR_BookRead = bookread; }
+	if (Core.addonByName.BookManagement.options.ManualNewFlag == "true") { node.opened = newflag; }
 	}
 	
-	// Book menu option to switch read status, called from main.xml
-	kbook.model.container.sandbox.OPTION_OVERLAY_PAGE.sandbox.MarkAsReadToggle = function () {
+	// Book menu option to switch new flag, called from main.xml
+	kbook.model.container.sandbox.OPTION_OVERLAY_PAGE.sandbox.NewFlagToggle = function () {
 	this.doOption();
 	var book = kbook.model.currentBook;
 	book.opened = (book.opened) ? false : true;
-	pageOptionOverlayModel.VAR_BookRead = book.opened;
 	}
 	
-	// Only show book menu option if preference is set
+	// Show book menu option if preference is set
 	kbook.optMenu.isDisable = function (part) {
-	if ((Core.addonByName.BookManagement.options.ManualAsReadMarking != "true") && (this.hasString(part, 'markasread'))) { return true }
-	else { return Fskin.overlayTool.isDisable(part); }
+	if (this.hasString(part, 'manualnewflag')) {
+		if (Core.addonByName.BookManagement.options.ManualNewFlag == "true") {
+		part.text = (kbook.model.currentBook.opened) ? L("SETNEWFLAG") : L("REMOVENEWFLAG");
+		return Fskin.overlayTool.isDisable(part);
+		}
+		else { return true }
 	}
-	
+	else { return Fskin.overlayTool.isDisable(part) }
+	}
+
 	// Hide default collections
 	var oldkbookPlaylistNode = kbook.root.kbookPlaylistNode.construct;
 	kbook.root.kbookPlaylistNode.construct = function () {
@@ -58,8 +64,8 @@ tmp = function() {
 		settingsGroup: "bookmanagement",
 		optionDefs: [
 			{
-				name: "ManualAsReadMarking",
-				title: L("OPTION_MARKASREAD"),
+				name: "ManualNewFlag",
+				title: L("OPTION_MANUALNEWFLAG"),
 				icon: "SETTINGS",
 				defaultValue: "false",
 				values: ["true", "false"],
