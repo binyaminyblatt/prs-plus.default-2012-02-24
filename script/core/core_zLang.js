@@ -29,6 +29,7 @@
 //					2) key is returned instead of prefix + key (didn't fit on the screen most of the time anyway)
 //	2010-12-01 kartu - Switched back to returning prefix + key to give user some hint what's behind "TITLE"
 //	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
+//	2011-08-24 Shura1oplot - Fixed empty translation
 
 tmp = function() {
 	var _strings, _X; // whatever is loaded from lang/<language>.js file
@@ -39,7 +40,8 @@ tmp = function() {
 		f = function(key) {
 			if (str.hasOwnProperty(key)) {
 				try {
-					return str[key];
+					if (str[key] !== "")
+						return str[key];
 				} catch (ignore) {
 				}
 			}
