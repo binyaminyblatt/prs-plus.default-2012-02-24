@@ -12,6 +12,7 @@
 //	2011-08-29 Mark Nord - fix: masking of overlap works now correct in landscape-mode
 //	2011-08-30 Mark Nord - renamed to ViewerSetting_x50; default for mask-overlap set to mask overlap
 //				keybindable action to switch gesture-pageturn on/off
+//	2011-09-01 Mark Nord - Used appropriate icons - based in Ben Chenoweth suggestion
 
 tmp = function() {
 
@@ -245,7 +246,7 @@ tmp = function() {
 			{
 				name: "NotMarkOverlapArea",
 				title: L("OPTION_NOTMARKOVERLAP"),
-				icon: "SETTINGS",
+				icon: "LANDSCAPE",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
@@ -256,7 +257,7 @@ tmp = function() {
 			{
 				name: "NoDictionary",
 				title: L("OPTION_NODICT"),
-				icon: "SETTINGS",
+				icon: "NODICTIONARY",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
@@ -267,7 +268,7 @@ tmp = function() {
 			{
 				name: "BorderColor",
 				title: L("OPTION_BORDERCOLOR"),
-				icon: "SETTINGS",
+				icon: "COLOR",
 				defaultValue: "grey",
 				values: ["grey", "white"],
 				valueTitles: {
@@ -278,7 +279,7 @@ tmp = function() {
 			{
 				name: "NoGesturePageTurn",
 				title: L("OPTION_NOGESTURE"),
-				icon: "SETTINGS",
+				icon: "GESTURE",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
