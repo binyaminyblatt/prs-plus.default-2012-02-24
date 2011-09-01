@@ -68,6 +68,8 @@ return {
 		HOME: 26, // missing
 		
 		STANDBY: 83,
+		GESTURE: 38,
+		NODICTIONARY: 40,		
 		
 		UNCHECKED: 60,
 		CHECKED: 61,

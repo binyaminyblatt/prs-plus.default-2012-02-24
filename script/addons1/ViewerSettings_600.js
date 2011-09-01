@@ -7,6 +7,7 @@
 //
 // History:
 //	2011-08-31 Ben Chenoweth - Initial version
+//  2011-09-01 Ben Chenoweth - Used appropriate icons
 
 tmp = function() {
 
@@ -41,7 +42,7 @@ tmp = function() {
 			{
 				name: "NoDictionary",
 				title: L("OPTION_NODICT"),
-				icon: "SETTINGS",
+				icon: "NODICTIONARY",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
@@ -52,7 +53,7 @@ tmp = function() {
 			{
 				name: "NoGesturePageTurn",
 				title: L("OPTION_NOGESTURE"),
-				icon: "SETTINGS",
+				icon: "GESTURE",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
@@ -75,7 +76,7 @@ tmp = function() {
 			name: "toggleGestureOnOff",
 			title: L("ACTION_toggleGestureOnOff"),
 			group: "Utils",
-			icon: "SETTINGS",
+			icon: "GESTURE",
 			action: function () {
 				if (ViewerSettings_600.options.NoGesturePageTurn === "true") {
 					ViewerSettings_600.options.NoGesturePageTurn = "false";
