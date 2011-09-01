@@ -1,0 +1,98 @@
+// Name: ViewerSettings_600
+// Description: Allows to 
+//	disables doubleTapAction and so dictionary
+//	disable pageturn gesture
+// Based on ViewerSettings_x50 by Mark Nord
+// Modified for the 600 by Ben Chenoweth
+//
+// History:
+//	2011-08-31 Ben Chenoweth - Initial version
+
+tmp = function() {
+
+	switch (Core.config.model) {
+	case "505":
+	case "300":
+	case "350":
+	case "650":
+	case "950":	
+		return;	
+		break;
+	default:       
+	}
+
+	// Localize	 	
+	var L = Core.lang.getLocalizer("ViewerSettings_x50");
+
+	// Constants
+
+	// overload Fskin.kbookPage.doSelectWord called by Fskin.kbookPage.readingTracker.doubleTap to disable Dictionary
+	var oldDoSelectWord = Fskin.kbookPage.doSelectWord;
+	var doSelectWord = function (){
+		if (Core.addonByName.ViewerSettings_600.options.NoDictionary === "false") {
+			return oldDoSelectWord.apply(this, arguments);
+		}
+	}
+
+	var ViewerSettings_600 = {
+		name: "ViewerSettings_600",
+		settingsGroup: "viewer",
+		optionDefs: [
+			{
+				name: "NoDictionary",
+				title: L("OPTION_NODICT"),
+				icon: "SETTINGS",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}
+			},
+			{
+				name: "NoGesturePageTurn",
+				title: L("OPTION_NOGESTURE"),
+				icon: "SETTINGS",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}	
+			}			
+		],
+		/**
+		* @constructor
+		*/
+		onInit: function () {
+			Fskin.kbookPage.doSelectWord = doSelectWord;
+			this.onSettingsChanged();
+		},
+		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+			Fskin.kbookPage.canLine = (ViewerSettings_600.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};	
+		},
+		actions: [{
+			name: "toggleGestureOnOff",
+			title: L("ACTION_toggleGestureOnOff"),
+			group: "Utils",
+			icon: "SETTINGS",
+			action: function () {
+				if (ViewerSettings_600.options.NoGesturePageTurn === "true") {
+					ViewerSettings_600.options.NoGesturePageTurn = "false";
+				}
+				else {
+					ViewerSettings_600.options.NoGesturePageTurn = "true";
+				}
+				Fskin.kbookPage.canLine = (ViewerSettings_600.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+			}
+		}] 	
+	};
+
+	Core.addAddon(ViewerSettings_600);
+};
+try {
+	tmp();
+} catch (e) {
+	// Core's log
+	log.error("in ViewerSettings_600.js", e);
+}

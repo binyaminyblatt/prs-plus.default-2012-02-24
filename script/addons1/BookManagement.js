@@ -21,6 +21,22 @@ tmp = function() {
 
 	var L = Core.lang.getLocalizer("BookManagement");
 	
+	SetCustomToneCurve = function () {
+		kbook.model.toneCurveTable[5] = "100,-100";
+	};
+
+	kbook.model.container.sandbox.OPTION_OVERLAY_PAGE_TONECURVEEDITOR.sandbox.initToneCurveEditor = function () {
+		var contrast, brightness;
+		contrast = parseInt(this.targetModel.doSomething('getContrast'));
+		brightness = parseInt(this.targetModel.doSomething('getBrightness'));
+		log.error("1", contrast);
+		contrast = "-50";
+		log.error("2", contrast);
+		this.org_slider_1 = contrast;
+		this.org_slider_2 = brightness;
+		this.ToneUpdate(contrast, brightness);
+	};
+
 	// Keep new flag as is on opening book
 	var oldonChangeBook = kbook.model.onChangeBook;
 	kbook.model.onChangeBook = function (node) {
@@ -92,6 +108,7 @@ tmp = function() {
 		onPreInit: function () {
 		},
 		onInit: function () {
+		//SetCustomToneCurve();
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 		}

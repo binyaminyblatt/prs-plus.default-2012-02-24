@@ -38,7 +38,8 @@ History:
 		<include name="**/*" />
 		<exclude name="ScrollbarAlphabet.js" />
 		<exclude name="StandardActions_x50.js" />
-		<exclude name="x50_ViewerSetting.js" />
+		<exclude name="ViewerSettings_x50.js" />
+		<exclude name="ViewerSettings_600.js" />
 	</patternset>
 	<patternset id="addons_600_x50">
 		<include name="**/*" />
@@ -60,15 +61,19 @@ History:
 	</patternset>
 	<patternset id="addons_600">
 		<patternset refid="addons_600_x50" />
+		<exclude name="ViewerSettings_x50.js" />
 	</patternset>
 	<patternset id="addons_350" >
 		<patternset refid="addons_600_x50" />
+		<exclude name="ViewerSettings_600.js" />
 	</patternset>
 	<patternset id="addons_650">
 		<patternset refid="addons_600_x50" />
+		<exclude name="ViewerSettings_600.js" />
 	</patternset>
 	<patternset id="addons_950">
 		<patternset refid="addons_600_x50" />
+		<exclude name="ViewerSettings_600.js" />
 	</patternset>
 	
 	<!--======================================================================== 
