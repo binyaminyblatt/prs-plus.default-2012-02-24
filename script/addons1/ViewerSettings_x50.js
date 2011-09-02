@@ -13,7 +13,8 @@
 //	2011-08-30 Mark Nord - renamed to ViewerSetting_x50; default for mask-overlap set to mask overlap
 //				keybindable action to switch gesture-pageturn on/off
 //	2011-09-01 Mark Nord - Used appropriate icons - based in Ben Chenoweth suggestion
-//  2011-09-02 quisvir - Added Custom View Settings for Restore Button
+//	2011-09-02 quisvir - Added Custom View Settings using Restore Button
+//	2011-09-02 quisvir - Added option to enable scrolling in Zoom Lock mode
 
 tmp = function() {
 
@@ -31,6 +32,35 @@ tmp = function() {
 
 	// Constants
 	
+	// Enable scrolling in Zoom Lock mode
+	var zoomlockold;
+	
+	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
+	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
+	zoomlockold = this.isZoomLock;
+	if (Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll == "true" && zoomlockold) { this.isZoomLock = false; }
+	oldZoomdoDrag.apply(this, arguments);
+	this.isZoomLock = zoomlockold;
+	}
+	
+	var oldZoomOverlaydone = Fskin.kbookZoomOverlay.done;
+	Fskin.kbookZoomOverlay.done = function () {
+		if (zoomlockold) { this.isZoomLock = true; }
+		oldZoomOverlaydone.apply(this, arguments);
+		this.isZoomlock = zoomlockold;
+	};
+
+	Fskin.kbookZoomOverlay.canLine = function () {
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll != "true") { return true; }
+		else { return false; }
+	};
+
+	Fskin.kbookZoomOverlay.canLineAndHold = function () {
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll != "true") { return true; }
+		else { return false; }
+	};
+
+	// Bind custom contrast & brightness values to Restore button
 	pageOptionToneCurveEditorOverlayModel.initToneCurveEditor = function () {
 		var contrast, brightness;
 		contrast = parseInt(this.targetModel.doSomething('getContrast'));
@@ -302,6 +332,16 @@ tmp = function() {
 					"true": L("VALUE_TRUE"),
 					"false": L("VALUE_FALSE")
 				}	
+			},
+						{
+				name: "ZoomLockScroll",
+				title: L("ZOOMLOCK_SCROLL"),
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}
 			},
 			{
 			groupTitle: L("CUSTOM_VIEW_SETTINGS"),
