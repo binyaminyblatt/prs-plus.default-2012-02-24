@@ -336,7 +336,7 @@ tmp = function() {
 					"false": L("VALUE_FALSE")
 				}	
 			},
-						{
+			{
 				name: "ZoomLockScroll",
 				title: L("ZOOMLOCK_SCROLL"),
 				defaultValue: "false",
