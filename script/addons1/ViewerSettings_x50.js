@@ -33,6 +33,8 @@ tmp = function() {
 	// Constants
 	
 	// Enable scrolling in Zoom Lock mode
+	if (Core.config.model != "350") {
+	
 	var zoomlockold;
 	
 	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
@@ -59,7 +61,8 @@ tmp = function() {
 		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll != "true") { return true; }
 		else { return false; }
 	};
-
+	}
+	
 	// Bind custom contrast & brightness values to Restore button
 	pageOptionToneCurveEditorOverlayModel.initToneCurveEditor = function () {
 		var contrast, brightness;
