@@ -304,7 +304,7 @@ tmp = function() {
 				}	
 			},
 			{
-			groupTitle: "Custom View Settings",
+			groupTitle: L("CUSTOM_VIEW_SETTINGS"),
 			groupIcon: "FOLDER",
 			optionDefs: [
 				{
