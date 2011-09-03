@@ -8,6 +8,7 @@
 // History:
 //	2011-08-31 Ben Chenoweth - Initial version
 //  2011-09-01 Ben Chenoweth - Used appropriate icons
+//	2011-09-02 quisvir - Added option to enable scrolling in Zoom Lock mode
 
 tmp = function() {
 
@@ -26,6 +27,34 @@ tmp = function() {
 	var L = Core.lang.getLocalizer("ViewerSettings_x50");
 
 	// Constants
+
+	// Enable scrolling in Zoom Lock mode
+	var zoomlockold;
+	
+	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
+	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
+		zoomlockold = this.isZoomLock;
+		if (Core.addonByName.ViewerSettings_600.options.ZoomLockScroll == "true" && zoomlockold) { this.isZoomLock = false; }
+		oldZoomdoDrag.apply(this, arguments);
+		this.isZoomLock = zoomlockold;
+	}
+	
+	var oldZoomOverlaydone = Fskin.kbookZoomOverlay.done;
+	Fskin.kbookZoomOverlay.done = function () {
+		if (zoomlockold) { this.isZoomLock = true; }
+		oldZoomOverlaydone.apply(this, arguments);
+		this.isZoomlock = zoomlockold;
+	};
+
+	Fskin.kbookZoomOverlay.canLine = function () {
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_600.options.ZoomLockScroll != "true") { return true; }
+		else { return false; }
+	};
+
+	Fskin.kbookZoomOverlay.canLineAndHold = function () {
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_600.options.ZoomLockScroll != "true") { return true; }
+		else { return false; }
+	};
 
 	// overload Fskin.kbookPage.doSelectWord called by Fskin.kbookPage.readingTracker.doubleTap to disable Dictionary
 	var oldDoSelectWord = Fskin.kbookPage.doSelectWord;
@@ -60,7 +89,18 @@ tmp = function() {
 					"true": L("VALUE_TRUE"),
 					"false": L("VALUE_FALSE")
 				}	
-			}			
+			},
+			{
+				name: "ZoomLockScroll",
+				title: L("ZOOMLOCK_SCROLL"),
+				icon: "SEARCH",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}
+			}
 		],
 		/**
 		* @constructor
