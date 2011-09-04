@@ -93,7 +93,7 @@ tmp = function() {
 			{
 				name: "ZoomLockScroll",
 				title: L("ZOOMLOCK_SCROLL"),
-				icon: "SEARCH",
+				icon: "ZOOMSCROLL",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
