@@ -68,6 +68,7 @@ return {
 		MS: 55,
 		SD: 56,
 		LANGUAGE: 57,
+		NEW: 61,
 		TIMEZONE: 62,
 		PERIODICALS: 67,
 		HOME: 26, // missing
@@ -98,6 +99,10 @@ return {
 		NEXT_SONG: 105,
 		PREVIOUS: 106,
 		NEXT: 107,
+		ARCHIVE: 108,
+		BRIGHT_CONT: 109,
+		BRIGHTHNESS: 110,
+		CONTRAST: 110,
 		
 		DEFAULT: 87,
 		
