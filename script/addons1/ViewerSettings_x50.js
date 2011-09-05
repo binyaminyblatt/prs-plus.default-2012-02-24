@@ -13,8 +13,9 @@
 //	2011-08-30 Mark Nord - renamed to ViewerSetting_x50; default for mask-overlap set to mask overlap
 //				keybindable action to switch gesture-pageturn on/off
 //	2011-09-01 Mark Nord - Used appropriate icons - based in Ben Chenoweth suggestion
-//	2011-09-02 quisvir - Added Custom View Settings using Restore Button
+//	2011-09-02 quisvir - Added Custom View Settings (Brightness & Contrast) using (OnScreen) Restore Button
 //	2011-09-02 quisvir - Added option to enable scrolling in Zoom Lock mode
+//	2011-09-04 Mark Nord - added some appropriate icons (avoid "SEARCH" / #39 as this will breake the Options-Sub-Menu)
 
 tmp = function() {
 
@@ -339,7 +340,8 @@ tmp = function() {
 			{
 				name: "ZoomLockScroll",
 				title: L("ZOOMLOCK_SCROLL"),
-				defaultValue: "false",
+				icon: "#41",
+				defaultValue: "true",
 				values: ["true", "false"],
 				valueTitles: {
 					"true": L("VALUE_TRUE"),
@@ -348,28 +350,31 @@ tmp = function() {
 			},
 			{
 			groupTitle: L("CUSTOM_VIEW_SETTINGS"),
-			groupIcon: "FOLDER",
+			groupIcon: "BRIGHT_CONT",
 			optionDefs: [
 				{
 					name: "CustomContrast",
 					title: L("CUSTOM_CONTRAST"),
+					icon: "CONTRAST",
 					defaultValue: 0,
 					values: [127,120,110,100,90,80,70,60,50,45,40,35,30,25,20,15,10,5,0,-5,-10,-15,-20,-25,-30,-35,-40,-45,-50,-60,-70,-80,-90,-100,-110,-120,-127],
 				},
 				{
 					name: "CustomBrightness",
 					title: L("CUSTOM_BRIGHTNESS"),
+					icon: "BRIGHTNESS",					
 					defaultValue: 0,
 					values: [225,200,175,150,125,100,90,80,70,60,50,40,30,20,10,0,-10,-20,-30,-40,-50,-60,-70,-80,-90,-100,-125,-150,-175,-200,-225],
 				},
 				{
-				name: "BindToRestoreButton",
-				title: L("BIND_TO_RESTORE_BUTTON"),
-				defaultValue: "false",
-				values: ["true","false"],
-				valueTitles: {
-					"true": L("VALUE_TRUE"),
-					"false": L("VALUE_FALSE")
+					name: "BindToRestoreButton",
+					title: L("BIND_TO_RESTORE_BUTTON"),
+					icon: "BACK",
+					defaultValue: "false",
+					values: ["true","false"],
+					valueTitles: {
+						"true": L("VALUE_TRUE"),
+						"false": L("VALUE_FALSE")
 				}
 				},
 			],

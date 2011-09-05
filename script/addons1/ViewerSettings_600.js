@@ -29,16 +29,14 @@ tmp = function() {
 	// Constants
 
 	// Enable scrolling in Zoom Lock mode
-	if (Core.config.model != "350") {
-	
 	var zoomlockold;
 	
 	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
 	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
-	zoomlockold = this.isZoomLock;
-	if (Core.addonByName.ViewerSettings_600.options.ZoomLockScroll == "true" && zoomlockold) { this.isZoomLock = false; }
-	oldZoomdoDrag.apply(this, arguments);
-	this.isZoomLock = zoomlockold;
+		zoomlockold = this.isZoomLock;
+		if (Core.addonByName.ViewerSettings_600.options.ZoomLockScroll == "true" && zoomlockold) { this.isZoomLock = false; }
+		oldZoomdoDrag.apply(this, arguments);
+		this.isZoomLock = zoomlockold;
 	}
 	
 	var oldZoomOverlaydone = Fskin.kbookZoomOverlay.done;
@@ -57,7 +55,6 @@ tmp = function() {
 		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_600.options.ZoomLockScroll != "true") { return true; }
 		else { return false; }
 	};
-	}
 
 	// overload Fskin.kbookPage.doSelectWord called by Fskin.kbookPage.readingTracker.doubleTap to disable Dictionary
 	var oldDoSelectWord = Fskin.kbookPage.doSelectWord;
@@ -96,6 +93,7 @@ tmp = function() {
 			{
 				name: "ZoomLockScroll",
 				title: L("ZOOMLOCK_SCROLL"),
+				icon: "ZOOMSCROLL",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {

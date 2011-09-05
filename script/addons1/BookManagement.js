@@ -6,7 +6,8 @@
 //
 // History:
 //	2011-08-29 quisvir - Initial version
-//  2011-08-31 quisvir - Avoid assets.xml and change terminology
+//	2011-08-31 quisvir - Avoid assets.xml and change terminology
+//	2011-09-04 Mark Nord - preserve Add-Collection, added icons
 
 tmp = function() {
 
@@ -24,9 +25,11 @@ tmp = function() {
 	// Keep new flag as is on opening book
 	var oldonChangeBook = kbook.model.onChangeBook;
 	kbook.model.onChangeBook = function (node) {
-	var newflag = node.opened;
-	oldonChangeBook.apply(this, arguments);
-	if (Core.addonByName.BookManagement.options.ManualNewFlag == "true") { node.opened = newflag; }
+		var newflag = node.opened;
+		oldonChangeBook.apply(this, arguments);
+		if (Core.addonByName.BookManagement.options.ManualNewFlag == "true") {
+			 node.opened = newflag; 
+		}
 	}
 	
 	// Book menu option to switch new flag, called from main.xml
@@ -38,14 +41,14 @@ tmp = function() {
 	
 	// Show book menu option if preference is set
 	kbook.optMenu.isDisable = function (part) {
-	if (this.hasString(part, 'manualnewflag')) {
-		if (Core.addonByName.BookManagement.options.ManualNewFlag == "true") {
-		part.text = (kbook.model.currentBook.opened) ? L("SETNEWFLAG") : L("REMOVENEWFLAG");
-		return Fskin.overlayTool.isDisable(part);
+		if (this.hasString(part, 'manualnewflag')) {
+			if (Core.addonByName.BookManagement.options.ManualNewFlag == "true") {
+				part.text = (kbook.model.currentBook.opened) ? L("SETNEWFLAG") : L("REMOVENEWFLAG");
+				return Fskin.overlayTool.isDisable(part);
+			}
+			else { return true }
 		}
-		else { return true }
-	}
-	else { return Fskin.overlayTool.isDisable(part) }
+		else { return Fskin.overlayTool.isDisable(part) }
 	}
 
 	// Hide default collections
@@ -53,20 +56,22 @@ tmp = function() {
 	kbook.root.kbookPlaylistNode.construct = function () {
 		oldkbookPlaylistNode.apply(this, arguments);
 		if (Core.addonByName.BookManagement.options.HideDefaultCollections == "true") {
-		this.nodes.splice(this.purchasedNodeIndex - 2,4);
-		this.constNodesCount = 0;
-		this.presetItemsCount = 0;
+			this.nodes.splice(this.purchasedNodeIndex - 2,3);
+			this.constNodesCount = 1;
+			this.presetItemsCount = 1;
 		}
 	}
 
 	var BookManagement = {
 		name: "BookManagement",
-		settingsGroup: "bookmanagement",
+	//	title: L("TITLE"),
+	//	settingsGroup: "bookmanagement",
+		icon: "BOOKS",
 		optionDefs: [
 			{
 				name: "ManualNewFlag",
 				title: L("OPTION_MANUALNEWFLAG"),
-				icon: "SETTINGS",
+				icon: "NEW",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
@@ -77,7 +82,7 @@ tmp = function() {
 			{
 				name: "HideDefaultCollections",
 				title: L("OPTION_HIDEDEFCOLL"),
-				icon: "SETTINGS",
+				icon: "BOOKS",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
@@ -85,16 +90,7 @@ tmp = function() {
 					"false": L("VALUE_FALSE")
 				}	
 			}		
-		],
-		/**
-		* @constructor
-		*/
-		onPreInit: function () {
-		},
-		onInit: function () {
-		},
-		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-		}
+		]
 	};
 
 	Core.addAddon(BookManagement);
