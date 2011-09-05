@@ -4698,6 +4698,7 @@
 			<optItemButton u="53" textresource="STR_UI_MENU_WORD_LOGS_PERIODICAL"		do="doGoToDicHistoryForBook" playing="dicHist,!isInvalidPage,!dictionary,periodical"/>
 			<optItemButton u="53" textresource="STR_UI_MENU_DICTIONARY_LOOK_UP_HISTORY"	do="doGoToDicHistoryForBook" playing="dicHist,!isInvalidPage,!dictionary,!periodical"/>
 			<optItemButton u="33" textresource="STR_UI_MENU_CHANG_TONE_CURVE"	do="doToneCurve" playing="!dictionary,!isInvalidPage"/> <!-- adjustFont -->
+			<optItemButton u="" do="NewFlagToggle" playing="!dictionary,manualnewflag"/> <!-- PRS+ -->
 			<optItemButton u= "5" textresource="STR_UI_MENU_DELETEBOOK"			do="doDelBook" playing="!dictionary" onoff="VAR_IsPeriodical,fskin:/l/strings/STR_UI_MENU_DELETEISSUE,fskin:/l/strings/STR_UI_MENU_DELETEBOOK"/> <!-- canToolbar -->
 			<optItemButton u= "4" textresource="STR_UI_MENU_BOOKINFO"			do="doViewBookInfo" playing="!dictionary"/> <!-- canToolbar -->
 
