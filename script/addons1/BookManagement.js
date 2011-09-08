@@ -10,6 +10,7 @@
 //	2011-09-04 Mark Nord - preserve Add-Collection, added icons
 //	2011-09-05 quisvir - Extend Hide Collection options to 1 option per collection entry
 //	2011-09-05 quisvir - Add reading progress in home menu and thumbnail views
+//	2011-09-08 quisvir - Format options now correspond to statusbar options, and fewer strings needed
 
 tmp = function() {
 
@@ -202,14 +203,14 @@ tmp = function() {
 				defaultValue: "2",
 				values: ["1", "2", "3", "4", "5", "6", "7", "8"],
 				valueTitles: {
-					"1": L("FORMAT_PAGE_X_OF_Y"),
-					"2": L("FORMAT_PAGE_X_OF_Y_PERC"),
-					"3": L("FORMAT_X_OF_Y"),
-					"4": L("FORMAT_X_OF_Y_PERC"),
-					"5": L("FORMAT_PERC"),
-					"6": L("FORMAT_X_SLASH_Y"),
-					"7": L("FORMAT_X_SLASH_Y_PERC"),
-					"8": L("FORMAT_PAGE_X_SLASH_Y_PERC")
+					"1": L("PAGE") + " 5 " + L("OF") + " 100",
+					"2": L("PAGE") + " 5 " + L("OF") + " 100 (5%)",
+					"3": "5 " + L("OF") + " 100",
+					"4": "5 " + L("OF") + " 100 (5%)",
+					"5": "5%",
+					"6": "5 / 100",
+					"7": "5 / 100 (5%)",
+					"8": L("PAGE") + " 5 / 100 (5%)"
 				}
 				},
 				{
@@ -228,14 +229,14 @@ tmp = function() {
 				defaultValue: "3",
 				values: ["1", "2", "3", "4", "5", "6", "7", "8"],
 				valueTitles: {
-					"1": L("FORMAT_PAGE_X_OF_Y"),
-					"2": L("FORMAT_PAGE_X_OF_Y_PERC"),
-					"3": L("FORMAT_X_OF_Y"),
-					"4": L("FORMAT_X_OF_Y_PERC"),
-					"5": L("FORMAT_PERC"),
-					"6": L("FORMAT_X_SLASH_Y"),
-					"7": L("FORMAT_X_SLASH_Y_PERC"),
-					"8": L("FORMAT_PAGE_X_SLASH_Y_PERC")
+					"1": L("PAGE") + " 5 " + L("OF") + " 100",
+					"2": L("PAGE") + " 5 " + L("OF") + " 100 (5%)",
+					"3": "5 " + L("OF") + " 100",
+					"4": "5 " + L("OF") + " 100 (5%)",
+					"5": "5%",
+					"6": "5 / 100",
+					"7": "5 / 100 (5%)",
+					"8": L("PAGE") + " 5 / 100 (5%)"
 				}
 				},
 				{
