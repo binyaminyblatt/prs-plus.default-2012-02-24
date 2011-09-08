@@ -16,6 +16,7 @@
 //	2011-09-02 quisvir - Added Custom View Settings (Brightness & Contrast) using (OnScreen) Restore Button
 //	2011-09-02 quisvir - Added option to enable scrolling in Zoom Lock mode
 //	2011-09-04 Mark Nord - added some appropriate icons (avoid "SEARCH" / #39 as this will breake the Options-Sub-Menu)
+//	2011-09-08 quisvir - Renamed scrolling (in zoom lock) to panning
 
 tmp = function() {
 
@@ -39,7 +40,7 @@ tmp = function() {
 	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
 	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
 		zoomlockold = this.isZoomLock;
-		if (Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll == "true" && zoomlockold) { 
+		if (Core.addonByName.ViewerSettings_x50.options.ZoomLockPanning == "true" && zoomlockold) { 
 			this.isZoomLock = false; }
 		oldZoomdoDrag.apply(this, arguments);
 		this.isZoomLock = zoomlockold;
@@ -54,13 +55,13 @@ tmp = function() {
 	};
 
 	Fskin.kbookZoomOverlay.canLine = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll != "true") {
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockPanning != "true") {
 			 return true; }
 		else { return false; }
 	};
 
 	Fskin.kbookZoomOverlay.canLineAndHold = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll != "true") { 
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockPanning != "true") { 
 			return true; }
 		else { return false; }
 	};
@@ -339,8 +340,8 @@ tmp = function() {
 				}	
 			},
 			{
-				name: "ZoomLockScroll",
-				title: L("ZOOMLOCK_SCROLL"),
+				name: "ZoomLockPanning",
+				title: L("ZOOMLOCK_PANNING"),
 				icon: "#41",
 				defaultValue: "true",
 				values: ["true", "false"],

@@ -122,7 +122,7 @@ tmp = function() {
 
 	var BookManagement = {
 		name: "BookManagement",
-	//	title: L("TITLE"),
+		title: L("TITLE"),
 	//	settingsGroup: "bookmanagement",
 		icon: "BOOKS",
 		optionDefs: [
@@ -184,7 +184,7 @@ tmp = function() {
 			],
 			},
 			{
-			groupTitle: L("SHOW_READING_PROGRESS"),
+			groupTitle: L("READING_PROGRESS"),
 			groupIcon: "FOLDER",
 			optionDefs: [
 				{

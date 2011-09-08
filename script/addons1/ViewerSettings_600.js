@@ -9,6 +9,7 @@
 //	2011-08-31 Ben Chenoweth - Initial version
 //  2011-09-01 Ben Chenoweth - Used appropriate icons
 //	2011-09-02 quisvir - Added option to enable scrolling in Zoom Lock mode
+//	2011-09-08 quisvir - Renamed scrolling (in zoom lock) to panning
 
 tmp = function() {
 
@@ -34,7 +35,7 @@ tmp = function() {
 	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
 	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
 		zoomlockold = this.isZoomLock;
-		if (Core.addonByName.ViewerSettings_600.options.ZoomLockScroll == "true" && zoomlockold) { this.isZoomLock = false; }
+		if (Core.addonByName.ViewerSettings_600.options.ZoomLockPanning == "true" && zoomlockold) { this.isZoomLock = false; }
 		oldZoomdoDrag.apply(this, arguments);
 		this.isZoomLock = zoomlockold;
 	}
@@ -47,12 +48,12 @@ tmp = function() {
 	};
 
 	Fskin.kbookZoomOverlay.canLine = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_600.options.ZoomLockScroll != "true") { return true; }
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_600.options.ZoomLockPanning != "true") { return true; }
 		else { return false; }
 	};
 
 	Fskin.kbookZoomOverlay.canLineAndHold = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_600.options.ZoomLockScroll != "true") { return true; }
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_600.options.ZoomLockPanning != "true") { return true; }
 		else { return false; }
 	};
 
@@ -91,8 +92,8 @@ tmp = function() {
 				}	
 			},
 			{
-				name: "ZoomLockScroll",
-				title: L("ZOOMLOCK_SCROLL"),
+				name: "ZoomLockPanning",
+				title: L("ZOOMLOCK_PANNING"),
 				icon: "ZOOMSCROLL",
 				defaultValue: "false",
 				values: ["true", "false"],
