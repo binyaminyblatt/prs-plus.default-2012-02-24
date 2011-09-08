@@ -13,15 +13,16 @@
 //		Free Cell by Ben Chenoweth
 //		Mahjong by Clemenseken
 //		Sudoku by Obelix
-//  2011-06-29 Ben Chenoweth - ALL: Updated existing games/calculator to use AppAssets and added
-//      Draughts by Ben Chenoweth
-//      MineSweeper by Mark Nord / D. Shep Poor
-//      XO-Cubed by Ben Chenoweth
+//	2011-06-29 Ben Chenoweth - ALL: Updated existing games/calculator to use AppAssets and added
+//		Draughts by Ben Chenoweth
+//		MineSweeper by Mark Nord / D. Shep Poor
+//		XO-Cubed by Ben Chenoweth
 //	2011-07-03 Mark Nord - Added NodeKinds.STANDBY
-//  2011-08-03 Ben Chenoweth - ALL: Added
-//      Calendar by Ben Chenoweth
-//      Solitaire by Ben Chenoweth
-//  2011-08-28 Ben Chenoweth - Moved games into Games node
+//	2011-08-03 Ben Chenoweth - ALL: Added
+//		Calendar by Ben Chenoweth
+//		Solitaire by Ben Chenoweth
+//	2011-08-28 Ben Chenoweth - Moved games into Games node
+//	2011-09-04 Mark Nord - NodeKinds.getIcon modified to accept "#icon-number" (not consistent across model-border but speeds up testing)
 
 return {
 	// Menu icon indices 
@@ -68,6 +69,7 @@ return {
 		MS: 55,
 		SD: 56,
 		LANGUAGE: 57,
+		NEW: 61,
 		TIMEZONE: 62,
 		PERIODICALS: 67,
 		HOME: 26, // missing
@@ -96,6 +98,10 @@ return {
 		NEXT_SONG: 130,
 		PREVIOUS: 131,
 		NEXT: 132,
+		ARCHIVE: 133,
+		BRIGHT_CONT: 134,
+		BRIGHTNESS: 135,
+		CONTRAST: 136,
 		
 		DEFAULT: 112,
 		
@@ -106,7 +112,8 @@ return {
 		
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {
-			var kind;
+		try{
+			var kind, i;
 			if (type === "home") {
 				kind = this["HOME_" + strKind];
 				if (typeof kind === "undefined") {
@@ -115,14 +122,22 @@ return {
 			} else if (type === "homeLarge") {
 				// if it is undefined, leave it as is
 				kind = this["LARGE_" + strKind];
-			} else {
-				kind = this[strKind];
-				if (typeof kind === "undefined") {
-					kind = this.FOLDER;
+				} else {
+					i = strKind.lastIndexOf("#");
+					if (i > -1) {
+						kind = parseInt(strKind.substring(i+1));
+					} else {
+						kind = this[strKind];
+					}
 				}
+			if (typeof kind === "undefined") {
+				kind = this.FOLDER;
 			}
-			
 			return kind;
+		}
+		catch (e) {
+			return this.FOLDER;
+		}
 		}
 	},
 	

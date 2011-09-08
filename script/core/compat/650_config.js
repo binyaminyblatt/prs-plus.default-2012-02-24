@@ -23,7 +23,7 @@
 //		Solitaire by Ben Chenoweth
 //	2011-08-28 Ben Chenoweth - Moved games into Games node
 //	2011-09-04 Mark Nord - NodeKinds.getIcon modified to accept "#icon-number" (not consistent across model-border but speeds up testing)
-
+ 
 return {
 	// Menu icon indices 
 	NodeKinds: {
@@ -75,7 +75,7 @@ return {
 		HOME: 26, // missing
 		
 		STANDBY: 79,
-
+		
 		UNCHECKED: 85,
 		CHECKED: 86,
 		
@@ -115,7 +115,7 @@ return {
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {
 		try{
-			var kind, i, log;
+			var kind, i;
 			if (type === "home") {
 				kind = this["HOME_" + strKind];
 				if (typeof kind === "undefined") {

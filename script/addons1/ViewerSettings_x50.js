@@ -35,35 +35,36 @@ tmp = function() {
 	// Constants
 	
 	// Enable scrolling in Zoom Lock mode
-	if (Core.config.model != "350") {
-	
 	var zoomlockold;
 	
 	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
 	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
-	zoomlockold = this.isZoomLock;
-	if (Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll == "true" && zoomlockold) { this.isZoomLock = false; }
-	oldZoomdoDrag.apply(this, arguments);
-	this.isZoomLock = zoomlockold;
+		zoomlockold = this.isZoomLock;
+		if (Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll == "true" && zoomlockold) { 
+			this.isZoomLock = false; }
+		oldZoomdoDrag.apply(this, arguments);
+		this.isZoomLock = zoomlockold;
 	}
 	
 	var oldZoomOverlaydone = Fskin.kbookZoomOverlay.done;
 	Fskin.kbookZoomOverlay.done = function () {
-		if (zoomlockold) { this.isZoomLock = true; }
+		if (zoomlockold) { 
+			this.isZoomLock = true; }
 		oldZoomOverlaydone.apply(this, arguments);
 		this.isZoomlock = zoomlockold;
 	};
 
 	Fskin.kbookZoomOverlay.canLine = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll != "true") { return true; }
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll != "true") {
+			 return true; }
 		else { return false; }
 	};
 
 	Fskin.kbookZoomOverlay.canLineAndHold = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll != "true") { return true; }
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockScroll != "true") { 
+			return true; }
 		else { return false; }
 	};
-	}
 	
 	// Bind custom contrast & brightness values to Restore button
 	pageOptionToneCurveEditorOverlayModel.initToneCurveEditor = function () {
@@ -71,12 +72,12 @@ tmp = function() {
 		contrast = parseInt(this.targetModel.doSomething('getContrast'));
 		brightness = parseInt(this.targetModel.doSomething('getBrightness'));
 		if (Core.addonByName.ViewerSettings_x50.options.BindToRestoreButton == "true") {
-		this.org_slider_1 = Core.addonByName.ViewerSettings_x50.options.CustomContrast;
-		this.org_slider_2 = Core.addonByName.ViewerSettings_x50.options.CustomBrightness;
+			this.org_slider_1 = Core.addonByName.ViewerSettings_x50.options.CustomContrast;
+			this.org_slider_2 = Core.addonByName.ViewerSettings_x50.options.CustomBrightness;
 		}
 		else {
-		this.org_slider_1 = contrast;
-		this.org_slider_2 = brightness;
+			this.org_slider_1 = contrast;
+			this.org_slider_2 = brightness;
 		}
 		this.ToneUpdate(contrast, brightness);
 	};
