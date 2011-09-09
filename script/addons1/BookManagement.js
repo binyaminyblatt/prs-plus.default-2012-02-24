@@ -126,7 +126,7 @@ tmp = function() {
 		name: "BookManagement",
 		title: L("TITLE"),
 	//	settingsGroup: "bookmanagement",
-		icon: "BOOKS",
+		// icon: "BOOKS",
 		optionDefs: [
 			{
 				name: "ManualNewFlag",
@@ -141,7 +141,7 @@ tmp = function() {
 			},
 			{
 			groupTitle: L("HIDE_DEFAULT_COLLECTIONS"),
-			groupIcon: "BOOKS",
+			// groupIcon: "BOOKS",
 			optionDefs: [
 				{
 					name: "HideUnreadBooks",

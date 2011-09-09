@@ -352,7 +352,7 @@ tmp = function() {
 			},
 			{
 			groupTitle: L("CUSTOM_VIEW_SETTINGS"),
-			groupIcon: "BRIGHT_CONT",
+			// groupIcon: "BRIGHT_CONT",
 			optionDefs: [
 				{
 					name: "CustomContrast",
