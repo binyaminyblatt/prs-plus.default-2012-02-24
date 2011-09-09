@@ -343,7 +343,7 @@ tmp = function() {
 				name: "ZoomLockPanning",
 				title: L("ZOOMLOCK_PANNING"),
 				icon: "#41",
-				defaultValue: "true",
+				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
 					"true": L("VALUE_TRUE"),
