@@ -98,7 +98,7 @@ tmp = function() {
 		oldthumbnaildrawRecord.apply(this, arguments);
 		if (Core.addonByName.BookManagement.options.ShowReadingProgressThumbs == "true" && offset < this.menu.countRecords() && !this.getField('multipleCheckbox', offset)) {
 			var record = this.menu.getRecord(offset);
-			if (record.media.ext.history[0]) {
+			if (record.media.ext.history[0] && !record.expiration) {
 				var page = record.media.ext.history[0].page + 1;
 				if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) { return; }
 				var pages = record.media.ext.history[0].pages;
