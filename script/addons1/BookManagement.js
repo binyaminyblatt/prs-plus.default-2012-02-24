@@ -11,6 +11,7 @@
 //	2011-09-05 quisvir - Extend Hide Collection options to 1 option per collection entry
 //	2011-09-05 quisvir - Add reading progress in home menu and thumbnail views
 //	2011-09-08 quisvir - Format options now correspond to statusbar options, and fewer strings needed
+//	2011-09-09 quisvir - Added exception for reading progress in thumbnail checkbox view
 
 tmp = function() {
 
@@ -91,6 +92,7 @@ tmp = function() {
 	}
 	
 	// Draw reading progress below thumbnails (both home screen and book lists)
+	// FIXME thumbnail checkbox view crashes on accessing record.media.ext - temporarily solved with exception
 	var oldthumbnaildrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
 		oldthumbnaildrawRecord.apply(this, arguments);
