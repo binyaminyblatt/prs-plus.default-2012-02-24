@@ -112,13 +112,13 @@ tmp = function() {
 	ReadingProgressComment = function (page, pages, format) {
 		switch (format) {
 			case "1": return L("PAGE") + ' ' + page + ' ' + L("OF") + ' ' + pages;
-			case "2": return L("PAGE") + ' ' + page + ' ' + L("OF") + ' ' + pages + ' (' + Math.round((page/pages)*100) + '%)';
+			case "2": return L("PAGE") + ' ' + page + ' ' + L("OF") + ' ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
 			case "3": return page + ' ' + L("OF") + ' ' + pages;
-			case "4": return page + ' ' + L("OF") + ' ' + pages + ' (' + Math.round((page/pages)*100) + '%)';
-			case "5": return Math.round((page/pages)*100) + '%';
+			case "4": return page + ' ' + L("OF") + ' ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
+			case "5": return Math.floor((page/pages)*100) + '%';
 			case "6": return page + ' / ' + pages;
-			case "7": return page + ' / ' + pages + ' (' + Math.round((page/pages)*100) + '%)';
-			case "8": return L("PAGE") + ' ' + page + ' / ' + pages + ' (' + Math.round((page/pages)*100) + '%)';
+			case "7": return page + ' / ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
+			case "8": return L("PAGE") + ' ' + page + ' / ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
 		}
 	}
 
