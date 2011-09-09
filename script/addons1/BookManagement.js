@@ -94,8 +94,8 @@ tmp = function() {
 	var oldthumbnaildrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
 		oldthumbnaildrawRecord.apply(this, arguments);
-		if (Core.addonByName.BookManagement.options.ShowReadingProgressThumbs == "true" && offset < this.menu.countRecords()) {
-			record = this.menu.getRecord(offset);
+		if (Core.addonByName.BookManagement.options.ShowReadingProgressThumbs == "true" && offset < this.menu.countRecords() && !this.getField('multipleCheckbox', offset)) {
+			var record = this.menu.getRecord(offset);
 			if (record.media.ext.history[0]) {
 				var page = record.media.ext.history[0].page + 1;
 				if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) { return; }
@@ -109,14 +109,14 @@ tmp = function() {
 	// Format reading progress comment
 	ReadingProgressComment = function (page, pages, format) {
 		switch (format) {
-			case "1": return L("PAGE") + ' ' + page + ' ' + L("OF") + ' ' + pages; break;
-			case "2": return L("PAGE") + ' ' + page + ' ' + L("OF") + ' ' + pages + ' (' + Math.round((page/pages)*100) + '%)'; break;
-			case "3": return page + ' ' + L("OF") + ' ' + pages; break;
-			case "4": return page + ' ' + L("OF") + ' ' + pages + ' (' + Math.round((page/pages)*100) + '%)'; break;
-			case "5": return Math.round((page/pages)*100) + '%'; break;
-			case "6": return page + ' / ' + pages; break;
-			case "7": return page + ' / ' + pages + ' (' + Math.round((page/pages)*100) + '%)'; break;
-			case "8": return L("PAGE") + ' ' + page + ' / ' + pages + ' (' + Math.round((page/pages)*100) + '%)'; break;
+			case "1": return L("PAGE") + ' ' + page + ' ' + L("OF") + ' ' + pages;
+			case "2": return L("PAGE") + ' ' + page + ' ' + L("OF") + ' ' + pages + ' (' + Math.round((page/pages)*100) + '%)';
+			case "3": return page + ' ' + L("OF") + ' ' + pages;
+			case "4": return page + ' ' + L("OF") + ' ' + pages + ' (' + Math.round((page/pages)*100) + '%)';
+			case "5": return Math.round((page/pages)*100) + '%';
+			case "6": return page + ' / ' + pages;
+			case "7": return page + ' / ' + pages + ' (' + Math.round((page/pages)*100) + '%)';
+			case "8": return L("PAGE") + ' ' + page + ' / ' + pages + ' (' + Math.round((page/pages)*100) + '%)';
 		}
 	}
 
