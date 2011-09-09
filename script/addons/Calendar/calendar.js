@@ -27,6 +27,7 @@
 // 2011-09-08 Ben Chenoweth - Replaced "U", "D" with arrow symbols.
 // 2011-09-09 Ben Chenoweth - Moved strings into variables to handle missing characters in the fonts on the 600.
 // 2011-09-09 Ben Chenoweth - Fix to get it working again!
+// 2011-09-09 Ben Chenoweth - Temporary fix for missing up/down arrows on 505.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -427,6 +428,12 @@ var tmp = function () {
 				strUp = "U";
 				strDown = "D";
 			}
+			if (kbook.autoRunRoot.model=="505") {
+				strShift = "Shft";
+				strUnShift = "unSh";
+				strUp = "U";
+				strDown = "D";
+			}			
 		}
 		
 		//keyboard keys in shifted form
