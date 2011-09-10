@@ -22,6 +22,12 @@
 // 2011-09-06 Ben Chenoweth - Changed order of precedence for event icon selection; show number of events in calendar (if more than one).
 // 2011-09-06 Ben Chenoweth - Fixed: events text box was not updating when adding new event.
 // 2011-09-08 Ben Chenoweth - Added OK and Cancel using physical buttons for non-touch on event editor.
+// 2011-09-08 Ben Chenoweth - Removed "Space" label; fixed error with event numbers.
+// 2011-09-08 Ben Chenoweth - Replaced "Shft", "unSh", "Back" with arrow symbols.
+// 2011-09-08 Ben Chenoweth - Replaced "U", "D" with arrow symbols.
+// 2011-09-09 Ben Chenoweth - Moved strings into variables to handle missing characters in the fonts on the 600.
+// 2011-09-09 Ben Chenoweth - Fix to get it working again!
+// 2011-09-09 Ben Chenoweth - Temporary fix for missing up/down arrows on 505.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -82,7 +88,14 @@ var tmp = function () {
 	var currentOffset = 0;
 	var upenabled = false;
 	var downenabled = false;
-		
+	
+	// the following strings work on all readers except the 600 because the characters are missing from the font
+	var strShift = "\u2191"; //up arrow
+	var strUnShift = "\u2193"; //down arrow
+	var strBack = "\u2190"; //left arrow
+	var strUp = "\u2191";
+	var strDown = "\u2193";
+	
 	// variables to be saved to a file
 	target.settings = {	
 		WeekBeginsWith : "Sun"
@@ -406,9 +419,32 @@ var tmp = function () {
 		target.BUTTON_DWN.enable(false);
 		this.nonTouch9.setValue('');
 		this.nonTouch0.setValue('');
+
+		if (!kbook.simEnviro) {
+			if (kbook.autoRunRoot.model=="600") {
+				strShift = "Shft";
+				strUnShift = "unSh";
+				strBack = "Back";
+				strUp = "U";
+				strDown = "D";
+			}
+			if (kbook.autoRunRoot.model=="505") {
+				strShift = "Shft";
+				strUnShift = "unSh";
+				strUp = "U";
+				strDown = "D";
+			}			
+		}
 		
 		//keyboard keys in shifted form
-		this.doShift();
+		//this.doShift();
+	
+		//simplify some labels
+		setSoValue(target.EVENTS_DIALOG.BACK, 'text', strBack);
+		setSoValue(target.EVENTS_DIALOG.SPACE, 'text', "");
+		//setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', strUnShift);
+		setSoValue(target.BUTTON_UPP, 'text', strUp);
+		setSoValue(target.BUTTON_DWN, 'text', strDown);
 		return;
 	}
 
@@ -728,13 +764,13 @@ var tmp = function () {
 
 		altdayofweek = dayofweek+1;
 		if (altdayofweek==8) altdayofweek=1;
-		
+
 		// reset the temporary array
 		if (tempEvents.length>0) {
 			tempEvents.length=0;
 			tempEventsNum.length=0;
 		}
-	
+		
 		for (var i = 0; i < events.length; i++) {
 			// First we'll process recurring events (if any):
 			if (events[i][0] != "") {
@@ -993,6 +1029,12 @@ var tmp = function () {
 			this.gridCursor.changeLayout((x-1)*70+50, 70, uD, (y-1)*70+80, 70, uD);
 			target.BUTTON_EDT.enable(true);
 		}
+		
+		// reset the temporary array
+		if (tempEvents.length>0) {
+			tempEvents.length=0;
+			tempEventsNum.length=0;
+		}		
 		
 		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
 			// events in square that was clicked
@@ -1317,7 +1359,7 @@ var tmp = function () {
 	
 	// events popup stuff
     target.doEditEvents = function () {
-		//target.bubble("tracelog","Number of events="+tempEvents.length);
+		target.bubble("tracelog","Number of events="+tempEvents.length);
 		// reset labels
 		maxEventNum=tempEvents.length+1; // need to add +1 if a blank event can be added
 		maxEventDay=numbDays;
@@ -2382,6 +2424,7 @@ var tmp = function () {
 		}
 
 		this.dateChanged();
+		target.BUTTON_EDT.enable(true);
 		return;
 	}
 
@@ -2389,7 +2432,15 @@ var tmp = function () {
 		//target.bubble("tracelog","Delete event "+tempEventsNum[currentTempEvent]);
 		eventsDlgOpen = false;
 		events.splice(tempEventsNum[currentTempEvent], 1);
+		
+		// reset the temporary array
+		if (tempEvents.length>0) {
+			tempEvents.length=0;
+			tempEventsNum.length=0;
+		}
+		
 		this.createCalendar();
+		target.BUTTON_EDT.enable(true);		
 		if (this.checkevents(selectionDate,monthNum,yearNum,y,x)>0) {
 			this.showevents(selectionDate,monthNum,yearNum,y,x,0);
 		} else {
@@ -2404,9 +2455,9 @@ var tmp = function () {
 		n = -1;
 		if (shifted) {
 			n = n + shiftOffset;
-			setSoValue(target.EVENTS_DIALOG['SHIFT'], 'text', 'unSh');
+			setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', strUnShift);
 		} else {
-			setSoValue(target.EVENTS_DIALOG['SHIFT'], 'text', 'Shft');
+			setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', strShift);
 		}
 		if (symbols) {
 			n = n + symbolsOffset;
@@ -2457,8 +2508,8 @@ var tmp = function () {
 	target.addCharacter = function (id) {
 		var n = parseInt(id.substring(3, 5));
 		//target.bubble("tracelog","id="+id+", n="+n);
-		if (symbols) { n = n + symbolsOffset};
-		if (shifted) { n = n + shiftOffset};
+		if (symbols) { n = n + symbolsOffset };
+		if (shifted) { n = n + shiftOffset };
 		var character = keys[n-1];
 		//target.bubble("tracelog","n="+n+", character="+character);
 		var eventDescription = target.getVariable("event_description");

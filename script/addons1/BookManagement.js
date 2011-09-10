@@ -1,6 +1,6 @@
 // Name: BookManagement
-// Description: Allows to set 'new' flag manually 
-//	and to hide default collections
+// Description: Allows to set 'new' flag manually, to hide default collections
+//				and to show reading progress in home menu and thumbnail views
 // 
 // Author: quisvir
 //
@@ -11,6 +11,8 @@
 //	2011-09-05 quisvir - Extend Hide Collection options to 1 option per collection entry
 //	2011-09-05 quisvir - Add reading progress in home menu and thumbnail views
 //	2011-09-08 quisvir - Format options now correspond to statusbar options, and fewer strings needed
+//	2011-09-09 quisvir - Added exception for reading progress in thumbnail checkbox view
+//	2011-09-10 quisvir - Reading Progress: Fixed menu lockups in views other than books
 
 tmp = function() {
 
@@ -30,9 +32,7 @@ tmp = function() {
 	kbook.model.onChangeBook = function (node) {
 		var newflag = node.opened;
 		oldonChangeBook.apply(this, arguments);
-		if (Core.addonByName.BookManagement.options.ManualNewFlag == "true") {
-			 node.opened = newflag; 
-		}
+		if (Core.addonByName.BookManagement.options.ManualNewFlag == "true") node.opened = newflag;
 	}
 	
 	// Book menu option to switch new flag, called from main.xml
@@ -49,9 +49,9 @@ tmp = function() {
 				part.text = (kbook.model.currentBook.opened) ? L("SETNEWFLAG") : L("REMOVENEWFLAG");
 				return Fskin.overlayTool.isDisable(part);
 			}
-			else { return true }
+			else return true;
 		}
-		else { return Fskin.overlayTool.isDisable(part) }
+		else return Fskin.overlayTool.isDisable(part);
 	}
 
 	// Hide default collections
@@ -60,22 +60,22 @@ tmp = function() {
 		oldkbookPlaylistNode.apply(this, arguments);
 		if (Core.addonByName.BookManagement.options.HideAddNewCollection == "true") {
 			this.nodes.splice(this.purchasedNodeIndex + 1,1);
-			this.constNodesCount = this.constNodesCount - 1;
+			this.constNodesCount--;
 		}
 		if (Core.addonByName.BookManagement.options.HidePurchasedBooks == "true") {
 			this.nodes.splice(this.purchasedNodeIndex,1);
-			this.constNodesCount = this.constNodesCount - 1;
-			this.presetItemsCount = this.presetItemsCount - 1;
+			this.constNodesCount--;
+			this.presetItemsCount--;
 		}
 		if (Core.addonByName.BookManagement.options.HideUnreadPeriodicals == "true") {
 			this.nodes.splice(this.purchasedNodeIndex - 1,1);
-			this.constNodesCount = this.constNodesCount - 1;
-			this.presetItemsCount = this.presetItemsCount - 1;
+			this.constNodesCount--;
+			this.presetItemsCount--;
 		}
 		if (Core.addonByName.BookManagement.options.HideUnreadBooks == "true") {
 			this.nodes.splice(this.purchasedNodeIndex - 2,1);
-			this.constNodesCount = this.constNodesCount - 1;
-			this.presetItemsCount = this.presetItemsCount - 1;
+			this.constNodesCount--;
+			this.presetItemsCount--;
 		}
 	}
 
@@ -83,22 +83,23 @@ tmp = function() {
 	kbook.model.getContinueDate = function (node) {
 		if (Core.addonByName.BookManagement.options.ShowReadingProgressCurrent == "true" && this.currentBook.media.ext.history[0]) {
 			var page = this.currentBook.media.ext.history[0].page + 1;
-			if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) { return node.nodes[0].lastReadDate; }
+			if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) return node.nodes[0].lastReadDate;
 			var pages = this.currentBook.media.ext.history[0].pages;
 			return ReadingProgressComment(page, pages, Core.addonByName.BookManagement.options.ProgressFormatCurrent);
 		}
-		else { return node.nodes[0].lastReadDate; }
+		else return node.nodes[0].lastReadDate;
 	}
 	
 	// Draw reading progress below thumbnails (both home screen and book lists)
+	// FIXME thumbnail checkbox view crashes on accessing record.media.ext - temporarily solved with exception !this.menu.getFixSelectPosition()
 	var oldthumbnaildrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
 		oldthumbnaildrawRecord.apply(this, arguments);
-		if (Core.addonByName.BookManagement.options.ShowReadingProgressThumbs == "true" && offset < this.menu.countRecords()) {
-			record = this.menu.getRecord(offset);
-			if (record.media.ext.history[0]) {
+		if (Core.addonByName.BookManagement.options.ShowReadingProgressThumbs == "true") {
+			var record = this.menu.getRecord(offset);
+			if (record && record.kind == 2 && !this.menu.getFixSelectPosition() && !record.expiration && record.media.ext.history[0]) {
 				var page = record.media.ext.history[0].page + 1;
-				if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) { return; }
+				if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) return;
 				var pages = record.media.ext.history[0].pages;
 				var message = ReadingProgressComment(page, pages, Core.addonByName.BookManagement.options.ProgressFormatThumbs);
 				parts.commentStyle.draw(this.getWindow(), message, x+this.marginWidth, y+this.marginHeight+this.designSpacingHeight+Math.min(this.getTh(height),this.thumbnailHeight)+this.textSeparation+this.textNameHeight+this.marginNameAndComment + 20, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
@@ -109,22 +110,22 @@ tmp = function() {
 	// Format reading progress comment
 	ReadingProgressComment = function (page, pages, format) {
 		switch (format) {
-			case "1": return L("PAGE") + ' ' + page + ' ' + L("OF") + ' ' + pages; break;
-			case "2": return L("PAGE") + ' ' + page + ' ' + L("OF") + ' ' + pages + ' (' + Math.round((page/pages)*100) + '%)'; break;
-			case "3": return page + ' ' + L("OF") + ' ' + pages; break;
-			case "4": return page + ' ' + L("OF") + ' ' + pages + ' (' + Math.round((page/pages)*100) + '%)'; break;
-			case "5": return Math.round((page/pages)*100) + '%'; break;
-			case "6": return page + ' / ' + pages; break;
-			case "7": return page + ' / ' + pages + ' (' + Math.round((page/pages)*100) + '%)'; break;
-			case "8": return L("PAGE") + ' ' + page + ' / ' + pages + ' (' + Math.round((page/pages)*100) + '%)'; break;
+			case "1": return L("PAGE") + ' ' + page + ' ' + L("OF") + ' ' + pages;
+			case "2": return L("PAGE") + ' ' + page + ' ' + L("OF") + ' ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
+			case "3": return page + ' ' + L("OF") + ' ' + pages;
+			case "4": return page + ' ' + L("OF") + ' ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
+			case "5": return Math.floor((page/pages)*100) + '%';
+			case "6": return page + ' / ' + pages;
+			case "7": return page + ' / ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
+			case "8": return L("PAGE") + ' ' + page + ' / ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
 		}
 	}
 
 	var BookManagement = {
 		name: "BookManagement",
-	//	title: L("TITLE"),
+		title: L("TITLE"),
 	//	settingsGroup: "bookmanagement",
-		icon: "BOOKS",
+		// icon: "BOOKS",
 		optionDefs: [
 			{
 				name: "ManualNewFlag",
@@ -139,7 +140,7 @@ tmp = function() {
 			},
 			{
 			groupTitle: L("HIDE_DEFAULT_COLLECTIONS"),
-			groupIcon: "BOOKS",
+			// groupIcon: "BOOKS",
 			optionDefs: [
 				{
 					name: "HideUnreadBooks",
@@ -184,7 +185,7 @@ tmp = function() {
 			],
 			},
 			{
-			groupTitle: L("SHOW_READING_PROGRESS"),
+			groupTitle: L("READING_PROGRESS"),
 			groupIcon: "FOLDER",
 			optionDefs: [
 				{
