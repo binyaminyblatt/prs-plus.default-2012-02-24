@@ -12,6 +12,7 @@
 //	2011-09-05 quisvir - Add reading progress in home menu and thumbnail views
 //	2011-09-08 quisvir - Format options now correspond to statusbar options, and fewer strings needed
 //	2011-09-09 quisvir - Added exception for reading progress in thumbnail checkbox view
+//	2011-09-10 quisvir - Reading Progress: Fixed menu lockups in views other than books
 
 tmp = function() {
 
@@ -92,13 +93,13 @@ tmp = function() {
 	}
 	
 	// Draw reading progress below thumbnails (both home screen and book lists)
-	// FIXME thumbnail checkbox view crashes on accessing record.media.ext - temporarily solved with exception
+	// FIXME thumbnail checkbox view crashes on accessing record.media.ext - temporarily solved with exception !this.menu.getFixSelectPosition()
 	var oldthumbnaildrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
 		oldthumbnaildrawRecord.apply(this, arguments);
-		if (Core.addonByName.BookManagement.options.ShowReadingProgressThumbs == "true" && offset < this.menu.countRecords() && !this.getField('multipleCheckbox', offset)) {
+		if (Core.addonByName.BookManagement.options.ShowReadingProgressThumbs == "true") {
 			var record = this.menu.getRecord(offset);
-			if (record.media.ext.history[0] && !record.expiration) {
+			if (record && record.kind == 2 && !this.menu.getFixSelectPosition() && record.media.ext.history[0]) {
 				var page = record.media.ext.history[0].page + 1;
 				if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) { return; }
 				var pages = record.media.ext.history[0].pages;
