@@ -99,7 +99,7 @@ tmp = function() {
 		oldthumbnaildrawRecord.apply(this, arguments);
 		if (Core.addonByName.BookManagement.options.ShowReadingProgressThumbs == "true") {
 			var record = this.menu.getRecord(offset);
-			if (record && record.kind == 2 && !this.menu.getFixSelectPosition() && record.media.ext.history[0]) {
+			if (record && !record.expiration && record.kind == 2 && !this.menu.getFixSelectPosition() && record.media.ext.history[0]) {
 				var page = record.media.ext.history[0].page + 1;
 				if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) { return; }
 				var pages = record.media.ext.history[0].pages;
