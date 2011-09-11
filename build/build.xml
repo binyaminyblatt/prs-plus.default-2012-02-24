@@ -259,6 +259,19 @@ History:
 			</else>
 		</if>
 		
+		<!-- Executables must have readonly field or cramsf will lose exec bit -->
+		<attrib readonly="true" verbose="true">
+			<fileset dir="../firmware/binaries" />
+		</attrib>
+		
+		<echo>TODO ================= Copying binaries for PRS-${model}</echo>
+		<copy todir="${prsp.dir}" verbose="true">
+			<fileset dir="../firmware/binaries">
+				<include name="**/*.${model}" />
+			</fileset>
+			<mapper type="glob" from="*.${model}" to="*" />
+		</copy>
+		
 		<echo>Combining model specific addon files</echo>
 		<!-- addons folder -->
 		<concat destfile="${prsp.dir}/addons.js" encoding="UTF-8">

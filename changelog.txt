@@ -1,11 +1,12 @@
 === 2.0.13 beta ===
  * 505: Fixed #126 "images/audio lists are empty"
  * 505: Fixed #139 "Menu customizer values are not translated"
- * x50: Fixed #120 "No keyboard in SP-EN dictionary"
- * 300/505: Added #38 "Standby image"
- * ALL: Added Korean alphabet (3131-314E unicode range)
  * 505: Fixed #150 "Some options in the setup menu are not translated" needs reflash! not working with beta-pack on SD-Card
  * 505: Added #39 "Hold joypad arrows events"
+ * 300/505: Added #38 "Standby image"
+ * x50: Fixed #120 "No keyboard in SP-EN dictionary"
+ * 600/x50: Games moved into Games node
+ * ALL: Added Korean alphabet (3131-314E unicode range)
  * ALL: Added #70 "Make node containers accessible via menu customizer" 
  * ALL: Added #24 "Displaying first page of the book on standby"
  * ALL: Screenshot: captured image is now  visible to the user, not only to the system :)
@@ -15,7 +16,6 @@
  * ALL: Updated existing games (Chess now comes with puzzles)
  * ALL: Added MineSweeper (by Mark Nord), Draughts, XO-Cubed and Solitaire (by Ben Chenoweth)
  * ALL: Added Calendar app (By Ben Chenoweth)
- * 600/x50: Games moved into Games node
 
 === 2.0.12 beta ===
  * 505: Fixed German translation
