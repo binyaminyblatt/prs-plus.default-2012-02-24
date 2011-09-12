@@ -7,7 +7,7 @@
 //	2010-11-30 kartu - Refactoring Core.stirng => Core.text
 //	2010-05-30 m-land - text, zoom, scroll aso
 //	2010-12-03 Mark Nord - adapterd for PRS+ moved out of sandbox using kartus solution
-//
+//	
 
 tmp = function() {
 	var L = Core.lang.getLocalizer("Dictionary");
@@ -66,7 +66,7 @@ tmp = function() {
 			},
 			{
 			    name: "resultSize",
-				title: 'Results size',  //@@@
+				title: L("RESULTS_SIZE"),
 				icon: "ABC",
 				defaultValue: 25,
 				values: [15, 20, 25, 30, 35],
@@ -76,12 +76,12 @@ tmp = function() {
 			},
 			{
 			    name: "maxSmartZoom",
-				title: 'Max smart zoom',  //@@@
+				title: L("MAX_SMART_ZOOM"),
 				icon: "ABC",
 				defaultValue: 20,
 				values: [0, 10, 20, 25, 40, 50],
 				valueTitles: {
-				    0: 'Disabled', 10: '10 %', 20: '20 %', 25: '25 %', 40: '40 %', 50: '50 %'   //@@@
+				    0: L("VALUE_DISABLED"), 10: '10 %', 20: '20 %', 25: '25 %', 40: '40 %', 50: '50 %'
 				}
 			}
 		],
