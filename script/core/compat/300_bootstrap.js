@@ -18,7 +18,9 @@
 //	2011-04-01 kartu - Renamed language files to corresponding 2 letter ISO codes
 //	2011-07-04 Mark Nord - Added #38 "Standby image"
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
-//  2011-07-06 Ben Chenoweth - Minor fix to StandbyImage (mime not needed)
+//	2011-07-06 Ben Chenoweth - Minor fix to StandbyImage (mime not needed)
+//	2011-09-10 Mark Nord - 	added localised "Sleeping.." to curretn page-StandbyImage;
+//	2011-09-12 Mark Nord - 	FIXED first book-page as StandbyImage for all file-formats
 
 
 var tmp = function() {
@@ -132,27 +134,19 @@ var tmp = function() {
 		}
 	};
 
-	// renders actial books first page, copy 'n past from 600's BookUtil
+	// renders current books first page
 	createTextThumbnail = function (path) {
-		var bitmap, viewer, bounds;
-		bitmap = null;
-		viewer = null;
+		var bitmap, page, log;
+		
+		log = Core.log.getLogger("createTextThumbnail");
 		try {
-			bounds = new Rectangle();
-			viewer = new Document.Viewer.URL('file://' + path, FileSystem.getMIMEType(path));
-			bounds.set(0, 0, 584, 754);
-			viewer.set(Document.Property.dimensions, bounds);
-			viewer.set(Document.Property.textEngine, 'FreeType');
-			viewer.set(Document.Property.font, 'Dutch801 Rm BT');
-			bitmap = viewer.render();
+			page = kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
+			page.data.set(Document.Property.page, 0);
+			page.data.set(Document.Property.part, 0);
+			bitmap = page.data.render();
 		}
 		catch (e){
-			PARAMS.bootLog("createTextThumbnail e:"+e, "error");
-		}
-		finally {
-			if (viewer) {
-				viewer.close();
-			}
+			log.error("createTextThumbnail e:"+ e);
 		}
 		return bitmap;
 	};	
@@ -200,7 +194,7 @@ var tmp = function() {
 
 		standbyImage.draw = function() {
         		var window, path, bitmap, temp, port, x, y, bounds, ratio, width, height, ditheredBitmap, color;
-        		var newpath, newbitmap, mode, dither;
+			var newpath, newbitmap, mode, dither, L, oldTextStyle, oldTextSize, oldPenColor;
         		window = this.root.window;
 			mode = Core.addonByName.StandbyImage.options.mode;
 			dither = Core.addonByName.StandbyImage.options.dither === "true";
@@ -209,11 +203,13 @@ var tmp = function() {
               			// attempt to use current book cover
               			newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
               			newbitmap = createTextThumbnail(newpath);
-              			ditheredBitmap = newbitmap.dither(dither);
-              			newbitmap.close();	
-              			}		
+				if (newbitmap) {
+					ditheredBitmap = newbitmap.dither(dither);
+					newbitmap.close();	
+					}	
+				}		
         		} catch (e) {
-        			log.error("createFileThumbnail", "error"); 
+				log.error("createFileThumbnail", e); 
         			}
         		
         		if (!newbitmap && (mode === 'random' || mode === 'cover')) {
@@ -247,18 +243,19 @@ var tmp = function() {
         					}
         			}
         		}
-			if (!ditheredBitmap || mode ==="blank"){
-			// generate blank bitmap
-			try {			
-				temp = new Bitmap(600, 800, 12);
-				port = new Port(temp);
-        			port.setPenColor(Color.white);
-        			port.fillRectangle(0, 0, 600, 800);			
-        			ditheredBitmap = temp.dither(false);
-        			port.close();
-        			temp.close(); 
-			} catch (e) {
-				log.error("Exception create blank " + e, 'error'); 
+			if (!ditheredBitmap && mode !=='act_page'){
+			// blank screen & return
+			try {	
+				window.beginDrawing();
+				oldPenColor = window.getPenColor();
+				window.setPenColor(Color.white);
+        			window.fillRectangle(0, 0, 600, 800);
+        			window.setPenColor(oldPenColor);
+        			window.endDrawing();
+				Core.ui.updateScreen();
+				return;
+			} catch (e) { 
+				log.error("Exception create blank " , e); 
 				}        			
 			}
 		if (ditheredBitmap) {
@@ -267,10 +264,28 @@ var tmp = function() {
 			ditheredBitmap.close();		
 			Core.ui.updateScreen();
 		} 
-		if (mode === 'act_page') {
-			Core.addonByName.StatusBar.setBookIndex('sleeping');
-			Core.ui.updateScreen();
-			}
+			if (mode === 'act_page') {
+				L = Core.lang.getLocalizer("StandbyImage");
+				// Save old styles
+				oldTextStyle = window.getTextStyle();
+				oldTextSize = window.getTextSize();
+				oldPenColor = window.getPenColor();
+				// Settings
+				window.setTextStyle("bold");
+				window.setTextSize(22);
+				// Drawing
+				window.beginDrawing();
+				window.setPenColor(Color.black);
+				window.fillRectangle(445, 770, 155, 30);
+				window.setPenColor(Color.white);
+				window.drawText(L("VALUE_SLEEPING"), 455, 770, 135, 30);				
+				window.endDrawing();
+				// Restore pen color, text size & style
+				window.setTextStyle(oldTextStyle);
+				window.setTextSize(oldTextSize);
+				window.setPenColor(oldPenColor);
+				Core.ui.updateScreen();
+				}
 		};
 	
 		standbyImage.draw();

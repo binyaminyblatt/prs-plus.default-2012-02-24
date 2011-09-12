@@ -12,7 +12,7 @@
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
 //	2011-07-06 Ben Chenoweth - Minor fix to StandbyImage (mime not needed)
 //	2011-09-10 Mark Nord - 	added localised "Sleeping.." to curretn page-StandbyImage;
-//				added FIXME for LRF-files (render just works with unopend files !?)
+//	2011-09-12 Mark Nord - 	FIXED first book-page as StandbyImage for all file-formats
 //
 
 var tmp = function() {
@@ -79,33 +79,19 @@ var tmp = function() {
 		}
 	};
 
-	// renders actial books first page, copy 'n past from 600's BookUtil	
+	// renders current books first page
 	createTextThumbnail = function (path) {
-		var bitmap, viewer, bounds, mime, oldpage, event;
-		bitmap = null;
-		viewer = null;
-		event = null;
+		var bitmap, page, log;
+		
+		log = Core.log.getLogger("createTextThumbnail");
 		try {
-			bounds = new Rectangle();
-			mime = FileSystem.getMIMEType(path);
-			if (mime !== "application/x-sony-bbeb") {
-				viewer = new Document.Viewer.URL('file://' + path, mime);
-				bounds.set(0, 0, 584, 754);
-				viewer.set(Document.Property.dimensions, bounds);
-				viewer.set(Document.Property.textEngine, 'FreeType');
-				viewer.set(Document.Property.font, 'Dutch801 Rm BT');	
-				bitmap = viewer.render();
-			}
-			else { // FIXME it's a LRF BBeB-Book	
-			}	
+			page = kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
+			page.data.set(Document.Property.page, 0);
+			page.data.set(Document.Property.part, 0);
+			bitmap = page.data.render();
 		}
 		catch (e){
-			bootLog("createTextThumbnail e:"+ e);
-			}
-		finally {
-			if (viewer) {
-				viewer.close();
-			}
+			log.error("createTextThumbnail e:"+ e);
 		}
 		return bitmap;
 	};	
@@ -123,7 +109,6 @@ var tmp = function() {
 				list = landscapeWallpapers;
 			} else {
 				folder = System.applyEnvironment("[prspPublicPath]wallpaper/");
-				//folder = "/Data/";
 				if (!wallpapers) {
 					wallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
 				}
@@ -172,7 +157,7 @@ var tmp = function() {
 				log.error("createFileThumbnail", e); 
 				}
         			
-			if (!newbitmap && (mode === 'random' || mode === 'cover')) {
+			if (!newbitmap  && (mode === 'random' || mode === 'cover')) {
 				// if no book cover, then use random wallpaper
 				path = getRandomWallpaper();
 				if (FileSystem.getFileInfo(path)) {
