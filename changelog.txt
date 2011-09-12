@@ -4,7 +4,12 @@
  * 505: Fixed #150 "Some options in the setup menu are not translated" needs reflash! not working with beta-pack on SD-Card
  * 505: Added #39 "Hold joypad arrows events"
  * x50: Fixed #120 "No keyboard in SP-EN dictionary"
+ * x50: Enabled "half-page-mask" in landscape mode (like PRS-505), added option to set PDF-border-color to white
+ * x50: Added option to preset custom Contras and Brightness values (quisvir)
+ * x50: Added option to toggle NEW-flag manually, hide standard collection and show reading-progress in book-list and thumbnail mode (quisvir)
  * 600/x50: Games moved into Games node
+ * 600/x50: Added various Touch-Screen related options (disable dictionary and page-turn-gestures) 
+ * 600/x50: Enabled panning while ZoomLocked (quisvir)
  * ALL: Fonts: Added Korean alphabet (3131-314E unicode range), updated Czech d t l L letters, added up/down arrows
  * ALL: Added #70 "Make node containers accessible via menu customizer" 
  * ALL: Added #24 "Displaying first page of the book on standby"
