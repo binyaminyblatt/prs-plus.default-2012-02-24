@@ -5,8 +5,9 @@
  * 505: Added #39 "Hold joypad arrows events"
  * x50: Fixed #120 "No keyboard in SP-EN dictionary"
  * x50: Enabled "half-page-mask" in landscape mode (like PRS-505), added option to set PDF-border-color to white
- * x50: Added option to preset custom Contras and Brightness values (quisvir)
- * x50: Added option to toggle NEW-flag manually, hide standard collection and show reading-progress in book-list and thumbnail mode (quisvir)
+ * x50: Added option to preset custom Contrast and Brightness values (quisvir)
+ * x50: Added option to toggle NEW-flag manually, hide standard collections and show reading-progress in home menu and thumbnail views (quisvir)
+ * x50: Added Home Menu Booklist customization (quisvir)
  * 600/x50: Games moved into Games node
  * 600/x50: Added various Touch-Screen related options (disable dictionary and page-turn-gestures) 
  * 600/x50: Enabled panning while ZoomLocked (quisvir)
