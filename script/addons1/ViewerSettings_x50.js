@@ -34,7 +34,7 @@ tmp = function() {
 
 	// Constants
 	
-	// Enable scrolling in Zoom Lock mode
+	// Enable panning in Zoom Lock mode
 	var zoomlockold;
 	
 	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
