@@ -140,115 +140,110 @@ tmp = function() {
 		if (this.cache) {
 			result = this.cache[this.master];
 			result = this.filter(result);
-			
 			switch (Core.addonByName.BookManagement.options.HomeMenuBooklist) {
-									
-			case 1: // Booklist option: last opened books
-				var i=0, j=0, opened=[], records, record, number;
-				records = result.count();
-				// Now find all opened books
-				// Use history[0] as proxy for currentPosition, since direct testing crashes
-				while (i < records) {
-					record = result.getRecord(i);
-					if (record.ext.history[0]) opened.push({number:i, date:Date.parse(record.ext.currentPosition.date)});
-					i++;
-				}
-				// Sort opened books by date, then add 1-3 to nodes, or 0-2 if no currentbook
-				opened.sort(function(a, b){ return b.date-a.date })
-				if (kbook.model.currentBook || kbook.model.currentPath) j=1;
-				for (i=0;i<3&&i+j<opened.length;i++) {
-					node = nodes[i] = xs.newInstanceOf(prototype);
-					node.cache = this.cache;
-					node.parent = this.parent.nodes[1];
-					node.sorter = this;
-					node.depth = this.depth + 1;
-					node.media = result.getRecord(opened[i+j].number);
-				}
-				break;
-			
-			case 2: // Booklist option: books by same author
-				var i=0, currentpath, id, author, booklist=[];
-				// First find id and author of current book
-				if (kbook.model.currentBook) {
-					id = kbook.model.currentBook.media.id;
-					author = kbook.model.currentBook.media.author;
-				}
-				// If currentBook is null, use indirect route via currentPath
-				if (kbook.model.currentPath) {
-					currentpath = kbook.model.currentPath;
+				case 1: // Booklist option: last opened books
+					var i=0, j=0, opened=[], records, record, number;
 					records = result.count();
-					for (i=0;i<records;i++) {
-						if (result.getRecord(i).ext.path == currentpath) {
-							id = result.getRecord(i).id;
-							author = result.getRecord(i).author;
-							break;
-						}
+					// Now find all opened books
+					// Use history[0] as proxy for currentPosition, since direct testing crashes
+					while (i < records) {
+						record = result.getRecord(i);
+						if (record.ext.history[0]) opened.push({number:i, date:Date.parse(record.ext.currentPosition.date)});
+						i++;
 					}
-				}
-				if (author) {
-					records = result.count();
-					// Find other books by same author, excluding currentbook
-					for (i=0;i<records;i++) {
-						if (result.getRecord(i).author == author && result.getRecord(i).id != id) booklist.push(i);
-					}
-					// Shuffle book list and add first 3 items to nodes
-					booklist = shuffle(booklist);
-					for (i=0;i<3&&i<booklist.length;i++) {
+					// Sort opened books by date, then add 1-3 to nodes, or 0-2 if no currentbook
+					opened.sort(function(a, b){ return b.date-a.date })
+					if (kbook.model.currentBook || kbook.model.currentPath) j=1;
+					for (i=0;i<3&&i+j<opened.length;i++) {
 						node = nodes[i] = xs.newInstanceOf(prototype);
 						node.cache = this.cache;
 						node.parent = this.parent.nodes[1];
 						node.sorter = this;
 						node.depth = this.depth + 1;
-						node.media = result.getRecord(booklist[i]);
+						node.media = result.getRecord(opened[i+j].number);
 					}
-				}
-				break;
-			
-			case 3: // Booklist option: next books in collection
-				var i=0, j=0, k=0, collections, currentpath, id, records, record, books, result2;
-				// First find id of current book
-				// currentBook is often null at this stage, hence indirect route via currentPath
-				if (kbook.model.currentBook) id = kbook.model.currentBook.media.id;
-				if (kbook.model.currentPath) {
-					currentpath = kbook.model.currentPath;
-					records = result.count();
-					for (i=0;i<records;i++) {
-						if (result.getRecord(i).ext.path == currentpath) {
-							id = result.getRecord(i).id;
-							break;
-						}
+					break;
+				case 2: // Booklist option: books by same author
+					var i=0, currentpath, id, author, booklist=[];
+					// First find id and author of current book
+					if (kbook.model.currentBook) {
+						id = kbook.model.currentBook.media.id;
+						author = kbook.model.currentBook.media.author;
 					}
-				}
-				if (id) {
-					// Switch to collections cache
-					result2 = this.cache['playlistMasters'];
-					collections = result2.count();
-					for (i=0;i<collections;i++) {
-						record = result2.getRecord(i);
-						books = record.items.length;
-						for (j=0;j<books;j++) {
-							if (record.items[j].id == id) {
-							// Current book has been found in collection
-							// Now add next 3 collection items, if present, to nodes
-								j++;
-								while (j<books&&k<3) {
-									node = nodes[k] = xs.newInstanceOf(prototype);
-									node.cache = this.cache;
-									node.parent = this.parent.nodes[1];
-									node.sorter = this;
-									node.depth = this.depth + 1;
-									node.media = result.getRecord(record.items[j].id-2); // -2 does the trick, but seems arbitrary
-									j++; k++;
-								}
-								i = collections;
-								j = books;
+					// If currentBook is null, use indirect route via currentPath
+					if (kbook.model.currentPath) {
+						currentpath = kbook.model.currentPath;
+						records = result.count();
+						for (i=0;i<records;i++) {
+							if (result.getRecord(i).ext.path == currentpath) {
+								id = result.getRecord(i).id;
+								author = result.getRecord(i).author;
+								break;
 							}
 						}
 					}
-				}
-				break;
-			}
-			
+					if (author) {
+						records = result.count();
+						// Find other books by same author, excluding currentbook
+						for (i=0;i<records;i++) {
+							if (result.getRecord(i).author == author && result.getRecord(i).id != id) booklist.push(i);
+						}
+						// Shuffle book list and add first 3 items to nodes
+						booklist = shuffle(booklist);
+						for (i=0;i<3&&i<booklist.length;i++) {
+							node = nodes[i] = xs.newInstanceOf(prototype);
+							node.cache = this.cache;
+							node.parent = this.parent.nodes[1];
+							node.sorter = this;
+							node.depth = this.depth + 1;
+							node.media = result.getRecord(booklist[i]);
+						}
+					}
+					break;
+				case 3: // Booklist option: next books in collection
+					var i=0, j=0, k=0, collections, currentpath, id, records, record, books, result2;
+					// First find id of current book
+					// currentBook is often null at this stage, hence indirect route via currentPath
+					if (kbook.model.currentBook) id = kbook.model.currentBook.media.id;
+					if (kbook.model.currentPath) {
+						currentpath = kbook.model.currentPath;
+						records = result.count();
+						for (i=0;i<records;i++) {
+							if (result.getRecord(i).ext.path == currentpath) {
+								id = result.getRecord(i).id;
+								break;
+							}
+						}
+					}
+					if (id) {
+						// Switch to collections cache
+						result2 = this.cache['playlistMasters'];
+						collections = result2.count();
+						for (i=0;i<collections;i++) {
+							record = result2.getRecord(i);
+							books = record.items.length;
+							for (j=0;j<books;j++) {
+								if (record.items[j].id == id) {
+								// Current book has been found in collection
+								// Now add next 3 collection items, if present, to nodes
+									j++;
+									while (j<books&&k<3) {
+										node = nodes[k] = xs.newInstanceOf(prototype);
+										node.cache = this.cache;
+										node.parent = this.parent.nodes[1];
+										node.sorter = this;
+										node.depth = this.depth + 1;
+										node.media = result.getRecord(record.items[j].id-2); // -2 does the trick, but seems arbitrary
+										j++; k++;
+									}
+									i = collections;
+									j = books;
+								}
+							}
+						}
+					}
+					break;
+			}			
 			// If no results or pref set to default, display last added books
 			if (nodes.length == 0) oldbookThumbnails.apply(this, arguments);
 		}
