@@ -21,15 +21,16 @@
 //	2011-05-12 kartu - Fixed "Periodicals"
 //	2011-06-18 kartu - A bit less ugly fix to "Periodicals"
 //	2011-06-26 kartu - x50 Fixed #120 "No keyboard in SP-EN dictionary"
+//	2011-09-14 kartu - x50: Added Catalan & Polish translation (except 950), Polish keyboard 
 //
-tmp = function() {
+tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
 		oldChangeKeyboardType, oldReadPreference, oldCallback, makeRootNodesMovable, bootLog,
 		doGetPeriodicalsKind;
 	bootLog = PARAMS.bootLog;
 
 	// Localize "popup" keyboard, that shows after holding button for a couple of secs
-	localizeKeyboardPopups = function() {
+	localizeKeyboardPopups = function () {
 		var keyboardLayout, oldIsSelectChar, oldSetPopupChar, SEL_CHARS;
 		
 		keyboardLayout = Fskin.kbookKeyboard.keyboardLayout;
@@ -49,7 +50,7 @@ tmp = function() {
 			"Ъ": ["Ъ", "'"]		
 		};
 		
-		keyboardLayout.isSelectChar = function(key) {
+		keyboardLayout.isSelectChar = function (key) {
 			try {
 				if (SEL_CHARS[key] !== undefined) {
 					return true;
@@ -76,7 +77,7 @@ tmp = function() {
 	localizeKeyboardPopups();
 	
 	// Updates node siblings (used for setting selected / unselected icon)
-	updateSiblings = function(fieldName) {
+	updateSiblings = function (fieldName) {
 		// find currently selected node
 		var nodes, i, n, idx, tmpKind;
 
@@ -104,7 +105,7 @@ tmp = function() {
 		}
 	};
 	
-	localize = function(Core) {
+	localize = function (Core) {
 		try {
 			var i, n, currentLang, settingsNode, langNode, languages, langNames, enter, 
 				node, langFile, icon;
@@ -113,8 +114,9 @@ tmp = function() {
 			// Fix settings node 
 			settingsNode.multiPage = true;
 			
-			languages = ["de", "en", "es", "fr", "it", "nl", "pt", "ru"];
+			languages = ["ca", "de", "en", "es", "fr", "it", "nl", "pl", "pt", "ru"];
 			langNames = {
+				ca: "Català",
 				de: "Deutsch", 
 				en: "English",
 				es: "Español",
@@ -122,6 +124,7 @@ tmp = function() {
 				it: "Italiano",
 				ka: "ქართული",
 				nl: "Nederlands",
+				pl: "Polski",
 				pt: "Português",
 				ru: "Русский"
 			};
@@ -145,7 +148,7 @@ tmp = function() {
 			langNode = Core.ui.createContainerNode({
 				title: "fskin:/l/strings/STR_NODE_TITLE_LANG_SETTINGS".idToString(),
 				icon: "LANGUAGE",
-				comment: function() {
+				comment: function () {
 					return langNames[kbook.model.language];
 				},
 				parent: settingsNode
@@ -172,7 +175,7 @@ tmp = function() {
 			}
 			
 			// Enter function for language children, changes locale and moves to parent
-			enter = function() {
+			enter = function () {
 				try {
 					// find currently selected node
 					var nodes, i, n, idx, tmpKind;
@@ -276,6 +279,7 @@ tmp = function() {
 				"Dutch-Netherlands",
 				"Sapanish-Spain", 
 				"Italian-Italy",
+				"Polish",
 				"Portuguese-Portugal",				
 				"Georgian", 
 				"Russian",
@@ -289,6 +293,7 @@ tmp = function() {
 			"Italian-Italy": "Italiano",
 			"Georgian": "ქართული",
 			"Dutch-Netherlands": "Nederlands",
+			"Polish": "Polski",
 			"Portuguese-Portugal": "Português",				
 			"Russian": "Русская",
 			"Russian-Phonetic": "Русская (яверты)",
@@ -299,7 +304,7 @@ tmp = function() {
 	
 		
 		// Enter function for keyboard children, changes keyboard and moves to parent
-		enter = function() {
+		enter = function () {
 			updateSiblings.call(this, "keyboard");
 			this.parent.gotoParent(kbook.model);			
 		};	
@@ -351,6 +356,7 @@ tmp = function() {
 				// yeah, that's what's written in Sony's firmware, Sapanish
 				"Sapanish-Spain": "KeyboardLayout173.xml", 
 				"Italian-Italy": "KeyboardLayout142.xml",
+				"Polish": "languages/KeyboardLayoutPolish.xml",
 				"Portuguese-Portugal": "KeyboardLayout275.xml",
 				"Russian": "languages/KeyboardLayoutRussian.xml",
 				"Russian-Phonetic": "languages/KeyboardLayoutRussianPhonetic.xml",
