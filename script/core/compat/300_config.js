@@ -15,15 +15,16 @@
 //		Mahjong by Clemenseken
 //		Sudoku by Obelix
 //		Dictionary by Clemenseken, lysak, m-land, Mark Nord
-//  2011-06-29 Ben Chenoweth - ALL: Updated existing games/calculator to use AppAssets and added
-//      Draughts by Ben Chenoweth
-//      MineSweeper by Mark Nord / D. Shep Poor
-//      XO-Cubed by Ben Chenoweth
+//	2011-06-29 Ben Chenoweth - ALL: Updated existing games/calculator to use AppAssets and added
+//		Draughts by Ben Chenoweth
+//		MineSweeper by Mark Nord / D. Shep Poor
+//		XO-Cubed by Ben Chenoweth
 //	2011-07-03 Mark Nord - Added NodeKinds.STANDBY
-//  2011-07-05 Ben Chenoweth - Added STANDBY icon
-//  2011-08-03 Ben Chenoweth - ALL: Added
-//      Calendar by Ben Chenoweth
-//      Solitaire by Ben Chenoweth
+//	2011-07-05 Ben Chenoweth - Added STANDBY icon
+//	2011-08-03 Ben Chenoweth - ALL: Added
+//		Calendar by Ben Chenoweth
+//		Solitaire by Ben Chenoweth
+//	2011-09-14 kartu - games & utils "into games (unstable)"
 
 return {
 	// Menu icon indices 
@@ -143,7 +144,7 @@ return {
 	prspMenu: {
 		// Container nodes
 		customContainers: [
-			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", icon: "GAME"}
+			{ name: "gamesAndUtils", title: "NODE_GAMES_UNSTABLE", icon: "GAME"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
