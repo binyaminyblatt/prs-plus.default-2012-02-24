@@ -15,6 +15,7 @@
 //	2011-09-10 quisvir - Reading Progress: Fixed menu lockups in views other than books
 //	2011-09-12 quisvir - Added Home Menu Booklist customization
 //	2011-09-14 quisvir - Fixed Booklist bug on searching history (thanks MiK77)
+//	2011-09-14 quisvir - Fixed bug in Reading Progress if there is no current book
 
 tmp = function() {
 
@@ -84,7 +85,7 @@ tmp = function() {
 
 	// Draw reading progress instead of 'last read' date/time
 	kbook.model.getContinueDate = function (node) {
-		if (Core.addonByName.BookManagement.options.ShowReadingProgressCurrent == "true" && this.currentBook.media.ext.history[0]) {
+		if (Core.addonByName.BookManagement.options.ShowReadingProgressCurrent == "true" && this.currentBook && this.currentBook.media.ext.history[0]) {
 			var page = this.currentBook.media.ext.history[0].page + 1;
 			if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) return node.nodes[0].lastReadDate;
 			var pages = this.currentBook.media.ext.history[0].pages;
