@@ -15,8 +15,9 @@
 //	2011-09-01 Mark Nord - Used appropriate icons - based in Ben Chenoweth suggestion
 //	2011-09-02 quisvir - Added Custom View Settings (Brightness & Contrast) using (OnScreen) Restore Button
 //	2011-09-02 quisvir - Added option to enable scrolling in Zoom Lock mode
-//	2011-09-04 Mark Nord - added some appropriate icons (avoid "SEARCH" / #39 as this will breake the Options-Sub-Menu)
+//	2011-09-04 Mark Nord - added some appropriate icons (avoid "SEARCH" / #39 as this will break the Options-Sub-Menu)
 //	2011-09-08 quisvir - Renamed scrolling (in zoom lock) to panning
+//	2011-09-13 quisvir - Added input dialog for custom contrast & brightness values
 
 tmp = function() {
 
@@ -62,6 +63,30 @@ tmp = function() {
 		else return false;
 	};
 	
+	// Change custom contrast variable if user has entered valid number
+	kbook.model.container.doContrastChange = function (text) {
+		var msg, value = parseInt(text);
+		if (isNaN(value)) msg = L("ERROR_NOT_A_NUMBER");
+		else if (value < -127 || value > 127) msg = L("ERROR_NOT_WITHIN_RANGE");
+		else Core.addonByName.ViewerSettings_x50.options.CustomContrast = value.toString(); // without toString(), option comment displays an error
+		if (msg) Core.addonByName.ViewerSettings_x50.options.CustomContrast = 0;
+		else msg = L("CUSTOM_VIEW_MSG");
+		Core.ui.showMsg(msg);
+		Core.settings.saveOptions(ViewerSettings_x50);
+	}
+	
+	// Change custom brightness variable if user has entered valid number
+	kbook.model.container.doBrightnessChange = function (text) {
+		var msg, value = parseInt(text);
+		if (isNaN(value)) msg = L("ERROR_NOT_A_NUMBER");
+		else if (value < -225 || value > 225) msg = L("ERROR_NOT_WITHIN_RANGE");
+		else Core.addonByName.ViewerSettings_x50.options.CustomBrightness = value.toString();
+		if (msg) Core.addonByName.ViewerSettings_x50.options.CustomBrightness = 0;
+		else msg = L("CUSTOM_VIEW_MSG");
+		Core.ui.showMsg(msg);
+		Core.settings.saveOptions(ViewerSettings_x50);
+	}
+
 	// Bind custom contrast & brightness values to Restore button
 	pageOptionToneCurveEditorOverlayModel.initToneCurveEditor = function () {
 		var contrast = parseInt(this.targetModel.doSomething('getContrast'));
@@ -354,14 +379,16 @@ tmp = function() {
 					title: L("CUSTOM_CONTRAST"),
 					icon: "CONTRAST",
 					defaultValue: 0,
-					values: [127,120,110,100,90,80,70,60,50,45,40,35,30,25,20,15,10,5,0,-5,-10,-15,-20,-25,-30,-35,-40,-45,-50,-60,-70,-80,-90,-100,-110,-120,-127],
+					values: [0,"Custom"],
+					valueTitles: { "Custom": L("VALUE_CUSTOM") }
 				},
 				{
 					name: "CustomBrightness",
 					title: L("CUSTOM_BRIGHTNESS"),
 					icon: "BRIGHTNESS",					
 					defaultValue: 0,
-					values: [225,200,175,150,125,100,90,80,70,60,50,45,40,35,30,25,20,15,10,5,0,-5,-10,-15,-20,-25,-30,-35,-40,-45,-50,-60,-70,-80,-90,-100,-125,-150,-175,-200,-225],
+					values: [0,"Custom"],
+					valueTitles: { "Custom": L("VALUE_CUSTOM") }
 				},
 				{
 					name: "BindToRestoreButton",
@@ -391,10 +418,8 @@ tmp = function() {
 				{kbook.kbookPage.borderColor=Color.rgb.parse('#6D6D6D')
 			} else { kbook.kbookPage.borderColor=Color.rgb.parse('white')
 			}
-			switch (propertyName) {
-			case "CustomContrast": case "CustomBrightness": case "BindToRestoreButton":
-			if (Core.addonByName.ViewerSettings_x50.options.BindToRestoreButton != "true") Core.ui.showMsg(L("CUSTOM_VIEW_MSG"));
-			}
+			if (propertyName == "CustomContrast" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_CONTRAST") + ':', '', 'doContrastChange', '', true, 'number');
+			if (propertyName == "CustomBrightness" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_BRIGHTNESS") + ':', '', 'doBrightnessChange', '', true, 'number');
 		},
 		actions: [{
 			name: "toggleGestureOnOff",
