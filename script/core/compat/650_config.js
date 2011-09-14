@@ -23,6 +23,7 @@
 //		Solitaire by Ben Chenoweth
 //	2011-08-28 Ben Chenoweth - Moved games into Games node
 //	2011-09-04 Mark Nord - NodeKinds.getIcon modified to accept "#icon-number" (not consistent across model-border but speeds up testing)
+//	2011-09-14 kartu - renamed games & utils into games
  
 return {
 	// Menu icon indices 
@@ -193,27 +194,27 @@ return {
 		// Container nodes
 		customContainers: [
 			{ name: "more", title: "NODE_MORE", icon: "MORE", parent: "root"},
-			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", shortName: "Games", icon: "GAME"}
+			{ name: "", title: "NODE_GAMES", shortName: "Games", icon: "GAME"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
 			{ name: "PRSPSettings", parent: "settings", position: 0},
-			{ name: "gamesAndUtils", parent: "more" },
+			{ name: "", parent: "more" },
 			{ name: "collections", parent: "more" },
 			{ name: "periodicals", parent: "more" },
 			{ name: "notes", parent: "more" },
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },	
-			{ name: "Chess", parent: "gamesAndUtils" },
-			{ name: "Draughts", parent: "gamesAndUtils" },
-			{ name: "FiveBalls", parent: "gamesAndUtils" },	
-			{ name: "FiveRow", parent: "gamesAndUtils" },	
-			{ name: "FreeCell", parent: "gamesAndUtils" },
-			{ name: "Mahjong", parent: "gamesAndUtils" },
-			{ name: "MineSweeper", parent: "gamesAndUtils" },
-			{ name: "Solitaire", parent: "gamesAndUtils" },
-			{ name: "Sudoku", parent: "gamesAndUtils" },
-			{ name: "XOCubed", parent: "gamesAndUtils" }
+			{ name: "Chess", parent: "" },
+			{ name: "Draughts", parent: "" },
+			{ name: "FiveBalls", parent: "" },	
+			{ name: "FiveRow", parent: "" },	
+			{ name: "FreeCell", parent: "" },
+			{ name: "Mahjong", parent: "" },
+			{ name: "MineSweeper", parent: "" },
+			{ name: "Solitaire", parent: "" },
+			{ name: "Sudoku", parent: "" },
+			{ name: "XOCubed", parent: "" }
 		],
 		movableNodes: [0, 0, 1, 1, 1],
 		defaultLayout: [
