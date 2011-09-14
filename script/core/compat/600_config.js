@@ -1,4 +1,4 @@
-// Name: 600 config
+gamesAndUtils// Name: 600 config
 // Description: Sony PRS-600 model specific configuration
 //
 // History:
@@ -14,15 +14,16 @@
 //		Free Cell by Ben Chenoweth
 //		Mahjong by Clemenseken
 //		Sudoku by Obelix
-//  2011-06-29 Ben Chenoweth - ALL: Updated existing games/calculator to use AppAssets and added
-//      Draughts by Ben Chenoweth
-//      MineSweeper by Mark Nord / D. Shep Poor
-//      XO-Cubed by Ben Chenoweth
+//	2011-06-29 Ben Chenoweth - ALL: Updated existing games/calculator to use AppAssets and added
+//		Draughts by Ben Chenoweth
+//		MineSweeper by Mark Nord / D. Shep Poor
+//		XO-Cubed by Ben Chenoweth
 //	2011-07-03 Mark Nord - Added NodeKinds.STANDBY
-//  2011-08-03 Ben Chenoweth - ALL: Added
-//      Calendar by Ben Chenoweth
-//      Solitaire by Ben Chenoweth
-//  2011-08-28 Ben Chenoweth - Moved games into Games node
+//	2011-08-03 Ben Chenoweth - ALL: Added
+//		Calendar by Ben Chenoweth
+//		Solitaire by Ben Chenoweth
+//	2011-08-28 Ben Chenoweth - Moved games into Games node
+//	2011-09-14 kartu - renamed games & utils into games
 
 return {
 	// Menu icon indices 
@@ -166,28 +167,28 @@ return {
 	prspMenu: {
 		// Container nodes
 		customContainers: [
-			{ name: "gamesAndUtils", title: "NODE_GAMES_AND_UTILS", shortName: "Games", icon: "GAME"}
+			{ name: "games", title: "NODE_GAMES", shortName: "Games", icon: "GAME"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
 			{ name: "BookHistory", parent: "more"},
 			{ name: "BrowseFolders", parent: "more"},
-			{ name: "gamesAndUtils", parent: "more" },
+			{ name: "games", parent: "more" },
 			{ name: "collections", parent: "more" },
 			{ name: "notes", parent: "more"},
 			{ name: "PRSPSettings", parent: "more" },
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },
-			{ name: "Chess", parent: "gamesAndUtils" },
-			{ name: "Draughts", parent: "gamesAndUtils" },
-			{ name: "FiveBalls", parent: "gamesAndUtils" },	
-			{ name: "FiveRow", parent: "gamesAndUtils" },	
-			{ name: "FreeCell", parent: "gamesAndUtils" },
-			{ name: "Mahjong", parent: "gamesAndUtils" },
-			{ name: "MineSweeper", parent: "gamesAndUtils" },
-			{ name: "Solitaire", parent: "gamesAndUtils" },
-			{ name: "Sudoku", parent: "gamesAndUtils" },
-			{ name: "XOCubed", parent: "gamesAndUtils" }
+			{ name: "Chess", parent: "games" },
+			{ name: "Draughts", parent: "games" },
+			{ name: "FiveBalls", parent: "games" },	
+			{ name: "FiveRow", parent: "games" },	
+			{ name: "FreeCell", parent: "games" },
+			{ name: "Mahjong", parent: "games" },
+			{ name: "MineSweeper", parent: "games" },
+			{ name: "Solitaire", parent: "games" },
+			{ name: "Sudoku", parent: "games" },
+			{ name: "XOCubed", parent: "games" }
 		],
 		movableNodes: [0, 0, 1, 1, 1, 1],
 		defaultLayout: [

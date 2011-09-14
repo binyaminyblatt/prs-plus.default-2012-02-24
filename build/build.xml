@@ -264,7 +264,7 @@ History:
 			<fileset dir="../firmware/binaries" />
 		</attrib>
 		
-		<echo>TODO ================= Copying binaries for PRS-${model}</echo>
+		<echo>Copying binaries for PRS-${model}</echo>
 		<copy todir="${prsp.dir}" verbose="true">
 			<fileset dir="../firmware/binaries">
 				<include name="**/*.${model}" />
