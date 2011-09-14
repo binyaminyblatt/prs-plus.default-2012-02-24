@@ -14,6 +14,7 @@
 //	2011-09-09 quisvir - Added exception for reading progress in thumbnail checkbox view
 //	2011-09-10 quisvir - Reading Progress: Fixed menu lockups in views other than books
 //	2011-09-12 quisvir - Added Home Menu Booklist customization
+//	2011-09-14 quisvir - Fixed Booklist bug on searching history (thanks MiK77)
 
 tmp = function() {
 
@@ -145,10 +146,9 @@ tmp = function() {
 					var i=0, j=0, opened=[], records, record, number;
 					records = result.count();
 					// Now find all opened books
-					// Use history[0] as proxy for currentPosition, since direct testing crashes
 					while (i < records) {
 						record = result.getRecord(i);
-						if (record.ext.history[0]) opened.push({number:i, date:Date.parse(record.ext.currentPosition.date)});
+						if (record && record.ext.currentPosition.date) opened.push({number:i, date:Date.parse(record.ext.currentPosition.date)});
 						i++;
 					}
 					// Sort opened books by date, then add 1-3 to nodes, or 0-2 if no currentbook
@@ -164,7 +164,8 @@ tmp = function() {
 					}
 					break;
 				case 2: // Booklist option: books by same author
-					var i=0, currentpath, id, author, booklist=[];
+					var i=0, records, currentpath, id, author, record, booklist=[];
+					records = result.count();
 					// First find id and author of current book
 					if (kbook.model.currentBook) {
 						id = kbook.model.currentBook.media.id;
@@ -173,20 +174,20 @@ tmp = function() {
 					// If currentBook is null, use indirect route via currentPath
 					if (kbook.model.currentPath) {
 						currentpath = kbook.model.currentPath;
-						records = result.count();
 						for (i=0;i<records;i++) {
-							if (result.getRecord(i).ext.path == currentpath) {
-								id = result.getRecord(i).id;
-								author = result.getRecord(i).author;
+							record = result.getRecord(i);
+							if (record && record.ext.path == currentpath) {
+								id = record.id;
+								author = record.author;
 								break;
 							}
 						}
 					}
 					if (author) {
-						records = result.count();
 						// Find other books by same author, excluding currentbook
 						for (i=0;i<records;i++) {
-							if (result.getRecord(i).author == author && result.getRecord(i).id != id) booklist.push(i);
+							record = result.getRecord(i);
+							if (record && record.author == author && record.id != id) booklist.push(i);
 						}
 						// Shuffle book list and add first 3 items to nodes
 						booklist = shuffle(booklist);
@@ -209,8 +210,9 @@ tmp = function() {
 						currentpath = kbook.model.currentPath;
 						records = result.count();
 						for (i=0;i<records;i++) {
-							if (result.getRecord(i).ext.path == currentpath) {
-								id = result.getRecord(i).id;
+							record = result.getRecord(i);
+							if (record && record.ext.path == currentpath) {
+								id = record.id;
 								break;
 							}
 						}
@@ -223,7 +225,7 @@ tmp = function() {
 							record = result2.getRecord(i);
 							books = record.items.length;
 							for (j=0;j<books;j++) {
-								if (record.items[j].id == id) {
+								if (record && record.items[j].id == id) {
 								// Current book has been found in collection
 								// Now add next 3 collection items, if present, to nodes
 									j++;
