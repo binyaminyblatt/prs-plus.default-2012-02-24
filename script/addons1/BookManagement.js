@@ -16,6 +16,7 @@
 //	2011-09-12 quisvir - Added Home Menu Booklist customization
 //	2011-09-14 quisvir - Fixed Booklist bug on searching history (thanks MiK77)
 //	2011-09-14 quisvir - Fixed bug in Reading Progress if there is no current book
+//	2011-09-15 quisvir - Fixed bug where booklist wasn't correct after startup (via workaround)
 
 tmp = function() {
 
@@ -263,6 +264,10 @@ tmp = function() {
 		name: "BookManagement",
 		title: L("TITLE"),
 		// icon: "BOOKS",
+		onInit: function () {
+			// Workaround for numerical settings being saved as strings
+			Core.addonByName.BookManagement.options.HomeMenuBooklist = parseInt(Core.addonByName.BookManagement.options.HomeMenuBooklist);
+		},
 		actions: [{
 			name: "CycleHomeMenuBooklist",
 			title: L("CYCLE_HOME_MENU_BOOKLIST"),
