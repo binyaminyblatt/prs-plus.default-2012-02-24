@@ -150,7 +150,7 @@ tmp = function() {
 	var oldbookThumbnails = kbook.root.children.deviceRoot.children.bookThumbnails.construct;
 	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
 		var nodes, prototype, result, records, node;
-		kbook.model.commitCache();
+		if (Core.addonByName.BookManagement.options.HomeMenuBooklist == 1) kbook.model.commitCache();
 		FskCache.tree.xdbNode.construct.call(this);
 		nodes = this.nodes = [];
 		prototype = this.prototype;
