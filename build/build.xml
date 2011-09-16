@@ -40,6 +40,7 @@ History:
 		<exclude name="StandardActions_x50.js" />
 		<exclude name="ViewerSettings_x50.js" />
 		<exclude name="ViewerSettings_600.js" />
+		<exclude name="BookManagement.js" />
 	</patternset>
 	<patternset id="addons_600_x50">
 		<include name="**/*" />
@@ -87,7 +88,6 @@ History:
 		<ant antfile="build_lang.xml" />
 		<antcall target="buildCore" />
 		<antcall target="buildAddons" />
-		<!--antcall target="build.beta" /-->
 		<foreach list="${MODEL}" param="model" target="build" />
 		<foreach list="${MODEL}" param="model" target="buildInstaller" />
 	</target>
