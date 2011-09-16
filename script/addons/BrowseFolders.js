@@ -28,11 +28,13 @@
 //	2011-04-25 kartu - Added "via mount" option for SD/MS card access
 //	2011-06-18 kartu - Reverted old "BrowseFolders view not updated" (2011-02-09) fix as it shouldn't be needed with correctly working ContainerNode.update()
 //	2011-06-26 kartu - Applied Shura1oplot's changes (".." item, action grouping, more icons)
+//	2011-08-10 Shura1oplot - Added show file size in comment option
+//	2011-09-16 Mark Nord - Added FileType & FileSize to FileName in comment
 //
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
-		compareFields, supportedMIMEs, createLazyInitNode, constructLazyNode, ACTION_ICON,
+		compareFields, supportedMIMEs, createArchiveNode, createLazyInitNode, constructLazyNode, ACTION_ICON,
 		doCopyAndOpen, doCopy, doOpenHere, browseFoldersNode, ENABLED, DISABLED;
 	
 	ENABLED = "enabled";
@@ -148,8 +150,19 @@ tmp = function() {
 	};
 	
 	createMediaNode = function (path, title, parent, dummy, needsMount) {
-		var node, mime;
+		var node, mime, extension, size, sizeStr;
 		node = Core.media.createMediaNode(path, parent);
+		extension = Core.io.extractExtension(path);
+		sizeStr="";
+		if (BrowseFolders.options.fileSizeInComment === ENABLED) {
+			size = Core.io.getFileSize(path) / 1024;
+			if (size > 1024) {
+				size /= 1024;
+				sizeStr = size.toFixed(1) + " MB";
+			} else {
+				sizeStr = size.toFixed(0) + " KB";
+			}
+		}	
 		if (node === null) {
 			// Either file that is not a media, or unscanned
 			mime = FileSystem.getMIMEType(path);
@@ -161,10 +174,14 @@ tmp = function() {
 		} else if (BrowseFolders.options.sortMode === "filenameAsComment") {
 			node._mycomment = function() {
 				try {
-					return Core.io.extractFileName(this.media.path);
+					return Core.io.extractFileName(this.media.path) + ", " + sizeStr;
 				} catch (e) {
 					return "error: " + e;
 				}
+			};
+		} else if (BrowseFolders.options.fileSizeInComment === ENABLED) {
+			node._mycomment = function() {
+				return this.comment + ", " + sizeStr + ", [" + extension + "]";
 			};
 		}
 		if (node) {
@@ -522,6 +539,18 @@ tmp = function() {
 				icon: "FOLDER",
 				// By default enabled for touch screen devices, disabled for the rest
 				defaultValue: (Core.config.compat.hasNumericButtons ? DISABLED : ENABLED),
+				values: [ENABLED, DISABLED],
+				valueTitles: {
+					enabled: L("VALUE_ENABLED"),
+					disabled: L("VALUE_DISABLED")
+				}
+			},
+			// Add file size to media comment
+			{
+				name: "fileSizeInComment",
+				title: L("OPTION_FILE_SIZE_IN_COMMENT"),
+				icon: "FOLDER",
+				defaultValue: DISABLED,
 				values: [ENABLED, DISABLED],
 				valueTitles: {
 					enabled: L("VALUE_ENABLED"),

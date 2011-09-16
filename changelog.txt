@@ -1,3 +1,8 @@
+=== 2.0.13v2 beta ===
+ * 300/500: Fixed CoverPage as StandbyImage, fixed problem with next page after sleepmode
+ * ALL: BrowseFolder patched with Shura1oplots FileSize in Comment & added FileType
+ * ALL: Fixed russian localisation of "No Book, 1 Book, x Books"
+
 === 2.0.13 beta ===
  * 505: Fixed #126 "images/audio lists are empty"
  * 505: Fixed #139 "Menu customizer values are not translated"
