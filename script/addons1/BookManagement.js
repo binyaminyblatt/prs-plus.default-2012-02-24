@@ -17,6 +17,7 @@
 //	2011-09-14 quisvir - Fixed Booklist bug on searching history (thanks MiK77)
 //	2011-09-14 quisvir - Fixed bug in Reading Progress if there is no current book
 //	2011-09-15 quisvir - Fixed bug where booklist wasn't correct after startup (via workaround)
+//	2011-09-16 quisvir - More bugfixes, booklist partly rewritten
 
 tmp = function() {
 
@@ -30,21 +31,20 @@ tmp = function() {
 	}
 
 	var L = Core.lang.getLocalizer("BookManagement");
-
+		
 	// Keep new flag as is on opening book
 	var oldonChangeBook = kbook.model.onChangeBook;
 	kbook.model.onChangeBook = function (node) {
 		var newflag = node.opened;
 		oldonChangeBook.apply(this, arguments);
 		if (Core.addonByName.BookManagement.options.ManualNewFlag == "true") node.opened = newflag;
-		UpdateBooklist(); // For Home Menu Booklist customization
 	}
 	
 	// Book menu option to switch new flag, called from main.xml
 	kbook.model.container.sandbox.OPTION_OVERLAY_PAGE.sandbox.NewFlagToggle = function () {
-	this.doOption();
-	var book = kbook.model.currentBook;
-	book.opened = (book.opened) ? false : true;
+		this.doOption();
+		var book = kbook.model.currentBook;
+		book.opened = (book.opened) ? false : true;
 	}
 	
 	// Show book menu option if preference is set
@@ -86,7 +86,7 @@ tmp = function() {
 
 	// Draw reading progress instead of 'last read' date/time
 	kbook.model.getContinueDate = function (node) {
-		if (Core.addonByName.BookManagement.options.ShowReadingProgressCurrent == "true" && this.currentBook && this.currentBook.media.ext.history[0]) {
+		if (Core.addonByName.BookManagement.options.ShowReadingProgressCurrent == "true" && this.currentBook && this.currentBook.media.ext.history.length) {
 			var page = this.currentBook.media.ext.history[0].page + 1;
 			if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) return node.nodes[0].lastReadDate;
 			var pages = this.currentBook.media.ext.history[0].pages;
@@ -102,7 +102,7 @@ tmp = function() {
 		oldthumbnaildrawRecord.apply(this, arguments);
 		if (Core.addonByName.BookManagement.options.ShowReadingProgressThumbs == "true") {
 			var record = this.menu.getRecord(offset);
-			if (record && record.kind == 2 && !this.menu.getFixSelectPosition() && !record.expiration && record.media.ext.history[0]) {
+			if (record && record.kind == 2 && !this.menu.getFixSelectPosition() && !record.expiration && record.media.ext.history.length) {
 				var page = record.media.ext.history[0].page + 1;
 				if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) return;
 				var pages = record.media.ext.history[0].pages;
@@ -132,30 +132,43 @@ tmp = function() {
 		return v;
 	};
 
+	// Force update of deviceroot menu
+	UpdateBooklist = function () {
+		kbook.root.update(kbook.model);
+		kbook.model.updateData();
+	}
+	
+	// Update deviceroot on enter
+	var onEnterDeviceRoot = kbook.model.onEnterDeviceRoot;
+	kbook.model.onEnterDeviceRoot = function () {
+		UpdateBooklist();
+		onEnterDeviceRoot.apply(this, arguments);
+	}
+	
 	// Customize book list in home menu
 	// Maybe move (option) to Menu Customizer?
 	var oldbookThumbnails = kbook.root.children.deviceRoot.children.bookThumbnails.construct;
 	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
-		var nodes, prototype, result, node;
+		var nodes, prototype, result, records, node;
+		if (Core.addonByName.BookManagement.options.HomeMenuBooklist == 1) kbook.model.commitCache();
 		FskCache.tree.xdbNode.construct.call(this);
 		nodes = this.nodes = [];
 		prototype = this.prototype;
 		if (this.cache) {
 			result = this.cache[this.master];
 			result = this.filter(result);
+			records = result.count();
 			switch (Core.addonByName.BookManagement.options.HomeMenuBooklist) {
 				case 1: // Booklist option: last opened books
-					var i=0, j=0, opened=[], records, record, number;
-					records = result.count();
-					// Now find all opened books
-					while (i < records) {
+					var i, j, record, opened=[];
+					// First find all opened books
+					for (i=0;i<records;i++) {
 						record = result.getRecord(i);
-						if (record && record.ext.currentPosition.date) opened.push({number:i, date:Date.parse(record.ext.currentPosition.date)});
-						i++;
+						if (record.ext.currentPosition.date) opened.push({number:i, date:Date.parse(record.ext.currentPosition.date)});
 					}
-					// Sort opened books by date, then add 1-3 to nodes, or 0-2 if no currentbook
+					// Sort opened books by date, then add 1-3 to nodes, or 0-2 if no current book
 					opened.sort(function(a, b){ return b.date-a.date })
-					if (kbook.model.currentBook || kbook.model.currentPath) j=1;
+					j = (kbook.model.currentBook || kbook.model.currentPath) ? 1 : 0;
 					for (i=0;i<3&&i+j<opened.length;i++) {
 						node = nodes[i] = xs.newInstanceOf(prototype);
 						node.cache = this.cache;
@@ -166,30 +179,17 @@ tmp = function() {
 					}
 					break;
 				case 2: // Booklist option: books by same author
-					var i=0, records, currentpath, id, author, record, booklist=[];
-					records = result.count();
-					// First find id and author of current book
-					if (kbook.model.currentBook) {
-						id = kbook.model.currentBook.media.id;
-						author = kbook.model.currentBook.media.author;
-					}
-					// If currentBook is null, use indirect route via currentPath
-					if (kbook.model.currentPath) {
-						currentpath = kbook.model.currentPath;
-						for (i=0;i<records;i++) {
-							record = result.getRecord(i);
-							if (record && record.ext.path == currentpath) {
-								id = record.id;
-								author = record.author;
-								break;
-							}
-						}
-					}
+					var i, currentbook, id, author, record, booklist=[];
+					if (kbook.model.currentBook) currentbook = kbook.model.currentBook.media;
+					else if (kbook.model.currentPath) currentbook = result.db.search('indexPath',kbook.model.currentPath).getRecord(0);
+					if (!currentbook) break;
+					id = currentbook.id;
+					author = currentbook.author;
 					if (author) {
-						// Find other books by same author, excluding currentbook
+						// Find other books by same author, excluding current book
 						for (i=0;i<records;i++) {
 							record = result.getRecord(i);
-							if (record && record.author == author && record.id != id) booklist.push(i);
+							if (record.author == author && record.id != id) booklist.push(i);
 						}
 						// Shuffle book list and add first 3 items to nodes
 						booklist = shuffle(booklist);
@@ -204,62 +204,39 @@ tmp = function() {
 					}
 					break;
 				case 3: // Booklist option: next books in collection
-					var i=0, j=0, k=0, collections, currentpath, id, records, record, books, result2;
-					// First find id of current book
-					// currentBook is often null at this stage, hence indirect route via currentPath
+					var i, j, k, l, id, result2, collections, record, books, nextid;
 					if (kbook.model.currentBook) id = kbook.model.currentBook.media.id;
-					if (kbook.model.currentPath) {
-						currentpath = kbook.model.currentPath;
-						records = result.count();
-						for (i=0;i<records;i++) {
-							record = result.getRecord(i);
-							if (record && record.ext.path == currentpath) {
-								id = record.id;
-								break;
+					else if (kbook.model.currentPath) id = result.db.search('indexPath',kbook.model.currentPath).getRecord(0).id;
+					if (!id) break;
+					// Switch to collections cache
+					result2 = this.cache['playlistMasters'];
+					collections = result2.count();
+					for (i=0;i<collections;i++) {
+						record = result2.getRecord(i);
+						if (record.getItemIndex(id) != -1) {
+							// Current book found in collection; add remaining books to nodes
+							j = record.getItemIndex(id) + 1;
+							books = record.count();
+							for(k=0;k<3&&j<books;j++,k++) {
+								node = nodes[k] = xs.newInstanceOf(prototype);
+								node.cache = this.cache;
+								node.parent = this.parent.nodes[1];
+								node.sorter = this;
+								node.depth = this.depth + 1;
+								nextid = record.items[j].id;
+								for (l=0;result.getRecord(l).id!=nextid;l++);
+								node.media = result.getRecord(l);
 							}
-						}
-					}
-					if (id) {
-						// Switch to collections cache
-						result2 = this.cache['playlistMasters'];
-						collections = result2.count();
-						for (i=0;i<collections;i++) {
-							record = result2.getRecord(i);
-							books = record.items.length;
-							for (j=0;j<books;j++) {
-								if (record && record.items[j].id == id) {
-								// Current book has been found in collection
-								// Now add next 3 collection items, if present, to nodes
-									j++;
-									while (j<books&&k<3) {
-										node = nodes[k] = xs.newInstanceOf(prototype);
-										node.cache = this.cache;
-										node.parent = this.parent.nodes[1];
-										node.sorter = this;
-										node.depth = this.depth + 1;
-										node.media = result.getRecord(record.items[j].id-2); // -2 does the trick, but seems arbitrary
-										j++; k++;
-									}
-									i = collections;
-									j = books;
-								}
-							}
+							break;
 						}
 					}
 					break;
-			}			
+			}
 			// If no results or pref set to default, display last added books
 			if (nodes.length == 0) oldbookThumbnails.apply(this, arguments);
 		}
 	};
-
-	// Commit cache and update root menu
-	UpdateBooklist = function () {
-		kbook.model.commitCache();
-		kbook.root.update(kbook.model);
-		kbook.model.updateData();
-	}
-
+	
 	var BookManagement = {
 		name: "BookManagement",
 		title: L("TITLE"),
@@ -289,7 +266,7 @@ tmp = function() {
 					0: L("VALUE_DEFAULT"),
 					1: L("LAST_OPENED_BOOKS"),
 					2: L("BOOKS_BY_SAME_AUTHOR"),
-					3: L("NEXT_BOOKS_IN_COLLECTION")
+					3: L("NEXT_BOOKS_IN_COLLECTION"),
 				}
 			},
 			{
