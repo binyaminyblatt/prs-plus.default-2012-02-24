@@ -28,6 +28,7 @@
 // 2011-09-09 Ben Chenoweth - Moved strings into variables to handle missing characters in the fonts on the 600.
 // 2011-09-09 Ben Chenoweth - Fix to get it working again!
 // 2011-09-09 Ben Chenoweth - Temporary fix for missing up/down arrows on 505.
+// 2011-09-14 Ben Chenoweth - Fix for today marker disappearing on Sundays when in 'week starts with Monday' mode; removed temporary fix for missing arrows.
 
 var tmp = function () {
 	var thisDate = 1;							// Tracks current date being written in calendar
@@ -367,6 +368,7 @@ var tmp = function () {
 			this.labelFri.setValue(wordDays[6]);
 			this.labelSat.setValue(wordDays[0]);
 			todaysDay = today.getDay();
+			if (todaysDay==0) todaysDay=7;
 		} else {
 			this.labelSun.setValue(wordDays[0]);
 			this.labelMon.setValue(wordDays[1]);
@@ -420,7 +422,7 @@ var tmp = function () {
 		this.nonTouch9.setValue('');
 		this.nonTouch0.setValue('');
 
-		if (!kbook.simEnviro) {
+		/*if (!kbook.simEnviro) {
 			if (kbook.autoRunRoot.model=="600") {
 				strShift = "Shft";
 				strUnShift = "unSh";
@@ -434,7 +436,7 @@ var tmp = function () {
 				strUp = "U";
 				strDown = "D";
 			}			
-		}
+		}*/
 		
 		//keyboard keys in shifted form
 		//this.doShift();
@@ -442,7 +444,6 @@ var tmp = function () {
 		//simplify some labels
 		setSoValue(target.EVENTS_DIALOG.BACK, 'text', strBack);
 		setSoValue(target.EVENTS_DIALOG.SPACE, 'text', "");
-		//setSoValue(target.EVENTS_DIALOG.SHIFT, 'text', strUnShift);
 		setSoValue(target.BUTTON_UPP, 'text', strUp);
 		setSoValue(target.BUTTON_DWN, 'text', strDown);
 		return;
@@ -637,14 +638,12 @@ var tmp = function () {
 	}
 
 	target.checkevents = function (day,month,year,week,dayofweek) {
-	var numevents = 0;
-	var floater = 0;
-	var altdayofweek;
-	
-	altdayofweek = dayofweek+1;
-	if (altdayofweek==8) altdayofweek=1;
-	
-
+		var numevents = 0;
+		var floater = 0;
+		var altdayofweek;
+		
+		altdayofweek = dayofweek+1;
+		if (altdayofweek==8) altdayofweek=1;
 	
 		for (var i = 0; i < events.length; i++) {
 			if (events[i][0] == "W") {
@@ -1281,6 +1280,7 @@ var tmp = function () {
 			this.labelFri.setValue(wordDays[6]);
 			this.labelSat.setValue(wordDays[0]);
 			todaysDay = today.getDay();
+			if (todaysDay==0) todaysDay=7;
 		} else {
 			this.labelSun.setValue(wordDays[0]);
 			this.labelMon.setValue(wordDays[1]);
