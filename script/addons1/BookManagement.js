@@ -42,9 +42,9 @@ tmp = function() {
 	
 	// Book menu option to switch new flag, called from main.xml
 	kbook.model.container.sandbox.OPTION_OVERLAY_PAGE.sandbox.NewFlagToggle = function () {
-	this.doOption();
-	var book = kbook.model.currentBook;
-	book.opened = (book.opened) ? false : true;
+		this.doOption();
+		var book = kbook.model.currentBook;
+		book.opened = (book.opened) ? false : true;
 	}
 	
 	// Show book menu option if preference is set
@@ -181,7 +181,7 @@ tmp = function() {
 				case 2: // Booklist option: books by same author
 					var i, currentbook, id, author, record, booklist=[];
 					if (kbook.model.currentBook) currentbook = kbook.model.currentBook.media;
-					if (kbook.model.currentPath) currentbook = result.db.search('indexPath',kbook.model.currentPath).getRecord(0);
+					else if (kbook.model.currentPath) currentbook = result.db.search('indexPath',kbook.model.currentPath).getRecord(0);
 					if (!currentbook) break;
 					id = currentbook.id;
 					author = currentbook.author;
@@ -206,7 +206,7 @@ tmp = function() {
 				case 3: // Booklist option: next books in collection
 					var i, j, k, l, id, result2, collections, record, books, nextid;
 					if (kbook.model.currentBook) id = kbook.model.currentBook.media.id;
-					if (kbook.model.currentPath) id = result.db.search('indexPath',kbook.model.currentPath).getRecord(0).id;
+					else if (kbook.model.currentPath) id = result.db.search('indexPath',kbook.model.currentPath).getRecord(0).id;
 					if (!id) break;
 					// Switch to collections cache
 					result2 = this.cache['playlistMasters'];
@@ -266,7 +266,7 @@ tmp = function() {
 					0: L("VALUE_DEFAULT"),
 					1: L("LAST_OPENED_BOOKS"),
 					2: L("BOOKS_BY_SAME_AUTHOR"),
-					3: L("NEXT_BOOKS_IN_COLLECTION")
+					3: L("NEXT_BOOKS_IN_COLLECTION"),
 				}
 			},
 			{

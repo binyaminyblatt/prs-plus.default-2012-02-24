@@ -21,6 +21,7 @@
 //	2011-07-06 Ben Chenoweth - Minor fix to StandbyImage (mime not needed)
 //	2011-09-10 Mark Nord - 	added localised "Sleeping.." to curretn page-StandbyImage;
 //	2011-09-12 Mark Nord - 	FIXED first book-page as StandbyImage for all file-formats
+//	2011-09-16 Mark Nord - Fixed display correct page on page-turn after waking from sleep with book-cover as standby image
 
 
 var tmp = function() {
@@ -136,18 +137,37 @@ var tmp = function() {
 
 	// renders current books first page
 	createTextThumbnail = function (path) {
-		var bitmap, page, log;
-		
+		var bitmap, viewer, bounds, mime, page, log, oldpage; // oldpart;
+
+		viewer = null;
 		log = Core.log.getLogger("createTextThumbnail");
 		try {
-			page = kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
-			page.data.set(Document.Property.page, 0);
-			page.data.set(Document.Property.part, 0);
-			bitmap = page.data.render();
+			mime = FileSystem.getMIMEType(path);
+			if (mime === "application/epub+zip") {
+				bounds = new Rectangle();
+				viewer = new Document.Viewer.URL('file://' + path, mime);
+				bounds.set(0, 0, 600, 800);
+				viewer.set(Document.Property.dimensions, bounds);
+				viewer.set(Document.Property.textEngine, 'FreeType');
+				viewer.set(Document.Property.font, 'Dutch801 Rm BT');	
+				bitmap = viewer.render();
+			}
+			else { // it's a LRF BBeB-Book or PDF
+				page = kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
+				oldpage = page.data.get(Document.Property.page);
+				page.data.set(Document.Property.page, 0);
+				bitmap = page.data.render();
+				page.data.set(Document.Property.page, oldpage);
+			}	
 		}
 		catch (e){
 			log.error("createTextThumbnail e:"+ e);
 		}
+		finally {
+			if (viewer) {
+				viewer.close();
+			}
+		}	
 		return bitmap;
 	};	
 	
