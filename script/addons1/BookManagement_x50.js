@@ -33,6 +33,8 @@ tmp = function() {
 	}
 
 	var L = Core.lang.getLocalizer("BookManagement");
+	
+	var bookchanged = false;
 		
 	// Keep new flag as is on opening book
 	var oldonChangeBook = kbook.model.onChangeBook;
@@ -40,6 +42,7 @@ tmp = function() {
 		var newflag = node.opened;
 		oldonChangeBook.apply(this, arguments);
 		if (BookManagement_x50.options.ManualNewFlag == "true") node.opened = newflag;
+		bookchanged = true;
 	}
 	
 	// Book menu option to switch new flag, called from main.xml
@@ -138,15 +141,15 @@ tmp = function() {
 	var onEnterDeviceRoot = kbook.model.onEnterDeviceRoot;
 	kbook.model.onEnterDeviceRoot = function () {
 		onEnterDeviceRoot.apply(this, arguments);
-		if (BookManagement_x50.options.HomeMenuBooklist) {
+		if (BookManagement_x50.options.HomeMenuBooklist && bookchanged) {
 			if (BookManagement_x50.options.HomeMenuBooklist == 1) kbook.model.commitCache();			
 			kbook.root.nodes[0].nodes[6].update(kbook.model);
+			bookchanged = false;
 		}
 	}
 	
 	// Customize book list in home menu
 	// Maybe move (option) to Menu Customizer?
-	var oldbookThumbnails = kbook.root.children.deviceRoot.children.bookThumbnails.construct;
 	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
 		var i, nodes, prototype, result, records, node;
 		FskCache.tree.xdbNode.construct.call(this);
@@ -284,6 +287,7 @@ tmp = function() {
 				else BookManagement_x50.options.HomeMenuBooklist++;
 				kbook.model.updateData();
 				kbook.root.nodes[0].nodes[6].update(kbook.model);
+				bookchanged = true;
 				Core.settings.saveOptions(BookManagement_x50); // FIXME radio button in PRS+ settings isn't updated
 			}
 		}],
