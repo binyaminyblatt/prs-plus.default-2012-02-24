@@ -422,7 +422,6 @@ tmp = function() {
 			},
 		],
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-		if (propertyName == 'HomeMenuBooklist') UpdateBooklist();
 		},
 	};
 
