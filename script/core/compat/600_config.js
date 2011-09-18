@@ -1,4 +1,4 @@
-gamesAndUtils// Name: 600 config
+// Name: 600 config
 // Description: Sony PRS-600 model specific configuration
 //
 // History:
