@@ -1,6 +1,7 @@
-// Name: BookManagement
-// Description: Allows to set 'new' flag manually, to hide default collections
-//				and to show reading progress in home menu and thumbnail views
+// Name: BookManagement_x50
+// Description: Allows to set 'new' flag manually, to hide default collections,
+//				to show reading progress in home menu and thumbnail views
+//				and to customize home menu booklist
 // 
 // Author: quisvir
 //
@@ -18,6 +19,7 @@
 //	2011-09-14 quisvir - Fixed bug in Reading Progress if there is no current book
 //	2011-09-15 quisvir - Fixed bug where booklist wasn't correct after startup (via workaround)
 //	2011-09-16 quisvir - More bugfixes, booklist partly rewritten
+//	2011-09-18 quisvir - Rename to BookManagement_x50, booklist speed improvements, add random booklist option
 
 tmp = function() {
 
@@ -37,7 +39,7 @@ tmp = function() {
 	kbook.model.onChangeBook = function (node) {
 		var newflag = node.opened;
 		oldonChangeBook.apply(this, arguments);
-		if (Core.addonByName.BookManagement.options.ManualNewFlag == "true") node.opened = newflag;
+		if (BookManagement_x50.options.ManualNewFlag == "true") node.opened = newflag;
 	}
 	
 	// Book menu option to switch new flag, called from main.xml
@@ -50,7 +52,7 @@ tmp = function() {
 	// Show book menu option if preference is set
 	kbook.optMenu.isDisable = function (part) {
 		if (this.hasString(part, 'manualnewflag')) {
-			if (Core.addonByName.BookManagement.options.ManualNewFlag == "true") {
+			if (BookManagement_x50.options.ManualNewFlag == "true") {
 				part.text = (kbook.model.currentBook.opened) ? L("SETNEWFLAG") : L("REMOVENEWFLAG");
 				return Fskin.overlayTool.isDisable(part);
 			}
@@ -63,21 +65,21 @@ tmp = function() {
 	var oldkbookPlaylistNode = kbook.root.kbookPlaylistNode.construct;
 	kbook.root.kbookPlaylistNode.construct = function () {
 		oldkbookPlaylistNode.apply(this, arguments);
-		if (Core.addonByName.BookManagement.options.HideAddNewCollection == "true") {
+		if (BookManagement_x50.options.HideAddNewCollection == "true") {
 			this.nodes.splice(this.purchasedNodeIndex + 1,1);
 			this.constNodesCount--;
 		}
-		if (Core.addonByName.BookManagement.options.HidePurchasedBooks == "true") {
+		if (BookManagement_x50.options.HidePurchasedBooks == "true") {
 			this.nodes.splice(this.purchasedNodeIndex,1);
 			this.constNodesCount--;
 			this.presetItemsCount--;
 		}
-		if (Core.addonByName.BookManagement.options.HideUnreadPeriodicals == "true") {
+		if (BookManagement_x50.options.HideUnreadPeriodicals == "true") {
 			this.nodes.splice(this.purchasedNodeIndex - 1,1);
 			this.constNodesCount--;
 			this.presetItemsCount--;
 		}
-		if (Core.addonByName.BookManagement.options.HideUnreadBooks == "true") {
+		if (BookManagement_x50.options.HideUnreadBooks == "true") {
 			this.nodes.splice(this.purchasedNodeIndex - 2,1);
 			this.constNodesCount--;
 			this.presetItemsCount--;
@@ -86,11 +88,11 @@ tmp = function() {
 
 	// Draw reading progress instead of 'last read' date/time
 	kbook.model.getContinueDate = function (node) {
-		if (Core.addonByName.BookManagement.options.ShowReadingProgressCurrent == "true" && this.currentBook && this.currentBook.media.ext.history.length) {
+		if (BookManagement_x50.options.ShowReadingProgressCurrent == "true" && this.currentBook && this.currentBook.media.ext.history.length) {
 			var page = this.currentBook.media.ext.history[0].page + 1;
-			if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) return node.nodes[0].lastReadDate;
+			if (page < BookManagement_x50.options.OnlyShowFromPage) return node.nodes[0].lastReadDate;
 			var pages = this.currentBook.media.ext.history[0].pages;
-			return ReadingProgressComment(page, pages, Core.addonByName.BookManagement.options.ProgressFormatCurrent);
+			return ReadingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatCurrent);
 		}
 		else return node.nodes[0].lastReadDate;
 	}
@@ -100,13 +102,13 @@ tmp = function() {
 	var oldthumbnaildrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
 		oldthumbnaildrawRecord.apply(this, arguments);
-		if (Core.addonByName.BookManagement.options.ShowReadingProgressThumbs == "true") {
+		if (BookManagement_x50.options.ShowReadingProgressThumbs == "true") {
 			var record = this.menu.getRecord(offset);
 			if (record && record.kind == 2 && !this.menu.getFixSelectPosition() && !record.expiration && record.media.ext.history.length) {
 				var page = record.media.ext.history[0].page + 1;
-				if (page < Core.addonByName.BookManagement.options.OnlyShowFromPage) return;
+				if (page < BookManagement_x50.options.OnlyShowFromPage) return;
 				var pages = record.media.ext.history[0].pages;
-				var message = ReadingProgressComment(page, pages, Core.addonByName.BookManagement.options.ProgressFormatThumbs);
+				var message = ReadingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatThumbs);
 				parts.commentStyle.draw(this.getWindow(), message, x+this.marginWidth, y+this.marginHeight+this.designSpacingHeight+Math.min(this.getTh(height),this.thumbnailHeight)+this.textSeparation+this.textNameHeight+this.marginNameAndComment + 20, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
 			}
 		}
@@ -132,25 +134,21 @@ tmp = function() {
 		return v;
 	};
 
-	// Force update of deviceroot menu
-	UpdateBooklist = function () {
-		kbook.root.update(kbook.model);
-		kbook.model.updateData();
-	}
-	
 	// Update deviceroot on enter
 	var onEnterDeviceRoot = kbook.model.onEnterDeviceRoot;
 	kbook.model.onEnterDeviceRoot = function () {
-		UpdateBooklist();
 		onEnterDeviceRoot.apply(this, arguments);
+		if (BookManagement_x50.options.HomeMenuBooklist) {
+			if (BookManagement_x50.options.HomeMenuBooklist == 1) kbook.model.commitCache();			
+			kbook.root.nodes[0].nodes[6].update(kbook.model);
+		}
 	}
 	
 	// Customize book list in home menu
 	// Maybe move (option) to Menu Customizer?
 	var oldbookThumbnails = kbook.root.children.deviceRoot.children.bookThumbnails.construct;
 	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
-		var nodes, prototype, result, records, node;
-		if (Core.addonByName.BookManagement.options.HomeMenuBooklist == 1) kbook.model.commitCache();
+		var i, nodes, prototype, result, records, node;
 		FskCache.tree.xdbNode.construct.call(this);
 		nodes = this.nodes = [];
 		prototype = this.prototype;
@@ -158,9 +156,9 @@ tmp = function() {
 			result = this.cache[this.master];
 			result = this.filter(result);
 			records = result.count();
-			switch (Core.addonByName.BookManagement.options.HomeMenuBooklist) {
+			switch (BookManagement_x50.options.HomeMenuBooklist) {
 				case 1: // Booklist option: last opened books
-					var i, j, record, opened=[];
+					var j, record, opened=[];
 					// First find all opened books
 					for (i=0;i<records;i++) {
 						record = result.getRecord(i);
@@ -179,7 +177,7 @@ tmp = function() {
 					}
 					break;
 				case 2: // Booklist option: books by same author
-					var i, currentbook, id, author, record, booklist=[];
+					var currentbook, id, author, record, booklist=[];
 					if (kbook.model.currentBook) currentbook = kbook.model.currentBook.media;
 					else if (kbook.model.currentPath) currentbook = result.db.search('indexPath',kbook.model.currentPath).getRecord(0);
 					if (!currentbook) break;
@@ -204,7 +202,7 @@ tmp = function() {
 					}
 					break;
 				case 3: // Booklist option: next books in collection
-					var i, j, k, l, id, result2, collections, record, books, nextid;
+					var j, k, l, id, result2, collections, record, books, nextid;
 					if (kbook.model.currentBook) id = kbook.model.currentBook.media.id;
 					else if (kbook.model.currentPath) id = result.db.search('indexPath',kbook.model.currentPath).getRecord(0).id;
 					if (!id) break;
@@ -231,29 +229,62 @@ tmp = function() {
 						}
 					}
 					break;
+				case 4: // Booklist option: random
+					var j, id, books=[], record;
+					if (kbook.model.currentBook) id = kbook.model.currentBook.media.id;
+					else if (kbook.model.currentPath) id = result.db.search('indexPath',kbook.model.currentPath).getRecord(0).id;
+					for (i=0;i<records;i++) if (result.getRecord(i)) books.push(i);
+					books = shuffle(books);
+					for (i=0,j=0;i<3&&j<books.length;i++,j++) {
+						record = result.getRecord(books[j]);
+						if (id && record.id == id) i--;
+						else {
+							node = nodes[i] = xs.newInstanceOf(prototype);
+							node.cache = this.cache;
+							node.parent = this.parent.nodes[1];
+							node.sorter = this;
+							node.depth = this.depth + 1;
+							node.media = record;
+						}
+					}
+					break;
 			}
 			// If no results or pref set to default, display last added books
-			if (nodes.length == 0) oldbookThumbnails.apply(this, arguments);
+			if (nodes.length == 0) {
+				obj0 = new Object();
+				obj0.by = 'indexDate';
+				obj0.order = xdb.descending;
+				result.sort_c(obj0);
+				for(i=0;i<3&&i<records;i++) {
+					node = nodes[i] = xs.newInstanceOf(prototype);
+					node.cache = this.cache;
+					node.parent = this.parent.nodes[1];
+					node.sorter = this;
+					node.depth = this.depth + 1;
+					node.media = result.getRecord(i);
+				}
+			}
 		}
 	};
 	
-	var BookManagement = {
-		name: "BookManagement",
+	var BookManagement_x50 = {
+		name: "BookManagement_x50",
 		title: L("TITLE"),
 		// icon: "BOOKS",
 		onInit: function () {
 			// Workaround for numerical settings being saved as strings
-			Core.addonByName.BookManagement.options.HomeMenuBooklist = parseInt(Core.addonByName.BookManagement.options.HomeMenuBooklist);
+			BookManagement_x50.options.HomeMenuBooklist = parseInt(BookManagement_x50.options.HomeMenuBooklist);
 		},
 		actions: [{
 			name: "CycleHomeMenuBooklist",
 			title: L("CYCLE_HOME_MENU_BOOKLIST"),
 			group: "Other",
 			action: function () {
-				if (Core.addonByName.BookManagement.options.HomeMenuBooklist == 3) Core.addonByName.BookManagement.options.HomeMenuBooklist = 0;
-				else Core.addonByName.BookManagement.options.HomeMenuBooklist++;
-				Core.settings.saveOptions(BookManagement); // FIXME radio button in PRS+ settings isn't updated
-				UpdateBooklist();
+				if (BookManagement_x50.options.HomeMenuBooklist == 4) BookManagement_x50.options.HomeMenuBooklist = 0;
+				else BookManagement_x50.options.HomeMenuBooklist++;
+				kbook.model.updateData();
+				kbook.root.nodes[0].nodes[6].update(kbook.model);
+				Core.settings.saveOptions(BookManagement_x50); // FIXME radio button in PRS+ settings isn't updated
 			}
 		}],
 		optionDefs: [
@@ -261,12 +292,13 @@ tmp = function() {
 				name: "HomeMenuBooklist",
 				title: L("CUSTOMIZE_HOME_MENU_BOOKLIST"),
 				defaultValue: 0,
-				values: [0, 1, 2, 3],
+				values: [0, 1, 2, 3, 4],
 				valueTitles: {
 					0: L("VALUE_DEFAULT"),
 					1: L("LAST_OPENED_BOOKS"),
 					2: L("BOOKS_BY_SAME_AUTHOR"),
 					3: L("NEXT_BOOKS_IN_COLLECTION"),
+					4: L("RANDOM_BOOKS"),
 				}
 			},
 			{
@@ -329,7 +361,7 @@ tmp = function() {
 				name: "OnlyShowFromPage",
 				title: L("ONLY_SHOW_FROM_PAGE"),
 				defaultValue: 2,
-				values: [1, 2, 3, 4, 5, 10, 25, 50],
+				values: [1, 2, 3, 4, 5, 10, 15, 20, 25, 50],
 				},
 			]},
 			{
@@ -394,7 +426,7 @@ tmp = function() {
 		},
 	};
 
-	Core.addAddon(BookManagement);
+	Core.addAddon(BookManagement_x50);
 };
 try {
 	tmp();
