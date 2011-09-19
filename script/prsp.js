@@ -14,7 +14,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 	var tmp = function() {
 		var config = {
 			model: System.applyEnvironment("[prspModel]"),
-			defaultLogLevel: "none",
+			defaultLogLevel: "trace",
 			logFile: System.applyEnvironment("[prspLogFile]"),
 			corePath: System.applyEnvironment("[prspCorePath]"),
 			addonsPath: System.applyEnvironment("[prspAddonsPath]"),
