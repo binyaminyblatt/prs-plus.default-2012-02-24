@@ -23,15 +23,6 @@
 
 tmp = function() {
 
-	switch (Core.config.model) {
-	case "505":
-	case "300":
-	case "600":
-		return;	
-		break;
-	default:       
-	}
-
 	var L = Core.lang.getLocalizer("BookManagement");
 	
 	var bookchanged = false;
@@ -285,9 +276,12 @@ tmp = function() {
 			action: function () {
 				if (BookManagement_x50.options.HomeMenuBooklist == 4) BookManagement_x50.options.HomeMenuBooklist = 0;
 				else BookManagement_x50.options.HomeMenuBooklist++;
-				kbook.model.updateData();
-				kbook.root.nodes[0].nodes[6].update(kbook.model);
-				bookchanged = true;
+				if (kbook.model.STATE == 'MENU_HOME') {
+					if (BookManagement_x50.options.HomeMenuBooklist == 1) kbook.model.commitCache();
+					kbook.root.nodes[0].nodes[6].update(kbook.model);
+					kbook.menuHomeThumbnailBookData.changed(true);
+				}
+				else bookchanged = true;
 				Core.settings.saveOptions(BookManagement_x50); // FIXME radio button in PRS+ settings isn't updated
 			}
 		}],
