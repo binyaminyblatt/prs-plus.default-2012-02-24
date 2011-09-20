@@ -20,10 +20,12 @@
 //	2011-09-15 quisvir - Fixed bug where booklist wasn't correct after startup (via workaround)
 //	2011-09-16 quisvir - More bugfixes, booklist partly rewritten
 //	2011-09-18 quisvir - Rename to BookManagement_x50, booklist speed improvements, add random booklist option
+//	2011-09-20 quisvir - Use PRS+ book history instead of cache for 'last opened books' booklist
 
 tmp = function() {
 
 	var L = Core.lang.getLocalizer("BookManagement");
+	var log = Core.log.getLogger("BookManagement");
 	
 	var bookchanged = false;
 		
@@ -133,7 +135,6 @@ tmp = function() {
 	kbook.model.onEnterDeviceRoot = function () {
 		onEnterDeviceRoot.apply(this, arguments);
 		if (BookManagement_x50.options.HomeMenuBooklist && bookchanged) {
-			if (BookManagement_x50.options.HomeMenuBooklist == 1) kbook.model.commitCache();			
 			kbook.root.nodes[0].nodes[6].update(kbook.model);
 			bookchanged = false;
 		}
@@ -152,22 +153,19 @@ tmp = function() {
 			records = result.count();
 			switch (BookManagement_x50.options.HomeMenuBooklist) {
 				case 1: // Booklist option: last opened books
-					var j, record, opened=[];
-					// First find all opened books
-					for (i=0;i<records;i++) {
-						record = result.getRecord(i);
-						if (record.ext.currentPosition.date) opened.push({number:i, date:Date.parse(record.ext.currentPosition.date)});
-					}
-					// Sort opened books by date, then add 1-3 to nodes, or 0-2 if no current book
-					opened.sort(function(a, b){ return b.date-a.date })
+					var j, k, history=[];
+					history = Core.addonByName.BookHistory.getBookList();
 					j = (kbook.model.currentBook || kbook.model.currentPath) ? 1 : 0;
-					for (i=0;i<3&&i+j<opened.length;i++) {
-						node = nodes[i] = xs.newInstanceOf(prototype);
-						node.cache = this.cache;
-						node.parent = this.parent.nodes[1];
-						node.sorter = this;
-						node.depth = this.depth + 1;
-						node.media = result.getRecord(opened[i+j].number);
+					for (i=0;nodes.length<3&&i+j<history.length;i++) {
+						for (k=0;k<records;k++) if (result.getRecord(k).getFilePath() == history[i+j]) break;
+						if (k != records) {
+							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
+							node.cache = this.cache;
+							node.parent = this.parent.nodes[1];
+							node.sorter = this;
+							node.depth = this.depth + 1;
+							node.media = result.getRecord(k);
+						}
 					}
 					break;
 				case 2: // Booklist option: books by same author
@@ -223,7 +221,7 @@ tmp = function() {
 						}
 					}
 					break;
-				case 4: // Booklist option: random
+				case 4: // Booklist option: random books
 					var j, id, books=[], record;
 					if (kbook.model.currentBook) id = kbook.model.currentBook.media.id;
 					else if (kbook.model.currentPath) id = result.db.search('indexPath',kbook.model.currentPath).getRecord(0).id;
@@ -277,7 +275,6 @@ tmp = function() {
 				if (BookManagement_x50.options.HomeMenuBooklist == 4) BookManagement_x50.options.HomeMenuBooklist = 0;
 				else BookManagement_x50.options.HomeMenuBooklist++;
 				if (kbook.model.STATE == 'MENU_HOME') {
-					if (BookManagement_x50.options.HomeMenuBooklist == 1) kbook.model.commitCache();
 					kbook.root.nodes[0].nodes[6].update(kbook.model);
 					kbook.menuHomeThumbnailBookData.changed(true);
 				}
@@ -420,6 +417,7 @@ tmp = function() {
 			},
 		],
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+			bookchanged = true;
 		},
 	};
 
