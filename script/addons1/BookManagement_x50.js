@@ -154,7 +154,7 @@ tmp = function() {
 			switch (BookManagement_x50.options.HomeMenuBooklist) {
 				case 1: // Booklist option: last opened books
 					var j, k, history=[];
-					history = getBookList();
+					history = Core.addonByName.BookHistory.getBookList();
 					j = (kbook.model.currentBook || kbook.model.currentPath) ? 1 : 0;
 					for (i=0;nodes.length<3&&i+j<history.length;i++) {
 						for (k=0;k<records;k++) if (result.getRecord(k).getFilePath() == history[i+j]) break;

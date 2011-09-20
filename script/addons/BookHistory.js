@@ -236,11 +236,6 @@ tmp = function() {
 		}
 	};
 	
-	// Make bookList var available to other addons
-	getBookList = function () {
-		return bookList;
-	}
-	
 	BookHistory = {
 		name: "BookHistory",
 		title: BH_TITLE,
@@ -301,6 +296,11 @@ tmp = function() {
 				};
 			}
 			return bookHistoryNode;
+		},
+			
+		// Make bookList var available to other addons
+		getBookList: function () {
+			return bookList;
 		},
 		
 		onSettingsChanged: function(propertyName, oldValue, newValue) {
