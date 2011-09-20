@@ -42,6 +42,8 @@
 //	2011-02-26 kartu - Fixed #68:  x50: Deleting books opened via Book History is bugged
 //	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
 //	2011-05-14 kartu - Fixed bug related to "Skip book menu" option 
+//	2011-09-20 quisvir - Added getBookList to make booklist available to other addons (thanks kartu)
+
 
 tmp = function() {
 	var L, LX, log, trim, model, BH_TITLE, BH_SHORT_TITLE, BH_FILE, BookHistory, bookList, mustSave, bookHistoryNode,
@@ -295,6 +297,12 @@ tmp = function() {
 			}
 			return bookHistoryNode;
 		},
+			
+		// Make bookList var available to other addons
+		getBookList: function () {
+			return bookList;
+		},
+		
 		onSettingsChanged: function(propertyName, oldValue, newValue) {
 			var size, i, n;
 			if (oldValue === newValue || propertyName !== "size") {
