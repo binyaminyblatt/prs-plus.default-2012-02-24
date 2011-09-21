@@ -21,6 +21,7 @@
 //	2011-09-16 quisvir - More bugfixes, booklist partly rewritten
 //	2011-09-18 quisvir - Rename to BookManagement_x50, booklist speed improvements, add random booklist option
 //	2011-09-20 quisvir - Use PRS+ book history instead of cache for 'last opened books' booklist
+//	2011-09-22 quisvir - Display current booklist option in home menu
 
 tmp = function() {
 
@@ -108,6 +109,7 @@ tmp = function() {
 				parts.commentStyle.draw(this.getWindow(), message, x+this.marginWidth, y+this.marginHeight+this.designSpacingHeight+Math.min(this.getTh(height),this.thumbnailHeight)+this.textSeparation+this.textNameHeight+this.marginNameAndComment + 20, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
 			}
 		}
+		if (kbook.model.currentNode.title == 'deviceRoot' && tabIndex == 0) parts.commentStyle.draw(this.getWindow(), BookManagement_x50.optionDefs[0].valueTitles[BookManagement_x50.options.HomeMenuBooklist], 0, y-25, 597, this.textCommentHeight);
 	};
 	
 	// Format reading progress comment
@@ -258,7 +260,7 @@ tmp = function() {
 			}
 		}
 	};
-	
+		
 	var BookManagement_x50 = {
 		name: "BookManagement_x50",
 		title: L("TITLE"),
@@ -274,9 +276,9 @@ tmp = function() {
 			action: function () {
 				if (BookManagement_x50.options.HomeMenuBooklist == 4) BookManagement_x50.options.HomeMenuBooklist = 0;
 				else BookManagement_x50.options.HomeMenuBooklist++;
-				if (kbook.model.STATE == 'MENU_HOME') {
+				if (kbook.model.currentNode.title == 'deviceRoot') {
 					kbook.root.nodes[0].nodes[6].update(kbook.model);
-					kbook.menuHomeThumbnailBookData.changed(true);
+					kbook.menuHomeThumbnailBookData.setNode(kbook.root.nodes[0].nodes[6]);
 				}
 				else bookchanged = true;
 				Core.settings.saveOptions(BookManagement_x50); // FIXME radio button in PRS+ settings isn't updated
@@ -289,7 +291,7 @@ tmp = function() {
 				defaultValue: 0,
 				values: [0, 1, 2, 3, 4],
 				valueTitles: {
-					0: L("VALUE_DEFAULT"),
+					0: L("LAST_ADDED_BOOKS"),
 					1: L("LAST_OPENED_BOOKS"),
 					2: L("BOOKS_BY_SAME_AUTHOR"),
 					3: L("NEXT_BOOKS_IN_COLLECTION"),
@@ -417,7 +419,7 @@ tmp = function() {
 			},
 		],
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			bookchanged = true;
+			if (propertyName == "HomeMenuBooklist") bookchanged = true;
 		},
 	};
 
