@@ -153,18 +153,18 @@ tmp = function() {
 			records = result.count();
 			switch (BookManagement_x50.options.HomeMenuBooklist) {
 				case 1: // Booklist option: last opened books
-					var j, k, history=[];
+					var j, history=[], record;
 					history = Core.addonByName.BookHistory.getBookList();
 					j = (kbook.model.currentBook || kbook.model.currentPath) ? 1 : 0;
 					for (i=0;nodes.length<3&&i+j<history.length;i++) {
-						for (k=0;k<records;k++) if (result.getRecord(k).getFilePath() == history[i+j]) break;
-						if (k != records) {
+						record = Core.media.findMedia(history[i+j]);
+						if (record) {
 							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 							node.cache = this.cache;
 							node.parent = this.parent.nodes[1];
 							node.sorter = this;
 							node.depth = this.depth + 1;
-							node.media = result.getRecord(k);
+							node.media = record;
 						}
 					}
 					break;
