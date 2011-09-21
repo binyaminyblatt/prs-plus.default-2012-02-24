@@ -21,27 +21,17 @@
 
 tmp = function() {
 
-	switch (Core.config.model) {
-	case "505":
-	case "300":
-	case "600":
-		return;	
-		break;
-	default:       
-	}
-
 	// Localize	 	
 	var L = Core.lang.getLocalizer("ViewerSettings_x50");
 
 	// Constants
-	
-	// Enable panning in Zoom Lock mode
 	var zoomlockold;
 	
+	// Enable panning in Zoom Lock mode
 	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
 	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
 		zoomlockold = this.isZoomLock;
-		if (Core.addonByName.ViewerSettings_x50.options.ZoomLockPanning == "true" && zoomlockold) this.isZoomLock = false;
+		if (ViewerSettings_x50.options.ZoomLockPanning == "true" && zoomlockold) this.isZoomLock = false;
 		oldZoomdoDrag.apply(this, arguments);
 		this.isZoomLock = zoomlockold;
 	}
@@ -54,12 +44,12 @@ tmp = function() {
 	};
 
 	Fskin.kbookZoomOverlay.canLine = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockPanning != "true") return true;
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_x50.options.ZoomLockPanning != "true") return true;
 		else return false;
 	};
 
 	Fskin.kbookZoomOverlay.canLineAndHold = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_x50.options.ZoomLockPanning != "true") return true;
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_x50.options.ZoomLockPanning != "true") return true;
 		else return false;
 	};
 	
@@ -68,8 +58,8 @@ tmp = function() {
 		var msg, value = parseInt(text);
 		if (isNaN(value)) msg = L("ERROR_NOT_A_NUMBER");
 		else if (value < -127 || value > 127) msg = L("ERROR_NOT_WITHIN_RANGE") + ' [-127 / 127]';
-		else Core.addonByName.ViewerSettings_x50.options.CustomContrast = value.toString(); // without toString(), option comment displays an error for negative values
-		if (msg) Core.addonByName.ViewerSettings_x50.options.CustomContrast = 0;
+		else ViewerSettings_x50.options.CustomContrast = value.toString(); // without toString(), option comment displays an error for negative values
+		if (msg) ViewerSettings_x50.options.CustomContrast = 0;
 		else msg = L("CUSTOM_VIEW_MSG");
 		Core.ui.showMsg(msg);
 		Core.settings.saveOptions(ViewerSettings_x50);
@@ -80,8 +70,8 @@ tmp = function() {
 		var msg, value = parseInt(text);
 		if (isNaN(value)) msg = L("ERROR_NOT_A_NUMBER");
 		else if (value < -225 || value > 225) msg = L("ERROR_NOT_WITHIN_RANGE") + ' [-225 / 225]';
-		else Core.addonByName.ViewerSettings_x50.options.CustomBrightness = value.toString();
-		if (msg) Core.addonByName.ViewerSettings_x50.options.CustomBrightness = 0;
+		else ViewerSettings_x50.options.CustomBrightness = value.toString();
+		if (msg) ViewerSettings_x50.options.CustomBrightness = 0;
 		else msg = L("CUSTOM_VIEW_MSG");
 		Core.ui.showMsg(msg);
 		Core.settings.saveOptions(ViewerSettings_x50);
@@ -91,9 +81,9 @@ tmp = function() {
 	pageOptionToneCurveEditorOverlayModel.initToneCurveEditor = function () {
 		var contrast = parseInt(this.targetModel.doSomething('getContrast'));
 		var brightness = parseInt(this.targetModel.doSomething('getBrightness'));
-		if (Core.addonByName.ViewerSettings_x50.options.BindToRestoreButton == "true") {
-			this.org_slider_1 = Core.addonByName.ViewerSettings_x50.options.CustomContrast;
-			this.org_slider_2 = Core.addonByName.ViewerSettings_x50.options.CustomBrightness;
+		if (ViewerSettings_x50.options.BindToRestoreButton == "true") {
+			this.org_slider_1 = ViewerSettings_x50.options.CustomContrast;
+			this.org_slider_2 = ViewerSettings_x50.options.CustomBrightness;
 		}
 		else {
 			this.org_slider_1 = contrast;
@@ -105,9 +95,8 @@ tmp = function() {
 	// overload kbook.kbookPage.doSelectWord called by kbook.kbookPage.readingTracker.doubleTap to disable Dictionary
 	var oldDoSelectWord = kbook.kbookPage.doSelectWord;
 	var doSelectWord = function (){
-		if (Core.addonByName.ViewerSettings_x50.options.NoDictionary === "false") {
+		if (ViewerSettings_x50.options.NoDictionary === "false") {
 			return oldDoSelectWord.apply(this, arguments);
-			
 		}
 	}
 
@@ -182,7 +171,7 @@ tmp = function() {
 			cache.bitmap.close();
 			cache.bitmap = backup;
 		}
-		if (Core.addonByName.ViewerSettings_x50.options.NotMarkOverlapArea === "false") {
+		if (ViewerSettings_x50.options.NotMarkOverlapArea === "false") {
 			bitmap = cache.bitmap;
 			if (bitmap && !cache.error) {
 				if (!this.isZooming && (this.isScrollView() && !this.monochrome.isRunning()) ) {
