@@ -1,3 +1,7 @@
+=== 2.0.14 beta ===
+ * x50: Fixed #128 books/collections sorting
+ * x50: Fixed "Coming back to Home from an other menu takes long"
+
 === 2.0.13v2 beta ===
  * 300/500: Fixed CoverPage as StandbyImage, fixed problem with next page after sleepmode
  * ALL: BrowseFolder patched with Shura1oplots FileSize in Comment & added FileType
