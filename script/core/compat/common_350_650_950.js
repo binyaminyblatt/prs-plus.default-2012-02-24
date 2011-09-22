@@ -22,6 +22,7 @@
 //	2011-06-18 kartu - A bit less ugly fix to "Periodicals"
 //	2011-06-26 kartu - x50 Fixed #120 "No keyboard in SP-EN dictionary"
 //	2011-09-14 kartu - x50: Added Catalan & Polish translation (except 950), Polish keyboard 
+//	2011-09-22 kartu - Removed code overriding String.prototype.localeCompare, it did nothing but tamper collections sorting
 //
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -425,12 +426,6 @@ tmp = function () {
 		}
 	};
 
-	// Fix sorting (unicode order)
-	var compareStrings =  PARAMS.Core.config.compat.compareStrings;
-	String.prototype.localeCompare = function(a) {
-		return compareStrings(this.valueOf(), a);
-	};
-	
 	// Allow menu customization
 	// Kinoma's code is hardcoded with references to periodicals / collections / all notes	
 	makeRootNodesMovable = function() {
