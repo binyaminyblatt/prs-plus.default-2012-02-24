@@ -87,7 +87,7 @@ tmp = function() {
 	kbook.model.getContinueDate = function (node) {
 		if (BookManagement_x50.options.ShowReadingProgressCurrent == "true" && this.currentBook && this.currentBook.media.ext.history.length) {
 			var page = this.currentBook.media.ext.history[0].page + 1;
-			if (page < BookManagement_x50.options.OnlyShowFromPage) return node.nodes[0].lastReadDate;
+			if (page < Number(BookManagement_x50.options.OnlyShowFromPage)) return node.nodes[0].lastReadDate;
 			var pages = this.currentBook.media.ext.history[0].pages;
 			return ReadingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatCurrent);
 		}
@@ -104,7 +104,7 @@ tmp = function() {
 			var record = this.menu.getRecord(offset);
 			if (!record || record.kind != 2 || !record.media.ext.history.length || (this.statusVisible && (record.media.sourceid > 1 || this.menu.getFixSelectPosition() || record.expiration))) return;
 			var page = record.media.ext.history[0].page + 1;
-			if (page < BookManagement_x50.options.OnlyShowFromPage) return;
+			if (page < Number(BookManagement_x50.options.OnlyShowFromPage)) return;
 			var pages = record.media.ext.history[0].pages;
 			var message = ReadingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatThumbs);
 			parts.commentStyle.draw(this.getWindow(), message, x+this.marginWidth, y+this.marginHeight+this.designSpacingHeight+Math.min(this.getTh(height),this.thumbnailHeight)+this.textSeparation+this.textNameHeight+this.marginNameAndComment + 20, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
@@ -161,9 +161,6 @@ tmp = function() {
 				for(i=0;i<3&&i<records;i++) {
 					node = nodes[i] = xs.newInstanceOf(prototype);
 					node.cache = this.cache;
-					node.parent = this.parent.nodes[1];
-					node.sorter = this;
-					node.depth = this.depth + 1;
 					node.media = result.getRecord(i);
 				}
 				break;
@@ -176,9 +173,6 @@ tmp = function() {
 					if (record) {
 						node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 						node.cache = this.cache;
-						node.parent = this.parent.nodes[1];
-						node.sorter = this;
-						node.depth = this.depth + 1;
 						node.media = record;
 					}
 				}
@@ -201,15 +195,12 @@ tmp = function() {
 					for (i=0;i<3&&i<booklist.length;i++) {
 						node = nodes[i] = xs.newInstanceOf(prototype);
 						node.cache = this.cache;
-						node.parent = this.parent.nodes[1];
-						node.sorter = this;
-						node.depth = this.depth + 1;
 						node.media = result.getRecord(booklist[i]);
 					}
 				}
 				break;
 			case 3: // Booklist option: next books in collection
-				var j, k, l, id, result2, collections, record, books, nextid;
+				var j, k, l, id, result2, collections, collection, books;
 				if (kbook.model.currentBook) id = kbook.model.currentBook.media.id;
 				else if (kbook.model.currentPath) id = result.db.search('indexPath',kbook.model.currentPath).getRecord(0).id;
 				if (!id) break;
@@ -217,20 +208,15 @@ tmp = function() {
 				result2 = this.cache['playlistMasters'];
 				collections = result2.count();
 				for (i=0;i<collections;i++) {
-					record = result2.getRecord(i);
-					if (record.getItemIndex(id) != -1) {
+					collection = result2.getRecord(i);
+					if (collection.getItemIndex(id) != -1) {
 						// Current book found in collection; add remaining books to nodes
-						j = record.getItemIndex(id) + 1;
-						books = record.count();
+						j = collection.getItemIndex(id) + 1;
+						books = collection.count();
 						for(k=0;k<3&&j<books;j++,k++) {
 							node = nodes[k] = xs.newInstanceOf(prototype);
 							node.cache = this.cache;
-							node.parent = this.parent.nodes[1];
-							node.sorter = this;
-							node.depth = this.depth + 1;
-							nextid = record.items[j].id;
-							for (l=0;result.getRecord(l).id!=nextid;l++);
-							node.media = result.getRecord(l);
+							node.media = this.cache.getRecord(collection.items[j].id);
 						}
 						break;
 					}
@@ -244,13 +230,10 @@ tmp = function() {
 				books = shuffle(books);
 				for (i=0,j=0;i<3&&j<books.length;i++,j++) {
 					record = result.getRecord(books[j]);
-					if (id && record.id == id) i--;
+					if (record.id == id) i--;
 					else {
 						node = nodes[i] = xs.newInstanceOf(prototype);
 						node.cache = this.cache;
-						node.parent = this.parent.nodes[1];
-						node.sorter = this;
-						node.depth = this.depth + 1;
 						node.media = record;
 					}
 				}
@@ -354,8 +337,8 @@ tmp = function() {
 				{
 				name: "OnlyShowFromPage",
 				title: L("ONLY_SHOW_FROM_PAGE"),
-				defaultValue: 2,
-				values: [1, 2, 3, 4, 5, 10, 15, 20, 25, 50],
+				defaultValue: "2",
+				values: ["1", "2", "3", "4", "5", "10", "15", "20", "25", "50"],
 				},
 			]},
 			{
