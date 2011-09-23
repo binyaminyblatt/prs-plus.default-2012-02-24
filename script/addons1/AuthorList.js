@@ -1,5 +1,5 @@
 // Name: Author List
-// Models: 300, 600 and x50 series
+// Models: 600 and x50 series
 //
 // Description: Adds 
 //
@@ -20,8 +20,9 @@ tmp = function() {
 	AuthorsNodeConstruct = function () {
 		var i, node, nodes, result, records, author, path, books;
 		nodes = this.nodes = [];
-		Authors = [];
-		result = kbook.root.children.deviceRoot.children.books.filter(kbook.model.cache['textMasters']);
+		result = kbook.model.cache['textMasters'];
+		// Model sniffing: filter out periodicals in relevant models
+		if (Core.config.model != '600') result = kbook.root.children.deviceRoot.children.books.filter(result);
 		// TODO optionally attempt sorting by author's last name
 		obj0 = new Object();
 		obj0.by = 'indexArtist';
