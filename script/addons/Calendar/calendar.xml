@@ -467,7 +467,7 @@
 					<function id="doCenter">	this.container.doCenterF();  </function>	        
 				</code>
 				<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
-				<label skin="swis32blk" active="false" text="Calendar Settings" align="center" left="28" right="28" top="20" height="38"/>
+				<label id="CalSettings" skin="swis32blk" active="false" text="Calendar Settings" align="center" left="28" right="28" top="20" height="38"/>
 				<text skin="customText" id="week_starts" active="false" left="10" width="200" top="70" align="left" height="44"/>
 				<radio id="SUN" variable="week_begins" on="1" active="true" text="Sunday" left="220" width="100" top="75" height="30" do="settingsType"/>
 				<radio id="MON" variable="week_begins" on="2" active="true" text="Monday" left="300" width="100" top="75" height="30" do="settingsType"/> 
@@ -516,22 +516,22 @@
 				<function id="doSize">		this.container.doSize(); </function>
 			</code>
 			<background skin="dlg_background" left="0" right="0" top="0" bottom="0"/>
-			<label skin="swis32blk" active="false" text="Events" align="center" left="28" right="28" top="20" height="38"/>
+			<label id="CalEvents" skin="swis32blk" active="false" text="Events" align="center" left="28" right="28" top="20" height="38"/>
 			<label id="ntEventSize" skin="swis16blk" active="false" text="[Size] OK" align="left" left="0" right="0" bottom="30" height="20"/>
 			<label id="ntEventMark" skin="swis16blk" active="false" text="[Mark] Cancel" align="left" left="0" right="0" bottom="10" height="20"/>
 
-			<label skin="swis24blk" active="false" text="Event: " left="40" width="100" top="67" align="left" height="32"/>
+			<label id="fieldEvent" skin="swis24blk" active="false" text="Event:" left="40" width="100" top="67" align="left" height="32"/>
 			<text id="eventNum" skin="eventText" active="false" variable="event_num" left="190" width="62" top="67" height="41"/>
 			<button id="eventNum-" skin="nullButton" left="140" top="67" width="50" heigth="28" text="-" do="doPlusMinus"/>
 			<button id="eventNum+" skin="nullButton" left="252" top="67" width="50" heigth="28" text="+" do="doPlusMinus"/>
 					
-			<label skin="swis24blk" active="false" text="Type:" left="40" width="100" top="107" align="left" height="32"/>
+			<label id="fieldType" skin="swis24blk" active="false" text="Type:" left="40" width="100" top="107" align="left" height="32"/>
 			<text id="eventType" skin="eventText" active="false" variable="event_type" left="190" width="62" top="107" height="41"/>
 			<text id="eventTypeText" skin="eventText" active="false" left="190" width="160" top="107" height="41"/>
 			<button id="eventType-" skin="nullButton" left="140" top="107" width="50" heigth="28" text="-" do="doPlusMinus"/>
 			<button id="eventType+" skin="nullButton" left="350" top="107" width="50" heigth="28" text="+" do="doPlusMinus"/>
 					
-			<label skin="swis24blk" active="false" text="Month:" left="40" width="100" top="147" align="left" height="32"/>
+			<label id="fieldMonth" skin="swis24blk" active="false" text="Month:" left="40" width="100" top="147" align="left" height="32"/>
 			<text id="eventMonth" skin="eventText" active="false" variable="event_month" left="190" width="62" top="147" height="41"/>
 			<button id="eventMonth-" skin="nullButton" left="140" top="147" width="50" heigth="28" text="-" do="doPlusMinus"/>
 			<button id="eventMonth+" skin="nullButton" left="252" top="147" width="50" heigth="28" text="+" do="doPlusMinus"/>
@@ -554,7 +554,7 @@
 			<button id="eventIcon-" skin="nullButton" left="350" top="260" width="50" heigth="28" text="-" do="doPlusMinus"/>
 			<button id="eventIcon+" skin="nullButton" left="390" top="260" width="50" heigth="28" text="+" do="doPlusMinus"/>
 			
-			<label skin="swis24blk" active="false" text="Description:" left="40" width="180" top="267" align="left" height="32"/>
+			<label id="fieldDescription" skin="swis24blk" active="false" text="Description:" left="40" width="180" top="267" align="left" height="32"/>
 			<text id="eventDescription" skin="eventText" active="false" variable="event_description" left="40" width="390" top="307" height="41"/>
 			
 			<button id="key01" text="q" left=  "5" top="370" width="40" height="40" do="doKeyPress"/>
