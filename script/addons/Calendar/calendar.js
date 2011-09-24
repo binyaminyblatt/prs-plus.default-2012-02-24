@@ -30,6 +30,7 @@
 // 2011-09-09 Ben Chenoweth - Temporary fix for missing up/down arrows on 505.
 // 2011-09-14 Ben Chenoweth - Fix for today marker disappearing on Sundays when in 'week starts with Monday' mode; removed temporary fix for missing arrows.
 // 2011-09-23 Ben Chenoweth - Strings can now be translated; Prev/Next Month for 300 (but now there is no Prev/Next Year).
+// 2011-09-24 Ben Chenoweth - Minor changes to some label/button sizes to accommodate translation strings; moved year to title bar.
 
 var tmp = function () {
 	var L = kbook.autoRunRoot.L;
@@ -155,7 +156,7 @@ var tmp = function () {
 	var strUnShift = "\u2193"; //down arrow
 	var strBack = "\u2190"; //left arrow
 	var strUp = "\u2191";
-	var strDown = "\u2193";	
+	var strDown = "\u2193";
 	
 	// variables to be saved to a file
 	target.settings = {	
@@ -568,7 +569,8 @@ var tmp = function () {
 			yearNum++
 		}
 		
-		this.displayMonthYear.setValue(wordMonth[monthNum-1]+" "+yearNum);
+		this.displayMonth.setValue(wordMonth[monthNum-1]);
+		this.bigYear.setValue(yearNum);
 
 		lastDate = new Date(yearNum,monthNum);
 		lastDate.setDate(lastDate.getDate()-1);
