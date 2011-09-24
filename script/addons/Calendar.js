@@ -29,6 +29,7 @@ tmp = function() {
 		actions: [{
 			name: "Calendar",
 			group: "Games",
+			title: L("TITLE"),
 			icon: appIcon,
 			action: function () {
 				Calendar.activate();
