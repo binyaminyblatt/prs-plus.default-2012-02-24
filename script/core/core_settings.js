@@ -212,6 +212,9 @@ tmp = function() {
 
 			doCreateAddonSettings(node, optionDef.optionDefs, addon, false);
 		} else {
+			// Do not create settings node if hidden property is defined
+			if (optionDef.hasOwnProperty("hidden")) return;
+
 			// If target is defined, use it, else create "options"
 			var options;
 			if (optionDef.hasOwnProperty("target")) {
