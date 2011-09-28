@@ -108,7 +108,7 @@ tmp = function() {
 		var record, page, pages, message;
 		if (kbook.model.currentNode.title == 'deviceRoot') {
 			message = (BookManagement_x50.options.CurrentCollection) ? L('NEXT_IN') + ' ' + BookManagement_x50.options.CurrentCollection : BookManagement_x50.optionDefs[0].optionDefs[0].valueTitles[BookManagement_x50.options.HomeMenuBooklist];
-			parts.commentStyle.draw(this.getWindow(), message, 0, y-25, 597, this.textCommentHeight);
+			this.skin.styles[6].draw(this.getWindow(), message, 0, y-25, this.width, this.textCommentHeight);
 		}
 		record = this.menu.getRecord(offset);
 		if (record) {
@@ -118,7 +118,7 @@ tmp = function() {
 				if (page < Number(BookManagement_x50.options.OnlyShowFromPage)) return;
 				pages = record.media.ext.history[0].pages;
 				message = ReadingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatThumbs);
-				parts.commentStyle.draw(this.getWindow(), message, x+this.marginWidth, y+this.marginHeight+this.designSpacingHeight+Math.min(this.getTh(height),this.thumbnailHeight)+this.textSeparation+this.textNameHeight+this.marginNameAndComment + 20, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
+				parts.commentStyle.draw(this.getWindow(), message, x+this.marginWidth, this.getNy(this.getTy(y),Math.min(this.getTh(height),this.thumbnailHeight))+this.textNameHeight+this.marginNameAndComment + 23, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
 			}
 		}
 	};
@@ -169,13 +169,8 @@ tmp = function() {
 		prototype = this.prototype;
 		cache = this.cache;
 		while (cache) {
-			result = cache.textMasters;
-			// FIXME there has to be a way to select ONLY library and kbook, instead of taking entire cache and removing other sources
-			if (BookManagement_x50.options.IgnoreCards == 'true') {
-				for (i=0;i<cache.sources.length;i++) {
-					if (cache.sources[i].title != 'Library' && cache.sources[i].title != 'kbook') result = result.and(cache.sources[i].textMasters.not());
-				}
-			}
+			if (BookManagement_x50.options.IgnoreCards == 'true') result = cache.getSourceByName('mediaPath').textMasters;
+			else result = cache.textMasters;
 			result = this.filter(result);
 			records = result.count();
 			if (!records) return;
@@ -469,7 +464,7 @@ tmp = function() {
 			},
 		],
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			if (propertyName == 'HomeMenuBooklist') {
+			if (propertyName == 'HomeMenuBooklist' || propertyName == 'IgnoreCards') {
 				BookChanged = true;
 				BookManagement_x50.options.CurrentCollection = '';
 			}
