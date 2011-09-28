@@ -23,6 +23,7 @@
 //	2011-09-20 quisvir - Use PRS+ book history instead of cache for 'last opened books' booklist
 //	2011-09-22 quisvir - Display current booklist option in home menu
 //	2011-09-27 quisvir - Add ability to cycle through collections for 'next in collection' booklist
+//	2011-09-28 quisvir - Display current collection in home menu, add option to ignore memory cards
 
 tmp = function() {
 
@@ -104,16 +105,21 @@ tmp = function() {
 	var oldthumbnaildrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
 		oldthumbnaildrawRecord.apply(this, arguments);
-		// Also draw current booklist option in home menu
-		if (kbook.model.currentNode.title == 'deviceRoot') parts.commentStyle.draw(this.getWindow(), BookManagement_x50.optionDefs[0].valueTitles[BookManagement_x50.options.HomeMenuBooklist], 0, y-25, 597, this.textCommentHeight);
-		if (BookManagement_x50.options.ShowReadingProgressThumbs == 'true') {
-			var record = this.menu.getRecord(offset);
-			if (!record || record.kind != 2 || !record.media.ext.history.length || (this.statusVisible && (record.media.sourceid > 1 || this.menu.getFixSelectPosition() || record.expiration))) return;
-			var page = record.media.ext.history[0].page + 1;
-			if (page < Number(BookManagement_x50.options.OnlyShowFromPage)) return;
-			var pages = record.media.ext.history[0].pages;
-			var message = ReadingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatThumbs);
-			parts.commentStyle.draw(this.getWindow(), message, x+this.marginWidth, y+this.marginHeight+this.designSpacingHeight+Math.min(this.getTh(height),this.thumbnailHeight)+this.textSeparation+this.textNameHeight+this.marginNameAndComment + 20, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
+		var record, page, pages, message;
+		record = this.menu.getRecord(offset);
+		if (record) {
+			if (BookManagement_x50.options.ShowReadingProgressThumbs == 'true') {
+				if (!record || record.kind != 2 || !record.media.ext.history.length || (this.statusVisible && (record.media.sourceid > 1 || this.menu.getFixSelectPosition() || record.expiration))) return;
+				page = record.media.ext.history[0].page + 1;
+				if (page < Number(BookManagement_x50.options.OnlyShowFromPage)) return;
+				pages = record.media.ext.history[0].pages;
+				message = ReadingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatThumbs);
+				parts.commentStyle.draw(this.getWindow(), message, x+this.marginWidth, y+this.marginHeight+this.designSpacingHeight+Math.min(this.getTh(height),this.thumbnailHeight)+this.textSeparation+this.textNameHeight+this.marginNameAndComment + 20, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
+			}
+		}
+		if (kbook.model.currentNode.title == 'deviceRoot') {
+			message = (BookManagement_x50.options.CurrentCollection) ? L('NEXT_IN') + ' ' + BookManagement_x50.options.CurrentCollection : BookManagement_x50.optionDefs[0].valueTitles[BookManagement_x50.options.HomeMenuBooklist];
+			parts.commentStyle.draw(this.getWindow(), message, 0, y-25, 597, this.textCommentHeight);
 		}
 	};
 	
@@ -157,12 +163,19 @@ tmp = function() {
 	// Customize book list in home menu
 	// Maybe move (option) to Menu Customizer?
 	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
-		var nodes, prototype, result, records, node;
+		var i, nodes, prototype, cache, result, records, node;
 		FskCache.tree.xdbNode.construct.call(this);
 		nodes = this.nodes = [];
 		prototype = this.prototype;
-		while (this.cache) {
-			result = this.cache[this.master];
+		cache = this.cache;
+		while (cache) {
+			result = cache.textMasters;
+			// FIXME there has to be a way to select ONLY library and kbook, instead of taking entire cache and removing other sources
+			if (BookManagement_x50.options.IgnoreCards == 'true') {
+				for (i=0;i<cache.sources.length;i++) {
+					if (cache.sources[i].title != 'Library' && cache.sources[i].title != 'kbook') result = result.and(cache.sources[i].textMasters.not());
+				}
+			}
 			result = this.filter(result);
 			records = result.count();
 			if (!records) return;
@@ -174,7 +187,7 @@ tmp = function() {
 					result.sort_c(obj0);
 					for(i=0;i<3&&i<records;i++) {
 						node = nodes[i] = xs.newInstanceOf(prototype);
-						node.cache = this.cache;
+						node.cache = cache;
 						node.media = result.getRecord(i);
 					}
 					break;
@@ -186,7 +199,7 @@ tmp = function() {
 						record = Core.media.findMedia(history[i+j]);
 						if (record) {
 							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
-							node.cache = this.cache;
+							node.cache = cache;
 							node.media = record;
 						}
 					}
@@ -208,7 +221,7 @@ tmp = function() {
 						booklist = shuffle(booklist);
 						for (i=0;i<3&&i<booklist.length;i++) {
 							node = nodes[i] = xs.newInstanceOf(prototype);
-							node.cache = this.cache;
+							node.cache = cache;
 							node.media = result.getRecord(booklist[i]);
 						}
 					}
@@ -219,13 +232,13 @@ tmp = function() {
 					else if (kbook.model.currentPath) id = result.db.search('indexPath',kbook.model.currentPath).getRecord(0).id;
 					if (id) {
 						// Switch to collections cache
-						result2 = this.cache['playlistMasters'];
+						result2 = cache.playlistMasters;
 						result2.sort('indexPlaylist');
 						collections = result2.count();
 						if (BookManagement_x50.options.CurrentCollection) {
 							for (i=0;i<collections&&result2.getRecord(i).title!=BookManagement_x50.options.CurrentCollection;i++);
 							if (i==collections) i=0;
-							if (BooklistTrigger) i++;
+							else if (BooklistTrigger) i++;
 						}
 						while (i<collections) {
 							collection = result2.getRecord(i);
@@ -235,8 +248,8 @@ tmp = function() {
 								// Current book found in collection where it's not the last book
 								for (k=0;k<3&&j<books;j++,k++) {
 									node = nodes[k] = xs.newInstanceOf(prototype);
-									node.cache = this.cache;
-									node.media = this.cache.getRecord(collection.items[j].id);
+									node.cache = cache;
+									node.media = cache.getRecord(collection.items[j].id);
 								}
 								break;
 							}
@@ -256,7 +269,7 @@ tmp = function() {
 						if (record.id == id) i--;
 						else {
 							node = nodes[i] = xs.newInstanceOf(prototype);
-							node.cache = this.cache;
+							node.cache = cache;
 							node.media = record;
 						}
 					}
@@ -303,8 +316,12 @@ tmp = function() {
 		}],
 		optionDefs: [
 			{
+			groupTitle: L('CUSTOMIZE_HOME_MENU_BOOKLIST'),
+			groupIcon: 'FOLDER',
+			optionDefs: [
+			{
 				name: 'HomeMenuBooklist',
-				title: L('CUSTOMIZE_HOME_MENU_BOOKLIST'),
+				title: L('BOOK_SELECTION'),
 				defaultValue: 0,
 				values: [0, 1, 2, 3, 4],
 				valueTitles: {
@@ -315,6 +332,17 @@ tmp = function() {
 					4: L('RANDOM_BOOKS'),
 				}
 			},
+			{
+				name: 'IgnoreCards',
+				title: L('IGNORE_MEMORY_CARDS'),
+				defaultValue: 'false',
+				values: ['true','false'],
+				valueTitles: {
+					'true': L('VALUE_TRUE'),
+					'false': L('VALUE_FALSE')
+				}
+			},
+			]},
 			{
 			groupTitle: L('SHOW_READING_PROGRESS'),
 			groupIcon: 'FOLDER',
