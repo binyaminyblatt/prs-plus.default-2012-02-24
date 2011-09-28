@@ -106,6 +106,10 @@ tmp = function() {
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
 		oldthumbnaildrawRecord.apply(this, arguments);
 		var record, page, pages, message;
+		if (kbook.model.currentNode.title == 'deviceRoot') {
+			message = (BookManagement_x50.options.CurrentCollection) ? L('NEXT_IN') + ' ' + BookManagement_x50.options.CurrentCollection : BookManagement_x50.optionDefs[0].optionDefs[0].valueTitles[BookManagement_x50.options.HomeMenuBooklist];
+			parts.commentStyle.draw(this.getWindow(), message, 0, y-25, 597, this.textCommentHeight);
+		}
 		record = this.menu.getRecord(offset);
 		if (record) {
 			if (BookManagement_x50.options.ShowReadingProgressThumbs == 'true') {
@@ -116,10 +120,6 @@ tmp = function() {
 				message = ReadingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatThumbs);
 				parts.commentStyle.draw(this.getWindow(), message, x+this.marginWidth, y+this.marginHeight+this.designSpacingHeight+Math.min(this.getTh(height),this.thumbnailHeight)+this.textSeparation+this.textNameHeight+this.marginNameAndComment + 20, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
 			}
-		}
-		if (kbook.model.currentNode.title == 'deviceRoot') {
-			message = (BookManagement_x50.options.CurrentCollection) ? L('NEXT_IN') + ' ' + BookManagement_x50.options.CurrentCollection : BookManagement_x50.optionDefs[0].valueTitles[BookManagement_x50.options.HomeMenuBooklist];
-			parts.commentStyle.draw(this.getWindow(), message, 0, y-25, 597, this.textCommentHeight);
 		}
 	};
 	
