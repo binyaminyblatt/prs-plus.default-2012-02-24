@@ -24,6 +24,7 @@ tmp = function() {
 
 	// Localize	 	
 	var L = Core.lang.getLocalizer("ViewerSettings_x50");
+	var log = Core.log.getLogger('ViewerSettings_x50');
 
 	// Constants
 	var zoomlockold;
@@ -32,8 +33,6 @@ tmp = function() {
 	var oldonPageTapped = kbook.kbookPage.onPageTapped;
 	kbook.kbookPage.onPageTapped = function (cache, bookmark, highlight, markupIcon, link) {
 		if (ViewerSettings_x50.options.PageTurnBySingleTap == 'true' && !this.selection.length) {
-			var oldselectNoneWithoutUpdate = this.selectNoneWithoutUpdate;
-			this.selectNoneWithoutUpdate = function () { this.doNext() }
 			var olddoBlink = kbook.model.doBlink;
 			kbook.model.doBlink = function () {}
 			oldonPageTapped.apply(this, arguments);
@@ -42,6 +41,12 @@ tmp = function() {
 		else oldonPageTapped.apply(this, arguments);
 	}
 	
+	var oldselectNoneWithoutUpdate = kbook.kbookPage.selectNoneWithoutUpdate;
+	kbook.kbookPage.selectNoneWithoutUpdate = function () {
+		if (ViewerSettings_x50.options.PageTurnBySingleTap == 'true' && !this.selection.length) this.doNext();
+		else oldselectNoneWithoutUpdate.apply(this, arguments);
+	}
+			
 	// Enable panning in Zoom Lock mode
 	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
 	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {

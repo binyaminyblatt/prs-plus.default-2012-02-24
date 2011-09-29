@@ -14,19 +14,9 @@
 
 tmp = function() {
 
-	switch (Core.config.model) {
-	case "505":
-	case "300":
-	case "350":
-	case "650":
-	case "950":	
-		return;	
-		break;
-	default:       
-	}
-
 	// Localize	 	
 	var L = Core.lang.getLocalizer("ViewerSettings_x50");
+	var log = Core.log.getLogger('ViewerSettings_600');
 
 	// Constants
 
@@ -34,8 +24,6 @@ tmp = function() {
 	var oldonPageTapped = Fskin.kbookPage.readingTracker.tap;
 	Fskin.kbookPage.readingTracker.tap = function (target, x, y) {
 		if (ViewerSettings_600.options.PageTurnBySingleTap == 'true' && !this.selection.length) {
-			var oldselectNoneWithoutUpdate = this.selectNoneWithoutUpdate;
-			this.selectNoneWithoutUpdate = function () { this.doNext() }
 			var olddoBlink = kbook.model.doBlink;
 			kbook.model.doBlink = function () {}
 			oldonPageTapped.apply(this, arguments);
@@ -44,7 +32,13 @@ tmp = function() {
 		else oldonPageTapped.apply(this, arguments);
 	}
 	
-	// Enable scrolling in Zoom Lock mode
+	var oldselectNoneWithoutUpdate = Fskin.kbookPage.selectNoneWithoutUpdate;
+	Fskin.kbookPage.selectNoneWithoutUpdate = function () {
+		if (ViewerSettings_600.options.PageTurnBySingleTap == 'true' && !this.selection.length) this.doNext();
+		else oldselectNoneWithoutUpdate.apply(this, arguments);
+	}
+	
+	// Enable panning in Zoom Lock mode
 	var zoomlockold;
 	
 	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
