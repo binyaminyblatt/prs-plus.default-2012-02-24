@@ -21,21 +21,47 @@ tmp = function() {
 	// Constants
 
 	// Enable Page Turn by Single Tap
+	
+	var ReadingTapX, ReadingTapY;
+	var oldselectNoneWithoutUpdate = Fskin.kbookPage.selectNoneWithoutUpdate;
+	var olddoBlink = kbook.model.doBlink;
+	var doNothingFunc = function () {};
+	
+	var PageTurnByTap = function () {
+		switch (ViewerSettings_x50.options.PageTurnBySingleTap) {
+			case 'anywhere':
+				this.doNext();
+				return;
+			case 'leftright':
+				if (ReadingTapX < (this.width / 2)) this.doPrevious();
+				else this.doNext();
+				return;
+			case 'rightleft':
+				if (ReadingTapX < (this.width / 2)) this.doNext();
+				else this.doPrevious();
+				return;
+			case 'topbottom':
+				if (ReadingTapY < (this.height / 2)) this.doPrevious();
+				else this.doNext();
+				return;
+			case 'bottomtop':
+				if (ReadingTapY < (this.height / 2)) this.doNext();
+				else this.doPrevious();
+		}
+	};
+	
 	var oldonPageTapped = Fskin.kbookPage.readingTracker.tap;
 	Fskin.kbookPage.readingTracker.tap = function (target, x, y) {
-		if (ViewerSettings_600.options.PageTurnBySingleTap == 'true' && !this.selection.length) {
-			var olddoBlink = kbook.model.doBlink;
-			kbook.model.doBlink = function () {}
+		if (ViewerSettings_600.options.PageTurnBySingleTap != 'false' && !this.selection.length) {
+			ReadingTapX = x;
+			ReadingTapY = y;
+			this.selectNoneWithoutUpdate = PageTurnByTap;
+			kbook.model.doBlink = doNothingFunc;
 			oldonPageTapped.apply(this, arguments);
+			this.selectNoneWithoutUpdate = oldselectNoneWithoutUpdate;
 			kbook.model.doBlink = olddoBlink;
 		}
 		else oldonPageTapped.apply(this, arguments);
-	}
-	
-	var oldselectNoneWithoutUpdate = Fskin.kbookPage.selectNoneWithoutUpdate;
-	Fskin.kbookPage.selectNoneWithoutUpdate = function () {
-		if (ViewerSettings_600.options.PageTurnBySingleTap == 'true' && !this.selection.length) this.doNext();
-		else oldselectNoneWithoutUpdate.apply(this, arguments);
 	}
 	
 	// Enable panning in Zoom Lock mode
@@ -104,10 +130,14 @@ tmp = function() {
 				name: "PageTurnBySingleTap",
 				title: L("PAGE_TURN_BY_SINGLE_TAP"),
 				defaultValue: "false",
-				values: ["true", "false"],
+				values: ["false", "anywhere", "leftright", "rightleft", "topbottom", "bottomtop"],
 				valueTitles: {
-					"true": L("VALUE_TRUE"),
-					"false": L("VALUE_FALSE")
+					"false": L("VALUE_FALSE"),
+					"anywhere": L("ANYWHERE_NEXT"),
+					"leftright": L("LEFT_PREVIOUS_RIGHT_NEXT"),
+					"rightleft": L("RIGHT_PREVIOUS_LEFT_NEXT"),
+					"topbottom": L("TOP_PREVIOUS_BOTTOM_NEXT"),
+					"bottomtop": L("BOTTOM_PREVIOUS_TOP_NEXT"),
 				}	
 			},
 			{
