@@ -18,6 +18,7 @@
 //	2011-09-04 Mark Nord - added some appropriate icons (avoid "SEARCH" / #39 as this will break the Options-Sub-Menu)
 //	2011-09-08 quisvir - Renamed scrolling (in zoom lock) to panning
 //	2011-09-13 quisvir - Added input dialog for custom contrast & brightness values
+//	2011-09-29 quisvir - Added Page Turn by Single Tap
 
 tmp = function() {
 
@@ -26,6 +27,20 @@ tmp = function() {
 
 	// Constants
 	var zoomlockold;
+	
+	// Enable Page Turn by Single Tap
+	var oldonPageTapped = kbook.kbookPage.onPageTapped;
+	kbook.kbookPage.onPageTapped = function (cache, bookmark, highlight, markupIcon, link) {
+		if (ViewerSettings_x50.options.PageTurnBySingleTap == 'true' && !this.selection.length) {
+			var oldselectNoneWithoutUpdate = this.selectNoneWithoutUpdate;
+			this.selectNoneWithoutUpdate = function () { this.doNext() }
+			var olddoBlink = kbook.model.doBlink;
+			kbook.model.doBlink = function () {}
+			oldonPageTapped.apply(this, arguments);
+			kbook.model.doBlink = olddoBlink;
+		}
+		else oldonPageTapped.apply(this, arguments);
+	}
 	
 	// Enable panning in Zoom Lock mode
 	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
@@ -341,6 +356,16 @@ tmp = function() {
 				name: "NoGesturePageTurn",
 				title: L("OPTION_NOGESTURE"),
 				icon: "GESTURE",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}	
+			},
+			{
+				name: "PageTurnBySingleTap",
+				title: L("PAGE_TURN_BY_SINGLE_TAP"),
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {

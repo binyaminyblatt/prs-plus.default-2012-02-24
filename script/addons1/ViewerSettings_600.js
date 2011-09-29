@@ -10,6 +10,7 @@
 //  2011-09-01 Ben Chenoweth - Used appropriate icons
 //	2011-09-02 quisvir - Added option to enable scrolling in Zoom Lock mode
 //	2011-09-08 quisvir - Renamed scrolling (in zoom lock) to panning
+//	2011-09-29 quisvir - Added Page Turn by Single Tap
 
 tmp = function() {
 
@@ -29,6 +30,20 @@ tmp = function() {
 
 	// Constants
 
+	// Enable Page Turn by Single Tap
+	var oldonPageTapped = Fskin.kbookPage.readingTracker.tap;
+	Fskin.kbookPage.readingTracker.tap = function (target, x, y) {
+		if (ViewerSettings_600.options.PageTurnBySingleTap == 'true' && !this.selection.length) {
+			var oldselectNoneWithoutUpdate = this.selectNoneWithoutUpdate;
+			this.selectNoneWithoutUpdate = function () { this.doNext() }
+			var olddoBlink = kbook.model.doBlink;
+			kbook.model.doBlink = function () {}
+			oldonPageTapped.apply(this, arguments);
+			kbook.model.doBlink = olddoBlink;
+		}
+		else oldonPageTapped.apply(this, arguments);
+	}
+	
 	// Enable scrolling in Zoom Lock mode
 	var zoomlockold;
 	
@@ -84,6 +99,16 @@ tmp = function() {
 				name: "NoGesturePageTurn",
 				title: L("OPTION_NOGESTURE"),
 				icon: "GESTURE",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}	
+			},
+			{
+				name: "PageTurnBySingleTap",
+				title: L("PAGE_TURN_BY_SINGLE_TAP"),
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
