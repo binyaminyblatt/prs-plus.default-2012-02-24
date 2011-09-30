@@ -503,16 +503,6 @@ var tmp = function () {
 		setSoValue(target.EVENTS_DIALOG.btn_Cancel, 'text', STR_CANCEL);
 		setSoValue(target.EVENTS_DIALOG.btn_Delete, 'text', STR_DELETE);
 		
-		// fix for Prev/Next month for 300
-		if (!kbook.simEnviro) {
-			if (kbook.autoRunRoot.model=="300") {
-				this.nonTouch2.setValue("");
-				this.nonTouch5.setValue("");
-				this.nonTouch3.setValue("[Hold Right] +" + STR_MONTH);
-				this.nonTouch6.setValue("[Hold Left] -" + STR_MONTH);
-			}			
-		}
-		
 		// look for custom keyboard
 		if (FileSystem.getFileInfo(customKbdPath)) {
 			customKbd=true;
