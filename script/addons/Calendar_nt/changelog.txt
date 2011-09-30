@@ -1,5 +1,5 @@
-Calendar Changelog
-=========
+Calendar_nt Changelog
+============
 Initial version: 2011-07-14
 2011-07-15 Ben Chenoweth - Fixed start-up script; resized "Today" button.
 2011-07-17 Ben Chenoweth - Improved layout and event icons; added "Anniversary"; increased event font size; changed event file-format; non-Touch cursor now moves.
@@ -29,4 +29,4 @@ Initial version: 2011-07-14
 2011-09-24 Ben Chenoweth - Minor changes to some label/button sizes to accommodate translation strings; moved year to title bar.
 2011-09-25 Ben Chenoweth - Non-touch: pressing mark for 'today' now moves to actual day.
 2011-09-27 Ben Chenoweth - Code-cleaning; separate changelog.
-2011-09-29 Ben Chenoweth - Expanded event popup and added more keys to keyboard; added two more keyboards and a custom keyboard option.
+2011-09-30 Ben Chenoweth - Code split: this version for non-touch readers; now uses customisable keyboard file..

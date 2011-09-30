@@ -41,6 +41,7 @@ History:
 		<exclude name="ViewerSettings_x50.js" />
 		<exclude name="ViewerSettings_600.js" />
 		<exclude name="BookManagement_x50.js" />
+		<exclude name="Calendar.js" />
 	</patternset>
 	<patternset id="addons_600_x50">
 		<include name="**/*" />
@@ -52,6 +53,7 @@ History:
 		<exclude name="StandardActions.js" />
 		<exclude name="TextEncoding.js" />
 		<exclude name="TextScale.js" />
+		<exclude name="Calendar_nt.js" />
 	</patternset>
 	<patternset id="addons_300">
 		<patternset refid="addons_300_505" />
