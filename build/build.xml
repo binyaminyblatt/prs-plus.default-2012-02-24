@@ -2,7 +2,8 @@
 Build script for PRS+ project
 
 History:
-2011-03-01 kartu - Rewritten from scratch
+	2011-03-01 kartu - Rewritten from scratch
+	2011-09-30 kartu - Added Unix support
 -->
 <project default="buildAll">
 	<!--======================================================================== 
@@ -79,6 +80,15 @@ History:
 		<patternset refid="addons_600_x50" />
 		<exclude name="ViewerSettings_600.js" />
 	</patternset>
+	
+	<!--======================================================================== 
+		Init tools
+	========================================================================-->
+	<chmod perm="+x">
+		<fileset file="tools/mkcramfs" />
+		<fileset file="tools/cramfsck" />
+	</chmod>
+
 	
 	<!--======================================================================== 
 		Tasks
@@ -266,6 +276,10 @@ History:
 		<attrib readonly="true" verbose="true">
 			<fileset dir="../firmware/binaries" />
 		</attrib>
+		<!-- Exec flag on linux -->
+		<chmod perm="+x">
+			<fileset dir="../firmware/binaries" />
+		</chmod>
 		
 		<echo>Copying binaries for PRS-${model}</echo>
 		<copy todir="${prsp.dir}" verbose="true">
@@ -372,8 +386,8 @@ History:
 				<arg value="@{file}" />
 			</exec>
 			<var name="diff" unset="true" />
-			<fileset dir="tmp/test.cramfs" id="diff">
-				<different targetdir="@{folder}" ignoreFileTimes="true" />
+			<fileset dir="@{folder}" id="diff">
+				<different targetdir="tmp/test.cramfs" ignoreFileTimes="true" />
 				<exclude name="**/*.lnk" />
 			</fileset>
 			<foreach param="error" target="test.cramfs.error">
