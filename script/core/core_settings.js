@@ -14,6 +14,7 @@
 //	2010-11-16 kartu - Added short title to the node (for small buttons on readers with touchscreen)
 //	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
 //	2011-08-23 Mark Nord - added PRS+ advanced Settings Group -> 11th Group -> 2 Settings Pages -> reorganize PRS+ Settings?
+//	2011-10-01 quisvir - Added guideArea property for option and group descriptions
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -206,7 +207,8 @@ tmp = function() {
 					comment: optionDef.groupComment ? optionDef.groupComment : function () {
 						return Core.lang.LX("SETTINGS", optionDef.optionDefs.length);
 					},
-					icon: optionDef.groupIcon
+					icon: optionDef.groupIcon,
+					guideArea: optionDef.description
 			});
 			parent.nodes.push(node);
 
@@ -227,7 +229,8 @@ tmp = function() {
 			node = Core.ui.createContainerNode({
 					parent: parent,
 					title: optionDef.title,
-					icon: optionDef.icon
+					icon: optionDef.icon,
+					guideArea: optionDef.description
 			});
 			parent.nodes.push(node);
 			parent = node;

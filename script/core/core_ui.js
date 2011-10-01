@@ -22,7 +22,7 @@
 //	2011-04-24 kartu - Changed showMsg to honor EOLs 
 //	2011-06-18 kartu - Fixed "update() wasn't called by container mode"
 //	2011-06-26 kartu - Again fixed "update() wasn't called by container mode"
-//
+//	2011-10-01 quisvir - Added guideArea property for containers
 
 try {
 	var doSetNodeIcon = function (node, icon) {
@@ -76,6 +76,7 @@ try {
 				obj._mycomment = "";
 			}
 			doSetNodeIcon(obj, arg.icon);
+			if (arg.hasOwnProperty("guideArea")) {obj.guideArea = arg.guideArea;}
 			if (arg.hasOwnProperty("separator")) {obj.separator = arg.separator;}
 			if (arg.hasOwnProperty("construct")) {obj.construct = arg.construct;}
 			if (arg.hasOwnProperty("destruct")) {obj.destruct = arg.destruct;}
