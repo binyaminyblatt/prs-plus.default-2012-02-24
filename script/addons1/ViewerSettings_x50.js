@@ -19,6 +19,7 @@
 //	2011-09-08 quisvir - Renamed scrolling (in zoom lock) to panning
 //	2011-09-13 quisvir - Added input dialog for custom contrast & brightness values
 //	2011-09-29 quisvir - Added Page Turn by Single Tap
+//	2011-10-01 quisvir - Close reading popup menu (dict etc) and cancel selection by tapping page
 
 tmp = function() {
 
@@ -27,79 +28,92 @@ tmp = function() {
 	var log = Core.log.getLogger('ViewerSettings_x50');
 
 	// Constants
-	var zoomlockold;
+	var zoomLockOld;
+	
+	// Close reading popup menu (dict etc) and cancel selection by tapping page
+	pageShortcutOverlayModel.doTap = function (x, y) {
+		if (kbook.model.doSomething('checkTap', x, y)) kbook.model.doSomething('doTap', x, y);
+		else if (ViewerSettings_x50.options.ClosePopupByPageTap == 'true') kbook.model.doSomething('selectNone');
+		else {
+			kbook.model.doBlink();
+			return;
+		}
+		this.doCloseShortcut();
+	};
 	
 	// Enable Page Turn by Single Tap
-	var ReadingTapX, ReadingTapY;
-	var oldselectNoneWithoutUpdate = kbook.kbookPage.selectNoneWithoutUpdate;
-	var olddoBlink = kbook.model.doBlink;
+	var readingTapX, readingTapY;
+	var oldSelectNoneWithoutUpdate = kbook.kbookPage.selectNoneWithoutUpdate;
+	var oldDoBlink = kbook.model.doBlink;
 	var doNothingFunc = function () {};
 	
-	var PageTurnByTap = function () {
+	// First get tap coordinates from reading tracker
+	var oldReadingTrackerTap = kbook.kbookPage.readingTracker.tap;
+	kbook.kbookPage.readingTracker.tap = function (target, x, y) {
+		readingTapX = x;
+		readingTapY = y;
+		oldReadingTrackerTap.apply(this, arguments);
+	};
+	
+	// Call pageTurnByTap when tap is not a link, highlight etc.
+	var oldOnPageTapped = kbook.kbookPage.onPageTapped;
+	kbook.kbookPage.onPageTapped = function (cache, bookmark, highlight, markupIcon, link) {
+		if (ViewerSettings_x50.options.PageTurnBySingleTap != 'false' && !this.selection.length) {
+			this.selectNoneWithoutUpdate = pageTurnByTap;
+			kbook.model.doBlink = doNothingFunc;
+			oldOnPageTapped.apply(this, arguments);
+			this.selectNoneWithoutUpdate = oldSelectNoneWithoutUpdate;
+			kbook.model.doBlink = oldDoBlink;
+		} else oldOnPageTapped.apply(this, arguments);
+	};
+	
+	// Determine what to do with tap based on preference
+	var pageTurnByTap = function () {
 		switch (ViewerSettings_x50.options.PageTurnBySingleTap) {
 			case 'anywhere':
 				this.doNext();
 				return;
 			case 'leftright':
-				if (ReadingTapX < (this.width / 2)) this.doPrevious();
+				if (readingTapX < (this.width / 2)) this.doPrevious();
 				else this.doNext();
 				return;
 			case 'rightleft':
-				if (ReadingTapX < (this.width / 2)) this.doNext();
+				if (readingTapX < (this.width / 2)) this.doNext();
 				else this.doPrevious();
 				return;
 			case 'topbottom':
-				if (ReadingTapY < (this.height / 2)) this.doPrevious();
+				if (readingTapY < (this.height / 2)) this.doPrevious();
 				else this.doNext();
 				return;
 			case 'bottomtop':
-				if (ReadingTapY < (this.height / 2)) this.doNext();
+				if (readingTapY < (this.height / 2)) this.doNext();
 				else this.doPrevious();
 		}
 	};
-	
-	var oldonPageTapped = kbook.kbookPage.onPageTapped;
-	kbook.kbookPage.onPageTapped = function (cache, bookmark, highlight, markupIcon, link) {
-		if (ViewerSettings_x50.options.PageTurnBySingleTap != 'false' && !this.selection.length) {
-			this.selectNoneWithoutUpdate = PageTurnByTap;
-			kbook.model.doBlink = doNothingFunc;
-			oldonPageTapped.apply(this, arguments);
-			this.selectNoneWithoutUpdate = oldselectNoneWithoutUpdate;
-			kbook.model.doBlink = olddoBlink;
-		}
-		else oldonPageTapped.apply(this, arguments);
-	};
-	
-	var oldreadingTrackerTap = kbook.kbookPage.readingTracker.tap;
-	kbook.kbookPage.readingTracker.tap = function (target, x, y) {
-		ReadingTapX = x;
-		ReadingTapY = y;
-		oldreadingTrackerTap.apply(this, arguments);
-	};
 			
 	// Enable panning in Zoom Lock mode
-	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
+	var oldZoomOverlayDoDrag = Fskin.kbookZoomOverlay.doDrag;
 	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
-		zoomlockold = this.isZoomLock;
-		if (ViewerSettings_x50.options.ZoomLockPanning == "true" && zoomlockold) this.isZoomLock = false;
-		oldZoomdoDrag.apply(this, arguments);
-		this.isZoomLock = zoomlockold;
+		zoomLockOld = this.isZoomLock;
+		if (ViewerSettings_x50.options.ZoomLockPanning == "true" && zoomLockOld) this.isZoomLock = false;
+		oldZoomOverlayDoDrag.apply(this, arguments);
+		this.isZoomLock = zoomLockOld;
 	};
 	
 	var oldZoomOverlaydone = Fskin.kbookZoomOverlay.done;
 	Fskin.kbookZoomOverlay.done = function () {
-		if (zoomlockold) this.isZoomLock = true;
+		if (zoomLockOld) this.isZoomLock = true;
 		oldZoomOverlaydone.apply(this, arguments);
-		this.isZoomlock = zoomlockold;
+		this.isZoomlock = zoomLockOld;
 	};
 
 	Fskin.kbookZoomOverlay.canLine = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_x50.options.ZoomLockPanning != "true") return true;
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_x50.options.ZoomLockPanning == "false") return true;
 		else return false;
 	};
 
 	Fskin.kbookZoomOverlay.canLineAndHold = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_x50.options.ZoomLockPanning != "true") return true;
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_x50.options.ZoomLockPanning == "false") return true;
 		else return false;
 	};
 	
@@ -134,8 +148,7 @@ tmp = function() {
 		if (ViewerSettings_x50.options.BindToRestoreButton == "true") {
 			this.org_slider_1 = ViewerSettings_x50.options.CustomContrast;
 			this.org_slider_2 = ViewerSettings_x50.options.CustomBrightness;
-		}
-		else {
+		} else {
 			this.org_slider_1 = contrast;
 			this.org_slider_2 = brightness;
 		}
@@ -144,14 +157,12 @@ tmp = function() {
 	
 	// overload kbook.kbookPage.doSelectWord called by kbook.kbookPage.readingTracker.doubleTap to disable Dictionary
 	var oldDoSelectWord = kbook.kbookPage.doSelectWord;
-	var doSelectWord = function (){
-		if (ViewerSettings_x50.options.NoDictionary === "false") {
-			return oldDoSelectWord.apply(this, arguments);
-		}
+	kbook.kbookPage.doSelectWord = function () {
+		if (ViewerSettings_x50.options.NoDictionary === "false") return oldDoSelectWord.apply(this, arguments);
 	}
 
 	// overload kbookPage.draw to peek into & patch
-	var draw = function (event) {
+	kbook.kbookPage.draw = function (event) {
 		var data, window, x, y, width, height, cache, naturalBounds, range, ratioX, ratioY, rct, state, backup, bitmap, cutout, u, xMin, xSize, yMin, ySize, size, minOverlap, maxOverlap, yMinN, yMaxN, parts, j, half, mark1, mark2, span, bounds, c, minSpan, maxSpan, i, bound, bound_y, update;
 		minOverlap =[];
 		maxOverlap =[];
@@ -349,7 +360,7 @@ tmp = function() {
 			this.monochrome.setFrameInfo(this.getCurrentID(), this.mapPage(this.getPage()), this.getPageOffset(), this.getPart(), this.yOffset);
 		}
 	};
-
+	
 	var ViewerSettings_x50 = {
 		name: "ViewerSettings_x50",
 		settingsGroup: "viewer", // "advanced",
@@ -375,7 +386,17 @@ tmp = function() {
 					"true": L("VALUE_TRUE"),
 					"false": L("VALUE_FALSE")
 				}
-			},	
+			},
+			{
+				name: "ClosePopupByPageTap",
+				title: L("CLOSE_POPUP_BY_PAGE_TAP"),
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}
+			},
 			{
 				name: "BorderColor",
 				title: L("OPTION_BORDERCOLOR"),
@@ -461,16 +482,11 @@ tmp = function() {
 		* @constructor
 		*/
 		onInit: function () {
-			kbook.kbookPage.draw = draw;
-			kbook.kbookPage.doSelectWord = doSelectWord;
 			this.onSettingsChanged();
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			kbook.kbookPage.canLine = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
-			if (ViewerSettings_x50.options.BorderColor === 'grey') 
-				{kbook.kbookPage.borderColor=Color.rgb.parse('#6D6D6D')
-			} else { kbook.kbookPage.borderColor=Color.rgb.parse('white')
-			}
+			kbook.kbookPage.borderColor = (ViewerSettings_x50.options.BorderColor === 'grey') ? Color.rgb.parse('#6D6D6D') : Color.rgb.parse('white');
 			if (propertyName == "CustomContrast" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_CONTRAST") + ':', '', 'doContrastChange', '', true, 'number');
 			if (propertyName == "CustomBrightness" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_BRIGHTNESS") + ':', '', 'doBrightnessChange', '', true, 'number');
 		},
@@ -480,13 +496,9 @@ tmp = function() {
 			group: "Utils",
 			icon: "SETTINGS",
 			action: function () {
-				if (ViewerSettings_x50.options.NoGesturePageTurn === "true") {
-					ViewerSettings_x50.options.NoGesturePageTurn = "false";
-				}
-				else {
-					ViewerSettings_x50.options.NoGesturePageTurn = "true";
-				}
-			kbook.kbookPage.canLine = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+				ViewerSettings_x50.options.NoGesturePageTurn = (ViewerSettings_x50.options.NoGesturePageTurn == 'true') ? 'false' : 'true';
+				kbook.kbookPage.canLine = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+				Core.ui.showMsg(L("OPTION_NOGESTURE") + ': ' + ((ViewerSettings_x50.options.NoGesturePageTurn == 'true')?L("VALUE_TRUE"):L("VALUE_FALSE")));
 			}
 		}] 	
 	};

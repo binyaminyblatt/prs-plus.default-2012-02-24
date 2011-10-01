@@ -11,6 +11,7 @@
 //	2011-09-02 quisvir - Added option to enable scrolling in Zoom Lock mode
 //	2011-09-08 quisvir - Renamed scrolling (in zoom lock) to panning
 //	2011-09-29 quisvir - Added Page Turn by Single Tap
+//	2011-10-01 quisvir - Close reading popup menu (dict etc) and cancel selection by tapping page
 
 tmp = function() {
 
@@ -20,84 +21,93 @@ tmp = function() {
 
 	// Constants
 
-	// Enable Page Turn by Single Tap
+	// Close reading popup menu (dict etc) and cancel selection by tapping page
+	pageShortcutOverlayModel.doTap = function (x, y) {
+		if (kbook.model.doSomething('checkTap', x, y)) kbook.model.doSomething('doTap', x, y);
+		else if (ViewerSettings_x50.options.ClosePopupByPageTap == 'true') kbook.model.doSomething('selectNone');
+		else {
+			kbook.model.doBlink();
+			return;
+		}
+		this.doCloseShortcut();
+	};
 	
-	var ReadingTapX, ReadingTapY;
-	var oldselectNoneWithoutUpdate = Fskin.kbookPage.selectNoneWithoutUpdate;
-	var olddoBlink = kbook.model.doBlink;
+	// Enable Page Turn by Single Tap
+	var readingTapX, readingTapY;
+	var oldSelectNoneWithoutUpdate = Fskin.kbookPage.selectNoneWithoutUpdate;
+	var oldDoBlink = kbook.model.doBlink;
 	var doNothingFunc = function () {};
 	
+	// Call PageTurnByTap when tap is not a link, highlight etc.
+	var oldOnPageTapped = Fskin.kbookPage.readingTracker.tap;
+	Fskin.kbookPage.readingTracker.tap = function (target, x, y) {
+		if (ViewerSettings_600.options.PageTurnBySingleTap != 'false' && !this.selection.length) {
+			readingTapX = x;
+			readingTapY = y;
+			this.selectNoneWithoutUpdate = PageTurnByTap;
+			kbook.model.doBlink = doNothingFunc;
+			oldOnPageTapped.apply(this, arguments);
+			this.selectNoneWithoutUpdate = oldSelectNoneWithoutUpdate;
+			kbook.model.doBlink = oldDoBlink;
+		}
+		else oldOnPageTapped.apply(this, arguments);
+	}
+	
+	// Determine what to do with tap based on preference
 	var PageTurnByTap = function () {
 		switch (ViewerSettings_x50.options.PageTurnBySingleTap) {
 			case 'anywhere':
 				this.doNext();
 				return;
 			case 'leftright':
-				if (ReadingTapX < (this.width / 2)) this.doPrevious();
+				if (readingTapX < (this.width / 2)) this.doPrevious();
 				else this.doNext();
 				return;
 			case 'rightleft':
-				if (ReadingTapX < (this.width / 2)) this.doNext();
+				if (readingTapX < (this.width / 2)) this.doNext();
 				else this.doPrevious();
 				return;
 			case 'topbottom':
-				if (ReadingTapY < (this.height / 2)) this.doPrevious();
+				if (readingTapY < (this.height / 2)) this.doPrevious();
 				else this.doNext();
 				return;
 			case 'bottomtop':
-				if (ReadingTapY < (this.height / 2)) this.doNext();
+				if (readingTapY < (this.height / 2)) this.doNext();
 				else this.doPrevious();
 		}
 	};
 	
-	var oldonPageTapped = Fskin.kbookPage.readingTracker.tap;
-	Fskin.kbookPage.readingTracker.tap = function (target, x, y) {
-		if (ViewerSettings_600.options.PageTurnBySingleTap != 'false' && !this.selection.length) {
-			ReadingTapX = x;
-			ReadingTapY = y;
-			this.selectNoneWithoutUpdate = PageTurnByTap;
-			kbook.model.doBlink = doNothingFunc;
-			oldonPageTapped.apply(this, arguments);
-			this.selectNoneWithoutUpdate = oldselectNoneWithoutUpdate;
-			kbook.model.doBlink = olddoBlink;
-		}
-		else oldonPageTapped.apply(this, arguments);
-	}
-	
 	// Enable panning in Zoom Lock mode
-	var zoomlockold;
+	var zoomLockOld;
 	
 	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
 	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
-		zoomlockold = this.isZoomLock;
-		if (Core.addonByName.ViewerSettings_600.options.ZoomLockPanning == "true" && zoomlockold) { this.isZoomLock = false; }
+		zoomLockOld = this.isZoomLock;
+		if (ViewerSettings_600.options.ZoomLockPanning == "true" && zoomLockOld) this.isZoomLock = false;
 		oldZoomdoDrag.apply(this, arguments);
-		this.isZoomLock = zoomlockold;
+		this.isZoomLock = zoomLockOld;
 	}
 	
 	var oldZoomOverlaydone = Fskin.kbookZoomOverlay.done;
 	Fskin.kbookZoomOverlay.done = function () {
-		if (zoomlockold) { this.isZoomLock = true; }
+		if (zoomLockOld) this.isZoomLock = true;
 		oldZoomOverlaydone.apply(this, arguments);
-		this.isZoomlock = zoomlockold;
+		this.isZoomlock = zoomLockOld;
 	};
 
 	Fskin.kbookZoomOverlay.canLine = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_600.options.ZoomLockPanning != "true") { return true; }
-		else { return false; }
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_600.options.ZoomLockPanning != "true") return true;
+		else return false;
 	};
 
 	Fskin.kbookZoomOverlay.canLineAndHold = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && Core.addonByName.ViewerSettings_600.options.ZoomLockPanning != "true") { return true; }
-		else { return false; }
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_600.options.ZoomLockPanning != "true") return true;
+		else return false;
 	};
 
 	// overload Fskin.kbookPage.doSelectWord called by Fskin.kbookPage.readingTracker.doubleTap to disable Dictionary
-	var oldDoSelectWord = Fskin.kbookPage.doSelectWord;
-	var doSelectWord = function (){
-		if (Core.addonByName.ViewerSettings_600.options.NoDictionary === "false") {
-			return oldDoSelectWord.apply(this, arguments);
-		}
+	Fskin.kbookPage.doSelectWord = function () {
+		if (ViewerSettings_600.options.NoDictionary === "false") return oldDoSelectWord.apply(this, arguments);
 	}
 
 	var ViewerSettings_600 = {
@@ -108,6 +118,16 @@ tmp = function() {
 				name: "NoDictionary",
 				title: L("OPTION_NODICT"),
 				icon: "NODICTIONARY",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}
+			},
+			{
+				name: "ClosePopupByPageTap",
+				title: L("CLOSE_POPUP_BY_PAGE_TAP"),
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
@@ -156,7 +176,6 @@ tmp = function() {
 		* @constructor
 		*/
 		onInit: function () {
-			Fskin.kbookPage.doSelectWord = doSelectWord;
 			this.onSettingsChanged();
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
@@ -168,13 +187,9 @@ tmp = function() {
 			group: "Utils",
 			icon: "GESTURE",
 			action: function () {
-				if (ViewerSettings_600.options.NoGesturePageTurn === "true") {
-					ViewerSettings_600.options.NoGesturePageTurn = "false";
-				}
-				else {
-					ViewerSettings_600.options.NoGesturePageTurn = "true";
-				}
-				Fskin.kbookPage.canLine = (ViewerSettings_600.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+				ViewerSettings_600.options.NoGesturePageTurn = (ViewerSettings_600.options.NoGesturePageTurn == 'true') ? 'false' : 'true';
+				kbook.kbookPage.canLine = (ViewerSettings_600.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+				Core.ui.showMsg(L("OPTION_NOGESTURE") + ': ' + ((ViewerSettings_600.options.NoGesturePageTurn == 'true')?L("VALUE_TRUE"):L("VALUE_FALSE")));
 			}
 		}] 	
 	};
