@@ -30,18 +30,18 @@ tmp = function() {
 	var L = Core.lang.getLocalizer('BookManagement');
 	var log = Core.log.getLogger('BookManagement');
 	
-	var BookChanged = false;
-	var BooklistTrigger = false;
+	var bookChanged = false;
+	var booklistTrigger = false;
 	
 	// Keep new flag as is on opening book
-	var oldonChangeBook = kbook.model.onChangeBook;
+	var oldOnChangeBook = kbook.model.onChangeBook;
 	kbook.model.onChangeBook = function (node) {
-		if (!this.currentBook) oldonChangeBook.apply(this, arguments);
+		if (!this.currentBook) oldOnChangeBook.apply(this, arguments);
 		else {
 			var newflag = node.opened;
-			oldonChangeBook.apply(this, arguments);
+			oldOnChangeBook.apply(this, arguments);
 			if (BookManagement_x50.options.ManualNewFlag == 'true') node.opened = newflag;
-			BookChanged = true;
+			bookChanged = true;
 			BookManagement_x50.options.CurrentCollection = '';
 		}
 	}
@@ -66,9 +66,9 @@ tmp = function() {
 	}
 
 	// Hide default collections
-	var oldkbookPlaylistNode = kbook.root.kbookPlaylistNode.construct;
+	var oldKbookPlaylistNode = kbook.root.kbookPlaylistNode.construct;
 	kbook.root.kbookPlaylistNode.construct = function () {
-		oldkbookPlaylistNode.apply(this, arguments);
+		oldKbookPlaylistNode.apply(this, arguments);
 		if (BookManagement_x50.options.HideAddNewCollection == 'true') {
 			this.nodes.splice(this.purchasedNodeIndex + 1,1);
 			this.constNodesCount--;
@@ -96,15 +96,15 @@ tmp = function() {
 			var page = this.currentBook.media.ext.history[0].page + 1;
 			if (page < Number(BookManagement_x50.options.OnlyShowFromPage)) return node.nodes[0].lastReadDate;
 			var pages = this.currentBook.media.ext.history[0].pages;
-			return ReadingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatCurrent);
+			return readingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatCurrent);
 		}
 		else return node.nodes[0].lastReadDate;
 	}
 	
 	// Draw reading progress below thumbnails (both home screen and book lists)
-	var oldthumbnaildrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
+	var oldThumbnaildrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
-		oldthumbnaildrawRecord.apply(this, arguments);
+		oldThumbnaildrawRecord.apply(this, arguments);
 		var record, page, pages, message;
 		if (kbook.model.currentNode.title == 'deviceRoot') {
 			message = (BookManagement_x50.options.CurrentCollection) ? L('NEXT_IN') + ' ' + BookManagement_x50.options.CurrentCollection : BookManagement_x50.optionDefs[0].optionDefs[0].valueTitles[BookManagement_x50.options.HomeMenuBooklist];
@@ -117,14 +117,14 @@ tmp = function() {
 				page = record.media.ext.history[0].page + 1;
 				if (page < Number(BookManagement_x50.options.OnlyShowFromPage)) return;
 				pages = record.media.ext.history[0].pages;
-				message = ReadingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatThumbs);
+				message = readingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatThumbs);
 				parts.commentStyle.draw(this.getWindow(), message, x+this.marginWidth, this.getNy(this.getTy(y),Math.min(this.getTh(height),this.thumbnailHeight))+this.textNameHeight+this.marginNameAndComment + 23, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
 			}
 		}
 	};
 	
 	// Format reading progress comment
-	ReadingProgressComment = function (page, pages, format) {
+	readingProgressComment = function (page, pages, format) {
 		switch (format) {
 			case '1': return L('PAGE') + ' ' + page + ' ' + L('OF') + ' ' + pages;
 			case '2': return L('PAGE') + ' ' + page + ' ' + L('OF') + ' ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
@@ -138,26 +138,26 @@ tmp = function() {
 	}
 
 	// Code to randomize array from jsfromhell.com
-	shuffle = function (v) {
+	arrayShuffle = function (v) {
 		for (var j, x, i = v.length; i; j = parseInt(Math.random() * i), x = v[--i], v[i] = v[j], v[j] = x);
 		return v;
 	};
 
 	// Update deviceroot on enter
-	var onEnterDeviceRoot = kbook.model.onEnterDeviceRoot;
+	var oldOnEnterDeviceRoot = kbook.model.onEnterDeviceRoot;
 	kbook.model.onEnterDeviceRoot = function () {
-		onEnterDeviceRoot.apply(this, arguments);
-		if (BookManagement_x50.options.HomeMenuBooklist && BookChanged) {
+		oldOnEnterDeviceRoot.apply(this, arguments);
+		if (BookManagement_x50.options.HomeMenuBooklist && bookChanged) {
 			kbook.root.nodes[0].nodes[6].update(kbook.model);
-			BookChanged = false;
+			bookChanged = false;
 		}
 	}
 	
 	// Update 'next in collection' booklist after collection edit
-	var oldfinishCollectionEdit = kbook.model.finishCollectionEdit;
+	var oldFinishCollectionEdit = kbook.model.finishCollectionEdit;
 	kbook.model.finishCollectionEdit = function () {
-		oldfinishCollectionEdit.apply(this, arguments);
-		if (BookManagement_x50.options.HomeMenuBooklist == 3) BookChanged = true; // TODO update only if current collection is changed
+		oldFinishCollectionEdit.apply(this, arguments);
+		if (BookManagement_x50.options.HomeMenuBooklist == 3) bookChanged = true; // TODO update only if current collection is changed
 	}
 	
 	// Customize book list in home menu
@@ -192,7 +192,7 @@ tmp = function() {
 					j = (kbook.model.currentBook || kbook.model.currentPath) ? 1 : 0;
 					for (i=0;nodes.length<3&&i+j<history.length;i++) {
 						record = Core.media.findMedia(history[i+j]);
-						if (record) {
+						if (record && !record.periodicalName) {
 							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 							node.cache = cache;
 							node.media = record;
@@ -213,7 +213,7 @@ tmp = function() {
 							if (record.author == author && record.id != id) booklist.push(i);
 						}
 						// Shuffle book list and add first 3 items to nodes
-						booklist = shuffle(booklist);
+						booklist = arrayShuffle(booklist);
 						for (i=0;i<3&&i<booklist.length;i++) {
 							node = nodes[i] = xs.newInstanceOf(prototype);
 							node.cache = cache;
@@ -233,7 +233,7 @@ tmp = function() {
 						if (BookManagement_x50.options.CurrentCollection) {
 							for (i=0;i<collections&&result2.getRecord(i).title!=BookManagement_x50.options.CurrentCollection;i++);
 							if (i==collections) i=0;
-							else if (BooklistTrigger) i++;
+							else if (booklistTrigger) i++;
 						}
 						while (i<collections) {
 							collection = result2.getRecord(i);
@@ -257,8 +257,8 @@ tmp = function() {
 					var i, j, id, books=[], record;
 					if (kbook.model.currentBook) id = kbook.model.currentBook.media.id;
 					else if (kbook.model.currentPath) id = result.db.search('indexPath',kbook.model.currentPath).getRecord(0).id;
-					for (i=0;i<records;i++) if (result.getRecord(i)) books.push(i);
-					books = shuffle(books);
+					for (i=0;i<records;i++) books.push(i);
+					books = arrayShuffle(books);
 					for (i=0,j=0;i<3&&j<books.length;i++,j++) {
 						record = result.getRecord(books[j]);
 						if (record.id == id) i--;
@@ -270,13 +270,13 @@ tmp = function() {
 					}
 				break;
 			}
-			if (BooklistTrigger) {
+			if (booklistTrigger) {
 				if (!nodes.length) {
 					if (BookManagement_x50.options.HomeMenuBooklist == 4) BookManagement_x50.options.HomeMenuBooklist = 0;
 					else BookManagement_x50.options.HomeMenuBooklist++;
 					continue;
 				}
-				BooklistTrigger = false;
+				booklistTrigger = false;
 			}
 			break;
 		}
@@ -295,7 +295,7 @@ tmp = function() {
 			title: L('CYCLE_HOME_MENU_BOOKLIST'),
 			group: 'Other',
 			action: function () {
-				BooklistTrigger = true;
+				booklistTrigger = true;
 				if (BookManagement_x50.options.HomeMenuBooklist == 4) BookManagement_x50.options.HomeMenuBooklist = 0;
 				else if (BookManagement_x50.options.HomeMenuBooklist != 3) {
 					BookManagement_x50.options.HomeMenuBooklist++;
@@ -305,7 +305,7 @@ tmp = function() {
 					kbook.root.nodes[0].nodes[6].update(kbook.model);
 					kbook.menuHomeThumbnailBookData.setNode(kbook.root.nodes[0].nodes[6]);
 				}
-				else BookChanged = true;
+				else bookChanged = true;
 				Core.settings.saveOptions(BookManagement_x50); // FIXME radio button in PRS+ settings isn't updated
 			}
 		}],
@@ -465,7 +465,7 @@ tmp = function() {
 		],
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			if (propertyName == 'HomeMenuBooklist' || propertyName == 'IgnoreCards') {
-				BookChanged = true;
+				bookChanged = true;
 				BookManagement_x50.options.CurrentCollection = '';
 			}
 		},

@@ -1,3 +1,8 @@
+=== 2.0.15 beta ===
+ * x50: "Cycle booklist" action now also cycles through collections (quisvir)
+ * 600/x50: Added Page Turn by Single Tap (quisvir)
+ * 600/x50: Close reading popup menu (dict etc) and cancel selection by tapping page (quisvir)
+
 === 2.0.14 beta ===
  * x50: Fixed #128 books/collections sorting
  * x50: Fixed "Coming back to Home from an other menu takes long"
