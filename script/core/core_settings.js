@@ -208,7 +208,7 @@ tmp = function() {
 						return Core.lang.LX("SETTINGS", optionDef.optionDefs.length);
 					},
 					icon: optionDef.groupIcon,
-					guideArea: optionDef.description
+					guideArea: optionDef.helptext
 			});
 			parent.nodes.push(node);
 
@@ -230,7 +230,7 @@ tmp = function() {
 					parent: parent,
 					title: optionDef.title,
 					icon: optionDef.icon,
-					guideArea: optionDef.description
+					guideArea: optionDef.helptext
 			});
 			parent.nodes.push(node);
 			parent = node;
