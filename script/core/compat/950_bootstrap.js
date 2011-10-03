@@ -15,6 +15,7 @@
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
 //	2011-07-06 Ben Chenoweth - Minor fix to StandbyImage (mime not needed)
 //	2011-08-18 Mark Nord - fixed current page as StandbyImage + display of localised "sleeping.." instead of the clock
+//	2011-10-04 quisvir - Always show book covers in portrait mode and keep aspect ratio
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -24,33 +25,45 @@
 var tmp = function() {
 
 	// Standby image
-	var oldStandbyImageDraw = standbyImage.draw;
+	var orgOrientation = 0;
 	
+	var oldStandbyImageDraw = standbyImage.draw;
 	standbyImage.draw = function() {
-		var window, ditheredBitmap;
+		var window, ditheredBitmap, temp, port, x, y, bounds, ratio, width, height;
 		var newpath, newbitmap, mode, dither, oldTextStyle, oldTextSize, oldPenColor, L;
 		window = this.root.window;
 		mode = Core.addonByName.StandbyImage.options.mode;
 		dither = Core.addonByName.StandbyImage.options.dither === "true";		
-		try {
-			if (mode === 'cover') {
-				// attempt to use current book cover
-				newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
-				newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
-				ditheredBitmap = newbitmap.dither(dither);
-				newbitmap.close();			
-				if (ditheredBitmap) {
-					window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
-					ditheredBitmap.close();	
+		if (mode === 'cover') {
+				try {
+					// attempt to use current book cover
+					newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+					newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
+					temp = new Bitmap(this.width, this.height, 12);
+					port = new Port(temp);
+					port.setPenColor(Color.black);
+					port.fillRectangle(0, 0, this.width, this.height);
+					x = 0;
+					y = 0;
+					bounds = newbitmap.getBounds();
+					ratio = (bounds.height > bounds.width)?(this.height / bounds.height):(this.width / bounds.width);
+					width = Math.floor(bounds.width * ratio);
+					height = Math.floor(bounds.height * ratio);
+					if (height > width) x = Math.floor((this.width - width) / 2);
+					else y = Math.floor((this.height - height) / 2);
+					newbitmap.draw(port, x, y, width, height);
+					newbitmap.close();
+					ditheredBitmap = temp.dither(true);
+					port.close();
+					temp.close();
+					if (ditheredBitmap) {
+						window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
+						ditheredBitmap.close();
 					}
-        			}	
-		} catch (ignore) {
+        		} catch (ignore) {}
 		}
-		
-		if (!newbitmap && (mode !== 'act_page')) {
-			oldStandbyImageDraw.apply(this);	
-		} else {
-			if (mode === 'act_page') {
+		if (!newbitmap && mode !== 'act_page') oldStandbyImageDraw.apply(this);
+		else if (mode === 'act_page') {
 				L = Core.lang.getLocalizer("StandbyImage");
 				// Save old styles
 				oldTextStyle = window.getTextStyle();
@@ -70,9 +83,24 @@ var tmp = function() {
 				window.setTextStyle(oldTextStyle);
 				window.setTextSize(oldTextSize);
 				window.setPenColor(oldPenColor);
-			}	
 		}
 	};
+
+	// Set orientation to portrait before showing book cover
+	oldSuspend = kbook.model.suspend;
+	kbook.model.suspend = function () {
+		oldSuspend.apply(this, arguments);
+		if (Core.addonByName.StandbyImage.options.mode == 'cover') orgOrientation = ebook.device.framebuffer.orientation.getCurrent();
+		if (orgOrientation !== 0) ebook.device.framebuffer.orientation.setCurrent(0);
+	}
+	
+	// Restore orientation if necessary
+	oldResume = kbook.model.resume;
+	kbook.model.resume = function () {
+		if (orgOrientation !== 0) ebook.device.framebuffer.orientation.setCurrent(orgOrientation);
+		orgOrientation = 0;
+		oldResume.apply(this, arguments);
+	}
 
 	var fixTimeZones, updateSiblings;
 	
