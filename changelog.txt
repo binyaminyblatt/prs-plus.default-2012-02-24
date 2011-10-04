@@ -1,5 +1,7 @@
 === 2.0.15 beta ===
+ * 350/650: Added 1-Column Split (quisvir)
  * x50: "Cycle booklist" action now also cycles through collections (quisvir)
+ * x50: Added option to treat periodicals as books (quisvir)
  * 600/x50: Added Page Turn by Single Tap (quisvir)
  * 600/x50: Close reading popup menu (dict etc) and cancel selection by tapping page (quisvir)
 
