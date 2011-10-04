@@ -24,6 +24,7 @@
 //	2011-09-22 quisvir - Display current booklist option in home menu
 //	2011-09-27 quisvir - Add ability to cycle through collections for 'next in collection' booklist
 //	2011-09-28 quisvir - Display current collection in home menu, add option to ignore memory cards
+//	2011-10-04 quisvir - Add option to treat periodicals as books
 
 tmp = function() {
 
@@ -32,6 +33,31 @@ tmp = function() {
 	
 	var bookChanged = false;
 	var booklistTrigger = false;
+	
+	// Treat Periodicals as Books
+	var oldBooksFilter = kbook.root.children.deviceRoot.children.books.filter;
+	kbook.root.children.deviceRoot.children.books.filter = function (result) {
+		if (BookManagement_x50.options.PeriodicalsAsBooks == 'true') return result;
+		else return oldBooksFilter.apply(this, arguments);
+	}
+	
+	var oldIsPeriodical = FskCache.text.isPeriodical;
+	FskCache.text.isPeriodical = function () {
+		if (BookManagement_x50.options.PeriodicalsAsBooks == 'true') return false;
+		else return oldIsPeriodical.apply(this, arguments);
+	}
+	
+	var oldIsNewspaper = FskCache.text.isNewspaper;
+	FskCache.text.isNewspaper = function () {
+		if (BookManagement_x50.options.PeriodicalsAsBooks == 'true') return false;
+		else return oldIsNewspaper.apply(this, arguments);
+	}
+	
+	var oldOnEnterShortCutBook = kbook.model.onEnterShortCutBook;
+	kbook.model.onEnterShortCutBook = function (node) {
+		if (BookManagement_x50.options.PeriodicalsAsBooks == 'true' && node.periodicalName) this.currentNode.gotoNode(node, this);
+		else oldOnEnterShortCutBook.apply(this, arguments);
+	};
 	
 	// Keep new flag as is on opening book
 	var oldOnChangeBook = kbook.model.onChangeBook;
@@ -171,7 +197,7 @@ tmp = function() {
 		while (cache) {
 			if (BookManagement_x50.options.IgnoreCards == 'true') result = cache.getSourceByName('mediaPath').textMasters;
 			else result = cache.textMasters;
-			result = this.filter(result);
+			if (BookManagement_x50.options.PeriodicalsAsBooks == 'false') result = this.filter(result);
 			records = result.count();
 			if (!records) return;
 			switch (BookManagement_x50.options.HomeMenuBooklist) {
@@ -192,7 +218,8 @@ tmp = function() {
 					j = (kbook.model.currentBook || kbook.model.currentPath) ? 1 : 0;
 					for (i=0;nodes.length<3&&i+j<history.length;i++) {
 						record = Core.media.findMedia(history[i+j]);
-						if (record && !record.periodicalName) {
+						if (record) {
+							if (record.periodicalName && BookManagement_x50.options.PeriodicalsAsBooks == 'false') continue;
 							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 							node.cache = cache;
 							node.media = record;
@@ -446,6 +473,16 @@ tmp = function() {
 					}
 				},
 			]},
+			{
+				name: 'PeriodicalsAsBooks',
+				title: L('TREAT_PERIODICALS_AS_BOOKS'),
+				defaultValue: 'false',
+				values: ['true', 'false'],
+				valueTitles: {
+					'true': L('VALUE_TRUE'),
+					'false': L('VALUE_FALSE')
+				}	
+			},
 			{
 				name: 'ManualNewFlag',
 				title: L('SET_NEW_FLAG_MANUALLY'),
