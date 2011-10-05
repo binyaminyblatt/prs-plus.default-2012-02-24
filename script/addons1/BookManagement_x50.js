@@ -137,15 +137,13 @@ tmp = function() {
 			this.skin.styles[6].draw(this.getWindow(), message, 0, y-25, this.width, this.textCommentHeight);
 		}
 		record = this.menu.getRecord(offset);
-		if (record) {
-			if (BookManagement_x50.options.ShowReadingProgressThumbs == 'true') {
-				if (!record || record.kind != 2 || !record.media.ext.history.length || (this.statusVisible && (record.media.sourceid > 1 || this.menu.getFixSelectPosition() || record.expiration))) return;
+		if (record && BookManagement_x50.options.ShowReadingProgressThumbs == 'true') {
+				if (record.kind != 2 || !record.media.ext || !record.media.ext.history.length || (this.statusVisible && (record.media.sourceid > 1 || this.menu.getFixSelectPosition() || record.expiration))) return;
 				page = record.media.ext.history[0].page + 1;
 				if (page < Number(BookManagement_x50.options.OnlyShowFromPage)) return;
 				pages = record.media.ext.history[0].pages;
 				message = readingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatThumbs);
 				parts.commentStyle.draw(this.getWindow(), message, x+this.marginWidth, this.getNy(this.getTy(y),Math.min(this.getTh(height),this.thumbnailHeight))+this.textNameHeight+this.marginNameAndComment + 23, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
-			}
 		}
 	};
 	
