@@ -24,7 +24,7 @@ tmp = function() {
 	// Close reading popup menu (dict etc) and cancel selection by tapping page
 	pageShortcutOverlayModel.doTap = function (x, y) {
 		if (kbook.model.doSomething('checkTap', x, y)) kbook.model.doSomething('doTap', x, y);
-		else if (ViewerSettings_x50.options.ClosePopupByPageTap == 'true') kbook.model.doSomething('selectNone');
+		else if (ViewerSettings_600.options.ClosePopupByPageTap == 'true') kbook.model.doSomething('selectNone');
 		else {
 			kbook.model.doBlink();
 			return;
@@ -55,7 +55,7 @@ tmp = function() {
 	
 	// Determine what to do with tap based on preference
 	var PageTurnByTap = function () {
-		switch (ViewerSettings_x50.options.PageTurnBySingleTap) {
+		switch (ViewerSettings_600.options.PageTurnBySingleTap) {
 			case 'anywhere':
 				this.doNext();
 				return;
@@ -106,6 +106,7 @@ tmp = function() {
 	};
 
 	// overload Fskin.kbookPage.doSelectWord called by Fskin.kbookPage.readingTracker.doubleTap to disable Dictionary
+	var oldDoSelectWord = Fskin.kbookPage.doSelectWord;
 	Fskin.kbookPage.doSelectWord = function () {
 		if (ViewerSettings_600.options.NoDictionary === "false") return oldDoSelectWord.apply(this, arguments);
 	}
