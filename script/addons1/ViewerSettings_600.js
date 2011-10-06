@@ -41,13 +41,13 @@ tmp = function() {
 	// Call PageTurnByTap when tap is not a link, highlight etc.
 	var oldOnPageTapped = Fskin.kbookPage.readingTracker.tap;
 	Fskin.kbookPage.readingTracker.tap = function (target, x, y) {
-		if (ViewerSettings_600.options.PageTurnBySingleTap != 'false' && !this.selection.length) {
+		if (ViewerSettings_600.options.PageTurnBySingleTap != 'false' && !target.selection.length) {
 			readingTapX = x;
 			readingTapY = y;
-			this.selectNoneWithoutUpdate = PageTurnByTap;
+			target.selectNoneWithoutUpdate = PageTurnByTap;
 			kbook.model.doBlink = doNothingFunc;
 			oldOnPageTapped.apply(this, arguments);
-			this.selectNoneWithoutUpdate = oldSelectNoneWithoutUpdate;
+			target.selectNoneWithoutUpdate = oldSelectNoneWithoutUpdate;
 			kbook.model.doBlink = oldDoBlink;
 		}
 		else oldOnPageTapped.apply(this, arguments);
