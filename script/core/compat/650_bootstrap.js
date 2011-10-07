@@ -17,6 +17,7 @@
 //	2011-07-06 Ben Chenoweth - Minor fix to StandbyImage (mime not needed)
 //	2011-08-18 Mark Nord - fixed current page as StandbyImage + display of localised "sleeping.." instead of the clock
 //	2011-10-04 quisvir - Always show book covers in portrait mode and keep aspect ratio
+//	2011-10-07 quisvir - Fixed #190 "Continue searching from the begining doesn't work" (Sony bug)
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -26,6 +27,17 @@
 
 var tmp = function() {
 
+	// Fix continue searching from beginning/end
+	pageSearchResultOverlayModel.onForward = function () {
+		var ret = this.forwardSearch();
+		if (ret) this.onOpenSearchResult();
+	};
+	
+	pageSearchResultOverlayModel.onBackward = function () {
+		var ret = this.backwardSearch();
+		if (ret) this.onOpenSearchResult();
+	};
+	
 	// Workaround for # Text Memo open => press root leads to reboot
 	kbook.kbookNotepad.exit = function(param) {
 		var note = this.note;
