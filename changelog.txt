@@ -1,4 +1,5 @@
 === 2.0.15 beta ===
+ * 350/650: Fixed "Continue searching from the begining doesn't work" (Sony bug)
  * 350/650: Added 1-Column Split (quisvir)
  * x50: "Cycle booklist" action now also cycles through collections (quisvir)
  * x50: Added option to treat periodicals as books (quisvir)
