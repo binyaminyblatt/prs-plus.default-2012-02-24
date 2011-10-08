@@ -119,7 +119,7 @@ tmp = function() {
 	// Draw reading progress instead of 'last read' date/time
 	kbook.model.getContinueDate = function (node) {
 		if (BookManagement_x50.options.ShowReadingProgressCurrent == 'true' && this.currentBook && this.currentBook.media.ext.history.length) {
-			var page = this.currentBook.media.ext.history[0].page + 1;
+			var page = this.currentBook.media.ext.currentPosition.page + 1;
 			if (page < Number(BookManagement_x50.options.OnlyShowFromPage)) return node.nodes[0].lastReadDate;
 			var pages = this.currentBook.media.ext.history[0].pages;
 			return readingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatCurrent);
@@ -139,7 +139,7 @@ tmp = function() {
 		record = this.menu.getRecord(offset);
 		if (record && BookManagement_x50.options.ShowReadingProgressThumbs == 'true') {
 				if (record.kind != 2 || !record.media.ext || !record.media.ext.history.length || (this.statusVisible && (record.media.sourceid > 1 || this.menu.getFixSelectPosition() || record.expiration))) return;
-				page = record.media.ext.history[0].page + 1;
+				page = record.media.ext.currentPosition.page + 1;
 				if (page < Number(BookManagement_x50.options.OnlyShowFromPage)) return;
 				pages = record.media.ext.history[0].pages;
 				message = readingProgressComment(page, pages, BookManagement_x50.options.ProgressFormatThumbs);
