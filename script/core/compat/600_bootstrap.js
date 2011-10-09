@@ -26,7 +26,8 @@
 //	2011-08-18 Mark Nord - fixed current page as StandbyImage + display of localised "sleeping.." instead of the clock
 //  2011-08-27 Ben Chenoweth - Minor fix to 'Sleeping...' text location
 //  2011-10-09 Ben Chenoweth - Applied quisvir's code to always show book covers in portrait mode and keep aspect ratio;
-//			"Sleeping..." for landscape-mode by making coordinates dynamic
+//			"Sleeping..." for landscape-mode by making coordinates dynamic; also show wallpaper in portrait-mode
+//			so no need for /landscape/ subfolder.
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -427,7 +428,7 @@ var tmp = function() {
 	var oldSuspend = kbook.model.suspend;
 	kbook.model.suspend = function () {
 		oldSuspend.apply(this, arguments);
-		if (Core.addonByName.StandbyImage.options.mode == 'cover') orgOrientation = ebook.device.framebuffer.orientation.getCurrent();
+		if (Core.addonByName.StandbyImage.options.mode == 'cover' || Core.addonByName.StandbyImage.options.mode === 'random') orgOrientation = ebook.device.framebuffer.orientation.getCurrent();
 		if (orgOrientation !== 0) ebook.device.framebuffer.orientation.setCurrent(0);
 	};
 	
