@@ -21,8 +21,11 @@
 //	2011-07-06 Ben Chenoweth - Minor fix to StandbyImage (mime not needed)
 //	2011-09-10 Mark Nord - 	added localised "Sleeping.." to curretn page-StandbyImage;
 //	2011-09-12 Mark Nord - 	FIXED first book-page as StandbyImage for all file-formats
-//	2011-09-16 Mark Nord - Fixed display correct page on page-turn after waking from sleep with book-cover as standby image
-
+//	2011-09-16 Mark Nord - 	Fixed display correct page on page-turn after waking from sleep with book-cover as standby image
+//	2011-10-08 Mark Nord - 	Fixed #195 "blank" & "Sleeping..." for landscape-mode by making coordinates dynamic (thx quisvir)
+//				show cover and wallpaper always in portrait, no more need for /landscape/ - subfolder 
+//				will flash once in portrait before resume with landscape-mode, due to needed ebook.rotate()
+//				could be avoided with inverse code in doResume(), but then resume will take noticeable longer
 
 var tmp = function() {
 	var oldSetLocale, localize;
@@ -135,7 +138,7 @@ var tmp = function() {
 		}
 	};
 
-	// renders current books first page
+	// renders current books first page, for epub it is copy 'n past from 600's BookUtil	
 	createTextThumbnail = function (path) {
 		var bitmap, viewer, bounds, mime, page, log, oldpage; // oldpart;
 
@@ -175,20 +178,11 @@ var tmp = function() {
 	getRandomWallpaper = function() {
 		var  path, folder, idx, list;
 		try {
-			if (kbook.model.container.getVariable('ORIENTATION')) {
-				// horizontal layout, use another set of pictures
-				folder = System.applyEnvironment("[prspPublicPath]wallpaper/landscape/");
-				if (!landscapeWallpapers) {
-					landscapeWallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
-				}
-				list = landscapeWallpapers;
-			} else {
 				folder = System.applyEnvironment("[prspPublicPath]wallpaper/");
 				if (!wallpapers) {
 					wallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
 				}
 				list = wallpapers;
-			}
 
 			while (list.length > 0) {
 				idx = Math.floor(Math.random() * list.length);
@@ -205,6 +199,7 @@ var tmp = function() {
 	};
 
 	// Standby image
+	var orgOrientation = false;
 	kbook.model.container.sandbox.doSuspend = function() {
 		var log, standbyImage;
 	try {	
@@ -234,25 +229,26 @@ var tmp = function() {
         		
         		if (!newbitmap && (mode === 'random' || mode === 'cover')) {
         			// if no book cover, then use random wallpaper
+				// width/hight intentionally uses as absolute values: 600/800
         			path = getRandomWallpaper();
         			if (FileSystem.getFileInfo(path)) {
-        				try {
-        					bitmap = new Bitmap(path);
-        					temp = new Bitmap(this.width, this.height, 12);
-        					port = new Port(temp);
-        					port.setPenColor(Color.white);
-        					port.fillRectangle(0, 0, this.width, this.height);
-        					x = 0;
-        					y = 0;
-        					bounds = bitmap.getBounds();
-        					ratio = (bounds.height > bounds.width)?this.height / bounds.height:this.width / bounds.width;
-        					width = Math.floor(bounds.width * ratio);
-        					height = Math.floor(bounds.height * ratio);
-        					if (height > width) {
-        						x = Math.floor(this.width - width) / 2;
-        					} else {
-        						y = Math.floor(this.height - height) / 2;
-        					}
+					try {
+						bitmap = new Bitmap(path);
+						temp = new Bitmap(600, 800, 12);
+						port = new Port(temp);
+						port.setPenColor(Color.white);
+						port.fillRectangle(0, 0, 600, 800);						
+						x = 0;
+						y = 0;
+						bounds = bitmap.getBounds();
+						ratio = (bounds.height > bounds.width) ? 800 / bounds.height : 600 / bounds.width;
+						width = Math.floor(bounds.width * ratio);
+						height = Math.floor(bounds.height * ratio);
+						if (height > width) {
+							x = Math.floor(600 - width) / 2;
+						} else {
+	       						y = Math.floor(800 - height) / 2;
+						}
         					bitmap.draw(port, x, y, width, height);
         					ditheredBitmap = temp.dither(dither);
         					bitmap.close();
@@ -269,7 +265,7 @@ var tmp = function() {
 				window.beginDrawing();
 				oldPenColor = window.getPenColor();
 				window.setPenColor(Color.white);
-        			window.fillRectangle(0, 0, 600, 800);
+        			window.fillRectangle(0, 0, this.width, this.height);
         			window.setPenColor(oldPenColor);
         			window.endDrawing();
 				Core.ui.updateScreen();
@@ -280,7 +276,7 @@ var tmp = function() {
 			}
 		if (ditheredBitmap) {
 		// if there is any standbyImage display it
-			window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
+				window.drawBitmap(ditheredBitmap, 0, 0, 600, 800);
 			ditheredBitmap.close();		
 			Core.ui.updateScreen();
 		} 
@@ -296,9 +292,9 @@ var tmp = function() {
 				// Drawing
 				window.beginDrawing();
 				window.setPenColor(Color.black);
-				window.fillRectangle(445, 770, 155, 30);
+				window.fillRectangle(this.width-155, this.height-30, 155, 30);
 				window.setPenColor(Color.white);
-				window.drawText(L("VALUE_SLEEPING"), 455, 770, 135, 30);				
+				window.drawText(L("VALUE_SLEEPING"), this.width-145, this.height-30, 135, 30);				
 				window.endDrawing();
 				// Restore pen color, text size & style
 				window.setTextStyle(oldTextStyle);
@@ -307,16 +303,29 @@ var tmp = function() {
 				Core.ui.updateScreen();
 				}
 		};
-	
+		if (Core.addonByName.StandbyImage.options.mode === "cover" || Core.addonByName.StandbyImage.options.mode === "random") {
+			orgOrientation = ebook.getOrientation();
+			if (orgOrientation) {
+				ebook.resetOrientation();
+				Core.ui.updateScreen(); // dosn't work without this !?
+			}
+		}
 		standbyImage.draw();
 
 	} catch (e1){
-		log.trace("Exception in standby image draw " + e1)
+		log.trace("Exception in doSuspend " + e1)
 		}	
 
 		this.getModel().suspend();
 		this.getDevice().doneSuspend();
 	}; 
+
+	var oldResume = kbook.model.container.sandbox.doResume;
+	kbook.model.container.sandbox.doResume = function() {	
+		oldResume.apply(this, arguments); 
+		if (orgOrientation) ebook.rotate();
+		orgOrientation = false;
+	} 
 	
 	/*
 		<function id="doDigit" params="part"><![CDATA[
