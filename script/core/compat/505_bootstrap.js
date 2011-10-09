@@ -18,6 +18,7 @@
 //				show cover and wallpaper always in portrait, no more need for /landscape/ - subfolder 
 //				will flash once in portrait before resume with landscape-mode, due to needed ebook.rotate()
 //				could be avoided with inverse code in doResume(), but then resume will take noticeable longer
+//	2011-10-09 Mark Nord - 	preserve ascept-ratio for cover-pages (using code from quisvir)
 
 var tmp = function() {
 	var oldReadPreference, oldCallback, bootLog;
@@ -163,9 +164,23 @@ var tmp = function() {
 				// attempt to use current book cover
 				newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
 				newbitmap = createTextThumbnail(newpath);
-				if (newbitmap) {
-					ditheredBitmap = newbitmap.dither(dither);
-					newbitmap.close();	
+				window.setPenColor(Color.white);
+				window.fillRectangle(0, 0, 600, 800);
+				x = 0;
+				y = 0;
+				bounds = newbitmap.getBounds();
+				ratio = (bounds.height > bounds.width)?(800 / bounds.height):(600 / bounds.width);
+				width = Math.floor(bounds.width * ratio);
+				height = Math.floor(bounds.height * ratio);
+				if (height > width) x = Math.floor((600 - width) / 2);
+				else y = Math.floor((800 - height) / 2);
+				ditheredBitmap = newbitmap.dither(dither);
+				newbitmap.close();
+				if (ditheredBitmap) {
+					window.drawBitmap(ditheredBitmap, x, y, width, height);
+					Core.ui.updateScreen();
+					ditheredBitmap.close();
+					return;
 					}	
 				}		
 			} catch (e) {
