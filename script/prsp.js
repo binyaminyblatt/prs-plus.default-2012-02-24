@@ -22,7 +22,8 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 			publicPath: System.applyEnvironment("[prspPublicPath]"), 
 			userCSSPath: System.applyEnvironment("[prspUserCSSPath]"),
 			userDictionaryPath: System.applyEnvironment("[userDictionaryPath]"),
-			userGamesSavePath : System.applyEnvironment("[prspPublicPath]")+"GamesSave/",   
+			userGamesSavePath: System.applyEnvironment("[prspPublicPath]")+"GamesSave/",  
+			userScreenShotPath: "ScreenShots/", 
 			coreFile: System.applyEnvironment("[prspCoreFile]"),
 			addonsFile: System.applyEnvironment("[prspAddonsFile]")
 		};
