@@ -3,7 +3,7 @@
 //	choose if Overlap in 2page mode is masked, 
 //	disables doubleTapAction and so dictionary
 //	toggle border color grey/white
-//	disable pageturen gesture
+//	disable pageturn gesture
 // Author: Mark Nord
 //
 // History:
@@ -21,6 +21,7 @@
 //	2011-09-29 quisvir - Added Page Turn by Single Tap
 //	2011-10-01 quisvir - Close reading popup menu (dict etc) and cancel selection by tapping page
 //	2011-10-05 quisvir - Added 1-Column split for 350 & 650
+//	2011-10-09 Mark Nord - fixed #182 MaskOverlap for PRS-950
 
 tmp = function() {
 
@@ -162,6 +163,13 @@ tmp = function() {
 		if (ViewerSettings_x50.options.NoDictionary === "false") return oldDoSelectWord.apply(this, arguments);
 	}
 
+	/*/ overload to enable landscape-mode split in 3 - for debuging with PRS-650  
+	var oldKbookPageCheckNaturalInfo = kbook.kbookPage.checkNaturalInfo;
+	kbook.kbookPage.checkNaturalInfo = function (naturalBounds) {
+		oldKbookPageCheckNaturalInfo.apply(this, arguments);
+		if (this.partsNatural === 2) this.partsNatural = 3;
+	} // end debug code*/
+
 	// overload kbookPage.draw to peek into & patch
 	kbook.kbookPage.draw = function (event) {
 		var data, window, x, y, width, height, cache, naturalBounds, range, ratioX, ratioY, rct, state, backup, bitmap, cutout, u, xMin, xSize, yMin, ySize, size, minOverlap, maxOverlap, yMinN, yMaxN, parts, j, half, mark1, mark2, span, bounds, c, minSpan, maxSpan, i, bound, bound_y, update;
@@ -247,7 +255,7 @@ tmp = function() {
 						yMaxN = this.yMaxNatural;
 						parts = this.partsNatural;
 						if (parts == 2) {
-							/* original code
+							/* original (defsk-ed) code
 							minOverlap[0] = yMaxN - size;
 							maxOverlap[0] = yMinN + size; */
 							// fixed Mark Nord
@@ -257,19 +265,23 @@ tmp = function() {
 						else {
 							if (parts === 3) {
 								if (this.yOffset === yMinN) {
-									minOverlap[0] = Math.floor(yMaxN + yMinN - size / 2);
-									maxOverlap[0] = size; //yMinN + size;
+									/* original (defsk-ed) code
+									minOverlap[0] = <global>.Math.floor(yMaxN + yMinN - size / 2);
+									maxOverlap[0] = yMinN + size;
+									in genaral swap min/max */
+									maxOverlap[0] = Math.floor((yMaxN + yMinN - size) / 2);
+									minOverlap[0] = yMinN + size;
 								}
 								else {
 									if (this.yOffset !== yMaxN - size) {
-										minOverlap[0] = Math.floor(yMaxN + yMinN - size / 2);
-										maxOverlap[0] = yMinN + size;
-										minOverlap[1] = yMaxN - size;
-										maxOverlap[1] = Math.floor(yMaxN + yMinN + size / 2);
+										maxOverlap[0] = Math.floor((yMaxN + yMinN - size) / 2);
+										minOverlap[0] = yMinN + size;
+										maxOverlap[1] = yMaxN - size;
+										minOverlap[1] = Math.floor((yMaxN + yMinN + size) / 2);
 									}
 									else {
-										minOverlap[0] = yMaxN - size;
-										maxOverlap[0] = Math.floor(yMaxN + yMinN + size / 2);
+										maxOverlap[0] = yMaxN - size;
+										minOverlap[0] = Math.floor((yMaxN + yMinN + size) / 2);
 									}
 								}
 							}
