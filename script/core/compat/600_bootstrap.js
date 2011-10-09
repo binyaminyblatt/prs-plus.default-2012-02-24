@@ -25,7 +25,8 @@
 //	2011-07-05 Ben Chenoweth - Minor fix to prevent crash when showing actual page on standby
 //	2011-08-18 Mark Nord - fixed current page as StandbyImage + display of localised "sleeping.." instead of the clock
 //  2011-08-27 Ben Chenoweth - Minor fix to 'Sleeping...' text location
-//  2011-10-09 Ben Chenoweth - Applied quisvir's code to always show book covers in portrait mode and keep aspect ratio
+//  2011-10-09 Ben Chenoweth - Applied quisvir's code to always show book covers in portrait mode and keep aspect ratio;
+//			"Sleeping..." for landscape-mode by making coordinates dynamic
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -411,9 +412,9 @@ var tmp = function() {
 			// Drawing
 			window.beginDrawing();
 			window.setPenColor(Color.black);
-			window.fillRectangle(445, 770, 150, 30);
+			window.fillRectangle(this.width-155, this.height-30, 155, 30);
 			window.setPenColor(Color.white);
-			window.drawText(L("VALUE_SLEEPING"), 465, 770, 120, 30);
+			window.drawText(L("VALUE_SLEEPING"), this.width-145, this.height-30, 135, 30);
 			window.endDrawing();
 			// Restore pen color, text size & style
 			window.setTextStyle(oldTextStyle);
