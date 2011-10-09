@@ -25,6 +25,7 @@
 //	2011-07-05 Ben Chenoweth - Minor fix to prevent crash when showing actual page on standby
 //	2011-08-18 Mark Nord - fixed current page as StandbyImage + display of localised "sleeping.." instead of the clock
 //  2011-08-27 Ben Chenoweth - Minor fix to 'Sleeping...' text location
+//  2011-10-09 Ben Chenoweth - Applied quisvir's code to always show book covers in portrait mode and keep aspect ratio
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -336,8 +337,23 @@ var tmp = function() {
 					// attempt to use current book cover
 					newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
 					newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
+					window.setPenColor(Color.white);
+					window.fillRectangle(0, 0, this.width, this.height);
+					x = 0;
+					y = 0;
+					bounds = newbitmap.getBounds();
+					ratio = (bounds.height > bounds.width)?(this.height / bounds.height):(this.width / bounds.width);
+					width = Math.floor(bounds.width * ratio);
+					height = Math.floor(bounds.height * ratio);
+					if (height > width) x = Math.floor((this.width - width) / 2);
+					else y = Math.floor((this.height - height) / 2);					
 					ditheredBitmap = newbitmap.dither(dither);
-					newbitmap.close();			
+					newbitmap.close();
+					if (ditheredBitmap) {
+						window.drawBitmap(ditheredBitmap, x, y, width, height);
+						ditheredBitmap.close();
+						return;
+					}					
 				}					
        		} catch (e) { }
 		
@@ -354,7 +370,7 @@ var tmp = function() {
 					x = 0;
 					y = 0;
 					bounds = bitmap.getBounds();
-					ratio = (bounds.height > bounds.width)?this.height / bounds.height:this.width / bounds.width;
+					ratio = (bounds.height > bounds.width)?(this.height / bounds.height):(this.width / bounds.width);
 					width = Math.floor(bounds.width * ratio);
 					height = Math.floor(bounds.height * ratio);
 					if (height > width) {
@@ -366,21 +382,22 @@ var tmp = function() {
 					ditheredBitmap = temp.dither(dither);
 					bitmap.close();
 					port.close();
-					temp.close();				
+					temp.close();
+					if (ditheredBitmap) {
+						window.drawBitmap(ditheredBitmap, x, y, width, height);
+						ditheredBitmap.close();
+						return;
+					}					
 				} catch (e) { PARAMS.bootLog("Exception in standby image draw " + e); }
 			}
 		}
-		if (!ditheredBitmap &&  mode !=='act_page'){
+		if (mode !=='act_page') {
 			try {			
 				color = window.getPenColor();
 				window.setPenColor(this.color);
 				window.fillRectangle(this);
 				window.setPenColor(color);
 			} catch (e) {PARAMS.bootLog("Exception in blank " + e, 'error'); }        			
-		}		
-		if (ditheredBitmap) {
-			window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
-			ditheredBitmap.close();		
 		}
 		if (mode === 'act_page') {
 			L = Core.lang.getLocalizer("StandbyImage");
@@ -405,6 +422,22 @@ var tmp = function() {
 			}	
 	};
 	
+	// Set orientation to portrait before showing book cover
+	var oldSuspend = kbook.model.suspend;
+	kbook.model.suspend = function () {
+		oldSuspend.apply(this, arguments);
+		if (Core.addonByName.StandbyImage.options.mode == 'cover') orgOrientation = ebook.device.framebuffer.orientation.getCurrent();
+		if (orgOrientation !== 0) ebook.device.framebuffer.orientation.setCurrent(0);
+	};
+	
+	// Restore orientation if necessary
+	var oldResume = kbook.model.resume;
+	kbook.model.resume = function () {
+		if (orgOrientation !== 0) ebook.device.framebuffer.orientation.setCurrent(orgOrientation);
+		orgOrientation = 0;
+		oldResume.apply(this, arguments);
+	};
+
 	// Fix sorting (unicode order)
 	var compareStrings = PARAMS.Core.config.compat.compareStrings;
 	String.prototype.localeCompare = function(a) {
