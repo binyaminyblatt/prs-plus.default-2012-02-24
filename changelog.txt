@@ -6,6 +6,7 @@
  * 600/x50: Added Page Turn by Single Tap (quisvir)
  * 600/x50: Close reading popup menu (dict etc) and cancel selection by tapping page (quisvir)
  * 600: Fixed #197 "SD/MS card via mount" doesn't handle non-latin characters
+ * ALL: Fixed #171 "The "Copy to IM..." menu items are not present in Card via Mount, if card scanning is not disabled"
 
 === 2.0.14 beta ===
  * x50: Fixed #128 books/collections sorting
