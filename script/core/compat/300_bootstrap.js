@@ -179,11 +179,11 @@ var tmp = function() {
 	getRandomWallpaper = function() {
 		var  path, folder, idx, list;
 		try {
-				folder = System.applyEnvironment("[prspPublicPath]wallpaper/");
-				if (!wallpapers) {
-					wallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
-				}
-				list = wallpapers;
+			folder = System.applyEnvironment("[prspPublicPath]wallpaper/");
+			if (!wallpapers) {
+				wallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
+			}
+			list = wallpapers;
 
 			while (list.length > 0) {
 				idx = Math.floor(Math.random() * list.length);
