@@ -24,6 +24,7 @@
 //	2011-09-14 kartu - x50: Added Catalan & Polish translation (except 950), Polish keyboard 
 //	2011-09-22 kartu - Removed code overriding String.prototype.localeCompare, it did nothing but tamper collections sorting
 //	2011-10-04 quisvir - Moved standby image code from bootstrap to common
+//	2011-10-09 quisvir - Removed unnecessary code from standby image (thx Mark)
 //
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -36,20 +37,18 @@ tmp = function () {
 	
 	var oldStandbyImageDraw = standbyImage.draw;
 	standbyImage.draw = function () {
-		var window, ditheredBitmap, temp, port, x, y, bounds, ratio, width, height;
+		var window, ditheredBitmap, x, y, bounds, ratio, width, height;
 		var newpath, newbitmap, mode, dither, oldTextStyle, oldTextSize, oldPenColor, L;
 		window = this.root.window;
 		mode = Core.addonByName.StandbyImage.options.mode;
-		dither = Core.addonByName.StandbyImage.options.dither === "true";		
+		dither = Core.addonByName.StandbyImage.options.dither === "true";
 		if (mode === 'cover') {
 				try {
 					// attempt to use current book cover
 					newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
 					newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
-					temp = new Bitmap(this.width, this.height, 12);
-					port = new Port(temp);
-					port.setPenColor(Color.black);
-					port.fillRectangle(0, 0, this.width, this.height);
+					window.setPenColor(Color.black);
+					window.fillRectangle(0, 0, this.width, this.height);
 					x = 0;
 					y = 0;
 					bounds = newbitmap.getBounds();
@@ -58,13 +57,10 @@ tmp = function () {
 					height = Math.floor(bounds.height * ratio);
 					if (height > width) x = Math.floor((this.width - width) / 2);
 					else y = Math.floor((this.height - height) / 2);
-					newbitmap.draw(port, x, y, width, height);
+					ditheredBitmap = newbitmap.dither(dither);
 					newbitmap.close();
-					ditheredBitmap = temp.dither(true);
-					port.close();
-					temp.close();
 					if (ditheredBitmap) {
-						window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
+						window.drawBitmap(ditheredBitmap, x, y, width, height);
 						ditheredBitmap.close();
 					}
         		} catch (ignore) {}
