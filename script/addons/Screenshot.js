@@ -17,6 +17,7 @@
 //		Switched to using Core.ui.showMsg
 //	2011-04-13 kartu - Captured image is made immediatelly visible to the system
 //	2011-06-18 kartu - Captured image is made immediatelly visible to the user as well
+//	2011-10-09 Mark Nord - save Screenshots in root+Core.config.userScreenShotPath
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -94,9 +95,11 @@ tmp = function() {
 			action: function () {
 				var root, saveFilename, savePath, stream, msg1, msg2, bitmap;
 				try {
-					root = Screenshot.options.saveTo;
+					root = Screenshot.options.saveTo + Core.config.userScreenShotPath;;
+					FileSystem.ensureDirectory(root);
 					saveFilename = getSavePath(root);
 					savePath = root + saveFilename;
+					root = Screenshot.options.saveTo;
 					
 					try {
 						stream = new Stream.File(savePath, 1);
