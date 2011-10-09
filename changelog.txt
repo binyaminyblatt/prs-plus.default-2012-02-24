@@ -5,6 +5,7 @@
  * x50: Added option to treat periodicals as books (quisvir)
  * 600/x50: Added Page Turn by Single Tap (quisvir)
  * 600/x50: Close reading popup menu (dict etc) and cancel selection by tapping page (quisvir)
+ * 600: Fixed #197 "SD/MS card via mount" doesn't handle non-latin characters
 
 === 2.0.14 beta ===
  * x50: Fixed #128 books/collections sorting

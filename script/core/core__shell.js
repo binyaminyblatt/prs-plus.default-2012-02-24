@@ -8,6 +8,7 @@
 //	2010-07-09 kartu - Renamed file so that it is loaded before other modules
 //	2010-11-21 kartu - Moved libfsk to resources/prsp subfolder
 //	2011-04-25 kartu - Updated mount/umount to support x50/600 models
+//	2011-10-09 kartu - 600: Fixed #197 "SD/MS card via mount" doesn't handle non-latin characters
 
 try {
 	// dummy function, to avoid introducing global vars
@@ -29,8 +30,8 @@ try {
 		var MOUNT_PATH = "/opt/mnt";
 		var MS_MOUNT_PATH = MOUNT_PATH + "/ms";
 		var SD_MOUNT_PATH = MOUNT_PATH + "/sd";
-		var CMD_MOUNT_SD = "mount -t vfat -o utf8 -o shortname=mixed " + CARD_DEVICE + "a1 " + SD_MOUNT_PATH;
-		var CMD_MOUNT_MS = "mount -t vfat -o utf8 -o shortname=mixed " + CARD_DEVICE + "b1 " + MS_MOUNT_PATH;
+		var CMD_MOUNT_SD = "mount -t vfat -o shortname=mixed,utf8 " + CARD_DEVICE + "a1 " + SD_MOUNT_PATH;
+		var CMD_MOUNT_MS = "mount -t vfat -o shortname=mixed,utf8 " + CARD_DEVICE + "b1 " + MS_MOUNT_PATH;
 		var CMD_UMOUNT_SD = "umount " + SD_MOUNT_PATH;
 		var CMD_UMOUNT_MS = "umount " + MS_MOUNT_PATH;
 		var SCRIPT_HEADER = "#!/bin/sh\n"+
