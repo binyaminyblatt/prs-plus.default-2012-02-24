@@ -62,7 +62,7 @@ tmp = function() {
 	// Keep new flag as is on opening book
 	var oldOnChangeBook = kbook.model.onChangeBook;
 	kbook.model.onChangeBook = function (node) {
-		if (!this.currentBook) oldOnChangeBook.apply(this, arguments);
+		if (this.currentPath) oldOnChangeBook.apply(this, arguments);
 		else {
 			var newflag = node.opened;
 			oldOnChangeBook.apply(this, arguments);
