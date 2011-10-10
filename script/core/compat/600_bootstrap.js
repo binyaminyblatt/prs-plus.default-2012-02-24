@@ -28,6 +28,7 @@
 //  2011-10-09 Ben Chenoweth - Applied quisvir's code to always show book covers in portrait mode and keep aspect ratio;
 //			"Sleeping..." for landscape-mode by making coordinates dynamic; also show wallpaper in portrait-mode
 //			so no need for /landscape/ subfolder.
+//  2011-10-10 Ben Chenoweth - Fix for cover/wallpaper on standby.
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -343,7 +344,7 @@ var tmp = function() {
 					ditheredBitmap = newbitmap.dither(dither);
 					newbitmap.close();
 					if (ditheredBitmap) {
-						window.drawBitmap(ditheredBitmap, x, y, width, height);
+						window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
 						ditheredBitmap.close();
 						return;
 					}					
@@ -377,7 +378,7 @@ var tmp = function() {
 					port.close();
 					temp.close();
 					if (ditheredBitmap) {
-						window.drawBitmap(ditheredBitmap, x, y, width, height);
+						window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
 						ditheredBitmap.close();
 						return;
 					}					
