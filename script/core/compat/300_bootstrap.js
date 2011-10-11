@@ -27,6 +27,7 @@
 //				will flash once in portrait before resume with landscape-mode, due to needed ebook.rotate()
 //				could be avoided with inverse code in doResume(), but then resume will take noticeable longer
 //	2011-10-09 Mark Nord - 	preserve ascept-ratio for cover-pages (using code from quisvir)
+//	2011-10-11 Mark Nord -  code tidying for cover/wallpaper on standby 
 
 var tmp = function() {
 	var oldSetLocale, localize;
@@ -202,99 +203,69 @@ var tmp = function() {
 	// Standby image
 	var orgOrientation = false;
 	kbook.model.container.sandbox.doSuspend = function() {
-		var log, standbyImage;
+	var log, standbyImage;
 	try {	
 		log = Core.log.getLogger("doSuspend");
 		
 		standbyImage = kbook.model.container.findContent('STANDBY_IMAGE');
 
 		standbyImage.draw = function() {
-        		var window, path, bitmap, temp, port, x, y, bounds, ratio, width, height, ditheredBitmap, color;
-			var newpath, newbitmap, mode, dither, L, oldTextStyle, oldTextSize, oldPenColor;
-        		window = this.root.window;
+			var window, path, bitmap, x, y, bounds, ratio, width, height, ditheredBitmap;
+			var mode, dither, L, oldTextStyle, oldTextSize, oldPenColor;
+			window = this.root.window;
 			mode = Core.addonByName.StandbyImage.options.mode;
 			dither = Core.addonByName.StandbyImage.options.dither === "true";
-        		try {
-      			if (mode === 'cover') {
-              			// attempt to use current book cover
-              			newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
-              			newbitmap = createTextThumbnail(newpath);
-				window.setPenColor(Color.white);
-				window.fillRectangle(0, 0, 600, 800);
-				x = 0;
-				y = 0;
-				bounds = newbitmap.getBounds();
-				ratio = (bounds.height > bounds.width)?(800 / bounds.height):(600 / bounds.width);
-				width = Math.floor(bounds.width * ratio);
-				height = Math.floor(bounds.height * ratio);
-				if (height > width) x = Math.floor((600 - width) / 2);
-				else y = Math.floor((800 - height) / 2);
-				ditheredBitmap = newbitmap.dither(dither);
-				newbitmap.close();
-				if (ditheredBitmap) {
-					window.drawBitmap(ditheredBitmap, x, y, width, height);
+			try {
+				if (mode === 'cover') {
+					// attempt to use current book cover
+					path = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+					bitmap = createTextThumbnail(path);
+				}		     			
+				if (!bitmap  && (mode === 'random' || mode === 'cover')) {
+					// if no book cover, then use random wallpaper; 
+					path = getRandomWallpaper();
+					if (FileSystem.getFileInfo(path)) bitmap = new Bitmap(path);
+				}
+				if (bitmap) {		
+					// if bitmap, then display it preserving aspect ratio
+					// width/hight intentionally uses as absolute values: 600/800
+					window.setPenColor(Color.white);
+					window.fillRectangle(0, 0, 600, 800);
+					x = 0;
+					y = 0;
+					bounds = bitmap.getBounds();
+					ratio = (bounds.height > bounds.width)?(800 / bounds.height):(600 / bounds.width);
+					width = Math.floor(bounds.width * ratio);
+					height = Math.floor(bounds.height * ratio);
+					if (height > width) x = Math.floor((600 - width) / 2);
+					else y = Math.floor((800 - height) / 2);					
+					ditheredBitmap = bitmap.dither(dither);
+					bitmap.close();
+					if (ditheredBitmap) {
+						window.drawBitmap(ditheredBitmap, x, y, width, height);
+						ditheredBitmap.close();
+						Core.ui.updateScreen();
+						return;
+					}
+				}					     		
+	      		} catch (e) {
+	      			log.error("Exception in cover/random " , e); 
+	      		}	       		
+			if (mode !=='act_page'){
+				// blank screen & return
+				try {	
+					window.beginDrawing();
+					oldPenColor = window.getPenColor();
+					window.setPenColor(Color.white);
+        				window.fillRectangle(0, 0, this.width, this.height);
+	        			window.setPenColor(oldPenColor);
+        				window.endDrawing();
 					Core.ui.updateScreen();
-					ditheredBitmap.close();
 					return;
-					}	
-				}		
-        		} catch (e) {
-				log.error("createFileThumbnail", e); 
-        			}
-        		
-        		if (!newbitmap && (mode === 'random' || mode === 'cover')) {
-        			// if no book cover, then use random wallpaper
-				// width/hight intentionally uses as absolute values: 600/800
-        			path = getRandomWallpaper();
-        			if (FileSystem.getFileInfo(path)) {
-					try {
-						bitmap = new Bitmap(path);
-						temp = new Bitmap(600, 800, 12);
-						port = new Port(temp);
-						port.setPenColor(Color.white);
-						port.fillRectangle(0, 0, 600, 800);						
-						x = 0;
-						y = 0;
-						bounds = bitmap.getBounds();
-						ratio = (bounds.height > bounds.width) ? 800 / bounds.height : 600 / bounds.width;
-						width = Math.floor(bounds.width * ratio);
-						height = Math.floor(bounds.height * ratio);
-						if (height > width) {
-							x = Math.floor(600 - width) / 2;
-						} else {
-	       						y = Math.floor(800 - height) / 2;
-						}
-        					bitmap.draw(port, x, y, width, height);
-        					ditheredBitmap = temp.dither(dither);
-        					bitmap.close();
-        					port.close();
-        					temp.close();		
-        				} catch (e) {
-        					log.error("Exception in random image draw " + e, 'error'); 
-        					}
-        			}
-        		}
-			if (!ditheredBitmap && mode !=='act_page'){
-			// blank screen & return
-			try {	
-				window.beginDrawing();
-				oldPenColor = window.getPenColor();
-				window.setPenColor(Color.white);
-        			window.fillRectangle(0, 0, this.width, this.height);
-        			window.setPenColor(oldPenColor);
-        			window.endDrawing();
-				Core.ui.updateScreen();
-				return;
-			} catch (e) { 
-				log.error("Exception create blank " , e); 
+				} catch (e) { 
+					log.error("Exception in blank " , e); 
 				}        			
 			}
-		if (ditheredBitmap) {
-		// if there is any standbyImage display it
-				window.drawBitmap(ditheredBitmap, 0, 0, 600, 800);
-			ditheredBitmap.close();		
-			Core.ui.updateScreen();
-		} 
 			if (mode === 'act_page') {
 				L = Core.lang.getLocalizer("StandbyImage");
 				// Save old styles
@@ -316,8 +287,9 @@ var tmp = function() {
 				window.setTextSize(oldTextSize);
 				window.setPenColor(oldPenColor);
 				Core.ui.updateScreen();
-				}
+			}
 		};
+		
 		if (Core.addonByName.StandbyImage.options.mode === "cover" || Core.addonByName.StandbyImage.options.mode === "random") {
 			orgOrientation = ebook.getOrientation();
 			if (orgOrientation) {
@@ -326,13 +298,11 @@ var tmp = function() {
 			}
 		}
 		standbyImage.draw();
-
 	} catch (e1){
 		log.trace("Exception in doSuspend " + e1)
 		}	
-
-		this.getModel().suspend();
-		this.getDevice().doneSuspend();
+	this.getModel().suspend();
+	this.getDevice().doneSuspend();
 	}; 
 
 	var oldResume = kbook.model.container.sandbox.doResume;
