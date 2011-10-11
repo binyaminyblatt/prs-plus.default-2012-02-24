@@ -29,6 +29,7 @@
 //			"Sleeping..." for landscape-mode by making coordinates dynamic; also show wallpaper in portrait-mode
 //			so no need for /landscape/ subfolder.
 //  2011-10-10 Ben Chenoweth - Fix for cover/wallpaper on standby.
+//  2011-10-11 Ben Chenoweth - Further fix for cover/wallpaper on standby & code tidying.
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -321,70 +322,46 @@ var tmp = function() {
 
 	// Standby image
 	standbyImage.draw = function() {
-		var window, path, bitmap, temp, port, x, y, bounds, ratio, width, height, ditheredBitmap, color;
-		var newpath, newbitmap, mode, dither;
+		var window, path, bitmap, x, y, bounds, ratio, width, height, ditheredBitmap, color;
+		var mode, dither;
 		window = this.root.window;
 		mode = Core.addonByName.StandbyImage.options.mode;
 		dither = Core.addonByName.StandbyImage.options.dither === "true";
 		try {
       			if (mode === 'cover') {
 					// attempt to use current book cover
-					newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
-					newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
+					path = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+					bitmap = BookUtil.thumbnail.createFileThumbnail(path, this.width, this.height);
+				}
+				if (!bitmap && ((mode === 'random') || (mode === 'cover'))) {
+					// if no book cover, then use random wallpaper
+					path = getRandomWallpaper();
+					if (FileSystem.getFileInfo(path)) {
+						bitmap = new Bitmap(path);
+					}
+				}
+				if (bitmap) {
+					// if bitmap, then display it preserving aspect ratio
 					window.setPenColor(Color.white);
 					window.fillRectangle(0, 0, this.width, this.height);
-					x = 0;
-					y = 0;
-					bounds = newbitmap.getBounds();
-					ratio = (bounds.height > bounds.width)?(this.height / bounds.height):(this.width / bounds.width);
-					width = Math.floor(bounds.width * ratio);
-					height = Math.floor(bounds.height * ratio);
-					if (height > width) x = Math.floor((this.width - width) / 2);
-					else y = Math.floor((this.height - height) / 2);					
-					ditheredBitmap = newbitmap.dither(dither);
-					newbitmap.close();
-					if (ditheredBitmap) {
-						window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
-						ditheredBitmap.close();
-						return;
-					}					
-				}					
-       		} catch (e) { }
-		
-		if (!newbitmap && (mode === 'random' || mode === 'cover')) {
-			// if no book cover, then use random wallpaper
-			path = getRandomWallpaper();
-			if (FileSystem.getFileInfo(path)) {
-				try {
-					bitmap = new Bitmap(path);
-					temp = new Bitmap(this.width, this.height, 12);
-					port = new Port(temp);
-					port.setPenColor(Color.white);
-					port.fillRectangle(0, 0, this.width, this.height);
 					x = 0;
 					y = 0;
 					bounds = bitmap.getBounds();
 					ratio = (bounds.height > bounds.width)?(this.height / bounds.height):(this.width / bounds.width);
 					width = Math.floor(bounds.width * ratio);
 					height = Math.floor(bounds.height * ratio);
-					if (height > width) {
-						x = Math.floor(this.width - width) / 2;
-					} else {
-						y = Math.floor(this.height - height) / 2;
-					}
-					bitmap.draw(port, x, y, width, height);
-					ditheredBitmap = temp.dither(dither);
+					if (height > width) x = Math.floor((this.width - width) / 2);
+					else y = Math.floor((this.height - height) / 2);					
+					ditheredBitmap = bitmap.dither(dither);
 					bitmap.close();
-					port.close();
-					temp.close();
 					if (ditheredBitmap) {
-						window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
+						window.drawBitmap(ditheredBitmap, x, y, width, height);
 						ditheredBitmap.close();
 						return;
-					}					
-				} catch (e) { PARAMS.bootLog("Exception in standby image draw " + e); }
-			}
-		}
+					}
+				}					
+       		} catch (e) {PARAMS.bootLog("Exception in cover/random " + e, 'error'); }
+
 		if (mode !=='act_page') {
 			try {			
 				color = window.getPenColor();
