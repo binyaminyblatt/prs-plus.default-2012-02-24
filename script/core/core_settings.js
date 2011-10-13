@@ -15,6 +15,7 @@
 //	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
 //	2011-08-23 Mark Nord - added PRS+ advanced Settings Group -> 11th Group -> 2 Settings Pages -> reorganize PRS+ Settings?
 //	2011-10-01 quisvir - Added guideArea property for option and group descriptions
+//	2011-10-13 quisvir - Fixed #187 "Arrow" icon in "PRS+ Settings" slot is missing
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -210,6 +211,7 @@ tmp = function() {
 					icon: optionDef.groupIcon,
 					guideArea: optionDef.helpText
 			});
+			node.sublistMark = true;
 			parent.nodes.push(node);
 
 			doCreateAddonSettings(node, optionDef.optionDefs, addon, false);
@@ -319,6 +321,7 @@ tmp = function() {
 					}
 					prspSettingsNode.nodes.push(thisSettingsNode);
 				}
+				thisSettingsNode.sublistMark = true;
 				doCreateAddonSettings(thisSettingsNode, optionDefs, addon, false);
 			}
 		} catch (e) {
@@ -473,7 +476,7 @@ tmp = function() {
 					return Core.lang.LX("SETTINGS", this.nodes.length);
 				}
 			});
-			
+			prspSettingsNode.sublistMark = true;
 		},
 		getAddonNode: function() {
 			return prspSettingsNode;
