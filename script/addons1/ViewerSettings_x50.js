@@ -22,6 +22,7 @@
 //	2011-10-01 quisvir - Close reading popup menu (dict etc) and cancel selection by tapping page
 //	2011-10-05 quisvir - Added 1-Column split for 350 & 650
 //	2011-10-09 Mark Nord - fixed #182 MaskOverlap for PRS-950
+//	2011-10-13 quisvir - Fixed #196 "No Page Turn with Gestures" doesn't disable Multi-Page Turn
 
 tmp = function() {
 
@@ -557,7 +558,7 @@ tmp = function() {
 			this.onSettingsChanged();
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			kbook.kbookPage.canLine = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+			kbook.kbookPage.canLine = kbook.kbookPage.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
 			kbook.kbookPage.borderColor = (ViewerSettings_x50.options.BorderColor === 'grey') ? Color.rgb.parse('#6D6D6D') : Color.rgb.parse('white');
 			if (propertyName == "CustomContrast" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_CONTRAST") + ':', '', 'doContrastChange', '', true, 'number');
 			if (propertyName == "CustomBrightness" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_BRIGHTNESS") + ':', '', 'doBrightnessChange', '', true, 'number');
@@ -569,7 +570,7 @@ tmp = function() {
 			icon: "SETTINGS",
 			action: function () {
 				ViewerSettings_x50.options.NoGesturePageTurn = (ViewerSettings_x50.options.NoGesturePageTurn == 'true') ? 'false' : 'true';
-				kbook.kbookPage.canLine = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+				kbook.kbookPage.canLine = kbook.kbookPage.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
 				Core.ui.showMsg(L("OPTION_NOGESTURE") + ': ' + ((ViewerSettings_x50.options.NoGesturePageTurn == 'true')?L("VALUE_TRUE"):L("VALUE_FALSE")));
 			}
 		}] 	
