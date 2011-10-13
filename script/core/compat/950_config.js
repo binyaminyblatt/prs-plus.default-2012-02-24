@@ -24,6 +24,7 @@
 //	2011-08-28 Ben Chenoweth - Moved games into Games node
 //	2011-09-04 Mark Nord - NodeKinds.getIcon modified to accept "#icon-number" (not consistent across model-border but speeds up testing)
 //	2011-09-14 kartu - games & utils "into games (unstable)", removed Minesweeper
+//	2011-10-13 quisvir - Fixed #192 Games folder is on the wrong place
 
 return {
 	// Menu icon indices 
@@ -198,10 +199,10 @@ return {
 		// Nodes assigned to certain nodes
 		customNodes: [
 			{ name: "PRSPSettings", parent: "settings", position: 0},
-			{ name: "games", parent: "more" },
 			{ name: "collections", parent: "more" },
 			{ name: "periodicals", parent: "more" },
 			{ name: "notes", parent: "more" },
+			{ name: "games", parent: "more" },
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },	
 			{ name: "Chess", parent: "games" },
