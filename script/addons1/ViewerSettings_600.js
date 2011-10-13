@@ -12,6 +12,7 @@
 //	2011-09-08 quisvir - Renamed scrolling (in zoom lock) to panning
 //	2011-09-29 quisvir - Added Page Turn by Single Tap
 //	2011-10-01 quisvir - Close reading popup menu (dict etc) and cancel selection by tapping page
+//	2011-10-13 quisvir - Fixed #196 "No Page Turn with Gestures" doesn't disable Multi-Page Turn
 
 tmp = function() {
 
@@ -180,7 +181,7 @@ tmp = function() {
 			this.onSettingsChanged();
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			Fskin.kbookPage.canLine = (ViewerSettings_600.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};	
+			Fskin.kbookPage.canLine = Fskin.kbookPage.canLineAndHold = (ViewerSettings_600.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};	
 		},
 		actions: [{
 			name: "toggleGestureOnOff",
@@ -189,7 +190,7 @@ tmp = function() {
 			icon: "GESTURE",
 			action: function () {
 				ViewerSettings_600.options.NoGesturePageTurn = (ViewerSettings_600.options.NoGesturePageTurn == 'true') ? 'false' : 'true';
-				kbook.kbookPage.canLine = (ViewerSettings_600.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+				Fskin.kbookPage.canLine = Fskin.kbookPage.canLineAndHold = (ViewerSettings_600.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
 				Core.ui.showMsg(L("OPTION_NOGESTURE") + ': ' + ((ViewerSettings_600.options.NoGesturePageTurn == 'true')?L("VALUE_TRUE"):L("VALUE_FALSE")));
 			}
 		}] 	
