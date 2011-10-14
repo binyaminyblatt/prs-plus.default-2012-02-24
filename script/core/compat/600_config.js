@@ -24,6 +24,7 @@
 //		Solitaire by Ben Chenoweth
 //	2011-08-28 Ben Chenoweth - Moved games into Games node
 //	2011-09-14 kartu - renamed games & utils into games
+//  2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
 
 return {
 	// Menu icon indices 
@@ -104,10 +105,14 @@ return {
 		HOME_BOOK_HISTORY: 8,
 		HOME_COLLECTIONS: 8,
 		HOME_FOLDER: 9,
+		HOME_GAME: 10,
+		HOME_DATE: 11,
 		
 		// big icons shonw in home menu
 		LARGE_BOOK_HISTORY: 3,
 		LARGE_FOLDER: 4,
+		LARGE_GAME: 5,
+		LARGE_DATE: 6,		
 		
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {
