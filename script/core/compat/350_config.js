@@ -25,6 +25,7 @@
 //	2011-09-04 Mark Nord - NodeKinds.getIcon modified to accept "#icon-number" (not consistent across model-border but speeds up testing)
 //	2011-09-14 kartu - renamed games & utils into games
 //	2011-10-13 quisvir - Fixed #192 Games folder is on the wrong place
+//  2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
 
 return {
 	// Menu icon indices 
@@ -113,6 +114,8 @@ return {
 		LARGE_BOOK_HISTORY: 2,
 		LARGE_FOLDER: 4,
 		LARGE_MORE: 5,
+		LARGE_GAME: 6,
+		LARGE_DATE: 7,
 		
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {
