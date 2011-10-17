@@ -32,7 +32,7 @@ return {
 		BOOKMARK: 10,
 		NOTES: 10,
 		LIST: 11,
-		BOOK_HISTORY: 11,
+		BOOK_HISTORY: 1, // 11
 		CLOCK: 12,
 		PAUSE: 13,
 		PLAY: 14,
