@@ -25,6 +25,7 @@
 //	2011-08-28 Ben Chenoweth - Moved games into Games node
 //	2011-09-14 kartu - renamed games & utils into games
 //  2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
+//  2011-10-19 Ben Chenoweth - Added ALT icons
 
 return {
 	// Menu icon indices 
@@ -72,7 +73,7 @@ return {
 		STANDBY: 83,
 		GESTURE: 38,
 		NODICTIONARY: 40,
-		ZOOMSCROLL: 41,
+		STYLUS: 41,
 		
 		UNCHECKED: 60,
 		CHECKED: 61,
@@ -96,6 +97,10 @@ return {
 		NEXT_SONG: 80,
 		PREVIOUS: 81,
 		NEXT: 82,
+		
+		BOOK_ALT: 84,
+		PICTURE_ALT: 85,
+		SEARCH_ALT: 86,
 		
 		DEFAULT: 62,
 		

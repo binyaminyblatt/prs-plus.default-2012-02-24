@@ -26,16 +26,17 @@
 //	2011-09-14 kartu - renamed games & utils into games
 //	2011-10-13 quisvir - Fixed #192 Games folder is on the wrong place
 //  2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
+//  2011-10-19 Ben Chenoweth - Added ALT icons; reverted BOOK to 2 and PICTURE to 4
 
 return {
 	// Menu icon indices 
 	NodeKinds: {
 		EMPTY: 1000,
 		ALL_BOOKS: 1,
-		BOOK: 17, // 2
+		BOOK: 2, // 17
 		FILE: 2,
 		AUDIO: 3,
-		PICTURE: 18,  // 4 
+		PICTURE: 4,  // 18
 		SETTINGS: 5,
 		AUTHOR: 6,
 		CONTINUE: 7,
@@ -107,6 +108,10 @@ return {
 		BRIGHT_CONT: 109,
 		BRIGHTNESS: 110,
 		CONTRAST: 111,
+		
+		BOOK_ALT: 112,
+		PICTURE_ALT: 113,
+		SEARCH_ALT: 114,
 		
 		DEFAULT: 87,
 		

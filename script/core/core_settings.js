@@ -16,6 +16,7 @@
 //	2011-08-23 Mark Nord - added PRS+ advanced Settings Group -> 11th Group -> 2 Settings Pages -> reorganize PRS+ Settings?
 //	2011-10-01 quisvir - Added guideArea property for option and group descriptions
 //	2011-10-13 quisvir - Fixed #187 "Arrow" icon in "PRS+ Settings" slot is missing
+//  2011-10-19 Ben Chenoweth - Changed BOOK to BOOK_ALT
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -258,7 +259,7 @@ tmp = function() {
 			},			
 			viewer: {
 				title: coreL("GROUP_VIEWER_TITLE"),
-				icon: "BOOK"
+				icon: "BOOK_ALT"
 			}
 		};
 		// Create addon nodes and addon option nodes

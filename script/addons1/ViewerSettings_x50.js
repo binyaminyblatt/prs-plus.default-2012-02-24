@@ -23,6 +23,7 @@
 //	2011-10-05 quisvir - Added 1-Column split for 350 & 650
 //	2011-10-09 Mark Nord - fixed #182 MaskOverlap for PRS-950
 //	2011-10-13 quisvir - Fixed #196 "No Page Turn with Gestures" doesn't disable Multi-Page Turn
+//  2011-10-13 Ben Chenoweth - assigned more icons
 
 tmp = function() {
 
@@ -463,6 +464,7 @@ tmp = function() {
 			{
 				name: "ClosePopupByPageTap",
 				title: L("CLOSE_POPUP_BY_PAGE_TAP"),
+				icon: "STYLUS",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
@@ -495,6 +497,7 @@ tmp = function() {
 			{
 				name: "PageTurnBySingleTap",
 				title: L("PAGE_TURN_BY_SINGLE_TAP"),
+				icon: "GESTURE",
 				defaultValue: "false",
 				values: ["false", "anywhere", "leftright", "rightleft", "topbottom", "bottomtop"],
 				valueTitles: {
@@ -509,7 +512,7 @@ tmp = function() {
 			{
 				name: "ZoomLockPanning",
 				title: L("ZOOMLOCK_PANNING"),
-				icon: "#41",
+				icon: "SEARCH_ALT",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
