@@ -26,16 +26,17 @@
 //	2011-09-14 kartu - games & utils "into games (unstable)", removed Minesweeper
 //	2011-10-13 quisvir - Fixed #192 Games folder is on the wrong place
 //  2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
+//  2011-10-19 Ben Chenoweth - Added ALT icons; reverted BOOK to 2 and PICTURE to 4; added missing CONTRAST icon
 
 return {
 	// Menu icon indices 
 	NodeKinds: {
 		EMPTY: 1000,
 		ALL_BOOKS: 1,
-		BOOK: 17, // 2
+		BOOK: 2, // 17
 		FILE: 2,
 		AUDIO: 3,
-		PICTURE: 18,  // 4 
+		PICTURE: 4,  // 18
 		SETTINGS: 5,
 		AUTHOR: 6,
 		CONTINUE: 7,
@@ -105,6 +106,10 @@ return {
 		BRIGHT_CONT: 134,
 		BRIGHTNESS: 135,
 		CONTRAST: 136,
+		
+		BOOK_ALT: 137,
+		PICTURE_ALT: 138,
+		SEARCH_ALT: 139,
 		
 		DEFAULT: 112,
 		

@@ -18,6 +18,7 @@
 //	2011-04-13 kartu - Captured image is made immediatelly visible to the system
 //	2011-06-18 kartu - Captured image is made immediatelly visible to the user as well
 //	2011-10-09 Mark Nord - save Screenshots in root+Core.config.userScreenShotPath
+//  2011-10-19 Ben Chenoweth - changed PICTURE to PICTURE_ALT
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -56,12 +57,12 @@ tmp = function() {
 	var Screenshot = {
 		name: "Screenshot",
 		title: L("TITLE"),
-		icon: "PICTURE",
+		icon: "PICTURE_ALT",
 		optionDefs: [
 			{
 				name: "showSaveProgress",
 				title: L("OPT_FEEDBACK"),
-				icon: "PICTURE",
+				icon: "PICTURE_ALT",
 				defaultValue: "on",
 				values: ["on", "off"],
 				valueTitles: {
@@ -91,7 +92,7 @@ tmp = function() {
 			name: "takeScreenshoot",
 			title: L("ACTION_TITLE"),
 			group: "Utils",
-			icon: "PICTURE",
+			icon: "PICTURE_ALT",
 			action: function () {
 				var root, saveFilename, savePath, stream, msg1, msg2, bitmap;
 				try {
