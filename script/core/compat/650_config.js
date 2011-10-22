@@ -27,6 +27,7 @@
 //	2011-10-13 quisvir - Fixed #192 Games folder is on the wrong place
 //  2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
 //  2011-10-19 Ben Chenoweth - Added ALT icons; reverted BOOK to 2 and PICTURE to 4
+//  2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
  
 return {
 	// Menu icon indices 
@@ -124,16 +125,18 @@ return {
 		
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {
-		try{
-			var kind, i;
-			if (type === "home") {
-				kind = this["HOME_" + strKind];
-				if (typeof kind === "undefined") {
-					kind = this.HOME_FOLDER;
-				}
-			} else if (type === "homeLarge") {
-				// if it is undefined, leave it as is
-				kind = this["LARGE_" + strKind];
+			try{
+				var kind, i;
+				if (type === "home") {
+					kind = this["HOME_" + strKind];
+					if (typeof kind === "undefined") {
+						kind = this.HOME_FOLDER;
+					}
+				} else if (type === "homeLarge") {
+					kind = this["LARGE_" + strKind];
+					if (typeof kind === "undefined") {
+						kind = this.LARGE_FOLDER;
+					}				
 				} else {
 					i = strKind.lastIndexOf("#");
 					if (i > -1) {
@@ -142,14 +145,14 @@ return {
 						kind = this[strKind];
 					}
 				}
-			if (typeof kind === "undefined") {
-				kind = this.FOLDER;
+				if (typeof kind === "undefined") {
+					kind = this.FOLDER;
+				}
+				return kind;
 			}
-			return kind;
-		}
-		catch (e) {
-			return this.FOLDER;
-		}
+			catch (e) {
+				return this.FOLDER;
+			}
 		}
 	},
 	
