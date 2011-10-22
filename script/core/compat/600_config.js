@@ -26,6 +26,7 @@
 //	2011-09-14 kartu - renamed games & utils into games
 //  2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
 //  2011-10-19 Ben Chenoweth - Added ALT icons
+//  2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
 
 return {
 	// Menu icon indices 
@@ -128,8 +129,10 @@ return {
 					kind = this.HOME_FOLDER;
 				}
 			} else if (type === "homeLarge") {
-				// if it is undefined, leave it as is
 				kind = this["LARGE_" + strKind];
+				if (typeof kind === "undefined") {
+					kind = this.LARGE_FOLDER;
+				}
 			} else {
 				kind = this[strKind];
 				if (typeof kind === "undefined") {
