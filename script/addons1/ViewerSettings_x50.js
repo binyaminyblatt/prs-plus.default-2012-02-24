@@ -24,6 +24,7 @@
 //	2011-10-09 Mark Nord - fixed #182 MaskOverlap for PRS-950
 //	2011-10-13 quisvir - Fixed #196 "No Page Turn with Gestures" doesn't disable Multi-Page Turn
 //  2011-10-13 Ben Chenoweth - assigned more icons
+//	2011-10-24 quisvir - Fixed #203 "Book rotation scribbled notes origin incorrect"
 
 tmp = function() {
 
@@ -198,8 +199,8 @@ tmp = function() {
 				ratioX = naturalBounds.width / this.sourcePageWidth;
 				ratioY = naturalBounds.height / this.sourcePageHeight;
 				this.portMatrixReviseRatio = Math.max(ratioX, ratioY);
-				this.portMatrixReviseX = naturalBounds.x + naturalBounds.width - (this.sourcePageWidth * this.portMatrixReviseRatio) / 2;
-				this.portMatrixReviseY = naturalBounds.y + naturalBounds.height - (this.sourcePageHeight * this.portMatrixReviseRatio) / 2;
+				this.portMatrixReviseX = naturalBounds.x + (naturalBounds.width - (this.sourcePageWidth * this.portMatrixReviseRatio)) / 2;
+				this.portMatrixReviseY = naturalBounds.y + (naturalBounds.height - (this.sourcePageHeight * this.portMatrixReviseRatio)) / 2;
 			}
 			if (this.marginRemove) {
 				if (!this.marginRemoveDrawRect) {
