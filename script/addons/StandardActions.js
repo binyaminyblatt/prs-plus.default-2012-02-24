@@ -6,9 +6,11 @@
 //	2010-06-27 kartu - Adapted for 300 from former KeyBindings addon
 //	2010-11-28 kartu - 600: Implemented #31 "Use Volume buttons to move through history"
 //				300: Fixed "next/prev" page actions consuming "goto page" key events 
+//	2011-10-27 Mark Nord - ported bubbleActions from x50
 
 tmp = function() {
-	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled;
+	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled,
+		addBubbleActions, addOptionalActions, doBubble, doBubbleFunc;
 	NAME = "StandardActions";
 	L = Core.lang.getLocalizer(NAME);
 	log = Core.log.getLogger(NAME);
@@ -35,6 +37,48 @@ tmp = function() {
 		model.doBlink();
 	};
 
+	// Generic "bubbling" code, bubbles using currently focused item;
+	doBubble = function(cmd, param) {
+		var currentNode, focus;
+		currentNode = model.current;
+		if (currentNode) {
+			focus = kbook.model.container.getWindow().focus;
+			if (focus) {
+				try {
+					focus.bubble(cmd, param);
+				} catch (e) {
+					log.error("in doBubble, command " + cmd, e);
+				}
+			} else {
+				model.doBlink();
+			}
+		}
+	};
+	
+	doBubbleFunc = function() {
+		doBubble(this.bubble);
+	};
+	
+	// Adds "bubblable" actions, if model supports them
+	addBubbleActions = function (actions) {
+		var bubbles, bubble, icons, i, m, n;
+		bubbles = ["doMark",   "doMarkMenu", "doMenu", "doSize"    , "doRoot"   ];
+		icons   = ["BOOKMARK", "EMPTY"  ,    "EMPTY" , "TEXT_SCALE", "ROOT_MENU"];
+		for (i = 0, n = bubbles.length; i < n; i ++) {
+			bubble = bubbles[i];
+			if (model[bubble]) {
+				actions.push( {
+					name: "BubbleAction_" + bubble,
+					title: L("ACTION_" + bubble),
+					group: "Book",
+					icon: icons[i],
+					bubble: bubble,
+					action: doBubbleFunc
+				});
+			}
+		}
+		bubbles = undefined;
+	}
 	StandardActions = {
 		name: NAME,
 		title: L("TITLE"),
@@ -150,10 +194,24 @@ tmp = function() {
 					// Show current book
 					kbook.model.onEnterContinue();
 				}
-			}
+			},
+			{
+				name: "doRotate",
+				title: L("ACTION_ROTATE"),
+				group: "Other",
+				icon: 23,
+				action: function () {
+					ebook.rotate();
+				}
+			}			
 		]
 	};
-
+	// Optional actions depending on the model
+	try {
+		addBubbleActions(StandardActions.actions);
+	} catch (e) {
+		log.trace("Failed to add optional/bubble actions " + e);
+	}
 	Core.addAddon(StandardActions);
 };
 try {

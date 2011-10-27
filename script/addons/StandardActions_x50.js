@@ -10,6 +10,7 @@
 //	2011-02-10 kartu - Implemented # goto TOC, doOption, doSearch, doRotate, doMenu, doSize, doRoot actions
 //	2011-02-27 kartu - x50: Added rotate by 0 / 90 / 180 / 270 / clock wise / counter clock wize actions
 //	2011-02-27 kartu - 600: Added rotate by 90 action
+//	2011-10-27 Mark Nord - Added doPowerSwitch = Sleepmode
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, 
@@ -312,6 +313,14 @@ tmp = function() {
 					// Show current book
 					kbook.model.onEnterContinue();
 				}
+			},
+			{
+				name: "Standby",
+				title: L("ACTION_STANDBY"),
+				group: "Other",
+				icon: "STANDBY",
+				bubble: "doPowerSwitch",
+				action: doBubbleFunc
 			}
 		]
 	};
@@ -321,7 +330,7 @@ tmp = function() {
 		addBubbleActions(StandardActions.actions);
 		addOptionalActions(StandardActions.actions);
 	} catch (e) {
-		log.trace("Failed ot add optional/bubble actions " + e);
+		log.trace("Failed to add optional/bubble actions " + e);
 	}
 	
 	Core.addAddon(StandardActions);
