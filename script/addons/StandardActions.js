@@ -79,47 +79,47 @@ tmp = function() {
 			}
 		}
 		bubbles = undefined;
-	}
+	};
 	
-		addOptionalActions = function(actions) {
-			if (Core.config.compat.hasVolumeButtons) {
-				actions.push({
-					name: "NextSong",
-					title: L("ACTION_NEXT_SONG"),
-					group: "Other",
-					icon: "NEXT_SONG",
-					action: function () {
-						model.doGotoNextSong();
+	addOptionalActions = function(actions) {
+		if (Core.config.compat.hasVolumeButtons) {
+			actions.push({
+				name: "NextSong",
+				title: L("ACTION_NEXT_SONG"),
+				group: "Other",
+				icon: "NEXT_SONG",
+				action: function () {
+					model.doGotoNextSong();
+				}
+			});
+			actions.push({
+				name: "PreviousSong",
+				title: L("ACTION_PREVIOUS_SONG"),
+				group: "Other",
+				icon: "PREVIOUS_SONG",
+				action: function () {
+					model.doGotoPreviousSong();
+				}
+			});
+			
+		}
+		// FIXME: implicit "is touchscreen device"
+		if (Core.config.compat.hasJoypadButtons) {
+			actions.push({
+				name: "GotoLink",
+				title: L("ACTION_GOTO_LINK"),
+				group: "Book",
+				icon: "NEXT_PAGE",
+				action: function () {
+					if (isBookEnabled()) {
+						book.doCenter();
+					} else {
+						return true;
 					}
-				});
-				actions.push({
-					name: "PreviousSong",
-					title: L("ACTION_PREVIOUS_SONG"),
-					group: "Other",
-					icon: "PREVIOUS_SONG",
-					action: function () {
-						model.doGotoPreviousSong();
-					}
-				});
-				
-			}
-			// FIXME: implicit "is touchscreen device"
-			if (Core.config.compat.hasJoypadButtons) {
-				actions.push({
-					name: "GotoLink",
-					title: L("ACTION_GOTO_LINK"),
-					group: "Book",
-					icon: "NEXT_PAGE",
-					action: function () {
-						if (isBookEnabled()) {
-							book.doCenter();
-						} else {
-							return true;
-						}
-					}
-				});
-			}
-		}	
+				}
+			});
+		}
+	};	
 	
 	StandardActions = {
 		name: NAME,
