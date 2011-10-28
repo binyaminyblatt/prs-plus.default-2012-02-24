@@ -59,7 +59,7 @@ tmp = function() {
 	addBubbleActions = function (actions) {
 		var bubbles, bubble, icons, i, m, n;
 		bubbles = ["doOption", "doSearch", "doRotate", "doMenu", "doSize"    , "doRoot"   ];
-		icons   = ["EMPTY"   , "SEARCH"  , "EMPTY"   , "EMPTY" , "TEXT_SCALE", "ROOT_MENU"];
+		icons   = ["EMPTY"   , "SEARCH"  , "EMPTY"   , "BACK" ,  "TEXT_SCALE", "ROOT_MENU"];
 		for (i = 0, n = bubbles.length; i < n; i ++) {
 			bubble = bubbles[i];
 			if (model[bubble]) {
