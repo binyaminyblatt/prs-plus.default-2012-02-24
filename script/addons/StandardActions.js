@@ -7,6 +7,7 @@
 //	2010-11-28 kartu - 600: Implemented #31 "Use Volume buttons to move through history"
 //				300: Fixed "next/prev" page actions consuming "goto page" key events 
 //	2011-10-27 Mark Nord - ported bubbleActions from x50
+//	2011-10-28 Mark Nord - fixed issue #206
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled,
@@ -62,8 +63,8 @@ tmp = function() {
 	// Adds "bubblable" actions, if model supports them
 	addBubbleActions = function (actions) {
 		var bubbles, bubble, icons, i, m, n;
-		bubbles = ["doMark",   "doMarkMenu", "doMenu", "doSize"    , "doRoot"   ];
-		icons   = ["BOOKMARK", "EMPTY"  ,    "EMPTY" , "TEXT_SCALE", "ROOT_MENU"];
+		bubbles = ["doMark",   "doMarkMenu", "doMenu", "doSize",     "doRoot"   ];
+		icons   = ["BOOKMARK", "BOOKMARK",   "BACK",   "TEXT_SCALE", "ROOT_MENU"];
 		for (i = 0, n = bubbles.length; i < n; i ++) {
 			bubble = bubbles[i];
 			if (model[bubble]) {
@@ -79,13 +80,10 @@ tmp = function() {
 		}
 		bubbles = undefined;
 	}
-	StandardActions = {
-		name: NAME,
-		title: L("TITLE"),
-		icon: "SETTINGS",
-		onPreInit: function() {
+	
+		addOptionalActions = function(actions) {
 			if (Core.config.compat.hasVolumeButtons) {
-				this.actions.push({
+				actions.push({
 					name: "NextSong",
 					title: L("ACTION_NEXT_SONG"),
 					group: "Other",
@@ -94,7 +92,7 @@ tmp = function() {
 						model.doGotoNextSong();
 					}
 				});
-				this.actions.push({
+				actions.push({
 					name: "PreviousSong",
 					title: L("ACTION_PREVIOUS_SONG"),
 					group: "Other",
@@ -107,7 +105,7 @@ tmp = function() {
 			}
 			// FIXME: implicit "is touchscreen device"
 			if (Core.config.compat.hasJoypadButtons) {
-				this.actions.push({
+				actions.push({
 					name: "GotoLink",
 					title: L("ACTION_GOTO_LINK"),
 					group: "Book",
@@ -121,8 +119,12 @@ tmp = function() {
 					}
 				});
 			}
-		},
-		
+		}	
+	
+	StandardActions = {
+		name: NAME,
+		title: L("TITLE"),
+		icon: "SETTINGS",
 		actions: [
 			{
 				name: "Shutdown",
@@ -197,18 +199,19 @@ tmp = function() {
 			},
 			{
 				name: "doRotate",
-				title: L("ACTION_ROTATE"),
+				title: L("ACTION_doRotate"),
 				group: "Other",
 				icon: 23,
 				action: function () {
 					ebook.rotate();
 				}
-			}			
+			}
 		]
 	};
-	// Optional actions depending on the model
+	// Optional actions depending on the model  
 	try {
 		addBubbleActions(StandardActions.actions);
+		addOptionalActions(StandardActions.actions);
 	} catch (e) {
 		log.trace("Failed to add optional/bubble actions " + e);
 	}
