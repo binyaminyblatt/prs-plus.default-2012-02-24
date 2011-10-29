@@ -27,6 +27,7 @@
 //  2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
 //  2011-10-19 Ben Chenoweth - Added ALT icons
 //  2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
+//  2011-10-29 Ben Chenoweth - Added some keyCodes (kMute, kSize and kHome) for key bindings
 
 return {
 	// Menu icon indices 
@@ -147,7 +148,10 @@ return {
 	// PRS+ abstract key code to actual key code, model specific
 	keyCodes: {
 		volume_down: "kVolumeMinus", 
-		volume_up: "kVolumePlus"
+		volume_up: "kVolumePlus",
+		volume_up_h: "kMute",
+		home: "kHome",
+		size: "kSize"
 	},
 	// does device have numeric keys
 	hasNumericButtons: false,
@@ -158,7 +162,7 @@ return {
 	// are there joypad buttons
 	hasJoypadButtons: false,
 	// are there "other" buttons
-	hasOtherButtons: false,
+	hasOtherButtons: true,
 	// Are there SD/MS card slots
 	hasCardSlots: true,
 	
