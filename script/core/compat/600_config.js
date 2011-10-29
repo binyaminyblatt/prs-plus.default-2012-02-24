@@ -24,10 +24,11 @@
 //		Solitaire by Ben Chenoweth
 //	2011-08-28 Ben Chenoweth - Moved games into Games node
 //	2011-09-14 kartu - renamed games & utils into games
-//  2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
-//  2011-10-19 Ben Chenoweth - Added ALT icons
-//  2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
-//  2011-10-29 Ben Chenoweth - Added some keyCodes (kMute, kSize and kHome) for key bindings
+//	2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
+//	2011-10-19 Ben Chenoweth - Added ALT icons
+//	2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
+//	2011-10-29 Ben Chenoweth - Added some keyCodes (kMute, kSize and kHome) for key bindings
+//	2011-10-29 Mark Nord - Added keyCodes for holding Volume+, Volume-, Home and Size (needs patched ebookSystem.so)
 
 return {
 	// Menu icon indices 
@@ -148,10 +149,13 @@ return {
 	// PRS+ abstract key code to actual key code, model specific
 	keyCodes: {
 		volume_down: "kVolumeMinus", 
+		volume_down_h: "kHold0",
 		volume_up: "kVolumePlus",
-		volume_up_h: "kMute",
+		volume_up_h: "kHold1",
 		home: "kHome",
-		size: "kSize"
+		home_h: "kHold2",
+		size: "kSize",
+		size_h: "kHold3"
 	},
 	// does device have numeric keys
 	hasNumericButtons: false,
