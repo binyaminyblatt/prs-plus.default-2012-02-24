@@ -29,6 +29,7 @@
 //	2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
 //	2011-10-29 Ben Chenoweth - Added some keyCodes (kMute, kSize and kHome) for key bindings
 //	2011-10-29 Mark Nord - Added keyCodes for holding Volume+, Volume-, Home and Size (needs patched ebookSystem.so)
+//  2011-10-29 Ben Chenoweth - Added Option and Hold Option to key bindings
 
 return {
 	// Menu icon indices 
@@ -148,14 +149,16 @@ return {
 	
 	// PRS+ abstract key code to actual key code, model specific
 	keyCodes: {
-		volume_down: "kVolumeMinus", 
+		volume_down: "kVolumeMinus",
 		volume_down_h: "kHold0",
 		volume_up: "kVolumePlus",
 		volume_up_h: "kHold1",
 		home: "kHome",
 		home_h: "kHold2",
 		size: "kSize",
-		size_h: "kHold3"
+		size_h: "hHold3",
+		menu: "kOption",
+		menu_h: "kHold4"
 	},
 	// does device have numeric keys
 	hasNumericButtons: false,
