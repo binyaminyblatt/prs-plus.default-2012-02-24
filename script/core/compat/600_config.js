@@ -156,7 +156,7 @@ return {
 		home: "kHome",
 		home_h: "kHold2",
 		size: "kSize",
-		size_h: "hHold3",
+		size_h: "kHold3",
 		menu: "kOption",
 		menu_h: "kHold4"
 	},
