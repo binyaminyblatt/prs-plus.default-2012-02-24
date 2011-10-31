@@ -24,7 +24,7 @@ try {
 
 		aboutText = 
 			"Author: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + 
-			"igorsk, boroda, amutin, obelix, pepak, kravitz, Mark Nord, Ben Chenoweth and others.\n" +
+			"igorsk, boroda, amutin, obelix, pepak, kravitz, Mark Nord, Ben Chenoweth, quisvir and others.\n" +
 			"Translations by:\n" +
 			"     Catalan: surquizu\n" +
 			"     Czech: Hobogen, milanv\n" +
