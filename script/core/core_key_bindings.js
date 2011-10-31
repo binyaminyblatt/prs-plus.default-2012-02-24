@@ -7,6 +7,7 @@
 //	2010-09-24 kartu - Added hasJoypadButtons / hasOtherButtons
 //				Added support for 600 (new event system, handleEvent is called for UP and DOWN and HOLD events)
 //	2010-11-28 kartu - Added option for actions to pass control to the default key handler
+//  2011-10-31 Ben Chenoweth - Changed MENU to OPTION for 600 & x50
 
 tmp = function() {
 	var KeyBindings, STATE_GLOBAL, contexts, contextsLen, defVal, contextLabels,
@@ -164,18 +165,37 @@ tmp = function() {
 	
 	createButtonOptions = function(keys, opDefs) {
 		var i, n, key, keyCode;
+		var model = Core.config.model;
 		for (i = 0, n = keys.length; i < n; i++) {
 			// simple key press	
 			key = keys[i];
 			keyCode = keyCodes[key]; 
 			if (keyCode !== undefined) {
-				opDefs.push(createOptionDef(L("BN_" + key.toUpperCase()), keyCode));
+				if ((model=="300") || (model=="505")) {
+					opDefs.push(createOptionDef(L("BN_" + key.toUpperCase()), keyCode));
+				} else {
+					// 600 & x50 have OPTION button not MENU button
+					if (key=="menu") {
+						opDefs.push(createOptionDef(L("BN_OPTION"), keyCode));
+					} else {
+						opDefs.push(createOptionDef(L("BN_" + key.toUpperCase()), keyCode));
+					}
+				}
 			}
 			
 			// "hold" key press
 			keyCode = keyCodes[key + "_h"];
 			if (keyCode !== undefined) {
-				opDefs.push(createOptionDef(L("BN_H_" + key.toUpperCase()), keyCode));
+				if ((model=="300") || (model=="505")) {
+					opDefs.push(createOptionDef(L("BN_H_" + key.toUpperCase()), keyCode));
+				} else {
+					// 600 & x50 have OPTION button not MENU button
+					if (key=="menu") {
+						opDefs.push(createOptionDef(L("BN_H_OPTION"), keyCode));
+					} else {
+						opDefs.push(createOptionDef(L("BN_H_" + key.toUpperCase()), keyCode));
+					}
+				}
 			}                                                      
 		}
 	};
