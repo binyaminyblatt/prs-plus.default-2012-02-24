@@ -166,8 +166,8 @@ return {
 		home_h: "kHome-hold",
 		size: "kSize",
 		size_h: "kSize-hold",
-		menu: "kOption",
-		menu_h: "kOption-hold"
+		option: "kOption",
+		option_h: "kOption-hold"
 	},
 	// does device have numeric keys
 	hasNumericButtons: false,
@@ -206,7 +206,7 @@ return {
 		// Container nodes
 		customContainers: [
 			{ name: "more", title: "NODE_MORE", icon: "MORE", parent: "root"},
-			{ name: "", title: "NODE_GAMES", shortName: "Games", icon: "GAME"}
+			{ name: "games", title: "NODE_GAMES", shortName: "Games", icon: "GAME", comment: "10 items"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
@@ -217,16 +217,16 @@ return {
 			{ name: "", parent: "more" },
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },	
-			{ name: "Chess", parent: "" },
-			{ name: "Draughts", parent: "" },
-			{ name: "FiveBalls", parent: "" },	
-			{ name: "FiveRow", parent: "" },	
-			{ name: "FreeCell", parent: "" },
-			{ name: "Mahjong", parent: "" },
-			{ name: "MineSweeper", parent: "" },
-			{ name: "Solitaire", parent: "" },
-			{ name: "Sudoku", parent: "" },
-			{ name: "XOCubed", parent: "" }
+			{ name: "Chess", parent: "games" },
+			{ name: "Draughts", parent: "games" },
+			{ name: "FiveBalls", parent: "games" },	
+			{ name: "FiveRow", parent: "games" },	
+			{ name: "FreeCell", parent: "games" },
+			{ name: "Mahjong", parent: "games" },
+			{ name: "MineSweeper", parent: "games" },
+			{ name: "Solitaire", parent: "games" },
+			{ name: "Sudoku", parent: "games" },
+			{ name: "XOCubed", parent: "games" }
 		],
 		movableNodes: [0, 0, 1, 1, 1],
 		defaultLayout: [
