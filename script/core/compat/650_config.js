@@ -25,9 +25,10 @@
 //	2011-09-04 Mark Nord - NodeKinds.getIcon modified to accept "#icon-number" (not consistent across model-border but speeds up testing)
 //	2011-09-14 kartu - renamed games & utils into games
 //	2011-10-13 quisvir - Fixed #192 Games folder is on the wrong place
-//  2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
-//  2011-10-19 Ben Chenoweth - Added ALT icons; reverted BOOK to 2 and PICTURE to 4
-//  2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
+//	2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
+//	2011-10-19 Ben Chenoweth - Added ALT icons; reverted BOOK to 2 and PICTURE to 4
+//	2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
+// 	2011-10-22 Mark Nord - Fix for node "games" in customNodes (instead of "") it's now consitstend for all x50
  
 return {
 	// Menu icon indices 
@@ -206,7 +207,7 @@ return {
 		// Container nodes
 		customContainers: [
 			{ name: "more", title: "NODE_MORE", icon: "MORE", parent: "root"},
-			{ name: "games", title: "NODE_GAMES", shortName: "Games", icon: "GAME", comment: "10 items"}
+			{ name: "games", title: "NODE_GAMES", shortName: "Games", icon: "GAME"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
@@ -214,7 +215,7 @@ return {
 			{ name: "collections", parent: "more" },
 			{ name: "periodicals", parent: "more" },
 			{ name: "notes", parent: "more" },
-			{ name: "", parent: "more" },
+			{ name: "games", parent: "more" },
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },	
 			{ name: "Chess", parent: "games" },
