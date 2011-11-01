@@ -164,8 +164,8 @@ return {
 		home_h: "kHome-hold",
 		size: "kSize",
 		size_h: "kSize-hold",
-		menu: "kOption",
-		menu_h: "kOption-hold"
+		option: "kOption",
+		option_h: "kOption-hold"
 	},
 	// does device have numeric keys
 	hasNumericButtons: false,
