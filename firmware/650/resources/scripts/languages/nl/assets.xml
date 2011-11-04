@@ -19,7 +19,7 @@
 		<string id="STR_UI_BUTTON_PM" value="PM" />
 		<string id="STR_NODE_TITLE_DEVICELOCK" value="Vergrendeling" />
 		<string id="STR_NODE_TITLE_ENTERCODE" value="Code invoeren" />
-		<string id="STR_NODE_TITLE_SLIDESHOW" value="Diashow" />
+		<string id="STR_NODE_TITLE_SLIDESHOW" value="Diavoorstelling" />
 		<string id="STR_NODE_TITLE_TURN" value="Activeren" />
 		<string id="STR_NODE_TITLE_SLIDEDURATION" value="Interval" />
 		<string id="STR_NODE_TITLE_DEVICESHUTDOWN" value="App. uitschkln" />
@@ -27,7 +27,7 @@
 		<string id="STR_NODE_TITLE_RESTOREDEFAULTS" value="Instellingen herstellen" />
 		<string id="STR_NODE_TITLE_CODE" value="Pass-code" />
 		<string id="#STR_NODE_TITLE_AUTORUN" value="autoRun" />
-		<string id="#STR_NODE_TITLE_HARDRESET" value="hardReset" />
+		<string id="#STR_NODE_TITLE_HARDRESET" value="harde Reset" />
 		<string id="STR_COUNTER_BOOKMARK_N" value=" bladwijzers" />
 		<string id="STR_COUNTER_BOOKMARK_1" value="1 bladwijzer" />
 		<string id="STR_COUNTER_BOOKMARK_0" value="Geen bladwijzers" />
@@ -40,9 +40,9 @@
 		<string id="STR_COUNTER_COLLECTION_N" value=" collecties" />
 		<string id="STR_COUNTER_COLLECTION_1" value="1 collect." />
 		<string id="STR_COUNTER_COLLECTION_0" value="Geen collecties" />
-		<string id="STR_COUNTER_SONG_N" value=" songs" />
-		<string id="STR_COUNTER_SONG_1" value="1 song" />
-		<string id="STR_COUNTER_SONG_0" value="Geen songs" />
+		<string id="STR_COUNTER_SONG_N" value=" nummers" />
+		<string id="STR_COUNTER_SONG_1" value="1 nummer" />
+		<string id="STR_COUNTER_SONG_0" value="Geen nummers" />
 		<string id="STR_COUNTER_PICTURE_N" value=" foto's" />
 		<string id="STR_COUNTER_PICTURE_1" value="1 foto" />
 		<string id="STR_COUNTER_PICTURE_0" value="Geen foto's" />
@@ -67,7 +67,7 @@
 		<string id="STR_UI_PARTS_VERSION" value="Versie" />
 		<string id="STR_UI_PARTS_DEVICE" value="App." />
 		<string id="STR_UI_GOTOPAGE" value="PAG." />
-		<string id="STR_UI_MESSAGE_INVALIDPAGE" value="Ongeldige pag.!" />
+		<string id="STR_UI_MESSAGE_INVALIDPAGE" value="Ongeldige pagina!" />
 		<string id="STR_UI_MESSAGE_PROTECTEDPAGE" value="Beveiligd door Digitale-rechtenbeheer" />
 		<string id="STR_UI_MESSAGE_ERRORPAGE" value="Paginafout!" />
 		<string id="STR_UI_MESSAGE_INVALIDFORMAT" value="Ongeldig formaat!" />
@@ -84,7 +84,7 @@
 		<string id="STR_UI_MESSAGE_HARDRESET" value="Alles resetten" />
 		<string id="STR_UI_MESSAGE_HARDRESETOPERATION" value="Wilt u alle inhoud VERWIJDEREN, alle fabrieksinstellingen herstellen en de DRM-machtigingsstatus wissen?&#xA;&#xA;Ja - Druk op de “OPTIONS”-knop&#xA;Nee - Druk op de “HOOFDSCHERM”-knop" />
 		<string id="STR_UI_MESSAGE_LOWBATTERY" value="Batterij laag!" />
-		<string id="STR_UI_MESSAGE_NOBATTERY" value="Batt leeg!" />
+		<string id="STR_UI_MESSAGE_NOBATTERY" value="Batterij leeg!" />
 		<string id="STR_UI_MESSAGE_LOADING" value="Laden..." />
 		<string id="STR_UI_MESSAGE_SINGLEPAGE" value="1 van 1" />
 		<string id="STR_UI_FORMAT_RTF" value="Rich Text Format" />
@@ -104,8 +104,8 @@
 		<string id="STR_UI_USB_MODE_GUIDE_OTHER_ERRORS" value="Uw Reader moet teruggesteld worden. Om dit te doen moet u een speld in het Reset-gaatje steken en daarna de uit/aanschakelaar verschuiven en loslaten. Indien u dit bericht nog steeds op het scherm ziet, gelieve met de klantendienst contact op te nemen." />
 		<string id="STR_UI_USB_MODE_GUIDE" value="Gelieve de gebruikersgids te raadplegen." />
 		<string id="STR_SORT_IGNORESPACEANDPUNCTUATIONS" value=" ,',&quot;,„,‘,’,“,”" />
-		<string id="STR_SORT_IGNOREARTICLES" value="een ,eene ,de ,het " />
-		<string id="infoTitles" value="Cover,Titel,Titel,op datum uitg.,Auteur,Uitgeverij,Categorie,eBook ID,Soort,Datum,Grootte,Locatie,Pad,Digitale Rechten,Vervaldag" />
+		<string id="STR_SORT_IGNOREARTICLES" value="een ,eene ,de ,het ,'s " />
+		<string id="infoTitles" value="Omslag,Titel,Titel,op datum uitg.,Auteur,Uitgeverij,Categorie,eBook ID,Soort,Datum,Grootte,Locatie,Pad,Digitale Rechten,Vervaldag" />
 		<string id="STR_NODE_TITLE_LANG_SETTINGS" value="Menutaal" />
 		<string id="STR_UI_LANG" value="Taal" />
 		<string id="STR_UI_LANG_EN" value="English" />
@@ -115,7 +115,7 @@
 		<string id="STR_UI_LANG_ES" value="Español" />
 		<string id="STR_UI_LANG_PT" value="Português" />
 		<string id="STR_UI_LANG_IT" value="Italiano" />
-		<string id="STR_UI_MESSAGE_GUIDEAREA_LANG" value="Kies uw gewenste taal en selecteer “OK”.&#xA;Opmerking:  De instellingen van dit apparaat kunt u op een later tijdstip wijzigen vanuit het “Instellingen”-menu." />
+		<string id="STR_UI_MESSAGE_GUIDEAREA_LANG" value="Kies uw gewenste taal en selecteer “Ok”.&#xA;Opmerking:  De instellingen van dit apparaat kunt u op een later tijdstip wijzigen vanuit het “Instellingen”-menu." />
 		<string id="STR_UI_PARTS_DELIMITER" value="/" />
 		<string id="STR_UI_MESSAGE_DEMOMODE" value="(Demomodus)" />
 		<string id="STR_UI_MESSAGE_DEMOSCR_SAVER" value="Demo Screensaver" />
@@ -132,9 +132,9 @@
 		<string id="STR_NODE_TITLE_SORTEDBYTITLE" value="op titel" />
 		<string id="STR_NODE_TITLE_SORTEDBYAUTHOR" value="op auteur" />
 		<string id="STR_NODE_TITLE_SORTEDBYDATE" value="op datum" />
-		<string id="STR_NODE_TITLE_SORTEDBYORDER" value="op Volg. Toev." />
+		<string id="STR_NODE_TITLE_SORTEDBYORDER" value="op toegevoegd" />
 		<string id="STR_NODE_TITLE_ALLNOTES" value="Alle notities" />
-		<string id="STR_NODE_TITLE_SORTEDBYCOMMENT" value="op comment." />
+		<string id="STR_NODE_TITLE_SORTEDBYCOMMENT" value="alfabetisch" />
 		<string id="STR_NODE_TITLE_SORTEDBYTYPE" value="op type" />
 		<string id="STR_NODE_TITLE_SORTEDBYARTIST" value="op artiest" />
 		<string id="STR_NODE_TITLE_NEXTPAGE" value="Volgende pagina" />
@@ -186,10 +186,10 @@
 		<string id="STR_UI_MENU_BYARTIST" value="op artiest" />
 		<string id="STR_UI_MENU_BYPAGE" value="op pagina" />
 		<string id="STR_UI_MENU_BYTYPE" value="op type" />
-		<string id="STR_UI_MENU_BYCOMMENT" value="op comment." />
+		<string id="STR_UI_MENU_BYCOMMENT" value="alfabetisch" />
 		<string id="STR_UI_MENU_DELETENOTES" value="Notities verwijderen" />
 		<string id="STR_UI_MESSAGE_RESET" value="Weet u zeker dat u de standaardinstellingen wilt herstellen?" />
-		<string id="STR_UI_MESSAGE_FORMATINTERNALMEMORY" value="Intern geheugen formatteren" />
+		<string id="STR_UI_MESSAGE_FORMATINTERNALMEMORY" value="Interne geheugen formatteren" />
 		<string id="STR_UI_MESSAGE_FORMATDEVICE" value="Weet u zeker dat u het interne geheugen wilt formatteren?&#xA;Waarschuwing: alle inhoud en notities zullen worden verwijderd." />
 		<string id="STR_UI_MESSAGE_FORMATDEVICE_MS" value="Weet u zeker dat u de Memory Stick™-kaart wilt formatteren?&#xA;Waarschuwing: alle inhoud en notities zullen worden verwijderd." />
 		<string id="STR_UI_MESSAGE_FORMATDEVICE_SD" value="Weet u zeker dat u de SD-kaart wilt formatteren?&#xA;Waarschuwing: alle inhoud en notities zullen worden verwijderd." />
@@ -203,7 +203,7 @@
 		<string id="STR_UI_MESSAGE_DEMO_MODE_2" value="Deze feature is niet beschikbaar in de demomodus." />
 		<string id="STR_UI_MESSAGE_CALIBRATION_START" value="Gebruik de Touchpen om het midden van het doel aan te raken." />
 		<string id="STR_UI_MESSAGE_CALIBRATION_ERR" value="Calibratiefout ontdekt. Gelieve het calibratieproces opnieuw te starten." />
-		<string id="STR_UI_BUTTON_YES" value="Ja " />
+		<string id="STR_UI_BUTTON_YES" value="Ja" />
 		<string id="STR_UI_BUTTON_NO" value="Nee" />
 		<string id="STR_UI_BUTTON_ZOOMIN" value="Inzoomen" />
 		<string id="STR_UI_BUTTON_PAGE_STYLE" value="Pagina-modus" />
@@ -259,17 +259,17 @@
 		<string id="STR_UI_MESSAGE_LOCATIONINTERNAL" value="Intern geheugen" />
 		<string id="STR_UI_MESSAGE_LOCATION_MS" value="Memory Stick™" />
 		<string id="STR_UI_MESSAGE_LOCATION_SD" value="SD-kaart" />
-		<string id="STR_UI_FORMAT_INTERNAL_MEMORY" value="Bezig formatt.intern geheugen..." />
-		<string id="STR_UI_FORMAT_EXTERNAL_MS" value="Bezig formatt. Memory Stick™..." />
-		<string id="STR_UI_FORMAT_EXTERNAL_SD" value="Bezig formatteren SD-kaart..." />
-		<string id="STR_WARNING_FORMAT_1" value="Bezig met formatteren..." />
+		<string id="STR_UI_FORMAT_INTERNAL_MEMORY" value="Formatteert intern geheugen..." />
+		<string id="STR_UI_FORMAT_EXTERNAL_MS" value="Formatteert Memory Stick™..." />
+		<string id="STR_UI_FORMAT_EXTERNAL_SD" value="Formatteert SD-kaart..." />
+		<string id="STR_WARNING_FORMAT_1" value="Aan het formatteren..." />
 		<string id="STR_WARNING_FORMAT_2_MS" value="Memory Stick™-kaart niet verwijderen." />
 		<string id="STR_WARNING_FORMAT_2_SD" value="SD-kaart niet verwijderen." />
 		<string id="STR_UI_DELETEBOOKMARKS_ON_PAGE_MES_1" value="Weet u zeker dat u deze bladwijzer wilt verwijderen?" />
 		<string id="STR_UI_DELETEBOOKMARKS_ON_PAGE_MES_2" value="Opmerking: deze pagina bevat een bladwijzer met meer dan één tekstgrootte. Als u verder gaat worden alle bladwijzers op deze pagina verwijderd." />
 		<string id="STR_UI_DELETEBOOKMARKS_ON_PAGE_W_COM_MES_1" value="Weet u zeker dat u de bladwijzer wilt verwijderen? " />
 		<string id="STR_UI_DELETEBOOKMARKS_ON_PAGE_W_COM_MES_2" value="Opmerking: deze pagina bevat een bladwijzer met een notitie in meer dan één tekstgrootte. Als u verder gaat worden alle bladwijzers en notities op deze pagina verwijderd." />
-		<string id="STR_FORMAT_NO_MEMORY" value="Geen geheugenkaart ingestoken." />
+		<string id="STR_FORMAT_NO_MEMORY" value="Geen geheugenkaart ingestoken" />
 		<string id="STR_FORMAT_WRITE_PROTECTED" value="Geheugenkaart beschermd tegen schrijven" />
 		<string id="STR_FORMAT_NON_STANDARD" value="Geheugenkaart niet ondersteund" />
 		<string id="STR_NODE_TITLE_NOTEPAD_FREEHAND" value="Handschrift" />
@@ -388,7 +388,7 @@
 		<string id="STR_UI_MESSAGE_TITLE_DELETEISSUE" value="Titel publicatie: &quot;XXTITLEXX&quot;" />
 		<string id="STR_UI_MESSAGE_DELETEISSUE" value="Weet u zeker dat u deze publicatie wilt verwijderen?" />
 		<string id="STR_UI_MESSAGE_DELETEISSUEERR" value="Verwijderen van publicatie mislukt. Raak “OK” aan om terug te gaan naar de publicatielijst." />
-		<string id="STR_NODE_TITLE_SORTEDBY_LATESTREAD" value="op ltst gelez" />
+		<string id="STR_NODE_TITLE_SORTEDBY_LATESTREAD" value="op lees datum" />
 		<string id="STR_NODE_TITLE_SORTEDBY_ISSUEDATE" value="op datum uitg." />
 		<string id="STR_MONTH_JANUARY" value="Januari" />
 		<string id="STR_MONTH_FEBRUARY" value="Februari" />
@@ -431,8 +431,8 @@
 		<string id="STR_NODE_TITLE_SELECT_PERIODICAL" value="Periodieken selecteren" />
 		<string id="STR_NODE_TITLE_ADD_ISSUES" value="Publicaties toevoegen" />
 		<string id="STR_NODE_TITLE_SELECT_A_COLLECTION" value="Een Collectie selecteren" />
-		<string id="STR_NODE_TITLE_SORTEDBYFILENAME" value="op n. bestand" />
-		<string id="STR_UI_MENU_BYFILENAME" value="op n. bestand" />
+		<string id="STR_NODE_TITLE_SORTEDBYFILENAME" value="op bestandsnaam" />
+		<string id="STR_UI_MENU_BYFILENAME" value="op bestandsnaam" />
 		<string id="STR_UI_MENU_TITLEONLYLIST" value="Enkel titel" />
 		<string id="STR_UI_MENU_ADDBOOKS" value="Boeken" />
 		<string id="STR_UI_MENU_ADDPERIODICALS" value="Periodieken" />
@@ -598,7 +598,7 @@
 		<string id="STR_UI_MENU_CREATE_EDIT" value="Aanmaken/Bewerken" />
 		<string id="STR_UI_MENU_HIDE" value="Verbergen" />
 		<string id="STR_UI_MENU_SHOW" value="Weergeven" />
-		<string id="STR_UI_MENU_ADD_TO_COLLECTION" value="Toevoegen aan Collectie" />
+		<string id="STR_UI_MENU_ADD_TO_COLLECTION" value="Toevoegen aan collectie" />
 		<string id="DIALOGMSG_STANDBY_PICTURE_MAX_MS" value="Kan niet selecteren omdat het maximum aantal van 99 foto's die geselecteerd kunnen worden op de Memory Stick™-kaart bereikt werd.&#xA;Gelieve een andere foto op de Memory Stick™-kaart te deselecteren en selecteer deze foto opnieuw." />
 		<string id="DIALOGMSG_STANDBY_PICTURE_MAX_SD" value="Kan niet selecteren omdat het maximum aantal van 99 foto's die geselecteerd kunnen worden op de SD-kaart bereikt werd.&#xA;Gelieve een andere foto op de SD-kaart te deselecteren en selecteer deze foto opnieuw." />
 		<string id="DIALOGMSG_STANDBY_PICTURE_MAX_INTERNAL_MEMORY" value="Kan niet selecteren omdat het maximum aantal van 99 foto's die geselecteerd kunnen worden op het interne geheugen bereikt werd. Gelieve een andere foto op het interne geheugen te deselecteren en selecteer deze foto opnieuw." />
