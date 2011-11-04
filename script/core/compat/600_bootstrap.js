@@ -24,12 +24,13 @@
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
 //	2011-07-05 Ben Chenoweth - Minor fix to prevent crash when showing actual page on standby
 //	2011-08-18 Mark Nord - fixed current page as StandbyImage + display of localised "sleeping.." instead of the clock
-//  2011-08-27 Ben Chenoweth - Minor fix to 'Sleeping...' text location
-//  2011-10-09 Ben Chenoweth - Applied quisvir's code to always show book covers in portrait mode and keep aspect ratio;
+//	2011-08-27 Ben Chenoweth - Minor fix to 'Sleeping...' text location
+//	2011-10-09 Ben Chenoweth - Applied quisvir's code to always show book covers in portrait mode and keep aspect ratio;
 //			"Sleeping..." for landscape-mode by making coordinates dynamic; also show wallpaper in portrait-mode
 //			so no need for /landscape/ subfolder.
-//  2011-10-10 Ben Chenoweth - Fix for cover/wallpaper on standby.
-//  2011-10-11 Ben Chenoweth - Further fix for cover/wallpaper on standby & code tidying.
+//	2011-10-10 Ben Chenoweth - Fix for cover/wallpaper on standby.
+//	2011-10-11 Ben Chenoweth - Further fix for cover/wallpaper on standby & code tidying.
+//	2011-11-04 kartu - Added Turkish
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -45,7 +46,7 @@ var tmp = function() {
 				node, langFile;
 			currentLang = kbook.model.language;
 			settingsNode = kbook.root.nodes[6].nodes[2];
-			languages = ["ca", "cs", "en", "es", "de", "fr", "it", "nl", "ka", "pt", "ru", "zh"];
+			languages = ["ca", "cs", "en", "es", "de", "fr", "it", "nl", "ka", "pt", "ru", "tr", "zh"];
 			langNames = {
 				ca: "Català",
 				cs: "Český",
@@ -58,6 +59,7 @@ var tmp = function() {
 				nl: "Nederlands",
 				pt: "Português",
 				ru: "Русский",
+				tr: "Türkçe",
 				zh: "简体中文 (Simplified Chinese)"
 			};
 	

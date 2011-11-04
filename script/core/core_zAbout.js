@@ -11,6 +11,7 @@
 //	2010-06-27 kartu - Adapted for 300
 //	2011-01-29 kartu - Adapted for x50
 //	2011-02-27 kartu - Fixed #69 PRS+ About information missing
+//	2011-11-04 kartu - Added Dutch & Turkish translation credits
 
 try {
 	// dummy function, to avoid introducing global vars
@@ -28,6 +29,7 @@ try {
 			"Translations by:\n" +
 			"     Catalan: surquizu\n" +
 			"     Czech: Hobogen, milanv\n" +
+			"     Dutch: DrMerry\n" +
 			"     French: VICTORSJG, Duglum, ronnn, dpierron\n" +
 			"     Georgian: rawerfas, kartu\n" +
 			"     German: Duglum, klawong, Mark Nord\n" +			
@@ -36,6 +38,7 @@ try {
 			"     Russian: SLL, boroda, amutin, happyhgy\n" +
 			"     Simplified Chinese: thawk, frank0734\n" +
 			"     Spanish: surquizu, VICTORSJG, Carlos\n" +
+			"     Turkish: Ugur Bulgan, Abdullah Demirci \n" +
 			"     Ukrainian: Bookoman\n" +
 			"© GNU Lesser General Public License.";
 		
