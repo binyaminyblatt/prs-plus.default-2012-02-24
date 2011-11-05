@@ -29,7 +29,8 @@
 //	2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
 //	2011-10-29 Ben Chenoweth - Added some keyCodes (kMute, kSize and kHome) for key bindings
 //	2011-10-29 Mark Nord - Added keyCodes for holding Volume+, Volume-, Home and Size (needs patched ebookSystem.so)
-//  2011-10-29 Ben Chenoweth - Added Option and Hold Option to key bindings
+//	2011-10-29 Ben Chenoweth - Added Option and Hold Option to key bindings
+//	2011-11-05 kartu - Shifted BF,BH and games to the bottom of "More" list
 
 return {
 	// Menu icon indices 
@@ -195,14 +196,14 @@ return {
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
-			{ name: "BookHistory", parent: "more"},
-			{ name: "BrowseFolders", parent: "more"},
-			{ name: "games", parent: "more" },
 			{ name: "collections", parent: "more" },
 			{ name: "notes", parent: "more"},
 			{ name: "PRSPSettings", parent: "more" },
+			{ name: "BookHistory", parent: "more"},
+			{ name: "BrowseFolders", parent: "more"},
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },
+			{ name: "games", parent: "more" },
 			{ name: "Chess", parent: "games" },
 			{ name: "Draughts", parent: "games" },
 			{ name: "FiveBalls", parent: "games" },	
