@@ -10,6 +10,8 @@
  * 600: Added keyCodes and Hold keyCodes to key bindings
  * 600: Fonts updated to the latest version
  * 600: Added Turkish translation
+ * 600: Changed "holding option button" to do "go to parent view"
+ * 600: Shifted games to the bottom of "More" list
 
 === 2.0.14 beta ===
  * x50: Fixed #128 books/collections sorting
