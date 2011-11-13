@@ -29,6 +29,7 @@
 //	2011-10-19 Ben Chenoweth - Added ALT icons; reverted BOOK to 2 and PICTURE to 4
 //	2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
 // 	2011-10-22 Mark Nord - Fix for node "games" in customNodes (instead of "") it's now consitstend for all x50
+//	2011-11-13 kartu - changed rootNode to a function, since node is not available at the time config file is loaded
  
 return {
 	// Menu icon indices 
@@ -200,7 +201,7 @@ return {
 	},
 	
 	// Root node for menu customizer
-	rootNode: kbook.root.nodes[0],
+	rootNode: function() { return kbook.root.nodes[0] },
 	
 	// Menu configuration
 	prspMenu: {

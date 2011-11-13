@@ -31,6 +31,8 @@
 //	2011-08-10 Shura1oplot - Added show file size in comment option
 //	2011-09-16 Mark Nord - Added FileType & FileSize to FileName in comment
 //	2011-10-09 kartu - ALL: Fixed #171 "The "Copy to IM..." menu items are not present in Card via Mount, if card scanning is not disabled"
+//	2011-11-13 kartu - ALL: Fixed bug that prevented SD/MS card scan mode from being changed on the fly
+//			x50: Fixed bug that caused SD/MS card scan options to be ignored on the first boot
 //
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -622,7 +624,7 @@ tmp = function() {
 			}
 			
 			// Bootstrap code knows only Core, not this addon
-			if (propertyName === "cardScanMode") {
+			if (propertyName === "cardScan") {
 				Core.config.cardScanMode = newValue;
 			}
 			

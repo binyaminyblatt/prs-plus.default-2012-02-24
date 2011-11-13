@@ -25,9 +25,10 @@
 //	2011-09-04 Mark Nord - NodeKinds.getIcon modified to accept "#icon-number" (not consistent across model-border but speeds up testing)
 //	2011-09-14 kartu - games & utils "into games (unstable)", removed Minesweeper
 //	2011-10-13 quisvir - Fixed #192 Games folder is on the wrong place
-//  2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
-//  2011-10-19 Ben Chenoweth - Added ALT icons; reverted BOOK to 2 and PICTURE to 4; added missing CONTRAST icon
-//  2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
+//	2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
+//	2011-10-19 Ben Chenoweth - Added ALT icons; reverted BOOK to 2 and PICTURE to 4; added missing CONTRAST icon
+//	2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
+//	2011-11-13 kartu - changed rootNode to a function, since node is not available at the time config file is loaded
 
 return {
 	// Menu icon indices 
@@ -198,7 +199,7 @@ return {
 	},
 	
 	// Root node for menu customizer
-	rootNode: kbook.root.nodes[0],
+	rootNode: function() { return kbook.root.nodes[0] },
 	
 	// Menu configuration
 	prspMenu: {
