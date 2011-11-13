@@ -1,16 +1,18 @@
 === 2.0.15 beta ===
  * ALL: Fixed #171 "The "Copy to IM..." menu items are not present in Card via Mount, if card scanning is not disabled"
+ * ALL: Fixed bug that prevented SD/MS card scan mode from being changed on the fly
  * 350/650: Fixed "Continue searching from the begining doesn't work" (Sony bug)
  * 350/650: Added 1-Column Split (quisvir)
  * x50: "Cycle booklist" action now also cycles through collections (quisvir)
  * x50: Added option to treat periodicals as books (quisvir)
+ * x50: Fixed #211  that caused SD/MS card scan options to be ignored on the first boot
  * 600/x50: Added Page Turn by Single Tap (quisvir)
  * 600/x50: Close reading popup menu (dict etc) and cancel selection by tapping page (quisvir)
  * 600: Fixed #197 "SD/MS card via mount" doesn't handle non-latin characters
  * 600: Added keyCodes and Hold keyCodes to key bindings
  * 600: Fonts updated to the latest version
  * 600: Added Turkish translation
- * 600: Changed "holding option button" to do "go to parent view"
+ * 600: Changed "holding option button" default action to do "go to parent view"
  * 600: Shifted games to the bottom of "More" list
 
 === 2.0.14 beta ===

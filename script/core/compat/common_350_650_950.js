@@ -25,6 +25,8 @@
 //	2011-09-22 kartu - Removed code overriding String.prototype.localeCompare, it did nothing but tamper collections sorting
 //	2011-10-04 quisvir - Moved standby image code from bootstrap to common
 //	2011-10-09 quisvir - Removed unnecessary code from standby image (thx Mark)
+//	2011-11-13 kartu - ALL: Fixed bug that prevented SD/MS card scan mode from being changed on the fly
+//			x50: Fixed bug that caused SD/MS card scan options to be ignored on the first boot
 //
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -34,7 +36,7 @@ tmp = function () {
 
 	// Standby image
 	var orgOrientation = 0;
-	
+
 	var oldStandbyImageDraw = standbyImage.draw;
 	standbyImage.draw = function () {
 		var window, ditheredBitmap, x, y, bounds, ratio, width, height;
@@ -43,49 +45,54 @@ tmp = function () {
 		mode = Core.addonByName.StandbyImage.options.mode;
 		dither = Core.addonByName.StandbyImage.options.dither === "true";
 		if (mode === 'cover') {
-				try {
-					// attempt to use current book cover
-					newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
-					newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
-					window.setPenColor(Color.black);
-					window.fillRectangle(0, 0, this.width, this.height);
-					x = 0;
-					y = 0;
-					bounds = newbitmap.getBounds();
-					ratio = (bounds.height > bounds.width)?(this.height / bounds.height):(this.width / bounds.width);
-					width = Math.floor(bounds.width * ratio);
-					height = Math.floor(bounds.height * ratio);
-					if (height > width) x = Math.floor((this.width - width) / 2);
-					else y = Math.floor((this.height - height) / 2);
-					ditheredBitmap = newbitmap.dither(dither);
-					newbitmap.close();
-					if (ditheredBitmap) {
-						window.drawBitmap(ditheredBitmap, x, y, width, height);
-						ditheredBitmap.close();
-					}
-        		} catch (ignore) {}
-		}
-		if (!newbitmap && mode !== 'act_page') oldStandbyImageDraw.apply(this);
-		else if (mode === 'act_page') {
-				L = Core.lang.getLocalizer("StandbyImage");
-				// Save old styles
-				oldTextStyle = window.getTextStyle();
-				oldTextSize = window.getTextSize();
-				oldPenColor = window.getPenColor();
-				// Settings
-				window.setTextStyle("bold");
-				window.setTextSize(22);
-				// Drawing
-				window.beginDrawing();
+			try {
+				// attempt to use current book cover
+				newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+				newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
 				window.setPenColor(Color.black);
-				window.fillRectangle(this.width-155, this.height-30, 155, 30);
-				window.setPenColor(Color.white);
-				window.drawText(L("VALUE_SLEEPING"), this.width-145, this.height-30, 135, 30);				
-				window.endDrawing();
-				// Restore pen color, text size & style
-				window.setTextStyle(oldTextStyle);
-				window.setTextSize(oldTextSize);
-				window.setPenColor(oldPenColor);
+				window.fillRectangle(0, 0, this.width, this.height);
+				x = 0;
+				y = 0;
+				bounds = newbitmap.getBounds();
+				ratio = (bounds.height > bounds.width)?(this.height / bounds.height):(this.width / bounds.width);
+				width = Math.floor(bounds.width * ratio);
+				height = Math.floor(bounds.height * ratio);
+				if (height > width) {
+					x = Math.floor((this.width - width) / 2);
+				} else {
+					y = Math.floor((this.height - height) / 2);
+				}
+				ditheredBitmap = newbitmap.dither(dither);
+				newbitmap.close();
+				if (ditheredBitmap) {
+					window.drawBitmap(ditheredBitmap, x, y, width, height);
+					ditheredBitmap.close();
+				}
+			} catch (ignore) {
+			}
+		}
+		if  (!newbitmap && mode !== 'act_page') {
+			oldStandbyImageDraw.apply(this);
+		} else if (mode === 'act_page')  {
+			L = Core.lang.getLocalizer("StandbyImage");
+			// Save old styles
+			oldTextStyle = window.getTextStyle();
+			oldTextSize = window.getTextSize();
+			oldPenColor = window.getPenColor();
+			// Settings
+			window.setTextStyle("bold");
+			window.setTextSize(22);
+			// Drawing
+			window.beginDrawing();
+			window.setPenColor(Color.black);
+			window.fillRectangle(this.width - 155, this.height - 30, 155, 30);
+			window.setPenColor(Color.white);
+			window.drawText(L("VALUE_SLEEPING"), this.width - 145, this.height - 30, 135, 30);				
+			window.endDrawing();
+			// Restore pen color, text size & style
+			window.setTextStyle(oldTextStyle);
+			window.setTextSize(oldTextSize);
+			window.setPenColor(oldPenColor);
 		}
 	};
 
@@ -93,17 +100,23 @@ tmp = function () {
 	var oldSuspend = kbook.model.suspend;
 	kbook.model.suspend = function () {
 		oldSuspend.apply(this, arguments);
-		if (Core.addonByName.StandbyImage.options.mode == 'cover') orgOrientation = ebook.device.framebuffer.orientation.getCurrent();
-		if (orgOrientation !== 0) ebook.device.framebuffer.orientation.setCurrent(0);
-	}
+		if (Core.addonByName.StandbyImage.options.mode === 'cover') {
+			orgOrientation = ebook.device.framebuffer.orientation.getCurrent();
+		}
+		if (orgOrientation !== 0) {
+			ebook.device.framebuffer.orientation.setCurrent(0);
+		}
+	};
 	
 	// Restore orientation if necessary
 	var oldResume = kbook.model.resume;
 	kbook.model.resume = function () {
-		if (orgOrientation !== 0) ebook.device.framebuffer.orientation.setCurrent(orgOrientation);
+		if (orgOrientation !== 0) {
+			ebook.device.framebuffer.orientation.setCurrent(orgOrientation);
+		}
 		orgOrientation = 0;
 		oldResume.apply(this, arguments);
-	}
+	};
 	
 	// Localize "popup" keyboard, that shows after holding button for a couple of secs
 	localizeKeyboardPopups = function () {
@@ -150,8 +163,9 @@ tmp = function () {
 			return oldSetPopupChar.apply(this, arguments);
 		};
 	};
+
 	localizeKeyboardPopups();
-	
+
 	// Updates node siblings (used for setting selected / unselected icon)
 	updateSiblings = function (fieldName) {
 		// find currently selected node
@@ -231,7 +245,7 @@ tmp = function () {
 			});
 			try {
 				// Hook comment field
-				kbook.commentField.format = function (item, name) {
+				kbook.commentField.format = function (item /* unused , name */) {
 					if (item && item._mycomment !== undefined) {
 						if ((typeof item._mycomment) === "function") {
 							try {
@@ -328,7 +342,7 @@ tmp = function () {
 			bootLog("error in localize " + e2);
 		}
 	};
-	
+
 	// Init language related stuff once setLocale was called and strings were loaded
 	oldSetLocale = Fskin.localize.setLocale;
 	Fskin.localize.setLocale = function() {
@@ -418,6 +432,7 @@ tmp = function () {
 		localizeKeyboard = null;
 	};
 
+
 	oldChangeKeyboardType = Fskin.kbookKeyboard.keyboardLayout.changeKeyboardType;
 	Fskin.kbookKeyboard.keyboardLayout.changeKeyboardType = function (langType) {
 		var url, path, keyboardPaths, keyboardPath;
@@ -454,7 +469,8 @@ tmp = function () {
 		// call the default version, since custom way has failed
 		oldChangeKeyboardType.apply(this, arguments);
 	};
-	
+
+
 	// Init core here
 	oldReadPreference = kbook.model.readPreference;
 	kbook.model.readPreference = function() {
@@ -462,7 +478,8 @@ tmp = function () {
 			oldReadPreference.apply(this, arguments);
 			// restore "old" readPreference
 			kbook.model.readPreference = oldReadPreference;
-			
+						
+			makeRootNodesMovable();
 			PARAMS.loadAddons();
 			PARAMS.Core.init();
 		} catch (e) {
@@ -472,10 +489,27 @@ tmp = function () {
 	
 	// Disable card scan
 	var originalCanHandleVolume = FskCache.diskSupport.canHandleVolume;
-	FskCache.diskSupport.canHandleVolume = function (volume) {
+	FskCache.diskSupport.canHandleVolume = function (/* unused volume */) {
 		try {
-			if (PARAMS.Core && PARAMS.Core.config && PARAMS.Core.config.cardScanMode === "disabled") {
-				return false;
+			if (PARAMS.Core && PARAMS.Core.config) {
+				var scanMode = PARAMS.Core.config.cardScanMode; 
+				if (scanMode === undefined) {
+					// We are right after boot, addons haven't been loaded yet, need to load the value manually
+					var fakeBF = {
+						name: "BrowseFolders",
+						optionDefs: [{
+							name: "cardScan",
+							defaultValue: ENABLED,
+							values: [ENABLED, "disabledLoadCache", DISABLED]
+						}]
+					};
+					PARAS.Core.settings.loadOptions(fakeBF);
+					PARAMS.Core.config.cardScanMode = fakeBF.options.cardScan;
+				}
+				
+				if (scanMode === "disabled") {
+					return false;
+				}
 			}
 		} catch (ee) {
 			bootLog("canHandleVolume" + ee);
@@ -489,6 +523,9 @@ tmp = function () {
 		try {
 			if (PARAMS.Core && PARAMS.Core.config 
 				&& PARAMS.Core.config.cardScanMode === "disabledLoadCache") {
+				
+				bootLog("scan mode is disabledLoadCache");
+			
 				this.target.synchronizedSource();
 				this.target.synchronizeDone();
 				this.stack.pop();
@@ -548,8 +585,7 @@ tmp = function () {
 		};
 		
 		// Fix periodicals node
-		var getPeriodicalLatestItemCalls = 0;
-		kbook.model.getPeriodicalLatestItem = function (node) {
+		kbook.model.getPeriodicalLatestItem = function (/* unused node */) {
 			return periodicalsNode.latestItem;
 		};
 
@@ -568,6 +604,7 @@ tmp = function () {
 
 			// If periodicals node was moved, we need to construct it manually, prior to setHomeCover
 			if (node.nodes[2] !== periodicalsNode) {
+				// TODO is this still needed?
 				periodicalsNode.construct();
 			}
 			
@@ -633,8 +670,6 @@ tmp = function () {
 			this.setParticularVariable(homeView, 'RIGHT_ITEM_NAME_COMMENT', rightItemTitle + '||' + rightItemComment);
 		};
 	};
-	makeRootNodesMovable();
-
 };
 
 try {
