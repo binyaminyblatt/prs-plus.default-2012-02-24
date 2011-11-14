@@ -28,6 +28,7 @@
 //	2011-11-13 kartu - ALL: Fixed bug that prevented SD/MS card scan mode from being changed on the fly
 //			x50: Fixed bug that caused SD/MS card scan options to be ignored on the first boot
 //	2011-11-14 kartu - Fixed "PARAS" typo, spotted by Ben
+//	2011-11-14 kartu - Removed debug statement
 //
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -525,8 +526,6 @@ tmp = function () {
 			if (PARAMS.Core && PARAMS.Core.config 
 				&& PARAMS.Core.config.cardScanMode === "disabledLoadCache") {
 				
-				bootLog("scan mode is disabledLoadCache");
-			
 				this.target.synchronizedSource();
 				this.target.synchronizeDone();
 				this.stack.pop();
