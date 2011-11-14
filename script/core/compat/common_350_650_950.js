@@ -27,6 +27,7 @@
 //	2011-10-09 quisvir - Removed unnecessary code from standby image (thx Mark)
 //	2011-11-13 kartu - ALL: Fixed bug that prevented SD/MS card scan mode from being changed on the fly
 //			x50: Fixed bug that caused SD/MS card scan options to be ignored on the first boot
+//	2011-11-14 kartu - Fixed "PARAS" typo, spotted by Ben
 //
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -503,7 +504,7 @@ tmp = function () {
 							values: [ENABLED, "disabledLoadCache", DISABLED]
 						}]
 					};
-					PARAS.Core.settings.loadOptions(fakeBF);
+					PARAMS.Core.settings.loadOptions(fakeBF);
 					PARAMS.Core.config.cardScanMode = fakeBF.options.cardScan;
 				}
 				
