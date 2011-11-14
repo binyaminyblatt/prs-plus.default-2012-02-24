@@ -33,6 +33,7 @@
 //	2011-10-09 kartu - ALL: Fixed #171 "The "Copy to IM..." menu items are not present in Card via Mount, if card scanning is not disabled"
 //	2011-11-13 kartu - ALL: Fixed bug that prevented SD/MS card scan mode from being changed on the fly
 //			x50: Fixed bug that caused SD/MS card scan options to be ignored on the first boot
+//	2011-11-14 kartu - ALL: Fixed #214 MSG_COPYING_BOOK not translated
 //
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -223,7 +224,7 @@ tmp = function() {
 	
 	doCopy = function () {
 		var fileName, path, needsMount;
-		Core.ui.showMsg("MSG_COPYING_BOOK", 1);
+		Core.ui.showMsg(L("MSG_COPYING_BOOK"), 1);
 		try {
 			// mount, if needed
 			needsMount = this.parent.needsMount;
