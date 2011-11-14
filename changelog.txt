@@ -8,6 +8,7 @@
  * x50: Fixed #211  that caused SD/MS card scan options to be ignored on the first boot
  * 600/x50: Added Page Turn by Single Tap (quisvir)
  * 600/x50: Close reading popup menu (dict etc) and cancel selection by tapping page (quisvir)
+ * 600/x50: Fixed #207 Collection sorting broken for Cyrillic
  * 600: Fixed #197 "SD/MS card via mount" doesn't handle non-latin characters
  * 600: Added keyCodes and Hold keyCodes to key bindings
  * 600: Fonts updated to the latest version

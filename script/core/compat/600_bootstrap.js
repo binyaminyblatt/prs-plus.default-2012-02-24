@@ -31,6 +31,7 @@
 //	2011-10-10 Ben Chenoweth - Fix for cover/wallpaper on standby.
 //	2011-10-11 Ben Chenoweth - Further fix for cover/wallpaper on standby & code tidying.
 //	2011-11-04 kartu - Added Turkish
+//	2011-11-14 kartu - Fixed #207 Collection sorting is broken for cyrillic
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -459,7 +460,113 @@ var tmp = function() {
 		};
 	};
 	localizeKeyboardPopups();
-	
+
+	// Add Cyrilic support
+	var patchStringCompare = function () {
+		var origToUpperCase, origToLowerCase, origLocaleCompare, isCyr;
+		origLocaleCompare = String.prototype.localeCompare;
+		origToUpperCase = String.prototype.toUpperCase;
+		origToLowerCase = String.prototype.toLowerCase;
+
+		isCyr = function (code) {
+			return code >= 1040 && code <= 1103;
+		};
+		
+		// Ignoring the case of mixed latin/cyr strings
+		String.prototype.localeCompare = function (a) {
+			var i, n, code, codeA, cyr, cyrA, ch, chA;
+			if (a === null) {
+				return (1);
+			}
+
+			if (this.length > 0 && a.length > 0) {
+				code = this.charCodeAt(0);
+				codeA = a.charCodeAt(0);
+				cyr = isCyr(code);
+				cyrA = isCyr(codeA);
+
+				// Neither is cyrillic
+				if (!cyr && !cyrA) {
+					return origLocaleCompare.call(this, a);
+				}
+
+				// Both are cyrillic
+				if (cyr && cyrA) {
+					for (i = 0, n = Math.min (this.length, a.length); i < n; i++) {
+						ch = this.charAt(i).toLowerCase();
+						chA = a.charAt(i).toLowerCase();
+						code = this.charCodeAt(i);
+						codeA = a.charCodeAt(i);
+						
+						
+						if (ch === chA) {
+							// Same char, but different case
+							if (code !== codeA) {
+								return code > codeA ? -1 : 1;
+							}
+						} else {
+							return ch.charCodeAt(0) > chA.charCodeAt(0) ? 1 : -1;
+						}
+					}
+				} else {
+					// one is cyrillic, one not
+					return code > codeA ? 1 : -1; 
+				}
+			}
+			
+			if (a.length === this.length) {
+				return 0;
+			}
+			
+			return this.length  > a.length ? 1 : -1;
+		};
+		
+		String.prototype.toUpperCase = function () {
+			var i, n, code, ch, upCh, result;
+			result = "";
+			for (i = 0, n = this.length; i < n; i++) {
+				code = this.charCodeAt(i);
+				ch = this.charAt(i);
+				if (!isCyr(code)) {
+					upCh = origToUpperCase.call(ch);
+				} else {
+					if (code === 1105) {
+						upCh = "Ё";
+					} else if (code > 1071) {
+						upCh = String.fromCharCode(code - 32);
+					} else {
+						upCh = ch;
+					}
+				}
+				result += upCh;
+			}
+			return result;
+		};
+
+		String.prototype.toLowerCase = function () {
+			var i, n, code, ch, loCh, result;
+			result = "";
+			for (i = 0, n = this.length; i < n; i++) {
+				code = this.charCodeAt(i);
+				ch = this.charAt(i);
+				if (!isCyr(code)) {
+					loCh = origToLowerCase.call(ch);
+				} else {
+					if (code === 1025) {
+						loCh = "ё";
+					} else if (code < 1072) {
+						loCh = String.fromCharCode(code + 32);
+					} else {
+						loCh = ch;
+					}
+				}
+				result += loCh;
+			}
+			return result;
+		};
+	};
+
+	patchStringCompare();	
 };
 
 try {
