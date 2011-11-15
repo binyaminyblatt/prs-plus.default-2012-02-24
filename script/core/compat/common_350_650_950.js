@@ -30,6 +30,7 @@
 //	2011-11-14 kartu - Fixed "PARAS" typo, spotted by Ben
 //	2011-11-14 kartu - Removed debug statement
 //	2011-11-14 kartu - Fixed #207 Collection sorting is broken for cyrillic
+//	2011-11-15 kartu - Yet another fix to SD/MS card scanning
 //
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -492,41 +493,51 @@ tmp = function () {
 	
 	// Disable card scan
 	var originalCanHandleVolume = FskCache.diskSupport.canHandleVolume;
-	FskCache.diskSupport.canHandleVolume = function (/* unused volume */) {
-		try {
-			if (PARAMS.Core && PARAMS.Core.config) {
-				var scanMode = PARAMS.Core.config.cardScanMode; 
-				if (scanMode === undefined) {
-					// We are right after boot, addons haven't been loaded yet, need to load the value manually
-					var fakeBF = {
-						name: "BrowseFolders",
-						optionDefs: [{
-							name: "cardScan",
-							defaultValue: ENABLED,
-							values: [ENABLED, "disabledLoadCache", DISABLED]
-						}]
-					};
-					PARAMS.Core.settings.loadOptions(fakeBF);
-					PARAMS.Core.config.cardScanMode = fakeBF.options.cardScan;
+	FskCache.diskSupport.canHandleVolume = function (volume) {
+		var options, optionsCode, settingsFile;
+		// If called for SD or MS volume
+		if (volume.name === "sdmsa1" || volume.name === "sdmsb1" || volume.name === "SD Card" || volume.name === "Memory Stick") {
+			try {
+				if (PARAMS.Core && PARAMS.Core.config) {
+					var scanMode = PARAMS.Core.config.cardScanMode; 
+					if (scanMode === undefined) {
+						// We are right after boot, addons haven't been loaded yet, need to load the value manually
+						// load settings from BookHistory settings file
+						settingsFile = Core.config.settingsPath + "BrowseFolders.config";
+						optionsCode = PARAMS.getFileContent(settingsFile);
+	
+						if (optionsCode !== null) {
+							optionsCode = new Function("", optionsCode);
+							options = optionsCode();
+							scanMode = options.cardScan;
+						}
+						
+						if (scanMode === undefined) {
+							scanMode = "enabled"; 
+						}
+	
+						PARAMS.Core.config.cardScanMode = scanMode;
+					}
+					
+					if (scanMode === "disabled") {
+						bootLog("returning false");
+						return false;
+					}
 				}
-				
-				if (scanMode === "disabled") {
-					return false;
-				}
+			} catch (ee) {
+				bootLog("canHandleVolume " + ee);
 			}
-		} catch (ee) {
-			bootLog("canHandleVolume" + ee);
 		}
+		bootLog("returning originalCanHandleVolume");
 		return originalCanHandleVolume.apply(this, arguments);
 	};	
 	
 	// Disabling scanning, but loading cache
 	oldCallback = FskCache._diskSource.synchronizeCallback;
 	FskCache._diskSource.synchronizeCallback = function() {
+		var scanMode = PARAMS.Core.config.cardScanMode;
 		try {
-			if (PARAMS.Core && PARAMS.Core.config 
-				&& PARAMS.Core.config.cardScanMode === "disabledLoadCache") {
-				
+			if (scanMode === "disabledLoadCache") {
 				this.target.synchronizedSource();
 				this.target.synchronizeDone();
 				this.stack.pop();
