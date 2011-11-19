@@ -1,3 +1,6 @@
+=== ? ===
+ * 600/x50: Added Author List addon
+
 === 2.0.15 beta ===
  * ALL: Fixed #171 "The "Copy to IM..." menu items are not present in Card via Mount, if card scanning is not disabled"
  * ALL: Fixed bug that prevented SD/MS card scan mode from being changed on the fly

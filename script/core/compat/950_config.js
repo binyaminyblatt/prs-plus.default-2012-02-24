@@ -29,6 +29,7 @@
 //	2011-10-19 Ben Chenoweth - Added ALT icons; reverted BOOK to 2 and PICTURE to 4; added missing CONTRAST icon
 //	2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
 //	2011-11-13 kartu - changed rootNode to a function, since node is not available at the time config file is loaded
+//	2011-11-20 quisvir - Added Author List
 
 return {
 	// Menu icon indices 
@@ -68,7 +69,8 @@ return {
 		TEXT_SCALE: 124, // 39
 		GESTURE: 38,
 		SEARCH: 39,
-		NODICTIONARY: 40,		
+		NODICTIONARY: 40,
+		COLLECTION: 42,	
 		KEYBOARD: 51,
 		ROOT_MENU: 53,
 		INTERNAL_MEM: 54,
@@ -117,6 +119,7 @@ return {
 		
 		// big icons shonw in home menu
 		LARGE_BOOK_HISTORY: 2,
+		LARGE_AUTHOR: 2,
 		LARGE_FOLDER: 4,
 		LARGE_MORE: 5,
 		LARGE_GAME: 6,
@@ -216,7 +219,8 @@ return {
 			{ name: "notes", parent: "more" },
 			{ name: "games", parent: "more" },
 			{ name: "Calculator", parent: "more" },
-			{ name: "Calendar", parent: "more" },	
+			{ name: "Calendar", parent: "more" },
+			{ name: "AuthorList", parent: "more" },
 			{ name: "Chess", parent: "games" },
 			{ name: "Draughts", parent: "games" },
 			{ name: "FiveBalls", parent: "games" },	

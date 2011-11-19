@@ -31,6 +31,7 @@
 //	2011-10-29 Mark Nord - Added keyCodes for holding Volume+, Volume-, Home and Size (needs patched ebookSystem.so)
 //	2011-10-29 Ben Chenoweth - Added Option and Hold Option to key bindings
 //	2011-11-05 kartu - Shifted BF,BH and games to the bottom of "More" list
+//	2011-11-20 quisvir - Added Author List
 
 return {
 	// Menu icon indices 
@@ -56,6 +57,7 @@ return {
 		INFO: 15,
 		LOCK: 16,
 		BOOKS: 17,
+		COLLECTION: 17,
 		PICTURES: 18,
 		CROSSED_BOX: 19,
 		DATE: 22,
@@ -114,12 +116,14 @@ return {
 		HOME_NOTES: 7, 
 		HOME_BOOK_HISTORY: 8,
 		HOME_COLLECTIONS: 8,
+		HOME_AUTHOR: 8,
 		HOME_FOLDER: 9,
 		HOME_GAME: 10,
 		HOME_DATE: 11,
 		
 		// big icons shonw in home menu
 		LARGE_BOOK_HISTORY: 3,
+		LARGE_AUTHOR: 3,
 		LARGE_FOLDER: 4,
 		LARGE_GAME: 5,
 		LARGE_DATE: 6,		
@@ -203,6 +207,7 @@ return {
 			{ name: "BrowseFolders", parent: "more"},
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },
+			{ name: "AuthorList", parent: "more" },
 			{ name: "games", parent: "more" },
 			{ name: "Chess", parent: "games" },
 			{ name: "Draughts", parent: "games" },
