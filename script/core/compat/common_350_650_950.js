@@ -31,6 +31,7 @@
 //	2011-11-14 kartu - Removed debug statement
 //	2011-11-14 kartu - Fixed #207 Collection sorting is broken for cyrillic
 //	2011-11-15 kartu - Yet another fix to SD/MS card scanning
+//	2011-17-14 kartu - Removed debug statement
 //
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -520,7 +521,6 @@ tmp = function () {
 					}
 					
 					if (scanMode === "disabled") {
-						bootLog("returning false");
 						return false;
 					}
 				}
@@ -528,7 +528,6 @@ tmp = function () {
 				bootLog("canHandleVolume " + ee);
 			}
 		}
-		bootLog("returning originalCanHandleVolume");
 		return originalCanHandleVolume.apply(this, arguments);
 	};	
 	
