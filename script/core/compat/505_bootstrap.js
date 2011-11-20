@@ -20,6 +20,7 @@
 //				could be avoided with inverse code in doResume(), but then resume will take noticeable longer
 //	2011-10-09 Mark Nord - 	preserve ascept-ratio for cover-pages (using code from quisvir)
 //	2011-10-11 Mark Nord -  code tidying for cover/wallpaper on standby 
+//	2011-11-20 quisvir - Added sub-collection support (max 1 sub-level, using | as separator)
 
 var tmp = function() {
 	var oldReadPreference, oldCallback, bootLog;
@@ -85,6 +86,46 @@ var tmp = function() {
 		}
 	};
 
+	// Sub-collection support
+	var oldPlaylistNode = FskCache.tree.playlistNode.construct;
+	FskCache.tree.playlistNode.construct = function () {
+		oldPlaylistNode.apply(this);
+		var i, next, nodes, node, last, idx, coll, title, LX = Core.lang.LX;
+		i = next = 0;
+		nodes = this.nodes;
+		c = nodes.length;
+		while (i < c) {
+			title = nodes[i].title;
+			idx = title.indexOf('|');
+			if (idx != -1) {
+				nodes[i].name = nodes[i].title = title.slice(idx+1);
+				coll = title.slice(0,idx);
+				if (last == coll) {
+					nodes[i].parent = nodes[next-1];
+					nodes[next-1].nodes.push(nodes.splice(i,1)[0]);
+					i--; c--;
+				} else {
+					node = Core.ui.createContainerNode({
+						title: coll,
+						comment: function () {
+							return Core.lang.LX('COLLECTIONS', this.nodes.length);
+						},
+						parent: this,
+						icon: 'BOOKS'
+					});
+					nodes[i].parent = node;
+					node.sublistMark = true;
+					node.nodes.push(nodes.splice(i,1)[0]);
+					nodes.splice(next,0,node);
+					last = coll;
+					next++;
+				}
+			}
+			i++;
+		}
+		if (last) nodes[next-1].separator = 1;
+	}
+	
 	// renders current books first page, for epub it is copy 'n past from 600's BookUtil	
 	createTextThumbnail = function (path) {
 		var bitmap, viewer, bounds, mime, page, log, oldpage; // oldpart;

@@ -32,6 +32,7 @@
 //	2011-10-11 Ben Chenoweth - Further fix for cover/wallpaper on standby & code tidying.
 //	2011-11-04 kartu - Added Turkish
 //	2011-11-14 kartu - Fixed #207 Collection sorting is broken for cyrillic
+//	2011-11-20 quisvir - Added sub-collection support (max 1 sub-level, using | as separator)
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -299,6 +300,46 @@ var tmp = function() {
 			oldCallback.apply(this, arguments);
 		}
 	};
+	
+	// Sub-collection support
+	var oldPlaylistNode = FskCache.tree.playlistNode.construct;
+	FskCache.tree.playlistNode.construct = function () {
+		oldPlaylistNode.apply(this);
+		var i, next, nodes, node, last, idx, coll, title, LX = Core.lang.LX;
+		i = next = 0;
+		nodes = this.nodes;
+		c = nodes.length;
+		while (i < c) {
+			title = nodes[i].title;
+			idx = title.indexOf('|');
+			if (idx != -1) {
+				nodes[i].name = nodes[i].title = title.slice(idx+1);
+				coll = title.slice(0,idx);
+				if (last == coll) {
+					nodes[i].parent = nodes[next-1];
+					nodes[next-1].nodes.push(nodes.splice(i,1)[0]);
+					i--; c--;
+				} else {
+					node = Core.ui.createContainerNode({
+						title: coll,
+						comment: function () {
+							return Core.lang.LX('COLLECTIONS', this.nodes.length);
+						},
+						parent: this,
+						icon: 'BOOKS'
+					});
+					nodes[i].parent = node;
+					node.sublistMark = true;
+					node.nodes.push(nodes.splice(i,1)[0]);
+					nodes.splice(next,0,node);
+					last = coll;
+					next++;
+				}
+			}
+			i++;
+		}
+		if (last) nodes[next-1].separator = 1;
+	}
 	
 	getRandomWallpaper = function() {
 		var  path, folder, idx, list;
