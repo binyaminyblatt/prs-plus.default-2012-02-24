@@ -1,4 +1,5 @@
-=== ? ===
+=== 2.x ===
+ * ALL: Added sub-collection support (max 1 sub-level, using | as separator)
  * 600/x50: Added Author List addon
 
 === 2.0.15 beta ===

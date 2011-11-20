@@ -25,10 +25,12 @@
 //	2011-09-27 quisvir - Add ability to cycle through collections for 'next in collection' booklist
 //	2011-09-28 quisvir - Display current collection in home menu, add option to ignore memory cards
 //	2011-10-04 quisvir - Add option to treat periodicals as books
+//	2011-11-20 quisvir - Added sub-collection support (max 1 sub-level, using | as separator)
 
 tmp = function() {
 
 	var L = Core.lang.getLocalizer('BookManagement');
+	var LX = Core.lang.LX;
 	var log = Core.log.getLogger('BookManagement');
 	
 	var bookChanged = false;
@@ -114,8 +116,45 @@ tmp = function() {
 			this.constNodesCount--;
 			this.presetItemsCount--;
 		}
+		createSubCollections(this.nodes, this, this.constNodesCount);
 	}
 
+	createSubCollections = function (nodes, parent, next) {
+		var i, node, last, idx, coll, title;
+		i = next;
+		c = nodes.length;
+		while (i < c) {
+			title = nodes[i].title;
+			idx = title.indexOf('|');
+			if (idx != -1) {
+				nodes[i].name = nodes[i].title = title.slice(idx+1);
+				coll = title.slice(0,idx);
+				if (last == coll) {
+					nodes[i].parent = nodes[next-1];
+					nodes[next-1].nodes.push(nodes.splice(i,1)[0]);
+					i--; c--;
+				} else {
+					node = Core.ui.createContainerNode({
+						title: coll,
+						comment: function () {
+							return Core.lang.LX('COLLECTIONS', this.nodes.length);
+						},
+						parent: parent,
+						icon: 'BOOKS'
+					});
+					nodes[i].parent = node;
+					node.sublistMark = true;
+					node.nodes.push(nodes.splice(i,1)[0]);
+					nodes.splice(next,0,node);
+					last = coll;
+					next++;
+				}
+			}
+			i++;
+		}
+		if (last) nodes[next-1].separator = 1;
+	}
+	
 	// Draw reading progress instead of 'last read' date/time
 	kbook.model.getContinueDate = function (node) {
 		if (BookManagement_x50.options.ShowReadingProgressCurrent == 'true' && this.currentBook && this.currentBook.media.ext.history.length) {
