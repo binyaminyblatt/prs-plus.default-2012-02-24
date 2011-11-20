@@ -8,15 +8,18 @@
 // History:
 //	2011-09-24 quisvir - Initial version
 //	2011-11-20 quisvir - Now working on 600 thanks to Ben Chenoweth, first public version
+//	2011-11-20 quisvir - Minor changes
 
 tmp = function() {
 
-	var L = Core.lang.getLocalizer('AuthorList');
-	var LX = Core.lang.LX;
-	var log = Core.log.getLogger('AuthorList');
+	var L, LX, log, authorsNode, authors, authorsNodeConstruct, authorsNodeDestruct, authorConstruct, authorDestruct;
 	
-	var authorsNode = null;
-	var authors = [];
+	L = Core.lang.getLocalizer('AuthorList');
+	LX = Core.lang.LX;
+	log = Core.log.getLogger('AuthorList');
+	
+	authorsNode = null;
+	authors = [];
 	
 	authorsNodeConstruct = function () {
 		var i, c, node, result, author, path, books;
@@ -90,9 +93,6 @@ tmp = function() {
 				values: ['1', '2', '3', '4', '5', '10', '15', '20', '25'],
 			},
 		],
-		/**
-		* @constructor
-		*/
 		getAddonNode: function () {
 			if (authorsNode === null) {
 				authorsNode = Core.ui.createContainerNode({
