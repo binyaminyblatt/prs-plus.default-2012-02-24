@@ -35,12 +35,13 @@
 //			x50: Fixed bug that caused SD/MS card scan options to be ignored on the first boot
 //	2011-11-14 kartu - ALL: Fixed #214 MSG_COPYING_BOOK not translated
 //	2011-11-15 Mark Nord - ALL: Fixed Fix #214 there is another one in Line 248
+//	2011-11-20 kartu - Fixed #215 fb2epub converter doesn't work with cards with disabled scanning
 //
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
-		compareFields, supportedMIMEs, createArchiveNode, createLazyInitNode, constructLazyNode, ACTION_ICON,
+		compareFields, supportedMIMEs, createLazyInitNode, constructLazyNode, ACTION_ICON,
 		doCopyAndOpen, doCopy, doOpenHere, doGotoParent, browseFoldersNode, ENABLED, DISABLED;
 	
 	ENABLED = "enabled";
@@ -176,8 +177,9 @@ tmp = function() {
 			if (supportedMIMEs[mime]) {
 				node = createLazyInitNode(path, title, parent, needsMount);
 			} else {
-				// or convertable
-				node = Core.convert.createMediaNode(path, title, parent);
+				// or convertable, 
+				// convertable node needs media constructor for converted file
+				node = Core.convert.createMediaNode(path, title, parent, createMediaNode, needsMount);
 			}
 		} else if (BrowseFolders.options.sortMode === "filenameAsComment") {
 			node._mycomment = function() {
