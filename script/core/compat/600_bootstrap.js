@@ -33,6 +33,7 @@
 //	2011-11-04 kartu - Added Turkish
 //	2011-11-14 kartu - Fixed #207 Collection sorting is broken for cyrillic
 //	2011-11-20 quisvir - Added sub-collection support (max 1 sub-level, using | as separator)
+//	2011-11-21 quisvir - Moved Standby Image code to addon
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -341,118 +342,6 @@ var tmp = function() {
 		if (last) nodes[next-1].separator = 1;
 	}
 	
-	getRandomWallpaper = function() {
-		var  path, folder, idx, list;
-		try {
-			folder = System.applyEnvironment("[prspPublicPath]wallpaper/");
-			if (!wallpapers) {
-				wallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
-			}
-			list = wallpapers;
-
-			while (list.length > 0) {
-				idx = Math.floor(Math.random() * list.length);
-				path = list[idx];
-				if (PARAMS.Core.media.isImage(path)) {
-					return folder + path;
-				} else {
-					list.splice(idx, 1);
-				}
-			}
-		} catch (e) {
-			PARAMS.bootLog("error in random image " + e);
-		}
-	};
-
-	// Standby image
-	standbyImage.draw = function() {
-		var window, path, bitmap, x, y, bounds, ratio, width, height, ditheredBitmap, color;
-		var mode, dither;
-		window = this.root.window;
-		mode = Core.addonByName.StandbyImage.options.mode;
-		dither = Core.addonByName.StandbyImage.options.dither === "true";
-		try {
-      			if (mode === 'cover') {
-					// attempt to use current book cover
-					path = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
-					bitmap = BookUtil.thumbnail.createFileThumbnail(path, this.width, this.height);
-				}
-				if (!bitmap && ((mode === 'random') || (mode === 'cover'))) {
-					// if no book cover, then use random wallpaper
-					path = getRandomWallpaper();
-					if (FileSystem.getFileInfo(path)) {
-						bitmap = new Bitmap(path);
-					}
-				}
-				if (bitmap) {
-					// if bitmap, then display it preserving aspect ratio
-					window.setPenColor(Color.white);
-					window.fillRectangle(0, 0, this.width, this.height);
-					x = 0;
-					y = 0;
-					bounds = bitmap.getBounds();
-					ratio = (bounds.height > bounds.width)?(this.height / bounds.height):(this.width / bounds.width);
-					width = Math.floor(bounds.width * ratio);
-					height = Math.floor(bounds.height * ratio);
-					if (height > width) x = Math.floor((this.width - width) / 2);
-					else y = Math.floor((this.height - height) / 2);					
-					ditheredBitmap = bitmap.dither(dither);
-					bitmap.close();
-					if (ditheredBitmap) {
-						window.drawBitmap(ditheredBitmap, x, y, width, height);
-						ditheredBitmap.close();
-						return;
-					}
-				}					
-       		} catch (e) {PARAMS.bootLog("Exception in cover/random " + e, 'error'); }
-
-		if (mode !=='act_page') {
-			try {			
-				color = window.getPenColor();
-				window.setPenColor(this.color);
-				window.fillRectangle(this);
-				window.setPenColor(color);
-			} catch (e) {PARAMS.bootLog("Exception in blank " + e, 'error'); }        			
-		}
-		if (mode === 'act_page') {
-			L = Core.lang.getLocalizer("StandbyImage");
-			// Save old styles
-			oldTextStyle = window.getTextStyle();
-			oldTextSize = window.getTextSize();
-			oldPenColor = window.getPenColor();
-			// Settings
-			window.setTextStyle("bold");
-			window.setTextSize(22);
-			// Drawing
-			window.beginDrawing();
-			window.setPenColor(Color.black);
-			window.fillRectangle(this.width-155, this.height-30, 155, 30);
-			window.setPenColor(Color.white);
-			window.drawText(L("VALUE_SLEEPING"), this.width-145, this.height-30, 135, 30);
-			window.endDrawing();
-			// Restore pen color, text size & style
-			window.setTextStyle(oldTextStyle);
-			window.setTextSize(oldTextSize);
-			window.setPenColor(oldPenColor);
-			}	
-	};
-	
-	// Set orientation to portrait before showing book cover
-	var oldSuspend = kbook.model.suspend;
-	kbook.model.suspend = function () {
-		oldSuspend.apply(this, arguments);
-		if (Core.addonByName.StandbyImage.options.mode == 'cover' || Core.addonByName.StandbyImage.options.mode === 'random') orgOrientation = ebook.device.framebuffer.orientation.getCurrent();
-		if (orgOrientation !== 0) ebook.device.framebuffer.orientation.setCurrent(0);
-	};
-	
-	// Restore orientation if necessary
-	var oldResume = kbook.model.resume;
-	kbook.model.resume = function () {
-		if (orgOrientation !== 0) ebook.device.framebuffer.orientation.setCurrent(orgOrientation);
-		orgOrientation = 0;
-		oldResume.apply(this, arguments);
-	};
-
 	// Fix sorting (unicode order)
 	var compareStrings = PARAMS.Core.config.compat.compareStrings;
 	String.prototype.localeCompare = function(a) {
