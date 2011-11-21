@@ -1,11 +1,14 @@
-=== 2.x ===
+=== 2.1.0 ? ===
  * ALL: Added sub-collection support (max 1 sub-level, using | as separator)
  * 600/x50: Added Author List addon
 
-=== 2.0.15 beta ===
+=== 2.0.15 release candidate (20.11.2011) ===
  * ALL: Fixed #171 "The "Copy to IM..." menu items are not present in Card via Mount, if card scanning is not disabled"
  * ALL: Fixed bug that prevented SD/MS card scan mode from being changed on the fly
  * ALL: Fixed #214 MSG_COPYING_BOOK not translated
+ * ALL: EPUB Css styles are now sorted
+ * ALL: Fixes #215 fb2epub converter doesn't work with cards with disabled scanning
+ * 350/650: Improved Dutch translation (drMerry)
  * 350/650: Fixed "Continue searching from the begining doesn't work" (Sony bug)
  * 350/650: Added 1-Column Split (quisvir)
  * x50: "Cycle booklist" action now also cycles through collections (quisvir)
