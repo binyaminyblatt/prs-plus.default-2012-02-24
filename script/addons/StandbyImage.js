@@ -49,7 +49,7 @@ tmp = function() {
 	var oldDoQuit = Fskin.window.doQuit;
 	Fskin.window.doQuit = function () {
 		try {
-			if (!FileSystem.getFileInfo(ebook.device.system.exitCodeFile)) { // does this work on 300/505?
+			if (!FileSystem.getFileInfo('/tmp/exitcode')) {
 				shutdown = true;
 				standbyImage.draw.call(kbook.model.container);
 				ebook.setExitCode(6);
