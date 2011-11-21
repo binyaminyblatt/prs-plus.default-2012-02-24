@@ -6,12 +6,13 @@
 //	2011-07-03 Mark Nord - Initial version
 //  2011-07-05 Ben Chenoweth - minor corrections
 //	2011-11-21 quisvir - Rewritten to merge all relevant code, add shutdown image support, icon, custom text
+//	2011-11-22 quisvir - Implemented bugfixes from Mark Nord, fixed standby icon indices
 //
 //	TODO: set/restore portrait orientation on shutdown
 
 
 tmp = function() {
-	var L, log, orgOrientation, shutdown, oldStandbyImageDraw, getBookCover;
+	var L, log, orgOrientation, shutdown, oldStandbyImageDraw, standbyIcon, getBookCover;
 	
 	// Localize
 	L = Core.lang.getLocalizer("StandbyImage");
@@ -24,18 +25,20 @@ tmp = function() {
 	var oldSuspend = kbook.model.suspend;
 	kbook.model.suspend = function () {
 		oldSuspend.apply(this);
-		if (StandbyImage.options.StandbyMode !== 'act_page') {
-			orgOrientation = ebook.getOrientation();
-			if (orgOrientation !== 0) ebook.rotate(0);
-		}
-		// Model sniffing: call standbyimage for 300/505
-		if (!StandbyImage.color) standbyImage.draw.call(kbook.model.container);
+		try {
+			if (StandbyImage.options.StandbyMode !== 'act_page') {
+				orgOrientation = ebook.getOrientation();
+				if (orgOrientation) ebook.rotate(0);
+			}
+			// Model sniffing: call standbyimage for 300/505
+			if (!StandbyImage.color) standbyImage.draw.call(kbook.model.container);
+		} catch (ignore) {}
 	};
 	
 	// Resume: restore orientation if necessary
 	var oldResume = kbook.model.resume;
 	kbook.model.resume = function () {
-		if (orgOrientation !== 0) {
+		if (orgOrientation) {
 			ebook.rotate(orgOrientation);
 			orgOrientation = 0;
 		}
@@ -128,7 +131,7 @@ tmp = function() {
 				idx = Math.floor(Math.random() * list.length);
 				path = list[idx];
 				if (Core.media.isImage(path)) {
-					return new Bitmap(path);
+					return new Bitmap(folder+path);
 				} else {
 					list.splice(idx, 1);
 				}
@@ -143,6 +146,7 @@ tmp = function() {
 		case "650":
 		case "950":
 			oldStandbyImageDraw = standbyImage.draw;
+			standbyIcon = 79;
 		case "600":
 			getBookCover = getBookCoverNew;
 			break;
@@ -221,7 +225,7 @@ tmp = function() {
 			if (opt.DisplayIcon === 'true') {
 				win.setPenColor(Color.black);
 				win.fillRectangle(w-69, 9, 60, 60);
-				kbook.model.container.cutouts['kBookVIcon-a'].draw(win, ((shutdown)?31:79), 0, ((shutdown)?w-74:w-73), 4, 70, 70);
+				kbook.model.container.cutouts['kBookVIcon-a'].draw(win, ((shutdown)?31:standbyIcon), 0, ((shutdown)?w-74:w-73), 4, 70, 70);
 			}
 			
 			// Display custom standby/shutdown text from file
@@ -319,8 +323,11 @@ tmp = function() {
 		onPreInit: function () {
 			switch (Core.config.model) {
 				case "505":
+					standbyIcon = 62;
 				case "300":
+					if (!standbyIcon) standbyIcon = 68;
 				case "600":
+					if (!standbyIcon) standbyIcon = 83;
 					this.optionDefs[0].values = ["random", "white", "black", "cover", "act_page"];
 					this.optionDefs[0].defaultValue = "white";
 					this.optionDefs[1].values = ["random", "white", "black", "cover"];
