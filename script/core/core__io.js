@@ -11,6 +11,7 @@
 //	2010-11-30 kartu - Fixed nasty double-bug with getFileContent not working properly on 600 plus finally block hijacking control.
 //	2011-03-03 kartu - Added moveFile, deleteFile, getFileSize
 //	2011-04-24 kartu - Added extractFileName, extractExtension, pathExists, getUnusedPath
+//	2011-11-22 Mark Nord - Modified extractExtension to return only portion after the last "." except for fb2.zip
 
 try {
 	Core.io = {
@@ -194,15 +195,20 @@ try {
 		
 		// Extracts file extension
 		extractExtension: function (path) {
-			var idx;
+			var idx, result;
 			if (path === undefined) {
 				return undefined;
 			}
 			path = this.extractFileName(path);
 			
-			idx = path.indexOf(".");
+			idx = path.lastIndexOf(".");
 			if (idx > -1) {
-				return path.substring(idx + 1);
+				result = path.substring(idx + 1);
+				if (result.toLowerCase() === "zip") {
+					// check for fb2.zip
+					 result = Core.text.endsWith(path.toLowerCase(),"fb2.zip") ? "fb2.zip" : "zip";
+				}			
+				return result;
 			}
 			return "";
 		},
