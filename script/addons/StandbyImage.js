@@ -31,17 +31,17 @@ tmp = function() {
 				orgOrientation = ebook.getOrientation();
 				if (orgOrientation) {
 					ebook.rotate(0);
-					//Model sniffing: call standbyimage for 300/505
-					if (!StandbyImage.color) {
+					// Model sniffing: update screen for 300/505
+					if (!standbyImage.color) {
 						// without this the current page is drawn over the standbyImage
 						Core.ui.updateScreen();
 					}
 				}	
 				
 			}	
-		// Model sniffing: call standbyimage for 300/505
-		if (!StandbyImage.color) {
-			standbyImage.draw.call(kbook.model.container);
+			// Model sniffing: call standbyimage for 300/505
+			if (!standbyImage.color) {
+				standbyImage.draw.call(kbook.model.container);
 			}	
 		} catch(ignore) {}
 	};
@@ -171,14 +171,14 @@ tmp = function() {
 	
 	standbyImage.draw = function () {
 	
-		var opt, mode, win, w, h, path, bitmap, bounds, ratio, width, height, x, y, oldPencolor, oldTextStyle, oldTextSize, oldTextAlignmentX, oldTextAlignmentY, filePath, customText;
+		var opt, mode, win, w, h, path, bitmap, bounds, ratio, width, height, x, y, oldPencolor, oldTextStyle, oldTextSize, oldTextAlignmentX, oldTextAlignmentY, icon, iconX, filePath, customText;
 		opt = StandbyImage.options;
 		mode = (shutdown) ? opt.ShutdownMode : opt.StandbyMode;
 		win = this.getWindow();
 		
 		//Model sniffing: call standbyimage for 300/505
 		//win.width / win.height isn't update after ebook.rotate!? giving w:800 h:600 
-		if (!StandbyImage.color) {
+		if (!standbyImage.color) {
 			w = 600; 
 			h = 800; 
 		} else {
@@ -244,11 +244,12 @@ tmp = function() {
 			}
 			
 			// Display standby/shutdown icon
-			// TODO check which changes are needed for pre-x50 models
 			if (opt.DisplayIcon === 'true') {
 				win.setPenColor(Color.black);
 				win.fillRectangle(w-69, 9, 60, 60);
-				kbook.model.container.cutouts['kBookVIcon-a'].draw(win, ((shutdown)?31:Core.config.compat.NodeKinds.STANDBY), 0, ((shutdown)?w-74:w-73), 4, 70, 70);
+				icon = (shutdown) ? Core.config.compat.NodeKinds.SHUTDOWN : Core.config.compat.NodeKinds.STANDBY;
+				iconX = (shutdown) ? w-74 : w-73;
+				kbook.model.container.cutouts['kBookVIcon-a'].draw(win, icon, 0, iconX, 4, 70, 70);
 			}
 			
 			// Display custom standby/shutdown text from file
@@ -265,7 +266,7 @@ tmp = function() {
 		}
 		win.endDrawing();
 		// Model sniffing: call win.update() only for 600/x50
-		if (StandbyImage.color) {
+		if (standbyImage.color) {
 			win.update();
 		}
 		// Restore settings
