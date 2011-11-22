@@ -4,9 +4,10 @@
 //
 // History:
 //	2011-07-03 Mark Nord - Initial version
-//  2011-07-05 Ben Chenoweth - minor corrections
+//	2011-07-05 Ben Chenoweth - minor corrections
 //	2011-11-21 quisvir - Rewritten to merge all relevant code, add shutdown image support, icon, custom text
 //	2011-11-22 quisvir - Implemented bugfixes from Mark Nord, fixed standby icon indices
+//	2011-11-22 Mark Nord - some more tweaks to get it working with 300/505
 //
 //	TODO: set/restore portrait orientation on shutdown
 
@@ -28,11 +29,21 @@ tmp = function() {
 		try {
 			if (StandbyImage.options.StandbyMode !== 'act_page') {
 				orgOrientation = ebook.getOrientation();
-				if (orgOrientation) ebook.rotate(0);
-			}
-			// Model sniffing: call standbyimage for 300/505
-			if (!StandbyImage.color) standbyImage.draw.call(kbook.model.container);
-		} catch (ignore) {}
+				if (orgOrientation) {
+					ebook.rotate(0);
+					//Model sniffing: call standbyimage for 300/505
+					if (!StandbyImage.color) {
+						// without this the current page is drawn over the standbyImage
+						Core.ui.updateScreen();
+					}
+				}	
+				
+			}	
+		// Model sniffing: call standbyimage for 300/505
+		if (!StandbyImage.color) {
+			standbyImage.draw.call(kbook.model.container);
+			}	
+		} catch(ignore) {}
 	};
 	
 	// Resume: restore orientation if necessary
@@ -109,16 +120,20 @@ tmp = function() {
 	// getBookCover for 300/505, calls getBookCoverNew for epub
 	var getBookCoverOld = function (path, w, h) {
 		var bitmap, page, oldpage;
-		if (FileSystem.getMIMEType(path) === "application/epub+zip") {
-			return getBookCoverNew(path, w, h);
-		} else { // it's a LRF BBeB-Book or PDF
+		if (FileSystem.getMIMEType(path) === "application/x-sony-bbeb") { // it's a LRF BBeB-Book 
+			if (orgOrientation) {
+			// Fixme enable CoverPage for BBeB/LRF in landscape
+				return null;
+			}	
 			page = kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
 			oldpage = page.data.get(Document.Property.page);
 			page.data.set(Document.Property.page, 0);
 			bitmap = page.data.render();
 			page.data.set(Document.Property.page, oldpage);
 			return bitmap;
-		}
+		} else { // its a epub or pdf
+			return getBookCoverNew(path, w, h);
+		} 
 	};
 	
 	// Get wallpaper for 300/505/600
@@ -130,7 +145,7 @@ tmp = function() {
 			while (list.length) {
 				idx = Math.floor(Math.random() * list.length);
 				path = list[idx];
-				if (Core.media.isImage(path)) {
+				if (Core.media.isImage(folder+path)) {
 					return new Bitmap(folder+path);
 				} else {
 					list.splice(idx, 1);
@@ -155,12 +170,21 @@ tmp = function() {
 	}
 	
 	standbyImage.draw = function () {
+	
 		var opt, mode, win, w, h, path, bitmap, bounds, ratio, width, height, x, y, oldPencolor, oldTextStyle, oldTextSize, oldTextAlignmentX, oldTextAlignmentY, filePath, customText;
 		opt = StandbyImage.options;
 		mode = (shutdown) ? opt.ShutdownMode : opt.StandbyMode;
 		win = this.getWindow();
-		w = win.width;
-		h = win.height;
+		
+		//Model sniffing: call standbyimage for 300/505
+		//win.width / win.height isn't update after ebook.rotate!? giving w:800 h:600 
+		if (!StandbyImage.color) {
+			w = 600; 
+			h = 800; 
+		} else {
+			w = win.width;
+			h = win.height;
+		}	
 		
 		// Save settings
 		oldPencolor = win.getPenColor();
@@ -187,7 +211,7 @@ tmp = function() {
 				case 'cover':
 					if (kbook.model.currentBook) {
 						path = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
-						bitmap = getBookCover(path, w, h);
+						bitmap = getBookCover(path, w, h);						
 					}
 				case 'random':
 				case 'standby':
@@ -239,10 +263,11 @@ tmp = function() {
 				win.drawText(customText, 0, h-30, w, 30);
 			}
 		}
-		
 		win.endDrawing();
-		win.update();
-		
+		// Model sniffing: call win.update() only for 600/x50
+		if (StandbyImage.color) {
+			win.update();
+		}
 		// Restore settings
 		win.setPenColor(oldPencolor);
 		win.setTextStyle(oldTextStyle);
