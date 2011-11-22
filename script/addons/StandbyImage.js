@@ -12,7 +12,7 @@
 
 
 tmp = function() {
-	var L, log, orgOrientation, shutdown, oldStandbyImageDraw, standbyIcon, getBookCover;
+	var L, log, orgOrientation, shutdown, oldStandbyImageDraw, getBookCover;
 	
 	// Localize
 	L = Core.lang.getLocalizer("StandbyImage");
@@ -146,7 +146,6 @@ tmp = function() {
 		case "650":
 		case "950":
 			oldStandbyImageDraw = standbyImage.draw;
-			standbyIcon = 79;
 		case "600":
 			getBookCover = getBookCoverNew;
 			break;
@@ -225,7 +224,7 @@ tmp = function() {
 			if (opt.DisplayIcon === 'true') {
 				win.setPenColor(Color.black);
 				win.fillRectangle(w-69, 9, 60, 60);
-				kbook.model.container.cutouts['kBookVIcon-a'].draw(win, ((shutdown)?31:standbyIcon), 0, ((shutdown)?w-74:w-73), 4, 70, 70);
+				kbook.model.container.cutouts['kBookVIcon-a'].draw(win, ((shutdown)?31:Core.config.compat.NodeKinds.STANDBY), 0, ((shutdown)?w-74:w-73), 4, 70, 70);
 			}
 			
 			// Display custom standby/shutdown text from file
@@ -323,11 +322,8 @@ tmp = function() {
 		onPreInit: function () {
 			switch (Core.config.model) {
 				case "505":
-					standbyIcon = 62;
 				case "300":
-					if (!standbyIcon) standbyIcon = 68;
 				case "600":
-					if (!standbyIcon) standbyIcon = 83;
 					this.optionDefs[0].values = ["random", "white", "black", "cover", "act_page"];
 					this.optionDefs[0].defaultValue = "white";
 					this.optionDefs[1].values = ["random", "white", "black", "cover"];

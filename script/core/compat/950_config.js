@@ -82,7 +82,7 @@ return {
 		PERIODICALS: 67,
 		HOME: 26, // missing
 		
-		STANDBY: 104,
+		STANDBY: 79,
 		
 		UNCHECKED: 110,
 		CHECKED: 111,
