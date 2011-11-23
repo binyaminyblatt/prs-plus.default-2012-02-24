@@ -32,6 +32,7 @@
 //	2011-10-29 Ben Chenoweth - Added Option and Hold Option to key bindings
 //	2011-11-05 kartu - Shifted BF,BH and games to the bottom of "More" list
 //	2011-11-20 quisvir - Added Author List
+//  2011-11-23 Ben Chenoweth - Added TEXT_MEMO
 
 return {
 	// Menu icon indices 
@@ -69,6 +70,7 @@ return {
 		SHUTDOWN: 31,
 		TEXT_SCALE: 74, // 39
 		SEARCH: 39,
+		TEXT_MEMO: 50,
 		KEYBOARD: 51,
 		ROOT_MENU: 53,
 		INTERNAL_MEM: 54,

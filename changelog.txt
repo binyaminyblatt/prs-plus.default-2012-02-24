@@ -1,6 +1,7 @@
 === 2.1.0 ? ===
  * ALL: Added sub-collection support (max 1 sub-level, using | as separator)
  * 600/x50: Added Author List addon
+ * 600/x50: Added Save Notepad Data addon
 
 === 2.0.15 release candidate (20.11.2011) ===
  * ALL: Fixed #171 "The "Copy to IM..." menu items are not present in Card via Mount, if card scanning is not disabled"
