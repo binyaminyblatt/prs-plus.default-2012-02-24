@@ -30,6 +30,7 @@
 //	2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
 //	2011-11-13 kartu - changed rootNode to a function, since node is not available at the time config file is loaded
 //	2011-11-20 quisvir - Added Author List
+//  2011-11-23 Ben Chenoweth - Added TEXT_MEMO
 
 return {
 	// Menu icon indices 
@@ -70,7 +71,8 @@ return {
 		GESTURE: 38,
 		SEARCH: 39,
 		NODICTIONARY: 40,
-		COLLECTION: 42,	
+		COLLECTION: 42,
+		TEXT_MEMO: 50,
 		KEYBOARD: 51,
 		ROOT_MENU: 53,
 		INTERNAL_MEM: 54,

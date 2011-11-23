@@ -44,6 +44,7 @@ History:
 		<exclude name="BookManagement_x50.js" />
 		<exclude name="Calendar.js" />
 		<exclude name="AuthorList.js" />
+		<exclude name="SaveNotepadData.js" />
 	</patternset>
 	<patternset id="addons_600_x50">
 		<include name="**/*" />
