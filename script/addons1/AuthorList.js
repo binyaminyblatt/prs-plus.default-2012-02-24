@@ -9,7 +9,7 @@
 //	2011-09-24 quisvir - Initial version
 //	2011-11-20 quisvir - Now working on 600 thanks to Ben Chenoweth, first public version
 //	2011-11-20 quisvir - Minor changes
-//	2011-11-24 quisvir - Fixed deleting books openend from Author List
+//	2011-11-24 quisvir - Fixed deleting books opened from Author List
 
 tmp = function() {
 
@@ -22,11 +22,11 @@ tmp = function() {
 	authorsNode = null;
 	
 	authorsNodeConstruct = function () {
-		var i, c, node, result, author, path, books;
+		var i, c, result, record, author, path, books, node;
 		authors = [];
 		this.nodes = [];
 		result = kbook.model.cache.textMasters;
-		obj0 = new Object();
+		obj0 = {};
 		obj0.by = 'indexArtist';
 		obj0.order = xdb.ascending;
 		// Model sniffing: filter out periodicals, enhance sorting
@@ -34,7 +34,7 @@ tmp = function() {
 			result.sort(obj0);
 		} else {
 			result = kbook.root.children.deviceRoot.children.books.filter(result);
-			obj1 = new Object();
+			obj1 = {};
 			obj1.by = 'indexTitle';
 			obj1.order = xdb.ascending;
 			result.sort_c(obj0, obj1);
@@ -71,19 +71,20 @@ tmp = function() {
 	authorsNodeDestruct = function () {
 		authors = [];
 		this.nodes = [];
-	}
+	};
 	
 	authorConstruct = function () {
+		var i;
 		this.nodes = [];
-		for (var i=1;i<authors[this.authorIndex].length;i++) {
+		for (i=1;i<authors[this.authorIndex].length;i++) {
 			this.nodes.push(Core.media.createMediaNode(authors[this.authorIndex][i], this));
 		}
 		this.comment = LX('BOOKS', this.nodes.length);
-	}
+	};
 	
 	authorDestruct = function () {
 		this.nodes = [];
-	}
+	};
 	
 	var AuthorList = {
 		name: 'AuthorList',
@@ -113,6 +114,7 @@ tmp = function() {
 
 	Core.addAddon(AuthorList);
 };
+
 try {
 	tmp();
 } catch (e) {
