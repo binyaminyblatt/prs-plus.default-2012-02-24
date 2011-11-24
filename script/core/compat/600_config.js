@@ -33,6 +33,7 @@
 //	2011-11-05 kartu - Shifted BF,BH and games to the bottom of "More" list
 //	2011-11-20 quisvir - Added Author List
 //  2011-11-23 Ben Chenoweth - Added TEXT_MEMO
+//  2011-11-24 Ben Chenoweth - Added HANDWRITING_ALT
 
 return {
 	// Menu icon indices 
@@ -110,6 +111,7 @@ return {
 		BOOK_ALT: 84,
 		PICTURE_ALT: 85,
 		SEARCH_ALT: 86,
+		HANDWRITING_ALT: 87,
 		
 		DEFAULT: 62,
 		
