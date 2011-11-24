@@ -9,6 +9,7 @@
 //	2011-09-24 quisvir - Initial version
 //	2011-11-20 quisvir - Now working on 600 thanks to Ben Chenoweth, first public version
 //	2011-11-20 quisvir - Minor changes
+//	2011-11-24 quisvir - Fixed deleting books openend from Author List
 
 tmp = function() {
 
@@ -19,10 +20,11 @@ tmp = function() {
 	log = Core.log.getLogger('AuthorList');
 	
 	authorsNode = null;
-	authors = [];
 	
 	authorsNodeConstruct = function () {
 		var i, c, node, result, author, path, books;
+		authors = [];
+		this.nodes = [];
 		result = kbook.model.cache.textMasters;
 		obj0 = new Object();
 		obj0.by = 'indexArtist';
@@ -60,7 +62,7 @@ tmp = function() {
 					destruct: authorDestruct,
 					icon: 'COLLECTION'
 				})
-				node.index = i;
+				node.authorIndex = i;
 				this.nodes.push(node);
 			}
 		}
@@ -72,9 +74,11 @@ tmp = function() {
 	}
 	
 	authorConstruct = function () {
-		for (var i=1;i<authors[this.index].length;i++) {
-			this.nodes.push(Core.media.createMediaNode(authors[this.index][i], this));
+		this.nodes = [];
+		for (var i=1;i<authors[this.authorIndex].length;i++) {
+			this.nodes.push(Core.media.createMediaNode(authors[this.authorIndex][i], this));
 		}
+		this.comment = LX('BOOKS', this.nodes.length);
 	}
 	
 	authorDestruct = function () {
