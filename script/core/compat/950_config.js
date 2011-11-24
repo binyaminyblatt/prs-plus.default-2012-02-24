@@ -31,6 +31,7 @@
 //	2011-11-13 kartu - changed rootNode to a function, since node is not available at the time config file is loaded
 //	2011-11-20 quisvir - Added Author List
 //  2011-11-23 Ben Chenoweth - Added TEXT_MEMO
+//  2011-11-24 Ben Chenoweth - Added HANDWRITING_ALT
 
 return {
 	// Menu icon indices 
@@ -116,6 +117,7 @@ return {
 		BOOK_ALT: 137,
 		PICTURE_ALT: 138,
 		SEARCH_ALT: 139,
+		HANDWRITING_ALT: 140,
 		
 		DEFAULT: 112,
 		
