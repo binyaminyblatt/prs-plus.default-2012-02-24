@@ -16,35 +16,35 @@ tmp = function() {
 
 	oldNotepadDataSave = kbook.notepadData.save;
 	kbook.notepadData.save = function () {
-		var folder, media, name, path, ret;
+		var folder, media, name, path, ret, width, height, stream, chr34, tab, svg, count, x, points, maker, bitmap, stream;
 		folder = SaveNotepadData.options.saveTo + "Notepads/";
 		FileSystem.ensureDirectory(folder);		
 		try {
 			media = this.media;
 			if (media) {				
-				if ((media.type == 'text') && (SaveNotepadData.options.saveTextMemo == 'on')) {
+				if ((media.type === 'text') && (SaveNotepadData.options.saveTextMemo === 'on')) {
 					try {
 						name = media.path.substring(media.path.lastIndexOf('/') + 1);
 						path = folder + name + ".txt";
 						Core.io.setFileContent(path, media.note.text);
 					} catch (e) { log.error("Save as TXT failed!"); }
 				}
-				if ((media.type == 'drawing') && (SaveNotepadData.options.saveHandwritingSVG == 'on')) {
+				if ((media.type === 'drawing') && (SaveNotepadData.options.saveHandwritingSVG === 'on')) {
 					try {
 						name = media.path.substring(media.path.lastIndexOf('/') + 1);
 						path = folder + name + ".svg";
 						if (FileSystem.getFileInfo(path)) FileSystem.deleteFile(path);
-						var width = parseInt(media.note.drawing.width);
-						var height = parseInt(media.note.drawing.height);
-						var stream = new Stream.File(path, 1);
-						var chr34 = String.fromCharCode(34); // "
-						var tab = String.fromCharCode(9); // TAB
+						width = parseInt(media.note.drawing.width);
+						height = parseInt(media.note.drawing.height);
+						stream = new Stream.File(path, 1);
+						chr34 = String.fromCharCode(34); // "
+						tab = String.fromCharCode(9); // TAB
 						stream.writeLine("<?xml version="+chr34+"1.0"+chr34+" encoding="+chr34+"utf-8"+chr34+" ?>");
 						stream.writeLine("<svg width="+chr34+width+chr34+" base="+chr34+"undefined"+chr34+" shape-rendering="+chr34+"optimizeQuality"+chr34+" height="+chr34+height+chr34+" transform="+chr34+chr34+">");
-						var svg = media.note.drawing.pages[0].svg.contents;
-						var count = svg.length;
-						for (var x=0; x<count; x++) {
-							var points = svg[x].points.toString();
+						svg = media.note.drawing.pages[0].svg.contents;
+						count = svg.length;
+						for (x=0; x<count; x++) {
+							points = svg[x].points.toString();
 							points=points.replace("x: ","");
 							points=points.replace("y: ","");
 							points=points.replace(", ",",");
@@ -57,17 +57,17 @@ tmp = function() {
 						stream.close();
 					} catch (e) { log.error("Save as SVG failed!"); }
 				}
-				if ((media.type == 'drawing') && (SaveNotepadData.options.saveHandwritingJPG == 'on')) {
+				if ((media.type === 'drawing') && (SaveNotepadData.options.saveHandwritingJPG === 'on')) {
 					try {
 						name = media.path.substring(media.path.lastIndexOf('/') + 1);
 						path = folder + name + ".jpg";
 						if (FileSystem.getFileInfo(path)) FileSystem.deleteFile(path);
-						var svg = media.note.drawing.pages[0].svg;
-						var width = parseInt(media.note.drawing.width);
-						var height = parseInt(media.note.drawing.height);
-						var maker = BookUtil.thumbnail.notepadThumbnailMaker;					
-						var bitmap = maker.makeThumbnail(new Bitmap(width, height), svg, width, height, true);
-						var stream = new Stream.File(path, 1);
+						svg = media.note.drawing.pages[0].svg;
+						width = parseInt(media.note.drawing.width);
+						height = parseInt(media.note.drawing.height);
+						maker = BookUtil.thumbnail.notepadThumbnailMaker;					
+						bitmap = maker.makeThumbnail(new Bitmap(width, height), svg, width, height, true);
+						stream = new Stream.File(path, 1);
 						bitmap.writeJPEG(stream);
 						stream.close();
 						// Add image to the library
