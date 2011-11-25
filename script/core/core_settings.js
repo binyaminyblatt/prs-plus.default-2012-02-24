@@ -17,6 +17,7 @@
 //	2011-10-01 quisvir - Added guideArea property for option and group descriptions
 //	2011-10-13 quisvir - Fixed #187 "Arrow" icon in "PRS+ Settings" slot is missing
 //  2011-10-19 Ben Chenoweth - Changed BOOK to BOOK_ALT
+//	2011-11-25 quisvir - Allow temporary redirect after selecting setting
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -96,7 +97,7 @@ tmp = function() {
 				Core.settings.saveOptions(arg.addon);
 
 				// Goto parent node
-				this.parent.parent.enter(kbook.model);
+				if (!this.parent.redirect) this.parent.parent.enter(kbook.model);
 			} catch (e) {
 				log.error("in valuenode.enter for option " + arg.optionDef.name + ": " + e);
 			}
