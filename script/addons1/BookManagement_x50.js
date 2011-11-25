@@ -178,7 +178,7 @@ tmp = function() {
 			if (opt.HomeMenuBooklist == 5) msg = opt.SelectedCollection;
 			else if (opt.HomeMenuBooklist == 3 && opt.CurrentCollection) msg = L('NEXT_IN') + ' ' + opt.CurrentCollection;
 			else msg = BookManagement_x50.optionDefs[0].optionDefs[0].valueTitles[opt.HomeMenuBooklist];
-			if (opt.EnableSubCollections == 'true') msg = msg.replace('|',': ');
+			msg = msg.replace('|',': '); // sub-collections
 			this.skin.styles[6].draw(this.getWindow(), msg, 0, y-25, this.width, this.textCommentHeight);
 		}
 		record = this.menu.getRecord(offset);
@@ -263,7 +263,7 @@ tmp = function() {
 			}
 			switch (opt.HomeMenuBooklist) {
 				case 0: // Booklist option: last added books
-					obj0 = new Object();
+					obj0 = {};
 					obj0.by = 'indexDate';
 					obj0.order = xdb.descending;
 					result.sort_c(obj0);
@@ -311,7 +311,7 @@ tmp = function() {
 					var i=0, j, k, id, result2, colls, coll, books;
 					if (current) {
 						id = current.id;
-						// Switch to colls cache
+						// Switch to collections cache
 						result2 = cache.playlistMasters;
 						result2.sort('indexPlaylist');
 						colls = result2.count();
@@ -392,7 +392,8 @@ tmp = function() {
 			break;
 		}
 	};
-		
+	
+	// Functions for booklist option 'Select Collection'
 	doSelectCollection = function () {
 		oldNode = kbook.model.currentNode;
 		oldNode.redirect = true;
@@ -420,7 +421,7 @@ tmp = function() {
 			nodes[i].onEnter = 'collectionSelected';
 			nodes[i].collName = result.getRecord(i).title;
 		}
-		if (nodes.length && opt.EnableSubCollections === 'true') createSubCollections(nodes, this, 0);
+		if (nodes.length) createSubCollections(nodes, this, 0);
 	}
 	
 	selectCollectionDestruct = function () {
