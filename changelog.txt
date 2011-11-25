@@ -3,6 +3,7 @@
  * ALL: Calculator now saves and loads memory cells
  * 600/x50: Added Author List addon
  * 600/x50: Added Save Notepad Data addon
+ * 300/505/600: Added Available Space Info to PRS+ About 
 
 === 2.0.15 release candidate (20.11.2011) ===
  * ALL: Fixed #171 "The "Copy to IM..." menu items are not present in Card via Mount, if card scanning is not disabled"
