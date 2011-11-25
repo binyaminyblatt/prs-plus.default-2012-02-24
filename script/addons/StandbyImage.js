@@ -8,6 +8,7 @@
 //	2011-11-21 quisvir - Rewritten to merge all relevant code, add shutdown image support, icon, custom text
 //	2011-11-22 quisvir - Implemented bugfixes from Mark Nord, fixed standby icon indices
 //	2011-11-22 Mark Nord - some more tweaks to get it working with 300/505
+//  2011-11-25 Ben Chenoweth - icon on standby and shutdown now separate options
 //
 //	TODO: set/restore portrait orientation on shutdown
 
@@ -244,7 +245,7 @@ tmp = function() {
 			}
 			
 			// Display standby/shutdown icon
-			if (opt.DisplayIcon === 'true') {
+			if (((opt.DisplayStandbyIcon === 'true') && (!shutdown)) || ((opt.DisplayShutdownIcon === 'true') && (shutdown))) {
 				win.setPenColor(Color.black);
 				win.fillRectangle(w-69, 9, 60, 60);
 				icon = (shutdown) ? Core.config.compat.NodeKinds.SHUTDOWN : Core.config.compat.NodeKinds.STANDBY;
@@ -298,6 +299,17 @@ tmp = function() {
 				}
 			},
 			{
+				name: "DisplayStandbyIcon",
+				title: L("DISPLAY_STANDBY_ICON"),
+				icon: "STANDBY",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}
+			},
+			{
 				name: "ShutdownMode",
 				title: L("SHUTDOWN_IMG_KIND"),
 				icon: "SHUTDOWN",
@@ -312,10 +324,10 @@ tmp = function() {
 				}
 			},
 			{
-				name: "dither",
-				title: L("DITHER_STANDBY_IMG"),
-				icon: "SETTINGS",
-				defaultValue: "true",
+				name: "DisplayShutdownIcon",
+				title: L("DISPLAY_SHUTDOWN_ICON"),
+				icon: "SHUTDOWN",
+				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
 					"true": L("VALUE_TRUE"),
@@ -323,10 +335,10 @@ tmp = function() {
 				}
 			},
 			{
-				name: "DisplayIcon",
-				title: L("DISPLAY_ICON"),
+				name: "dither",
+				title: L("DITHER_STANDBY_IMG"),
 				icon: "SETTINGS",
-				defaultValue: "false",
+				defaultValue: "true",
 				values: ["true", "false"],
 				valueTitles: {
 					"true": L("VALUE_TRUE"),
