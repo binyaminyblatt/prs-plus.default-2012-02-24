@@ -1,5 +1,6 @@
 === 2.1.0 ? ===
  * ALL: Added sub-collection support (max 1 sub-level, using | as separator)
+ * ALL: Calculator now saves and loads memory cells
  * 600/x50: Added Author List addon
  * 600/x50: Added Save Notepad Data addon
 
