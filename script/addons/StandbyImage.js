@@ -369,9 +369,9 @@ tmp = function() {
 				case "505":
 				case "300":
 				case "600":
-					this.optionDefs[0].values = ["random", "white", "black", "cover", "act_page"];
+					this.optionDefs[0].values = ["random", "white", "black", "cover", "act_page", "calendar"];
 					this.optionDefs[0].defaultValue = "white";
-					this.optionDefs[1].values = ["random", "white", "black", "cover"];
+					this.optionDefs[2].values = ["random", "white", "black", "cover", "calendar"];
 			}
 		},
 	}
