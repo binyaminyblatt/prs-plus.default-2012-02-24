@@ -8,6 +8,7 @@
 //				300: Fixed "next/prev" page actions consuming "goto page" key events 
 //	2011-10-27 Mark Nord - ported bubbleActions from x50
 //	2011-10-28 Mark Nord - fixed issue #206
+//	2011-11-26 Mark Nord - Added issue #218 TOC Action for 300/505
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled,
@@ -114,7 +115,7 @@ tmp = function() {
 					if (isBookEnabled()) {
 						book.doCenter();
 					} else {
-						return true;
+						model.doBlink();
 					}
 				}
 			});
@@ -144,7 +145,7 @@ tmp = function() {
 					if (isBookEnabled()) {
 						book.doNext();
 					} else {
-						return true;
+						model.doBlink();
 					}
 				}
 			},
@@ -157,7 +158,7 @@ tmp = function() {
 					if (isBookEnabled()) {
 						book.doPrevious();
 					} else {
-						return true;
+						model.doBlink();
 					}
 				}
 			},
@@ -170,7 +171,7 @@ tmp = function() {
 					if (isBookEnabled()) {
 						doHistory(-1);
 					} else {
-						return true;
+						model.doBlink();
 					}
 				}
 			},
@@ -183,10 +184,24 @@ tmp = function() {
 					if (isBookEnabled()) {
 						doHistory(1);
 					} else {
-						return true;
+						model.doBlink();
 					}
 				}
 			},
+			{
+				name: "OpenTOC",
+				title: L("ACTION_OPEN_TOC"),
+				group: "Book",
+				icon: "LIST",
+				action: function () {
+					var parent = kbook.model.current.parent;
+					if (isBookEnabled()) {
+						parent.gotoNode(parent.nodes[4],kbook.model);
+					} else {
+						model.doBlink();
+					}
+				}
+			}, 
 			{
 				name: "ContinueReading",
 				title: L("ACTION_CONTINUE_READING"),
