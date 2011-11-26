@@ -14,6 +14,7 @@
 //	2011-10-01 quisvir - Close reading popup menu (dict etc) and cancel selection by tapping page
 //	2011-10-13 quisvir - Fixed #196 "No Page Turn with Gestures" doesn't disable Multi-Page Turn
 //  2011-10-13 Ben Chenoweth - assigned more icons
+//	2011-11-26 quisvir - Fixed Issue #228 "No Page Turn with Gestures" doesn't disable page turns through pageShortcutOverlayModel
 
 tmp = function() {
 
@@ -185,6 +186,8 @@ tmp = function() {
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			Fskin.kbookPage.canLine = Fskin.kbookPage.canLineAndHold = (ViewerSettings_600.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};	
+			pageShortcutOverlayModel.canLine = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return this.targetModel.doSomething('canLine');};
+			pageShortcutOverlayModel.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return this.targetModel.doSomething('canLineAndHold');};
 		},
 		actions: [{
 			name: "toggleGestureOnOff",
@@ -194,6 +197,8 @@ tmp = function() {
 			action: function () {
 				ViewerSettings_600.options.NoGesturePageTurn = (ViewerSettings_600.options.NoGesturePageTurn == 'true') ? 'false' : 'true';
 				Fskin.kbookPage.canLine = Fskin.kbookPage.canLineAndHold = (ViewerSettings_600.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+				pageShortcutOverlayModel.canLine = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return this.targetModel.doSomething('canLine');};
+				pageShortcutOverlayModel.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return this.targetModel.doSomething('canLineAndHold');};
 				Core.ui.showMsg(L("OPTION_NOGESTURE") + ': ' + ((ViewerSettings_600.options.NoGesturePageTurn == 'true')?L("VALUE_TRUE"):L("VALUE_FALSE")));
 			}
 		}] 	
