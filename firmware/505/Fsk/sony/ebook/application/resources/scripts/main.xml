@@ -2,6 +2,7 @@
 <document xmlns="http://www.kinoma.com/fskin/1" href="x-id://model">
 	<assets>
 		<!-- PRS+ stuff -->
+		<import href="../prsp/prspAssets.xml"/>
 		<texture href="kBookAssets.png">
 			<cutout id="whiteBox" x="630" y="0" width="70" height="70" columns="0" lines="0" />
 			<cutout id="blackBox" x="351" y="0" width="35" height="70" columns="0" lines="0" />
