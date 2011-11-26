@@ -222,7 +222,7 @@ History:
 					msg2 = savePath;
 				}
 
-				win.setTextStyle("bold");
+				win.setTextStyle(1);
 				win.setTextSize(24);
 
 				var bounds1 = win.getTextBounds(msg1);
