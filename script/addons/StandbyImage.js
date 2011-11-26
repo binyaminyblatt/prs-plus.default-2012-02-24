@@ -9,8 +9,9 @@
 //	2011-11-22 quisvir - Implemented bugfixes from Mark Nord, fixed standby icon indices
 //	2011-11-22 Mark Nord - some more tweaks to get it working with 300/505
 //  2011-11-25 Ben Chenoweth - icon on standby and shutdown now separate options
+//	2011-11-26 quisvir - separate standby/shutdown text
 //
-//	TODO: set/restore portrait orientation on shutdown
+//	TODO: set/restore portrait orientation on shutdown, scaling option
 
 
 tmp = function() {
@@ -172,12 +173,13 @@ tmp = function() {
 	
 	standbyImage.draw = function () {
 	
-		var opt, mode, win, w, h, path, bitmap, bounds, ratio, width, height, x, y, oldPencolor, oldTextStyle, oldTextSize, oldTextAlignmentX, oldTextAlignmentY, icon, iconX, filePath, customText;
+		var opt, mode, win, w, h, path, bitmap, bounds, ratio, width, height, x, y, oldPencolor, oldTextStyle, oldTextSize, oldTextAlignmentX, oldTextAlignmentY,
+			icon, iconX, file, content, lines, line, customText;
 		opt = StandbyImage.options;
 		mode = (shutdown) ? opt.ShutdownMode : opt.StandbyMode;
 		win = this.getWindow();
 		
-		//Model sniffing: call standbyimage for 300/505
+		//Model sniffing: 300/505
 		//win.width / win.height isn't update after ebook.rotate!? giving w:800 h:600 
 		if (!standbyImage.color) {
 			w = 600; 
@@ -250,7 +252,7 @@ tmp = function() {
 			}
 			
 			// Display standby/shutdown icon
-			if (((opt.DisplayStandbyIcon === 'true') && (!shutdown)) || ((opt.DisplayShutdownIcon === 'true') && (shutdown))) {
+			if ((shutdown && opt.DisplayShutdownIcon === 'true') || (!shutdown && opt.DisplayStandbyIcon === 'true')) {
 				win.setPenColor(Color.black);
 				win.fillRectangle(w-69, 9, 60, 60);
 				icon = (shutdown) ? Core.config.compat.NodeKinds.SHUTDOWN : Core.config.compat.NodeKinds.STANDBY;
@@ -258,15 +260,21 @@ tmp = function() {
 				kbook.model.container.cutouts['kBookVIcon-a'].draw(win, icon, 0, iconX, 4, 70, 70);
 			}
 			
-			// Display custom standby/shutdown text from file
-			if (opt.DisplayCustomText === 'true') {
+			// Display custom standby/shutdown text from customtext.cfg
+			if ((shutdown && opt.DisplayShutdownText === 'true') || (!shutdown && opt.DisplayStandbyText === 'true')) {
 				win.fillRectangle(0, h-30, w, 30);
 				win.setPenColor(Color.white);
 				win.setTextStyle(1);
 				win.setTextSize(20);
 				win.setTextAlignment(0, 0);
-				filePath = Core.config.publicPath + 'customtext.cfg';
-				customText = Core.io.getFileContent(filePath, L('CUSTOM_TEXT_NOT_FOUND'));
+				file = Core.config.publicPath + 'customtext.cfg';
+				content = Core.io.getFileContent(file, null);
+				if (content !== null) {
+					lines = content.split('\n');
+					line = (shutdown) ? 7 : 5;
+					if (lines.length > line) customText = lines[line].replace('\r','');
+				}
+				if (!customText || customText === '') customText = L('CUSTOM_TEXT_NOT_FOUND');
 				win.drawText(customText, 0, h-30, w, 30);
 			}
 		}
@@ -289,74 +297,95 @@ tmp = function() {
 		icon: "STANDBY",
 		optionDefs: [
 			{
-				name: "StandbyMode",
-				title: L("STANDBY_IMG_KIND"),
-				icon: "STANDBY",
-				defaultValue: "standby",
-				values: ["standby", "white", "black", "cover", "act_page", "calendar"],
-				valueTitles: {
-					"standby": L("VALUE_ORIGINAL_STANDBY"),
-					"random": L("VALUE_RANDOM"),
-					"white": L("VALUE_WHITE_SCREEN"),
-					"black": L("VALUE_BLACK_SCREEN"),
-					"cover": L("VALUE_COVER"),
-					"act_page": L("VALUE_ACT_PAGE"),
-					"calendar": L("VALUE_CALENDAR")
-				}
-			},
+			groupTitle: L('STANDBY_IMAGE'),
+			groupIcon: 'STANDBY',
+			optionDefs: [
+				{
+					name: "StandbyMode",
+					title: L("STANDBY_IMG_KIND"),
+					icon: "STANDBY",
+					defaultValue: "standby",
+					values: ["standby", "white", "black", "cover", "act_page", "calendar"],
+					valueTitles: {
+						"standby": L("VALUE_ORIGINAL_STANDBY"),
+						"random": L("VALUE_RANDOM"),
+						"white": L("VALUE_WHITE_SCREEN"),
+						"black": L("VALUE_BLACK_SCREEN"),
+						"cover": L("VALUE_COVER"),
+						"act_page": L("VALUE_ACT_PAGE"),
+						"calendar": L("VALUE_CALENDAR")
+					}
+				},
+				{
+					name: "DisplayStandbyIcon",
+					title: L("DISPLAY_STANDBY_ICON"),
+					icon: "STANDBY",
+					defaultValue: "false",
+					values: ["true", "false"],
+					valueTitles: {
+						"true": L("VALUE_TRUE"),
+						"false": L("VALUE_FALSE")
+					}
+				},
+				{
+					name: "DisplayStandbyText",
+					title: L("DISPLAY_STANDBY_TEXT"),
+					icon: "ABC",
+					defaultValue: "false",
+					values: ["true", "false"],
+					valueTitles: {
+						"true": L("VALUE_TRUE"),
+						"false": L("VALUE_FALSE")
+					}
+				},
+			]},
 			{
-				name: "DisplayStandbyIcon",
-				title: L("DISPLAY_STANDBY_ICON"),
-				icon: "STANDBY",
-				defaultValue: "false",
-				values: ["true", "false"],
-				valueTitles: {
-					"true": L("VALUE_TRUE"),
-					"false": L("VALUE_FALSE")
-				}
-			},
-			{
-				name: "ShutdownMode",
-				title: L("SHUTDOWN_IMG_KIND"),
-				icon: "SHUTDOWN",
-				defaultValue: "white",
-				values: ["standby", "white", "black", "cover", "calendar"],
-				valueTitles: {
-					"standby": L("VALUE_ORIGINAL_STANDBY"),
-					"random": L("VALUE_RANDOM"),
-					"white": L("VALUE_WHITE_SCREEN"),
-					"black": L("VALUE_BLACK_SCREEN"),
-					"cover": L("VALUE_COVER"),
-					"calendar": L("VALUE_CALENDAR")
-				}
-			},
-			{
-				name: "DisplayShutdownIcon",
-				title: L("DISPLAY_SHUTDOWN_ICON"),
-				icon: "SHUTDOWN",
-				defaultValue: "false",
-				values: ["true", "false"],
-				valueTitles: {
-					"true": L("VALUE_TRUE"),
-					"false": L("VALUE_FALSE")
-				}
-			},
+			groupTitle: L('SHUTDOWN_IMAGE'),
+			groupIcon: 'SHUTDOWN',
+			optionDefs: [
+				{
+					name: "ShutdownMode",
+					title: L("SHUTDOWN_IMG_KIND"),
+					icon: "SHUTDOWN",
+					defaultValue: "white",
+					values: ["standby", "white", "black", "cover", "calendar"],
+					valueTitles: {
+						"standby": L("VALUE_ORIGINAL_STANDBY"),
+						"random": L("VALUE_RANDOM"),
+						"white": L("VALUE_WHITE_SCREEN"),
+						"black": L("VALUE_BLACK_SCREEN"),
+						"cover": L("VALUE_COVER"),
+						"calendar": L("VALUE_CALENDAR")
+					}
+				},
+				{
+					name: "DisplayShutdownIcon",
+					title: L("DISPLAY_SHUTDOWN_ICON"),
+					icon: "SHUTDOWN",
+					defaultValue: "false",
+					values: ["true", "false"],
+					valueTitles: {
+						"true": L("VALUE_TRUE"),
+						"false": L("VALUE_FALSE")
+					}
+				},
+				{
+					name: "DisplayShutdownText",
+					title: L("DISPLAY_SHUTDOWN_TEXT"),
+					icon: "ABC",
+					defaultValue: "false",
+					values: ["true", "false"],
+					valueTitles: {
+						"true": L("VALUE_TRUE"),
+						"false": L("VALUE_FALSE")
+					}
+				},
+			]},
 			{
 				name: "dither",
-				title: L("DITHER_STANDBY_IMG"),
+				title: L("DITHER_IMAGE"),
 				icon: "SETTINGS",
 				defaultValue: "true",
-				values: ["true", "false"],
-				valueTitles: {
-					"true": L("VALUE_TRUE"),
-					"false": L("VALUE_FALSE")
-				}
-			},
-			{
-				name: "DisplayCustomText",
-				title: L("DISPLAY_CUSTOM_TEXT"),
-				icon: "ABC",
-				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
 					"true": L("VALUE_TRUE"),
@@ -369,9 +398,9 @@ tmp = function() {
 				case "505":
 				case "300":
 				case "600":
-					this.optionDefs[0].values = ["random", "white", "black", "cover", "act_page", "calendar"];
-					this.optionDefs[0].defaultValue = "white";
-					this.optionDefs[2].values = ["random", "white", "black", "cover", "calendar"];
+					this.optionDefs[0].optionDefs[0].values = ["random", "white", "black", "cover", "act_page", "calendar"];
+					this.optionDefs[0].optionDefs[0].defaultValue = "white";
+					this.optionDefs[1].optionDefs[0].values = ["random", "white", "black", "cover", "calendar"];
 			}
 		},
 	}
