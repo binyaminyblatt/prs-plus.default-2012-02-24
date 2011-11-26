@@ -229,6 +229,11 @@ tmp = function() {
 					win.setPenColor(Color.black);
 					win.fillRectangle(win);
 					break;
+				case 'calendar':
+					try {
+						Core.addonByName.Calendar.drawStandbyWidget(win);
+					} catch (e) { log.error(e); }
+					break;
 			}
 			
 			// If getBookCover or getRandomWallpaper succeeded, draw bitmap
@@ -288,14 +293,15 @@ tmp = function() {
 				title: L("STANDBY_IMG_KIND"),
 				icon: "STANDBY",
 				defaultValue: "standby",
-				values: ["standby", "white", "black", "cover", "act_page"],
+				values: ["standby", "white", "black", "cover", "act_page", "calendar"],
 				valueTitles: {
 					"standby": L("VALUE_ORIGINAL_STANDBY"),
 					"random": L("VALUE_RANDOM"),
 					"white": L("VALUE_WHITE_SCREEN"),
 					"black": L("VALUE_BLACK_SCREEN"),
 					"cover": L("VALUE_COVER"),
-					"act_page": L("VALUE_ACT_PAGE")
+					"act_page": L("VALUE_ACT_PAGE"),
+					"calendar": L("VALUE_CALENDAR")
 				}
 			},
 			{
@@ -314,13 +320,14 @@ tmp = function() {
 				title: L("SHUTDOWN_IMG_KIND"),
 				icon: "SHUTDOWN",
 				defaultValue: "white",
-				values: ["standby", "white", "black", "cover"],
+				values: ["standby", "white", "black", "cover", "calendar"],
 				valueTitles: {
 					"standby": L("VALUE_ORIGINAL_STANDBY"),
 					"random": L("VALUE_RANDOM"),
 					"white": L("VALUE_WHITE_SCREEN"),
 					"black": L("VALUE_BLACK_SCREEN"),
-					"cover": L("VALUE_COVER")
+					"cover": L("VALUE_COVER"),
+					"calendar": L("VALUE_CALENDAR")
 				}
 			},
 			{
