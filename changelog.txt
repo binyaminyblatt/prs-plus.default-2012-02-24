@@ -6,6 +6,11 @@
  * 600/x50: Added Save Notepad Data addon (Ben Chenoweth)
  * 300/505/600: Added Available Space Info to PRS+ About 
 
+=== 2.0.16 release candidate 2 (26.11.2011) ===
+ * ALL: Minor translation fixes (RUS, TUR)
+ * ALL: StandbyImage: Fix for scaling bug in Sony code
+ * 300/505/600: Added $a0 (no wrap space) to fonts (to be added to x50 in 2.1.x)
+
 === 2.0.15 release candidate (20.11.2011) ===
  * ALL: Fixed #171 "The "Copy to IM..." menu items are not present in Card via Mount, if card scanning is not disabled"
  * ALL: Fixed bug that prevented SD/MS card scan mode from being changed on the fly
