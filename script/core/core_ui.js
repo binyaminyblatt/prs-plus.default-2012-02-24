@@ -151,7 +151,7 @@ try {
 		// Settings
 		gap = 20;
 		spc = 10;
-		win.setTextStyle("bold");
+		win.setTextStyle(1);
 		win.setTextSize(22);
 		// Calc
 		ms_w = [];
