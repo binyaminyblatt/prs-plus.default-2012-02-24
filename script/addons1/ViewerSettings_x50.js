@@ -25,6 +25,7 @@
 //	2011-10-13 quisvir - Fixed #196 "No Page Turn with Gestures" doesn't disable Multi-Page Turn
 //  2011-10-13 Ben Chenoweth - assigned more icons
 //	2011-10-24 quisvir - Fixed #203 "Book rotation scribbled notes origin incorrect"
+//	2011-11-26 quisvir - Fixed Issue #228 "No Page Turn with Gestures" doesn't disable page turns through pageShortcutOverlayModel
 
 tmp = function() {
 
@@ -563,6 +564,7 @@ tmp = function() {
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			kbook.kbookPage.canLine = kbook.kbookPage.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+			pageShortcutOverlayModel.canLine = pageShortcutOverlayModel.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return true;};
 			kbook.kbookPage.borderColor = (ViewerSettings_x50.options.BorderColor === 'grey') ? Color.rgb.parse('#6D6D6D') : Color.rgb.parse('white');
 			if (propertyName == "CustomContrast" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_CONTRAST") + ':', '', 'doContrastChange', '', true, 'number');
 			if (propertyName == "CustomBrightness" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_BRIGHTNESS") + ':', '', 'doBrightnessChange', '', true, 'number');
@@ -575,6 +577,7 @@ tmp = function() {
 			action: function () {
 				ViewerSettings_x50.options.NoGesturePageTurn = (ViewerSettings_x50.options.NoGesturePageTurn == 'true') ? 'false' : 'true';
 				kbook.kbookPage.canLine = kbook.kbookPage.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+				pageShortcutOverlayModel.canLine = pageShortcutOverlayModel.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return true;};
 				Core.ui.showMsg(L("OPTION_NOGESTURE") + ': ' + ((ViewerSettings_x50.options.NoGesturePageTurn == 'true')?L("VALUE_TRUE"):L("VALUE_FALSE")));
 			}
 		}] 	
