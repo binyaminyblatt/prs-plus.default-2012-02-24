@@ -10,8 +10,9 @@
 //	2011-11-22 Mark Nord - some more tweaks to get it working with 300/505
 //  2011-11-25 Ben Chenoweth - icon on standby and shutdown now separate options
 //	2011-11-26 quisvir - separate standby/shutdown text
+//	2011-11-27 quisvir - made customtext code more flexible, added scaling option
 //
-//	TODO: set/restore portrait orientation on shutdown, scaling option
+//	TODO: set/restore portrait orientation on shutdown
 
 
 tmp = function() {
@@ -174,7 +175,7 @@ tmp = function() {
 	standbyImage.draw = function () {
 	
 		var opt, mode, win, w, h, path, bitmap, bounds, ratio, width, height, x, y, oldPencolor, oldTextStyle, oldTextSize, oldTextAlignmentX, oldTextAlignmentY,
-			icon, iconX, file, content, lines, line, customText;
+			icon, iconX, file, content, lines, match, i, customText;
 		opt = StandbyImage.options;
 		mode = (shutdown) ? opt.ShutdownMode : opt.StandbyMode;
 		win = this.getWindow();
@@ -241,11 +242,19 @@ tmp = function() {
 			// If getBookCover or getRandomWallpaper succeeded, draw bitmap
 			if (bitmap) {
 				bounds = bitmap.getBounds();
-				ratio = (bounds.height/bounds.width > h/w) ? (h/bounds.height) : (w/bounds.width);
-				width = Math.floor(bounds.width * ratio);
-				height = Math.floor(bounds.height * ratio);
-				x = (w > width) ? Math.floor((w - width) / 2) : 0;
-				y = (h > height) ? Math.floor((h - height) / 2) : 0;
+				switch (opt.ScalingMethod) {
+					case 'keepaspect':
+						ratio = (bounds.height/bounds.width > h/w) ? (h/bounds.height) : (w/bounds.width);
+						width = Math.floor(bounds.width * ratio);
+						height = Math.floor(bounds.height * ratio);
+						x = (w > width) ? Math.floor((w - width) / 2) : 0;
+						y = (h > height) ? Math.floor((h - height) / 2) : 0;
+						break;
+					case 'stretch':
+						width = w;
+						height = h;
+						x = y = 0;
+				}
 				if (opt.dither === 'true') bitmap = bitmap.dither(true);
 				win.drawBitmap(bitmap, x, y, width, height);
 				bitmap.close();
@@ -271,8 +280,9 @@ tmp = function() {
 				content = Core.io.getFileContent(file, null);
 				if (content !== null) {
 					lines = content.split('\n');
-					line = (shutdown) ? 7 : 5;
-					if (lines.length > line) customText = lines[line].replace('\r','');
+					match = (shutdown) ? 'Enter Shutdown Text below this line' : 'Enter Standby Text below this line';
+					for (i=0; i < lines.length - 1 && lines[i].indexOf(match) === -1; i++);
+					if (i !== lines.length - 1) customText = lines[i+1].replace('\r','');
 				}
 				if (!customText || customText === '') customText = L('CUSTOM_TEXT_NOT_FOUND');
 				win.drawText(customText, 0, h-30, w, 30);
@@ -381,6 +391,17 @@ tmp = function() {
 					}
 				},
 			]},
+			{
+				name: "ScalingMethod",
+				title: L("IMAGE_SCALING"),
+				icon: "SETTINGS",
+				defaultValue: "keepaspect",
+				values: ["keepaspect", "stretch"],
+				valueTitles: {
+					"keepaspect": L("VALUE_KEEP_ASPECT_RATIO"),
+					"stretch": L("VALUE_STRETCH_TO_SCREEN")
+				}
+			},
 			{
 				name: "dither",
 				title: L("DITHER_IMAGE"),
