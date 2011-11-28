@@ -10,7 +10,9 @@
 //				Unmodifiable slots got different title.
 //	2011-06    Shura1oplot - assign Icons to menu-options
 //	2011-08-01 Mark Nord -  include Core.config.compat.prspMenu.customContainers
-//  2011-08-28 Ben Chenoweth - Custom containers can now have a short name and a comment
+//	2011-08-28 Ben Chenoweth - Custom containers can now have a short name and a comment
+//	2011-11-13 kartu - added support for rootNode being a funciton that returns root node
+//	2011-11-27 Mark Nord - ItemCount in comment for more, multimedia & games-nodes 
 
 var MenuCustomizer;
 tmp = function() {
@@ -80,10 +82,12 @@ tmp = function() {
 		};
 		standardMenuLayout = Core.config.compat.standardMenuLayout;
 		// Root node
-		if (Core.config.compat.rootNode) {
-			nodeMap.root = Core.config.compat.rootNode;
-		} else {
-			nodeMap.root = kbook.root;
+		nodeMap.root = Core.config.compat.rootNode;
+		if (typeof nodeMap.root === "function") {
+			nodeMap.root = nodeMap.root();
+		}
+		if (!nodeMap.root) {
+			nodeMap.root = kbook.root;	
 		}
 		
 		// Empty node
@@ -251,8 +255,16 @@ tmp = function() {
 						shortName: container.shortName,
 						kind: container.kind,
 						icon: container.icon,
-						comment: container.comment
+						//comment: container.comment
+						comment : container.comment ? container.comment : function () {
+								try{
+									return Core.lang.LX("ITEMS", this.nodes.length);
+								}
+								catch (ignore) {}
+							}
 					});					
+					// (X) like description, i.e. (3)
+					nodeMap[container.name].shortComment = function () {return "(" + this.nodes.length + ")"; };
 				}
 				
 				// Set of already placed nodes

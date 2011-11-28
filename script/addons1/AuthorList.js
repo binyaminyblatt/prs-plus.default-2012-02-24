@@ -1,79 +1,95 @@
 // Name: Author List
 // Models: 600 and x50 series
 //
-// Description: Adds 
+// Description: Allows user to browse books by author on touch models
 //
 // Author: quisvir
 //
 // History:
 //	2011-09-24 quisvir - Initial version
+//	2011-11-20 quisvir - Now working on 600 thanks to Ben Chenoweth, first public version
+//	2011-11-20 quisvir - Minor changes
+//	2011-11-24 quisvir - Fixed deleting books opened from Author List
 
 tmp = function() {
 
-	var L = Core.lang.getLocalizer('AuthorList');
-	var LX = Core.lang.LX;
-	var log = Core.log.getLogger('AuthorList');
+	var L, LX, log, authorsNode, authors, authorsNodeConstruct, authorsNodeDestruct, authorConstruct, authorDestruct;
 	
-	var AuthorsNode = null;
-	var Authors = [];
+	L = Core.lang.getLocalizer('AuthorList');
+	LX = Core.lang.LX;
+	log = Core.log.getLogger('AuthorList');
 	
-	AuthorsNodeConstruct = function () {
-		var i, node, nodes, result, records, author, path, books;
-		nodes = this.nodes = [];
-		result = kbook.model.cache['textMasters'];
-		// Model sniffing: filter out periodicals in relevant models
-		if (Core.config.model != '600') result = kbook.root.children.deviceRoot.children.books.filter(result);
-		// TODO optionally attempt sorting by author's last name
-		obj0 = new Object();
+	authorsNode = null;
+	
+	authorsNodeConstruct = function () {
+		var i, c, result, record, author, path, books, node;
+		authors = [];
+		this.nodes = [];
+		result = kbook.model.cache.textMasters;
+		obj0 = {};
 		obj0.by = 'indexArtist';
 		obj0.order = xdb.ascending;
-		obj1 = new Object();
-		obj1.by = 'indexTitle';
-		obj1.order = xdb.ascending;
-		result.sort_c(obj0, obj1);
-		records = result.count();
-		for (i=0;i<records;i++) {
+		// Model sniffing: filter out periodicals, enhance sorting
+		if (Core.config.model === '600') {
+			result.sort(obj0);
+		} else {
+			result = kbook.root.children.deviceRoot.children.books.filter(result);
+			obj1 = {};
+			obj1.by = 'indexTitle';
+			obj1.order = xdb.ascending;
+			result.sort_c(obj0, obj1);
+		}
+		c = result.count();
+		for (i=0;i<c;i++) {
 			record = result.getRecord(i);
-			if (record) {
-				author = record.author;
-				path = record.getFilePath();
-				if (!Authors.length || Authors[Authors.length-1][0] != author) Authors.push([author, path]);
-				else Authors[Authors.length-1].push(path);
+			author = record.author;
+			path = record.getFilePath();
+			if (!authors.length || authors[authors.length-1][0] !== author) {
+				authors.push([author, path]);
+			} else {
+				authors[authors.length-1].push(path);
 			}
 		}
 		// Create author subnodes
-		for (i=0;i<Authors.length;i++) {
-			books = Authors[i].length - 1;
+		for (i=0;i<authors.length;i++) {
+			books = authors[i].length - 1;
 			if (books >= Number(AuthorList.options.MinimumBooks)) {
-				node = nodes[nodes.length] = Core.ui.createContainerNode({
-					title: Authors[i][0] ? Authors[i][0] : '(' + L('NO_AUTHOR') + ')',
-					parent: AuthorsNode,
+				node = Core.ui.createContainerNode({
+					title: authors[i][0] ? authors[i][0] : '(' + L('NO_AUTHOR') + ')',
+					parent: authorsNode,
 					comment: LX('BOOKS', books),
-					construct: AuthorsBooksNodeConstruct,
-					destruct: AuthorsBooksNodeDestruct
+					construct: authorConstruct,
+					destruct: authorDestruct,
+					icon: 'COLLECTION'
 				})
-				node.index = i;
+				node.authorIndex = i;
+				this.nodes.push(node);
 			}
 		}
 	};
 	
-	AuthorsNodeDestruct = function () {
-		Authors = [];
+	authorsNodeDestruct = function () {
+		authors = [];
 		this.nodes = [];
-	}
+	};
 	
-	AuthorsBooksNodeConstruct = function () {
+	authorConstruct = function () {
+		var i;
 		this.nodes = [];
-		for (var i=1;i<Authors[this.index].length;i++) this.nodes.push(Core.media.createMediaNode(Authors[this.index][i], this));
-	}
+		for (i=1;i<authors[this.authorIndex].length;i++) {
+			this.nodes.push(Core.media.createMediaNode(authors[this.authorIndex][i], this));
+		}
+		this.comment = LX('BOOKS', this.nodes.length);
+	};
 	
-	AuthorsBooksNodeDestruct = function () {
+	authorDestruct = function () {
 		this.nodes = [];
-	}
+	};
 	
 	var AuthorList = {
 		name: 'AuthorList',
 		title: L('TITLE'),
+		icon: 'AUTHOR',
 		optionDefs: [
 			{
 				name: 'MinimumBooks',
@@ -82,31 +98,23 @@ tmp = function() {
 				values: ['1', '2', '3', '4', '5', '10', '15', '20', '25'],
 			},
 		],
-		/**
-		* @constructor
-		*/
-		onPreInit: function () {
-		},
-		onInit: function () {
-		},
 		getAddonNode: function () {
-			if (AuthorsNode === null) {
-				AuthorsNode = Core.ui.createContainerNode({
+			if (authorsNode === null) {
+				authorsNode = Core.ui.createContainerNode({
 					title: L('TITLE'),
 					shortName: L('SHORT_TITLE'),
-					icon: 'BOOK_HISTORY',
-					construct: AuthorsNodeConstruct,
-					destruct: AuthorsNodeDestruct
+					icon: 'AUTHOR',
+					construct: authorsNodeConstruct,
+					destruct: authorsNodeDestruct
 				});
 			}
-			return AuthorsNode;
-		},
-		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+			return authorsNode;
 		},
 	};
 
 	Core.addAddon(AuthorList);
 };
+
 try {
 	tmp();
 } catch (e) {

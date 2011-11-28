@@ -14,6 +14,10 @@
 //	2010-11-16 kartu - Added short title to the node (for small buttons on readers with touchscreen)
 //	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
 //	2011-08-23 Mark Nord - added PRS+ advanced Settings Group -> 11th Group -> 2 Settings Pages -> reorganize PRS+ Settings?
+//	2011-10-01 quisvir - Added guideArea property for option and group descriptions
+//	2011-10-13 quisvir - Fixed #187 "Arrow" icon in "PRS+ Settings" slot is missing
+//  2011-10-19 Ben Chenoweth - Changed BOOK to BOOK_ALT
+//	2011-11-25 quisvir - Allow temporary redirect after selecting setting
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -93,7 +97,7 @@ tmp = function() {
 				Core.settings.saveOptions(arg.addon);
 
 				// Goto parent node
-				this.parent.parent.enter(kbook.model);
+				if (!this.parent.redirect) this.parent.parent.enter(kbook.model);
 			} catch (e) {
 				log.error("in valuenode.enter for option " + arg.optionDef.name + ": " + e);
 			}
@@ -206,12 +210,17 @@ tmp = function() {
 					comment: optionDef.groupComment ? optionDef.groupComment : function () {
 						return Core.lang.LX("SETTINGS", optionDef.optionDefs.length);
 					},
-					icon: optionDef.groupIcon
+					icon: optionDef.groupIcon,
+					guideArea: optionDef.helpText
 			});
+			node.sublistMark = true;
 			parent.nodes.push(node);
 
 			doCreateAddonSettings(node, optionDef.optionDefs, addon, false);
 		} else {
+			// Do not create settings node if hidden property is defined
+			if (optionDef.hasOwnProperty("hidden")) return;
+
 			// If target is defined, use it, else create "options"
 			var options;
 			if (optionDef.hasOwnProperty("target")) {
@@ -224,7 +233,8 @@ tmp = function() {
 			node = Core.ui.createContainerNode({
 					parent: parent,
 					title: optionDef.title,
-					icon: optionDef.icon
+					icon: optionDef.icon,
+					guideArea: optionDef.helpText
 			});
 			parent.nodes.push(node);
 			parent = node;
@@ -250,7 +260,7 @@ tmp = function() {
 			},			
 			viewer: {
 				title: coreL("GROUP_VIEWER_TITLE"),
-				icon: "BOOK"
+				icon: "BOOK_ALT"
 			}
 		};
 		// Create addon nodes and addon option nodes
@@ -313,6 +323,7 @@ tmp = function() {
 					}
 					prspSettingsNode.nodes.push(thisSettingsNode);
 				}
+				thisSettingsNode.sublistMark = true;
 				doCreateAddonSettings(thisSettingsNode, optionDefs, addon, false);
 			}
 		} catch (e) {
@@ -467,7 +478,7 @@ tmp = function() {
 					return Core.lang.LX("SETTINGS", this.nodes.length);
 				}
 			});
-			
+			prspSettingsNode.sublistMark = true;
 		},
 		getAddonNode: function() {
 			return prspSettingsNode;
