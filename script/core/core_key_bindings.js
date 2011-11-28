@@ -8,6 +8,7 @@
 //				Added support for 600 (new event system, handleEvent is called for UP and DOWN and HOLD events)
 //	2010-11-28 kartu - Added option for actions to pass control to the default key handler
 //  2011-11-01 Ben Chenoweth - Added 'option' key for 600 & x50
+//	2011-11-28 quisvir - Added getActionDefs() to expose actions to other addons
 
 tmp = function() {
 	var KeyBindings, STATE_GLOBAL, contexts, contextsLen, defVal, contextLabels,
@@ -265,6 +266,10 @@ tmp = function() {
 				// 300/500
 				Fskin.device.handleEvent = handleEvent;
 			}
+		},
+		
+		getActionDefs: function() {
+			return [values, valueTitles, valueIcons, valueGroups, actionName2action];
 		}
 	};
 	Core.addAddon(KeyBindings);

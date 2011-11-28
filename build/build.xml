@@ -45,6 +45,7 @@ History:
 		<exclude name="Calendar.js" />
 		<exclude name="AuthorList.js" />
 		<exclude name="SaveNotepadData.js" />
+		<exclude name="TouchSettings_x50.js" />
 	</patternset>
 	<patternset id="addons_600_x50">
 		<include name="**/*" />
@@ -69,6 +70,7 @@ History:
 		<patternset refid="addons_600_x50" />
 		<exclude name="ViewerSettings_x50.js" />
 		<exclude name="BookManagement_x50.js" />
+		<exclude name="TouchSettings_x50.js" />
 	</patternset>
 	<patternset id="addons_350" >
 		<patternset refid="addons_600_x50" />
@@ -320,7 +322,7 @@ History:
 				</fileset>
 			</intersect>
 		</concat>
-		<!-- addons 1 folder -->
+		<!-- addons 2 folder -->
 		<concat destfile="${prsp.dir}/addons2.js" encoding="UTF-8">
 			<intersect>
 				<fileset dir="${SRC.ADDONS}2">
