@@ -11,7 +11,7 @@
 //  2011-11-25 Ben Chenoweth - icon on standby and shutdown now separate options
 //	2011-11-26 quisvir - separate standby/shutdown text
 //	2011-11-27 quisvir - made customtext code more flexible, added scaling option
-//  2011-11-28 Ben Chenoweth - Added event overlay option
+//  2011-11-28 Ben Chenoweth - Added event overlay option (on standby and/or shutdown)
 //
 //	TODO: set/restore portrait orientation on shutdown
 
@@ -290,7 +290,7 @@ tmp = function() {
 			}
 			
 			// Display events overlay
-			if ((opt.DisplayEventsOverlay === 'true') && (mode !== 'calendar')) {
+			if (((shutdown && opt.DisplayShutdownEvents === 'true') || (!shutdown && opt.DisplayStandbyEvents === 'true')) && (mode !== 'calendar')) {
 				eventsonly=true;
 				Core.addonByName.Calendar.drawStandbyWidget(win, eventsonly);
 			}
@@ -356,8 +356,8 @@ tmp = function() {
 					}
 				},
 				{
-					name: "DisplayEventsOverlay",
-					title: L("DISPLAY_EVENTS_OVERLAY"),
+					name: "DisplayStandbyEvents",
+					title: L("DISPLAY_STANDBY_EVENTS"),
 					icon: "DATE",
 					defaultValue: "false",
 					values: ["true", "false"],
@@ -408,6 +408,17 @@ tmp = function() {
 						"false": L("VALUE_FALSE")
 					}
 				},
+				{
+					name: "DisplayShutdownEvents",
+					title: L("DISPLAY_SHUTDOWN_EVENTS"),
+					icon: "DATE",
+					defaultValue: "false",
+					values: ["true", "false"],
+					valueTitles: {
+						"true": L("VALUE_TRUE"),
+						"false": L("VALUE_FALSE")
+					}
+				}
 			]},
 			{
 				name: "ScalingMethod",
