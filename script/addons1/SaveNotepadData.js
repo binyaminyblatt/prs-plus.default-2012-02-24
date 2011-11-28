@@ -9,6 +9,7 @@
 //	2011-11-23 Ben Chenoweth - Initial version
 //  2011-11-24 Ben Chenoweth - Added saving Handwriting as SVG and JPG
 //  2011-11-27 Ben Chenoweth - Added saving Bookmark Comments and Scribbles
+//  2011-11-28 Ben Chenoweth - Minor code cleaning
 
 tmp = function() {
 	var L, log, oldNotepadDataSave, oldNotepadFreehandDataSave;
@@ -27,9 +28,9 @@ tmp = function() {
 			tab = String.fromCharCode(9); // TAB
 			stream.writeLine("<?xml version="+chr34+"1.0"+chr34+" encoding="+chr34+"utf-8"+chr34+" ?>");
 			stream.writeLine("<svg width="+chr34+width+chr34+" base="+chr34+"undefined"+chr34+" shape-rendering="+chr34+"optimizeQuality"+chr34+" height="+chr34+height+chr34+" transform="+chr34+chr34+">");
-			count = svg.length;
+			count = svg.contents.length;
 			for (x=0; x<count; x++) {
-				points = svg[x].points.toString();
+				points = svg.contents[x].points.toString();
 				points=points.replace("x: ","");
 				points=points.replace("y: ","");
 				points=points.replace(", ",",");
@@ -80,22 +81,18 @@ tmp = function() {
 						Core.io.setFileContent(path, media.note.text);
 					} catch (e) { log.error("Save as TXT failed!"); }
 				}
-				if ((media.type === 'drawing') && (SaveNotepadData.options.saveHandwritingSVG === 'on')) {
-					try {
-						name = media.path.substring(media.path.lastIndexOf('/') + 1);
-						svg = media.note.drawing.pages[0].svg.contents;
-						width = parseInt(media.note.drawing.width);
-						height = parseInt(media.note.drawing.height);
-						saveHandwritingSVG(name, svg, width, height);
-					} catch (e) { }
-				}
-				if ((media.type === 'drawing') && (SaveNotepadData.options.saveHandwritingJPG === 'on')) {
+				if (media.type === 'drawing') {
 					try {
 						name = media.path.substring(media.path.lastIndexOf('/') + 1);
 						svg = media.note.drawing.pages[0].svg;
 						width = parseInt(media.note.drawing.width);
 						height = parseInt(media.note.drawing.height);
-						saveHandwritingJPG(name, svg, width, height);
+						if (SaveNotepadData.options.saveHandwritingSVG === 'on') {
+							saveHandwritingSVG(name, svg, width, height);
+						}
+						if (SaveNotepadData.options.saveHandwritingJPG === 'on') {
+							saveHandwritingJPG(name, svg, width, height);
+						}
 					} catch (e) { }
 				}
 			}
@@ -149,7 +146,6 @@ tmp = function() {
 									saveHandwritingJPG(name, svg, width, height);
 								}
 								if (SaveNotepadData.options.saveHandwritingSVG === 'on') {
-									svg = svg.contents;
 									saveHandwritingSVG(name, svg, width, height);
 								}
 							}
