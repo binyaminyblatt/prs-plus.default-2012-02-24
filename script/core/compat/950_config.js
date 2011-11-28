@@ -32,6 +32,7 @@
 //	2011-11-20 quisvir - Added Author List
 //  2011-11-23 Ben Chenoweth - Added TEXT_MEMO
 //  2011-11-24 Ben Chenoweth - Added HANDWRITING_ALT
+//	2011-11-28 quisvir - Added STYLUS
 
 return {
 	// Menu icon indices 
@@ -72,6 +73,7 @@ return {
 		GESTURE: 38,
 		SEARCH: 39,
 		NODICTIONARY: 40,
+		STYLUS: 41,
 		COLLECTION: 42,
 		TEXT_MEMO: 50,
 		KEYBOARD: 51,

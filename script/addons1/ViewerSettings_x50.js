@@ -26,6 +26,7 @@
 //  2011-10-13 Ben Chenoweth - assigned more icons
 //	2011-10-24 quisvir - Fixed #203 "Book rotation scribbled notes origin incorrect"
 //	2011-11-26 quisvir - Fixed Issue #228 "No Page Turn with Gestures" doesn't disable page turns through pageShortcutOverlayModel
+//	2011-11-28 quisvir - Moved touch-related code to Touch Settings addon
 
 tmp = function() {
 
@@ -33,95 +34,6 @@ tmp = function() {
 	var L = Core.lang.getLocalizer("ViewerSettings_x50");
 	var log = Core.log.getLogger('ViewerSettings_x50');
 
-	// Constants
-	var zoomLockOld;
-	
-	// Close reading popup menu (dict etc) and cancel selection by tapping page
-	pageShortcutOverlayModel.doTap = function (x, y) {
-		if (kbook.model.doSomething('checkTap', x, y)) kbook.model.doSomething('doTap', x, y);
-		else if (ViewerSettings_x50.options.ClosePopupByPageTap == 'true') kbook.model.doSomething('selectNone');
-		else {
-			kbook.model.doBlink();
-			return;
-		}
-		this.doCloseShortcut();
-	};
-	
-	// Enable Page Turn by Single Tap
-	var readingTapX, readingTapY;
-	var oldSelectNoneWithoutUpdate = kbook.kbookPage.selectNoneWithoutUpdate;
-	var oldDoBlink = kbook.model.doBlink;
-	var doNothingFunc = function () {};
-	
-	// First get tap coordinates from reading tracker
-	var oldReadingTrackerTap = kbook.kbookPage.readingTracker.tap;
-	kbook.kbookPage.readingTracker.tap = function (target, x, y) {
-		readingTapX = x;
-		readingTapY = y;
-		oldReadingTrackerTap.apply(this, arguments);
-	};
-	
-	// Call pageTurnByTap when tap is not a link, highlight etc.
-	var oldOnPageTapped = kbook.kbookPage.onPageTapped;
-	kbook.kbookPage.onPageTapped = function (cache, bookmark, highlight, markupIcon, link) {
-		if (ViewerSettings_x50.options.PageTurnBySingleTap != 'false' && !this.selection.length) {
-			this.selectNoneWithoutUpdate = pageTurnByTap;
-			kbook.model.doBlink = doNothingFunc;
-			oldOnPageTapped.apply(this, arguments);
-			this.selectNoneWithoutUpdate = oldSelectNoneWithoutUpdate;
-			kbook.model.doBlink = oldDoBlink;
-		} else oldOnPageTapped.apply(this, arguments);
-	};
-	
-	// Determine what to do with tap based on preference
-	var pageTurnByTap = function () {
-		switch (ViewerSettings_x50.options.PageTurnBySingleTap) {
-			case 'anywhere':
-				this.doNext();
-				return;
-			case 'leftright':
-				if (readingTapX < (this.width / 2)) this.doPrevious();
-				else this.doNext();
-				return;
-			case 'rightleft':
-				if (readingTapX < (this.width / 2)) this.doNext();
-				else this.doPrevious();
-				return;
-			case 'topbottom':
-				if (readingTapY < (this.height / 2)) this.doPrevious();
-				else this.doNext();
-				return;
-			case 'bottomtop':
-				if (readingTapY < (this.height / 2)) this.doNext();
-				else this.doPrevious();
-		}
-	};
-			
-	// Enable panning in Zoom Lock mode
-	var oldZoomOverlayDoDrag = Fskin.kbookZoomOverlay.doDrag;
-	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
-		zoomLockOld = this.isZoomLock;
-		if (ViewerSettings_x50.options.ZoomLockPanning == "true" && zoomLockOld) this.isZoomLock = false;
-		oldZoomOverlayDoDrag.apply(this, arguments);
-		this.isZoomLock = zoomLockOld;
-	};
-	
-	var oldZoomOverlaydone = Fskin.kbookZoomOverlay.done;
-	Fskin.kbookZoomOverlay.done = function () {
-		if (zoomLockOld) this.isZoomLock = true;
-		oldZoomOverlaydone.apply(this, arguments);
-		this.isZoomlock = zoomLockOld;
-	};
-
-	Fskin.kbookZoomOverlay.canLine = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_x50.options.ZoomLockPanning == "false") return true;
-		else return false;
-	};
-
-	Fskin.kbookZoomOverlay.canLineAndHold = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_x50.options.ZoomLockPanning == "false") return true;
-		else return false;
-	};
 	
 	// Change custom contrast variable if user has entered valid number
 	kbook.model.container.doContrastChange = function (text) {
@@ -161,12 +73,6 @@ tmp = function() {
 		this.ToneUpdate(contrast, brightness);
 	};
 	
-	// overload kbook.kbookPage.doSelectWord called by kbook.kbookPage.readingTracker.doubleTap to disable Dictionary
-	var oldDoSelectWord = kbook.kbookPage.doSelectWord;
-	kbook.kbookPage.doSelectWord = function () {
-		if (ViewerSettings_x50.options.NoDictionary === "false") return oldDoSelectWord.apply(this, arguments);
-	}
-
 	/*/ overload to enable landscape-mode split in 3 - for debuging with PRS-650  
 	var oldKbookPageCheckNaturalInfo = kbook.kbookPage.checkNaturalInfo;
 	kbook.kbookPage.checkNaturalInfo = function (naturalBounds) {
@@ -451,28 +357,6 @@ tmp = function() {
 					"true": L("VALUE_TRUE"),
 					"false": L("VALUE_FALSE")
 				}
-			},	
-			{
-				name: "NoDictionary",
-				title: L("OPTION_NODICT"),
-				icon: "NODICTIONARY",
-				defaultValue: "false",
-				values: ["true", "false"],
-				valueTitles: {
-					"true": L("VALUE_TRUE"),
-					"false": L("VALUE_FALSE")
-				}
-			},
-			{
-				name: "ClosePopupByPageTap",
-				title: L("CLOSE_POPUP_BY_PAGE_TAP"),
-				icon: "STYLUS",
-				defaultValue: "false",
-				values: ["true", "false"],
-				valueTitles: {
-					"true": L("VALUE_TRUE"),
-					"false": L("VALUE_FALSE")
-				}
 			},
 			{
 				name: "BorderColor",
@@ -486,45 +370,8 @@ tmp = function() {
 				}									
 			},
 			{
-				name: "NoGesturePageTurn",
-				title: L("OPTION_NOGESTURE"),
-				icon: "GESTURE",
-				defaultValue: "false",
-				values: ["true", "false"],
-				valueTitles: {
-					"true": L("VALUE_TRUE"),
-					"false": L("VALUE_FALSE")
-				}	
-			},
-			{
-				name: "PageTurnBySingleTap",
-				title: L("PAGE_TURN_BY_SINGLE_TAP"),
-				icon: "GESTURE",
-				defaultValue: "false",
-				values: ["false", "anywhere", "leftright", "rightleft", "topbottom", "bottomtop"],
-				valueTitles: {
-					"false": L("VALUE_FALSE"),
-					"anywhere": L("ANYWHERE_NEXT"),
-					"leftright": L("LEFT_PREVIOUS_RIGHT_NEXT"),
-					"rightleft": L("RIGHT_PREVIOUS_LEFT_NEXT"),
-					"topbottom": L("TOP_PREVIOUS_BOTTOM_NEXT"),
-					"bottomtop": L("BOTTOM_PREVIOUS_TOP_NEXT"),
-				}	
-			},
-			{
-				name: "ZoomLockPanning",
-				title: L("ZOOMLOCK_PANNING"),
-				icon: "SEARCH_ALT",
-				defaultValue: "false",
-				values: ["true", "false"],
-				valueTitles: {
-					"true": L("VALUE_TRUE"),
-					"false": L("VALUE_FALSE")
-				}
-			},
-			{
 			groupTitle: L("CUSTOM_VIEW_SETTINGS"),
-			// groupIcon: "BRIGHT_CONT",
+			groupIcon: "CONTRAST",
 			optionDefs: [
 				{
 					name: "CustomContrast",
@@ -551,36 +398,18 @@ tmp = function() {
 					valueTitles: {
 						"true": L("VALUE_TRUE"),
 						"false": L("VALUE_FALSE")
+					}
 				}
-				},
-			],
-			}
+			]}
 		],
-		/**
-		* @constructor
-		*/
 		onInit: function () {
-			this.onSettingsChanged();
+			if (ViewerSettings_x50.options.BorderColor === 'white') kbook.kbookPage.borderColor = Color.rgb.parse('white');
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			kbook.kbookPage.canLine = kbook.kbookPage.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
-			pageShortcutOverlayModel.canLine = pageShortcutOverlayModel.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return true;};
 			kbook.kbookPage.borderColor = (ViewerSettings_x50.options.BorderColor === 'grey') ? Color.rgb.parse('#6D6D6D') : Color.rgb.parse('white');
 			if (propertyName == "CustomContrast" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_CONTRAST") + ':', '', 'doContrastChange', '', true, 'number');
 			if (propertyName == "CustomBrightness" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_BRIGHTNESS") + ':', '', 'doBrightnessChange', '', true, 'number');
-		},
-		actions: [{
-			name: "toggleGestureOnOff",
-			title: L("ACTION_toggleGestureOnOff"),
-			group: "Utils",
-			icon: "SETTINGS",
-			action: function () {
-				ViewerSettings_x50.options.NoGesturePageTurn = (ViewerSettings_x50.options.NoGesturePageTurn == 'true') ? 'false' : 'true';
-				kbook.kbookPage.canLine = kbook.kbookPage.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
-				pageShortcutOverlayModel.canLine = pageShortcutOverlayModel.canLineAndHold = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return true;};
-				Core.ui.showMsg(L("OPTION_NOGESTURE") + ': ' + ((ViewerSettings_x50.options.NoGesturePageTurn == 'true')?L("VALUE_TRUE"):L("VALUE_FALSE")));
-			}
-		}] 	
+		}
 	};
 
 	Core.addAddon(ViewerSettings_x50);
