@@ -79,7 +79,7 @@ tmp = function() {
 			}
 			return numevents;
 		},
-		drawStandbyWidget: function (win) {
+		drawStandbyWidget: function (win, eventsonly) {
 			var w, h;
 			w = win.width;
 			h = win.height;
@@ -104,24 +104,30 @@ tmp = function() {
 			var settingsPath = datPath0 + 'settings.dat';
 			var stream, inpLine;
 			var values = [];
+			var todayevents = [];
+			var futureevents = [];
+			var altTodaysDay = todaysDay+1;
+			if (altTodaysDay==8) altTodaysDay=1;
 	
-			// window is already blank, so start with the top bar
-			win.setPenColor(Color.black);
-			win.fillRectangle(0, 0, w, 70);
-			
-			// YEAR (in the top bar)
-			win.setTextStyle(1); // 0 = regular, 1 = bold, 2 = italic, 3 = bold italic
-			win.setTextSize(40);
-			win.setPenColor(Color.white);
-			win.setTextAlignment(0, 0); // (x, y): 0 = center, 1 = left, 2 = right, 3 = top, 4 = bottom
-			win.drawText(yearNum, 0, 12, w, 50);
-			
-			// MONTH (just below top bar)
-			win.setTextSize(22);
-			win.setPenColor(Color.black);
-			win.setTextAlignment(0, 0);
-			win.drawText(wordMonth[monthNum-1], 205, 70, 190, 60);
-			
+			if (!eventsonly) {
+				// window is already blank, so start with the top bar
+				win.setPenColor(Color.black);
+				win.fillRectangle(0, 0, w, 70);
+				
+				// YEAR (in the top bar)
+				win.setTextStyle(1); // 0 = regular, 1 = bold, 2 = italic, 3 = bold italic
+				win.setTextSize(40);
+				win.setPenColor(Color.white);
+				win.setTextAlignment(0, 0); // (x, y): 0 = center, 1 = left, 2 = right, 3 = top, 4 = bottom
+				win.drawText(yearNum, 0, 12, w, 50);
+				
+				// MONTH (just below top bar)
+				win.setTextSize(22);
+				win.setPenColor(Color.black);
+				win.setTextAlignment(0, 0);
+				win.drawText(wordMonth[monthNum-1], 205, 70, 190, 60);
+			}
+		
 			// load settings file to determine WeekStartsWith
 			try {
 				if (FileSystem.getFileInfo(settingsPath)) {
@@ -139,34 +145,39 @@ tmp = function() {
 				log.error("Settings file failed to load");
 				weekBeginsWith="Sun";
 			}
-			
-			// WEEKDAY ABBREVIATIONS
-			win.setTextSize(12);
-			win.setTextAlignment(0, 0);
+				
 			if (weekBeginsWith=="Mon") {
-				win.drawText(wordDays[1], 50, 132, 70, 20);
-				win.drawText(wordDays[2], 120, 132, 70, 20);
-				win.drawText(wordDays[3], 190, 132, 70, 20);
-				win.drawText(wordDays[4], 260, 132, 70, 20);
-				win.drawText(wordDays[5], 330, 132, 70, 20);
-				win.drawText(wordDays[6], 400, 132, 70, 20);
-				win.drawText(wordDays[0], 470, 132, 70, 20);
 				todaysDay = today.getDay();
 				if (todaysDay==0) todaysDay=7;
-			} else {
-				win.drawText(wordDays[0], 50, 132, 70, 20);
-				win.drawText(wordDays[1], 120, 132, 70, 20);
-				win.drawText(wordDays[2], 190, 132, 70, 20);
-				win.drawText(wordDays[3], 260, 132, 70, 20);
-				win.drawText(wordDays[4], 330, 132, 70, 20);
-				win.drawText(wordDays[5], 400, 132, 70, 20);
-				win.drawText(wordDays[6], 470, 132, 70, 20);
-				todaysDay = today.getDay() + 1;
+			}
+			
+			if (!eventsonly) {
+				// WEEKDAY ABBREVIATIONS
+				win.setTextSize(12);
+				win.setTextAlignment(0, 0);
+				if (weekBeginsWith=="Mon") {
+					win.drawText(wordDays[1], 50, 132, 70, 20);
+					win.drawText(wordDays[2], 120, 132, 70, 20);
+					win.drawText(wordDays[3], 190, 132, 70, 20);
+					win.drawText(wordDays[4], 260, 132, 70, 20);
+					win.drawText(wordDays[5], 330, 132, 70, 20);
+					win.drawText(wordDays[6], 400, 132, 70, 20);
+					win.drawText(wordDays[0], 470, 132, 70, 20);
+				} else {
+					win.drawText(wordDays[0], 50, 132, 70, 20);
+					win.drawText(wordDays[1], 120, 132, 70, 20);
+					win.drawText(wordDays[2], 190, 132, 70, 20);
+					win.drawText(wordDays[3], 260, 132, 70, 20);
+					win.drawText(wordDays[4], 330, 132, 70, 20);
+					win.drawText(wordDays[5], 400, 132, 70, 20);
+					win.drawText(wordDays[6], 470, 132, 70, 20);
+				}
 			}
 			
 			// Load events from save file
 			events = [];
-			var todayevents = [];
+			todayevents = [];
+			futureevents = [];
 			try {
 				if (FileSystem.getFileInfo(datPath)) {
 					var tempfile = Core.io.getFileContent(datPath,'savefile missing');
@@ -182,40 +193,6 @@ tmp = function() {
 								if (isNaN(events[j][4]-0)) {
 									events[j][5]=events[i][4];
 									events[j][4]=3;
-								}
-								// check if event is today
-								if (events[j][0] == "Y") {
-									if ((events[j][2] == todaysDate) && (events[j][1] == todaysMonth) && (events[j][3] <= todaysYear)) {
-										todayevents.push(events[j][5]);
-									}
-								}
-								if (events[j][0] == "F") {
-									if ((events[j][1] == 3) && (events[j][2] == 0) && (events[j][3] == 0) ) {
-										if (easterday == todaysDate && eastermonth == todaysMonth) {
-											todayevents.push(events[j][5]);
-										} 
-									} else {
-										var floater = Calendar.floatingholiday(year,events[j][1],events[j][2],events[j][3]);
-										if ((todaysMonth == 5) && (events[j][1] == 5) && (events[j][2] == 4) && (events[j][3] == 2)) {
-											if ((floater + 7 <= 31) && (todaysDate == floater + 7)) {
-												todayevents.push(events[j][5]);
-											} else if ((floater + 7 > 31) && (todaysDate == floater)) {
-												todayevents.push(events[j][5]);								
-											}
-										} else if ((events[j][1] == todaysMonth) && (floater == todaysDate)) {
-											todayevents.push(events[j][5]);
-										}
-									}
-								}
-								if (events[j][0] == "") {
-									if ((events[j][2] == todaysDate) && (events[j][1] == todaysMonth) && (events[j][3] == todaysYear)) {
-										todayevents.push(events[j][5]);
-									}
-								}
-								if (events[j][0] == "M") {
-									if ((events[j][2] == todaysDate) && (events[j][3] <= todaysYear)) {
-										todayevents.push(events[j][5]);
-									}
 								}
 							}
 						}
@@ -239,80 +216,136 @@ tmp = function() {
 				events.push(["Y", "12", "25", "1900", "5", L("STR_CHRISTMAS")]);
 			}
 			
-			// output current month (with event icons)
-			lastDate = new Date(yearNum,monthNum);
-			lastDate.setDate(lastDate.getDate()-1);
-			var numbDays = lastDate.getDate();
-			firstDate = new Date(yearNum, monthNum-1, 1);
-			firstDay = firstDate.getDay() + 1;
-			var daycounter = 0;
-			var eventtype;
-			var numevents
-			thisDate = 1;
-			for (var i = 1; i <= 6; i++) {
-				for (var x = 1; x <= 7; x++) {
-					if (weekBeginsWith=="Sun") {
-						daycounter = (thisDate - firstDay)+1;
-					} else {
-						daycounter = (thisDate - firstDay)+2;
-						if (firstDay==1) daycounter -= 7;
+			// check if event is a today event or TODO: a future event
+			for (var j=0; j<events.length; j++) {
+				if (events[j][0] == "Y") {
+					if ((events[j][2] == todaysDate) && (events[j][1] == todaysMonth) && (events[j][3] <= todaysYear)) {
+						todayevents.push(events[j][5]);
 					}
-					thisDate++;
-					if ((daycounter > numbDays) || (daycounter < 1)) {
-						// square not used by current month
+				}
+				if (events[j][0] == "F") {
+					if ((events[j][1] == 3) && (events[j][2] == 0) && (events[j][3] == 0) ) {
+						if (easterday == todaysDate && eastermonth == todaysMonth) {
+							todayevents.push(events[j][5]);
+						} 
 					} else {
-						numevents=Calendar.checkevents(daycounter,monthNum,yearNum,i,x);
-						
-						if (numevents>0) {
-							// event on this day
-							eventtype=Calendar.getevent(daycounter,monthNum,yearNum,i,x);
-							kbook.model.container.cutouts['calendarsquare'].draw(win, eventtype, 0, (x-1)*70+50, (i-1)*70+150, 70, 70);
-							if (numevents>1) {
-								win.setTextSize(10);
-								win.setTextAlignment(1, 0);
-								win.drawText(numevents, (x-1)*70+54, (i-1)*70+200, 20, 20);
+						var floater = Calendar.floatingholiday(year,events[j][1],events[j][2],events[j][3]);
+						if ((todaysMonth == 5) && (events[j][1] == 5) && (events[j][2] == 4) && (events[j][3] == 2)) {
+							if ((floater + 7 <= 31) && (todaysDate == floater + 7)) {
+								todayevents.push(events[j][5]);
+							} else if ((floater + 7 > 31) && (todaysDate == floater)) {
+								todayevents.push(events[j][5]);								
 							}
-							win.setTextSize(22);
-							win.setTextAlignment(0, 0);
-							win.drawText(daycounter, (x-1)*70+50, (i-1)*70+155, 70, 30);
+						} else if ((events[j][1] == todaysMonth) && (floater == todaysDate)) {
+							todayevents.push(events[j][5]);
+						}
+					}
+				}
+				if (events[j][0] == "") {
+					if ((events[j][2] == todaysDate) && (events[j][1] == todaysMonth) && (events[j][3] == todaysYear)) {
+						todayevents.push(events[j][5]);
+					}
+				}
+				if (events[j][0] == "M") {
+					if ((events[j][2] == todaysDate) && (events[j][3] <= todaysYear)) {
+						todayevents.push(events[j][5]);
+					}
+				}
+				if (events[j][0] == "W") {
+					if (weekBeginsWith=="Sun") {
+						if (events[j][3] == todaysDay) {
+							todayevents.push(events[j][5]);
+						}
+					} else {
+						if (events[j][3] == altTodaysDay) {
+							todayevents.push(events[j][5]);
+						}
+					}		
+				}
+			}
+			
+			if (!eventsonly) {
+				// output current month (with event icons)
+				lastDate = new Date(yearNum,monthNum);
+				lastDate.setDate(lastDate.getDate()-1);
+				var numbDays = lastDate.getDate();
+				firstDate = new Date(yearNum, monthNum-1, 1);
+				firstDay = firstDate.getDay() + 1;
+				var daycounter = 0;
+				var eventtype;
+				var numevents
+				thisDate = 1;
+				for (var i = 1; i <= 6; i++) {
+					for (var x = 1; x <= 7; x++) {
+						if (weekBeginsWith=="Sun") {
+							daycounter = (thisDate - firstDay)+1;
 						} else {
-							// blank day
-							if (((weekBeginsWith=="Sun") && ((x==1) || (x==7))) || ((weekBeginsWith=="Mon") && ((x==6) || (x==7)))) {
-								// weekend
-								kbook.model.container.cutouts['calendarsquare'].draw(win, 2, 0, (x-1)*70+50, (i-1)*70+150, 70, 70);
+							daycounter = (thisDate - firstDay)+2;
+							if (firstDay==1) daycounter -= 7;
+						}
+						thisDate++;
+						if ((daycounter > numbDays) || (daycounter < 1)) {
+							// square not used by current month
+						} else {
+							numevents=Calendar.checkevents(daycounter,monthNum,yearNum,i,x);
+							
+							if (numevents>0) {
+								// event on this day
+								eventtype=Calendar.getevent(daycounter,monthNum,yearNum,i,x);
+								kbook.model.container.cutouts['calendarsquare'].draw(win, eventtype, 0, (x-1)*70+50, (i-1)*70+150, 70, 70);
+								if (numevents>1) {
+									win.setTextSize(10);
+									win.setTextAlignment(1, 0);
+									win.drawText(numevents, (x-1)*70+54, (i-1)*70+200, 20, 20);
+								}
 								win.setTextSize(22);
 								win.setTextAlignment(0, 0);
 								win.drawText(daycounter, (x-1)*70+50, (i-1)*70+155, 70, 30);
 							} else {
-								kbook.model.container.cutouts['calendarsquare'].draw(win, 1, 0, (x-1)*70+50, (i-1)*70+150, 70, 70);
-								win.setTextSize(22);
-								win.setTextAlignment(0, 0);
-								win.drawText(daycounter, (x-1)*70+50, (i-1)*70+155, 70, 30);
+								// blank day
+								if (((weekBeginsWith=="Sun") && ((x==1) || (x==7))) || ((weekBeginsWith=="Mon") && ((x==6) || (x==7)))) {
+									// weekend
+									kbook.model.container.cutouts['calendarsquare'].draw(win, 2, 0, (x-1)*70+50, (i-1)*70+150, 70, 70);
+									win.setTextSize(22);
+									win.setTextAlignment(0, 0);
+									win.drawText(daycounter, (x-1)*70+50, (i-1)*70+155, 70, 30);
+								} else {
+									kbook.model.container.cutouts['calendarsquare'].draw(win, 1, 0, (x-1)*70+50, (i-1)*70+150, 70, 70);
+									win.setTextSize(22);
+									win.setTextAlignment(0, 0);
+									win.drawText(daycounter, (x-1)*70+50, (i-1)*70+155, 70, 30);
+								}
 							}
-						}
-						if ((todaysDay == x) && (todaysDate == daycounter) && (todaysMonth == monthNum)) {
-							kbook.model.container.cutouts['highlightcalsquare'].draw(win, 0, 0, (x-1)*70+50, (i-1)*70+150, 70, 70);
+							if ((todaysDay == x) && (todaysDate == daycounter) && (todaysMonth == monthNum)) {
+								kbook.model.container.cutouts['highlightcalsquare'].draw(win, 0, 0, (x-1)*70+50, (i-1)*70+150, 70, 70);
+							}
 						}
 					}
 				}
 			}
 			
-			// output today's events
-			win.fillRectangle(47, 579, w-101, h-608);
-			win.setPenColor(Color.white);
-			win.fillRectangle(48, 580, w-103, h-610);
-			win.setPenColor(Color.black);
-			win.setTextStyle(1);
-			win.setTextSize(24);
-			win.setTextAlignment(0, 0);
-			win.drawText(L("TODAYS_EVENTS"), 50, 582, w-107, 24);
-			win.setTextStyle(0);
-			win.setTextSize(20);
-			win.setTextAlignment(1, 0);
-			for (var i=0; i<todayevents.length; i++) {
-				if (i==8) break;
-				win.drawText(todayevents[i], 50, (i-1)*22+630, w-107, 22);
+			if ((!eventsonly) || (todayevents.length>0)) {
+				// output today's events
+				win.fillRectangle(47, 579, w-101, h-608);
+				win.setPenColor(Color.white);
+				win.fillRectangle(48, 580, w-103, h-610);
+				win.setPenColor(Color.black);
+				win.setTextStyle(1);
+				win.setTextSize(24);
+				win.setTextAlignment(0, 0);
+				win.drawText(L("TODAYS_EVENTS"), 50, 582, w-107, 24);
+				win.setTextStyle(0);
+				win.setTextSize(20);
+				win.setTextAlignment(1, 0);
+				for (var i=0; i<todayevents.length; i++) {
+					if (i==8) break; // only room for 8 lines (this is a guess and may be changed!)
+					win.drawText(todayevents[i], 50, (i-1)*22+630, w-107, 22);
+				}
 			}
+
+			
+			// TODO: output future events
+			
 		},
 		easter: function (year) {
 			var a = year % 19;
@@ -395,12 +428,10 @@ tmp = function() {
 				if (events[i][0] == "W") {
 					if (weekBeginsWith=="Sun") {
 						if ((events[i][3] == dayofweek)) {
-							if (dayofweek == todaysDay) todayevents.push(events[i][5]);
 							return events[i][4];
 						}
 					} else {
 						if ((events[i][3] == altdayofweek)) {
-							if (altdayofweek == todaysDay) todayevents.push(events[i][5]);
 							return events[i][4];
 						}
 					}				
