@@ -585,7 +585,7 @@
 		<string id="DIALOGMSG_CONFIRM_DIRECTORY_CHANGE" value="Выбор словаря&#xA;Раньше:&#xA;%CUR_DIC%&#xA;Теперь:&#xA;%NEW_DIC%" />
 		<string id="DIALOG_CONFIRM_DICTIONARY_CHANGE_CURRENT_DIC" value="%CUR_DIC%" />
 		<string id="DIALOG_CONFIRM_DICTIONARY_CHANGE_NEW_DIC" value="%NEW_DIC%" />
-		<string id="STR_UI_PARTS_UNKNOWN" value="Unknown" />
+		<string id="STR_UI_PARTS_UNKNOWN" value="Неизв." />
 		<string id="DIALOGMSG_APPLYING_SETTINGS" value="Процесс пошел...&#xA;Подождите." />
 		<string id="STR_UI_MENU_ADD" value="Добавить файлы" />
 		<string id="STR_UI_MENU_RENAMECOLLECTION" value="Переименовать коллекцию" />

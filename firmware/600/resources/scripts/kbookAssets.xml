@@ -427,16 +427,16 @@
 		</texture>
 		<texture href="kBookHome.png">
 			<cutout id="kbookHomeIconsLarge-a" x="0" y="0" width="140" height="140"/>
-			<cutout id="kbookHomeIconsSmall-a" x="700" y="0" width="80" height="80" lines="140"/>
-			<cutout id="kbookHomeItem-lt" x="710" y="85" width="10" height="10"/>
-			<cutout id="kbookHomeItem-ct" x="720" y="85" width="30" height="10"/>
-			<cutout id="kbookHomeItem-rt" x="750" y="85" width="10" height="10"/>
-			<cutout id="kbookHomeItem-lm" x="710" y="95" width="10" height="30"/>
-			<cutout id="kbookHomeItem-cm" x="720" y="95" width="30" height="30"/>
-			<cutout id="kbookHomeItem-rm" x="750" y="95" width="10" height="30"/>
-			<cutout id="kbookHomeItem-lb" x="710" y="125" width="10" height="10"/>
-			<cutout id="kbookHomeItem-cb" x="720" y="125" width="30" height="10"/>
-			<cutout id="kbookHomeItem-rb" x="750" y="125" width="10" height="10"/>
+			<cutout id="kbookHomeIconsSmall-a" x="1260" y="0" width="80" height="80" lines="140"/>
+			<cutout id="kbookHomeItem-lt" x="1270" y="85" width="10" height="10"/>
+			<cutout id="kbookHomeItem-ct" x="1280" y="85" width="30" height="10"/>
+			<cutout id="kbookHomeItem-rt" x="1310" y="85" width="10" height="10"/>
+			<cutout id="kbookHomeItem-lm" x="1270" y="95" width="10" height="30"/>
+			<cutout id="kbookHomeItem-cm" x="1280" y="95" width="30" height="30"/>
+			<cutout id="kbookHomeItem-rm" x="1310" y="95" width="10" height="30"/>
+			<cutout id="kbookHomeItem-lb" x="1270" y="125" width="10" height="10"/>
+			<cutout id="kbookHomeItem-cb" x="1280" y="125" width="30" height="10"/>
+			<cutout id="kbookHomeItem-rb" x="1310" y="125" width="10" height="10"/>
 		</texture>
 		<texture href="kBookIcon.png">
 			<cutout id="kBookVIcon-a" x="0" y="0" width="70" height="70"/>

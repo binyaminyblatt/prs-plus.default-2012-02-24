@@ -25,6 +25,7 @@
 //		Calendar by Ben Chenoweth
 //		Solitaire by Ben Chenoweth
 //	2011-09-14 kartu - games & utils "into games (unstable)"
+//  2011-10-19 Ben Chenoweth - Added ALT icons
 
 return {
 	// Menu icon indices 
@@ -43,7 +44,7 @@ return {
 		BOOKMARK: 10,
 		NOTES: 10,
 		LIST: 11,
-		BOOK_HISTORY: 11,
+		BOOK_HISTORY: 1, // 11
 		CLOCK: 12,
 		PAUSE: 13,
 		PLAY: 14,
@@ -90,6 +91,10 @@ return {
 		NEXT_SONG: 65,
 		PREVIOUS: 66,
 		NEXT: 67,
+		
+		BOOK_ALT: 69,
+		PICTURE_ALT: 70,
+		SEARCH_ALT: 71,
 		
 		DEFAULT: 47,
 		

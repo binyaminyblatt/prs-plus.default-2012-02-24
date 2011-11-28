@@ -43,6 +43,7 @@
 //	2011-03-23 kartu - Refactoring: moving functions out of lang files, moving texts to a spreadsheet
 //	2011-05-14 kartu - Fixed bug related to "Skip book menu" option 
 //	2011-09-20 quisvir - Added getBookList to make booklist available to other addons (thanks kartu)
+//	2011-09-24 quisvir - Fixed #178: Deleting books present in Book History deletes current book from Book History as well
 
 
 tmp = function() {
@@ -219,10 +220,10 @@ tmp = function() {
 	};
 	
 	// Called when book is deleted. Removes book from history node and from book list
-	bookDeleted = function () {
+	bookDeleted = function (not_commit, deleteNode) {
 		var media, path, i, n;
 		try {
-			media = kbook.model.currentBook.media;
+			media = (deleteNode) ? deleteNode.media : kbook.model.currentBook.media;
 			path = media.source.path + media.path;
 			for (i = 0, n = bookList.length; i < n; i++) {
 				if (path === bookList[i]) {

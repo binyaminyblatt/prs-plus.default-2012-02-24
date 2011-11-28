@@ -7,6 +7,7 @@
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
 //	2011-08-27 kartu - Added "addons1" folder, to fix "script too big" problem
 //	2011-08-27 Mark Nord - Fixed "addonpath1" in case of folder (as addonsPath ends with "/" simply adding +"1" will fail)
+//  2011-11-26 Ben Chenoweth - Added "addons2" folder
 
 if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 	var bootLog;
@@ -14,7 +15,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 	var tmp = function() {
 		var config = {
 			model: System.applyEnvironment("[prspModel]"),
-			defaultLogLevel: "trace",
+			defaultLogLevel: "none",
 			logFile: System.applyEnvironment("[prspLogFile]"),
 			corePath: System.applyEnvironment("[prspCorePath]"),
 			addonsPath: System.applyEnvironment("[prspAddonsPath]"),
@@ -22,7 +23,8 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 			publicPath: System.applyEnvironment("[prspPublicPath]"), 
 			userCSSPath: System.applyEnvironment("[prspUserCSSPath]"),
 			userDictionaryPath: System.applyEnvironment("[userDictionaryPath]"),
-			userGamesSavePath : System.applyEnvironment("[prspPublicPath]")+"GamesSave/",   
+			userGamesSavePath: System.applyEnvironment("[prspPublicPath]")+"GamesSave/",  
+			userScreenShotPath: "ScreenShots/", 
 			coreFile: System.applyEnvironment("[prspCoreFile]"),
 			addonsFile: System.applyEnvironment("[prspAddonsFile]")
 		};
@@ -133,7 +135,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 		
 		// Load addons, called by model specific bootstrap
 		loadAddons = function() {
-			var addonCode, log, addons, addonsPath, addonsPath1, jsPostfix;
+			var addonCode, log, addons, addonsPath, addonsPath1, addonsPath2, jsPostfix;
 			jsPostfix = ".js";
 			addonsPath = config.addonsFile;
 			// Call addons
@@ -158,6 +160,20 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 				addons(Core, log, undefined);
 			} catch (e) {
 				bootLog("Failed to load addons1 " + e);
+			}
+			// Call addons2
+			try {
+				var lenDiff = addonsPath.length - jsPostfix.length;
+				if (addonsPath.indexOf(jsPostfix) === lenDiff) {
+					addonsPath2 = addonsPath.substring(0, lenDiff) + "2" + jsPostfix;
+				} else {
+					addonsPath2 = addonsPath.substring(0, addonsPath.lastIndexOf("/")) + "2/";
+				}
+				addonCode = getFileContentEx(addonsPath2, ".js");
+				addons = new Function("Core,log,tmp", addonCode);
+				addons(Core, log, undefined);
+			} catch (e) {
+				bootLog("Failed to load addons2 " + e);
 			}
 		};
 

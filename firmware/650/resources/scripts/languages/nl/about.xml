@@ -22,7 +22,7 @@
 			<record><number name="kind" value="13"/><string name="text" value="SD-kaart"/></record>
 			<record><number name="kind" value="-2"/><string name="text" value=""/></record>
 
-			<record><number name="kind" value="30"/><string name="text" value="Informatie apparaat"/></record>
+			<record><number name="kind" value="30"/><string name="text" value="Informatie over apparaat"/></record>
 			<record><number name="kind" value="-2"/><string name="text" value=""/></record>
 			<record><number name="kind" value="20"/><string name="text" value="Versie"/></record>
 			<record><number name="kind" value="21"/><string name="text" value="App."/></record>
