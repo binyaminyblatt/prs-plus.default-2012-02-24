@@ -10,6 +10,7 @@
 //  2011-11-24 Ben Chenoweth - Added saving Handwriting as SVG and JPG
 //  2011-11-27 Ben Chenoweth - Added saving Bookmark Comments and Scribbles
 //  2011-11-28 Ben Chenoweth - Minor code cleaning
+//  2011-11-29 Ben Chenoweth - All Bookmark Comments from one book are now saved in one TXT file
 
 tmp = function() {
 	var L, log, oldNotepadDataSave, oldNotepadFreehandDataSave;
@@ -103,7 +104,7 @@ tmp = function() {
 	// Save BOOKMARK COMMENTS
 	var oldPageCommentEditorOverlayModelCloseAnnotationEditor = pageCommentEditorOverlayModel.closeAnnotationEditor;
 	pageCommentEditorOverlayModel.closeAnnotationEditor = function (saveflag) {
-		var folder, note, name, path, str;
+		var folder, note, media, name, path, title, author, stream, bookmark, page, date, str;
 		if (SaveNotepadData.options.saveTextMemo === 'on') {
 			folder = SaveNotepadData.options.saveTo + "Notepads/";
 			FileSystem.ensureDirectory(folder);
@@ -112,10 +113,45 @@ tmp = function() {
 					if (saveflag) {
 						note = this.note;
 						if (note) {
-							name = Date.now();
-							path = folder + name + ".txt";
-							str = this.VAR_KEYBUF;
-							Core.io.setFileContent(path, str);
+							if (kbook.model.currentBook) {
+								media = kbook.model.currentBook.media;
+								name = media.path.substring(media.path.lastIndexOf("/")+1,media.path.lastIndexOf("."));
+								path = folder + name + ".txt";
+								try {
+									if (!FileSystem.getFileInfo(path)) {
+										// first bookmark comment for this book, so output header information
+										title=media.title;
+										author=media.author;
+										stream = new Stream.File(path, 1);
+										stream.writeLine("Title: "+title);
+										stream.writeLine("Author: "+author);
+									} else {
+										// file already exists, so scan through to the end
+										stream = new Stream.File(path, 1);
+										stream.seek(stream.bytesAvailable);
+									}
+									stream.writeLine("");
+									bookmark=kbook.model.currentBook.bookmark;
+									page=bookmark.page;
+									date=bookmark.date;
+									stream.writeLine("Page: "+page);
+									str = this.VAR_KEYBUF;
+									stream.writeLine(str);
+									stream.close();
+								} catch(e) {
+									// fallback
+									name = Date.now();
+									path = folder + name + ".txt";
+									str = this.VAR_KEYBUF;
+									Core.io.setFileContent(path, str);
+								}
+							} else {
+								// I don't think this is possible, but you never know!
+								name = Date.now();
+								path = folder + name + ".txt";
+								str = this.VAR_KEYBUF;
+								Core.io.setFileContent(path, str);
+							}
 						}
 					}
 				}
