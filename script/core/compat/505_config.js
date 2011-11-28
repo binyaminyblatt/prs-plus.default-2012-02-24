@@ -14,6 +14,7 @@
 //  2011-08-03 Ben Chenoweth - ALL: Added
 //      Calendar by Ben Chenoweth
 //      Solitaire by Ben Chenoweth
+//  2011-10-19 Ben Chenoweth - Added ALT icons
 
 return {
 	// Menu icon indices 
@@ -32,7 +33,7 @@ return {
 		BOOKMARK: 10,
 		NOTES: 10,
 		LIST: 11,
-		BOOK_HISTORY: 11,
+		BOOK_HISTORY: 1, // 11
 		CLOCK: 12,
 		PAUSE: 13,
 		PLAY: 14,
@@ -81,6 +82,10 @@ return {
 		NEXT_SONG: 59,
 		PREVIOUS: 60,
 		NEXT: 61,
+		
+		BOOK_ALT: 63,
+		PICTURE_ALT: 64,
+		SEARCH_ALT: 65,
 		
 		DEFAULT: 41,
 		

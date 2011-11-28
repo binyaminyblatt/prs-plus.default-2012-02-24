@@ -10,6 +10,8 @@
 //	2011-02-10 kartu - Implemented # goto TOC, doOption, doSearch, doRotate, doMenu, doSize, doRoot actions
 //	2011-02-27 kartu - x50: Added rotate by 0 / 90 / 180 / 270 / clock wise / counter clock wize actions
 //	2011-02-27 kartu - 600: Added rotate by 90 action
+//	2011-10-27 Mark Nord - Added doPowerSwitch = Sleepmode
+//  2011-10-30 Ben Chenoweth - Added goZoomPage
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, 
@@ -58,7 +60,7 @@ tmp = function() {
 	addBubbleActions = function (actions) {
 		var bubbles, bubble, icons, i, m, n;
 		bubbles = ["doOption", "doSearch", "doRotate", "doMenu", "doSize"    , "doRoot"   ];
-		icons   = ["EMPTY"   , "SEARCH"  , "EMPTY"   , "EMPTY" , "TEXT_SCALE", "ROOT_MENU"];
+		icons   = ["EMPTY"   , "SEARCH"  , "EMPTY"   , "BACK" ,  "TEXT_SCALE", "ROOT_MENU"];
 		for (i = 0, n = bubbles.length; i < n; i ++) {
 			bubble = bubbles[i];
 			if (model[bubble]) {
@@ -204,14 +206,14 @@ tmp = function() {
 				if  (toc) {
 					kbook.model.gotoBookOptionList (toc);
 				} else {
-					model.doBlick();
+					model.doBlink();
 				}
 			};
 		} else {
 			// older models
 			gotoTOCFunc = function() {
 				// FIXME implement
-				model.doBlick();
+				model.doBlink();
 			};
 		}
 		actions.push({
@@ -229,12 +231,12 @@ tmp = function() {
 				if (notes) {
 					kbook.model.gotoBookOptionList(notes);
 				} else {
-					model.doBlick();
+					model.doBlink();
 				}
 			};
 		} else {
 			gotoMyNotes = function() {
-				model.doBlick();
+				model.doBlink();
 			};
 		}
 		actions.push({
@@ -243,6 +245,23 @@ tmp = function() {
 			group: "Book",
 			icon: "NOTES",
 			action: gotoMyNotes
+		});
+		
+		// Zoom page function
+		goZoomPage = function() {
+			if (kbook.model.doSize) {
+			   pageSizeOverlayModel.openCurrentOverlay();
+			   pageSizeOverlayModel.goZoomMode();
+			} else {
+				model.doBlink;
+			}
+		};
+		actions.push({
+			name: "ZoomPage",
+			title: L("ACTION_ZOOM_PAGE"),
+			group: "Book",
+			icon: "SEARCH_ALT",
+			action: goZoomPage
 		});
 	};
 
@@ -312,6 +331,14 @@ tmp = function() {
 					// Show current book
 					kbook.model.onEnterContinue();
 				}
+			},
+			{
+				name: "Standby",
+				title: L("ACTION_STANDBY"),
+				group: "Other",
+				icon: "STANDBY",
+				bubble: "doPowerSwitch",
+				action: doBubbleFunc
 			}
 		]
 	};
@@ -321,7 +348,7 @@ tmp = function() {
 		addBubbleActions(StandardActions.actions);
 		addOptionalActions(StandardActions.actions);
 	} catch (e) {
-		log.trace("Failed ot add optional/bubble actions " + e);
+		log.trace("Failed to add optional/bubble actions " + e);
 	}
 	
 	Core.addAddon(StandardActions);

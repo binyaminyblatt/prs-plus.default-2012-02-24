@@ -7,6 +7,8 @@
 //	2010-09-24 kartu - Added hasJoypadButtons / hasOtherButtons
 //				Added support for 600 (new event system, handleEvent is called for UP and DOWN and HOLD events)
 //	2010-11-28 kartu - Added option for actions to pass control to the default key handler
+//  2011-11-01 Ben Chenoweth - Added 'option' key for 600 & x50
+//	2011-11-28 quisvir - Added getActionDefs() to expose actions to other addons
 
 tmp = function() {
 	var KeyBindings, STATE_GLOBAL, contexts, contextsLen, defVal, contextLabels,
@@ -176,7 +178,7 @@ tmp = function() {
 			keyCode = keyCodes[key + "_h"];
 			if (keyCode !== undefined) {
 				opDefs.push(createOptionDef(L("BN_H_" + key.toUpperCase()), keyCode));
-			}                                                      
+			}
 		}
 	};
 	
@@ -227,7 +229,7 @@ tmp = function() {
 				optionDefs: []
 			};
 			KeyBindings.optionDefs.push(otherGroup);
-			createButtonOptions(["home", "menu", "bookmark", "size"],otherGroup.optionDefs);
+			createButtonOptions(["home", "menu", "bookmark", "option", "size"],otherGroup.optionDefs);
 			if (compat.hasPagingButtons) {
 				createButtonOptions(["bl_next", "bl_previous", "sb_next", "sb_previous"],otherGroup.optionDefs);
 			}
@@ -264,6 +266,10 @@ tmp = function() {
 				// 300/500
 				Fskin.device.handleEvent = handleEvent;
 			}
+		},
+		
+		getActionDefs: function() {
+			return [values, valueTitles, valueIcons, valueGroups, actionName2action];
 		}
 	};
 	Core.addAddon(KeyBindings);

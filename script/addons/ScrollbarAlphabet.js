@@ -74,7 +74,7 @@ tmp = function() {
 						return "*";
 					}
 					// toUppercase
-					if (code > 1072) {
+					if (code > 1071) {
 						ch = String.fromCharCode(code - 32);
 					}
 					return rangeBasedGetBinName(this.bins, 1040, 1071, ch);
