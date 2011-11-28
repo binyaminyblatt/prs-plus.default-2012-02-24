@@ -24,16 +24,7 @@
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
 //	2011-07-05 Ben Chenoweth - Minor fix to prevent crash when showing actual page on standby
 //	2011-08-18 Mark Nord - fixed current page as StandbyImage + display of localised "sleeping.." instead of the clock
-//	2011-08-27 Ben Chenoweth - Minor fix to 'Sleeping...' text location
-//	2011-10-09 Ben Chenoweth - Applied quisvir's code to always show book covers in portrait mode and keep aspect ratio;
-//			"Sleeping..." for landscape-mode by making coordinates dynamic; also show wallpaper in portrait-mode
-//			so no need for /landscape/ subfolder.
-//	2011-10-10 Ben Chenoweth - Fix for cover/wallpaper on standby.
-//	2011-10-11 Ben Chenoweth - Further fix for cover/wallpaper on standby & code tidying.
-//	2011-11-04 kartu - Added Turkish
-//	2011-11-14 kartu - Fixed #207 Collection sorting is broken for cyrillic
-//	2011-11-20 quisvir - Added sub-collection support (max 1 sub-level, using | as separator)
-//	2011-11-21 quisvir - Moved Standby Image code to addon
+//  2011-08-27 Ben Chenoweth - Minor fix to 'Sleeping...' text location
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -49,7 +40,7 @@ var tmp = function() {
 				node, langFile;
 			currentLang = kbook.model.language;
 			settingsNode = kbook.root.nodes[6].nodes[2];
-			languages = ["ca", "cs", "en", "es", "de", "fr", "it", "nl", "ka", "pt", "ru", "tr", "zh"];
+			languages = ["ca", "cs", "en", "es", "de", "fr", "it", "nl", "ka", "pt", "ru", "zh"];
 			langNames = {
 				ca: "Català",
 				cs: "Český",
@@ -62,7 +53,6 @@ var tmp = function() {
 				nl: "Nederlands",
 				pt: "Português",
 				ru: "Русский",
-				tr: "Türkçe",
 				zh: "简体中文 (Simplified Chinese)"
 			};
 	
@@ -302,45 +292,118 @@ var tmp = function() {
 		}
 	};
 	
-	// Sub-collection support
-	var oldPlaylistNode = FskCache.tree.playlistNode.construct;
-	FskCache.tree.playlistNode.construct = function () {
-		oldPlaylistNode.apply(this);
-		var i, next, nodes, node, last, idx, coll, title, LX = Core.lang.LX;
-		i = next = 0;
-		nodes = this.nodes;
-		c = nodes.length;
-		while (i < c) {
-			title = nodes[i].title;
-			idx = title.indexOf('|');
-			if (idx != -1) {
-				nodes[i].name = nodes[i].title = title.slice(idx+1);
-				coll = title.slice(0,idx);
-				if (last == coll) {
-					nodes[i].parent = nodes[next-1];
-					nodes[next-1].nodes.push(nodes.splice(i,1)[0]);
-					i--; c--;
+	getRandomWallpaper = function() {
+		var  path, folder, idx, list;
+		try {
+			if (kbook.model.container.getVariable('ORIENTATION')) {
+				// horizontal layout, use another set of pictures
+				folder = System.applyEnvironment("[prspPublicPath]wallpaper/landscape/");
+				if (!landscapeWallpapers) {
+					landscapeWallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
+				}
+				list = landscapeWallpapers;
+			} else {
+				folder = System.applyEnvironment("[prspPublicPath]wallpaper/");
+				if (!wallpapers) {
+					wallpapers = PARAMS.Core.io.listFiles(folder, ".jpg", ".jpeg", ".gif", ".png"); 
+				}
+				list = wallpapers;
+			}
+
+			while (list.length > 0) {
+				idx = Math.floor(Math.random() * list.length);
+				path = list[idx];
+				if (PARAMS.Core.media.isImage(path)) {
+					return folder + path;
 				} else {
-					node = Core.ui.createContainerNode({
-						title: coll,
-						comment: function () {
-							return Core.lang.LX('COLLECTIONS', this.nodes.length);
-						},
-						parent: this,
-						icon: 'BOOKS'
-					});
-					nodes[i].parent = node;
-					node.sublistMark = true;
-					node.nodes.push(nodes.splice(i,1)[0]);
-					nodes.splice(next,0,node);
-					last = coll;
-					next++;
+					list.splice(idx, 1);
 				}
 			}
-			i++;
+		} catch (e) {
+			PARAMS.bootLog("error in random image " + e);
 		}
-		if (last) nodes[next-1].separator = 1;
-	}
+	};
+
+	// Standby image
+	standbyImage.draw = function() {
+		var window, path, bitmap, temp, port, x, y, bounds, ratio, width, height, ditheredBitmap, color;
+		var newpath, newbitmap, mode, dither;
+		window = this.root.window;
+		mode = Core.addonByName.StandbyImage.options.mode;
+		dither = Core.addonByName.StandbyImage.options.dither === "true";
+		try {
+      			if (mode === 'cover') {
+					// attempt to use current book cover
+					newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+					newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
+					ditheredBitmap = newbitmap.dither(dither);
+					newbitmap.close();			
+				}					
+       		} catch (e) { }
+		
+		if (!newbitmap && (mode === 'random' || mode === 'cover')) {
+			// if no book cover, then use random wallpaper
+			path = getRandomWallpaper();
+			if (FileSystem.getFileInfo(path)) {
+				try {
+					bitmap = new Bitmap(path);
+					temp = new Bitmap(this.width, this.height, 12);
+					port = new Port(temp);
+					port.setPenColor(Color.white);
+					port.fillRectangle(0, 0, this.width, this.height);
+					x = 0;
+					y = 0;
+					bounds = bitmap.getBounds();
+					ratio = (bounds.height > bounds.width)?this.height / bounds.height:this.width / bounds.width;
+					width = Math.floor(bounds.width * ratio);
+					height = Math.floor(bounds.height * ratio);
+					if (height > width) {
+						x = Math.floor(this.width - width) / 2;
+					} else {
+						y = Math.floor(this.height - height) / 2;
+					}
+					bitmap.draw(port, x, y, width, height);
+					ditheredBitmap = temp.dither(dither);
+					bitmap.close();
+					port.close();
+					temp.close();				
+				} catch (e) { PARAMS.bootLog("Exception in standby image draw " + e); }
+			}
+		}
+		if (!ditheredBitmap &&  mode !=='act_page'){
+			try {			
+				color = window.getPenColor();
+				window.setPenColor(this.color);
+				window.fillRectangle(this);
+				window.setPenColor(color);
+			} catch (e) {PARAMS.bootLog("Exception in blank " + e, 'error'); }        			
+		}		
+		if (ditheredBitmap) {
+			window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
+			ditheredBitmap.close();		
+		}
+		if (mode === 'act_page') {
+			L = Core.lang.getLocalizer("StandbyImage");
+			// Save old styles
+			oldTextStyle = window.getTextStyle();
+			oldTextSize = window.getTextSize();
+			oldPenColor = window.getPenColor();
+			// Settings
+			window.setTextStyle("bold");
+			window.setTextSize(22);
+			// Drawing
+			window.beginDrawing();
+			window.setPenColor(Color.black);
+			window.fillRectangle(445, 770, 150, 30);
+			window.setPenColor(Color.white);
+			window.drawText(L("VALUE_SLEEPING"), 465, 770, 120, 30);
+			window.endDrawing();
+			// Restore pen color, text size & style
+			window.setTextStyle(oldTextStyle);
+			window.setTextSize(oldTextSize);
+			window.setPenColor(oldPenColor);
+			}	
+	};
 	
 	// Fix sorting (unicode order)
 	var compareStrings = PARAMS.Core.config.compat.compareStrings;
@@ -390,113 +453,7 @@ var tmp = function() {
 		};
 	};
 	localizeKeyboardPopups();
-
-	// Add Cyrilic support
-	var patchStringCompare = function () {
-		var origToUpperCase, origToLowerCase, origLocaleCompare, isCyr;
-		origLocaleCompare = String.prototype.localeCompare;
-		origToUpperCase = String.prototype.toUpperCase;
-		origToLowerCase = String.prototype.toLowerCase;
-
-		isCyr = function (code) {
-			return code >= 1040 && code <= 1103;
-		};
-		
-		// Ignoring the case of mixed latin/cyr strings
-		String.prototype.localeCompare = function (a) {
-			var i, n, code, codeA, cyr, cyrA, ch, chA;
-			if (a === null) {
-				return (1);
-			}
-
-			if (this.length > 0 && a.length > 0) {
-				code = this.charCodeAt(0);
-				codeA = a.charCodeAt(0);
-				cyr = isCyr(code);
-				cyrA = isCyr(codeA);
-
-				// Neither is cyrillic
-				if (!cyr && !cyrA) {
-					return origLocaleCompare.call(this, a);
-				}
-
-				// Both are cyrillic
-				if (cyr && cyrA) {
-					for (i = 0, n = Math.min (this.length, a.length); i < n; i++) {
-						ch = this.charAt(i).toLowerCase();
-						chA = a.charAt(i).toLowerCase();
-						code = this.charCodeAt(i);
-						codeA = a.charCodeAt(i);
-						
-						
-						if (ch === chA) {
-							// Same char, but different case
-							if (code !== codeA) {
-								return code > codeA ? -1 : 1;
-							}
-						} else {
-							return ch.charCodeAt(0) > chA.charCodeAt(0) ? 1 : -1;
-						}
-					}
-				} else {
-					// one is cyrillic, one not
-					return code > codeA ? 1 : -1; 
-				}
-			}
-			
-			if (a.length === this.length) {
-				return 0;
-			}
-			
-			return this.length  > a.length ? 1 : -1;
-		};
-		
-		String.prototype.toUpperCase = function () {
-			var i, n, code, ch, upCh, result;
-			result = "";
-			for (i = 0, n = this.length; i < n; i++) {
-				code = this.charCodeAt(i);
-				ch = this.charAt(i);
-				if (!isCyr(code)) {
-					upCh = origToUpperCase.call(ch);
-				} else {
-					if (code === 1105) {
-						upCh = "Ё";
-					} else if (code > 1071) {
-						upCh = String.fromCharCode(code - 32);
-					} else {
-						upCh = ch;
-					}
-				}
-				result += upCh;
-			}
-			return result;
-		};
-
-		String.prototype.toLowerCase = function () {
-			var i, n, code, ch, loCh, result;
-			result = "";
-			for (i = 0, n = this.length; i < n; i++) {
-				code = this.charCodeAt(i);
-				ch = this.charAt(i);
-				if (!isCyr(code)) {
-					loCh = origToLowerCase.call(ch);
-				} else {
-					if (code === 1025) {
-						loCh = "ё";
-					} else if (code < 1072) {
-						loCh = String.fromCharCode(code + 32);
-					} else {
-						loCh = ch;
-					}
-				}
-				result += loCh;
-			}
-			return result;
-		};
-	};
-
-	patchStringCompare();	
+	
 };
 
 try {

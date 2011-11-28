@@ -23,17 +23,7 @@
 //	2011-06-26 kartu - x50 Fixed #120 "No keyboard in SP-EN dictionary"
 //	2011-09-14 kartu - x50: Added Catalan & Polish translation (except 950), Polish keyboard 
 //	2011-09-22 kartu - Removed code overriding String.prototype.localeCompare, it did nothing but tamper collections sorting
-//	2011-10-04 quisvir - Moved standby image code from bootstrap to common
-//	2011-10-09 quisvir - Removed unnecessary code from standby image (thx Mark)
-//	2011-11-13 kartu - ALL: Fixed bug that prevented SD/MS card scan mode from being changed on the fly
-//			x50: Fixed bug that caused SD/MS card scan options to be ignored on the first boot
-//	2011-11-14 kartu - Fixed "PARAS" typo, spotted by Ben
-//	2011-11-14 kartu - Removed debug statement
-//	2011-11-14 kartu - Fixed #207 Collection sorting is broken for cyrillic
-//	2011-11-15 kartu - Yet another fix to SD/MS card scanning
-//	2011-11-17 kartu - Removed debug statement
-//	2011-11-21 quisvir - Moved Standby Image code to addon
-
+//
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
 		oldChangeKeyboardType, oldReadPreference, oldCallback, makeRootNodesMovable, bootLog,
@@ -85,9 +75,8 @@ tmp = function () {
 			return oldSetPopupChar.apply(this, arguments);
 		};
 	};
-
 	localizeKeyboardPopups();
-
+	
 	// Updates node siblings (used for setting selected / unselected icon)
 	updateSiblings = function (fieldName) {
 		// find currently selected node
@@ -167,7 +156,7 @@ tmp = function () {
 			});
 			try {
 				// Hook comment field
-				kbook.commentField.format = function (item /* unused , name */) {
+				kbook.commentField.format = function (item, name) {
 					if (item && item._mycomment !== undefined) {
 						if ((typeof item._mycomment) === "function") {
 							try {
@@ -264,7 +253,7 @@ tmp = function () {
 			bootLog("error in localize " + e2);
 		}
 	};
-
+	
 	// Init language related stuff once setLocale was called and strings were loaded
 	oldSetLocale = Fskin.localize.setLocale;
 	Fskin.localize.setLocale = function() {
@@ -354,7 +343,6 @@ tmp = function () {
 		localizeKeyboard = null;
 	};
 
-
 	oldChangeKeyboardType = Fskin.kbookKeyboard.keyboardLayout.changeKeyboardType;
 	Fskin.kbookKeyboard.keyboardLayout.changeKeyboardType = function (langType) {
 		var url, path, keyboardPaths, keyboardPath;
@@ -391,8 +379,7 @@ tmp = function () {
 		// call the default version, since custom way has failed
 		oldChangeKeyboardType.apply(this, arguments);
 	};
-
-
+	
 	// Init core here
 	oldReadPreference = kbook.model.readPreference;
 	kbook.model.readPreference = function() {
@@ -400,8 +387,7 @@ tmp = function () {
 			oldReadPreference.apply(this, arguments);
 			// restore "old" readPreference
 			kbook.model.readPreference = oldReadPreference;
-						
-			makeRootNodesMovable();
+			
 			PARAMS.loadAddons();
 			PARAMS.Core.init();
 		} catch (e) {
@@ -412,38 +398,12 @@ tmp = function () {
 	// Disable card scan
 	var originalCanHandleVolume = FskCache.diskSupport.canHandleVolume;
 	FskCache.diskSupport.canHandleVolume = function (volume) {
-		var options, optionsCode, settingsFile;
-		// If called for SD or MS volume
-		if (volume.name === "sdmsa1" || volume.name === "sdmsb1" || volume.name === "SD Card" || volume.name === "Memory Stick") {
-			try {
-				if (PARAMS.Core && PARAMS.Core.config) {
-					var scanMode = PARAMS.Core.config.cardScanMode; 
-					if (scanMode === undefined) {
-						// We are right after boot, addons haven't been loaded yet, need to load the value manually
-						// load settings from BookHistory settings file
-						settingsFile = Core.config.settingsPath + "BrowseFolders.config";
-						optionsCode = PARAMS.getFileContent(settingsFile);
-	
-						if (optionsCode !== null) {
-							optionsCode = new Function("", optionsCode);
-							options = optionsCode();
-							scanMode = options.cardScan;
-						}
-						
-						if (scanMode === undefined) {
-							scanMode = "enabled"; 
-						}
-	
-						PARAMS.Core.config.cardScanMode = scanMode;
-					}
-					
-					if (scanMode === "disabled") {
-						return false;
-					}
-				}
-			} catch (ee) {
-				bootLog("canHandleVolume " + ee);
+		try {
+			if (PARAMS.Core && PARAMS.Core.config && PARAMS.Core.config.cardScanMode === "disabled") {
+				return false;
 			}
+		} catch (ee) {
+			bootLog("canHandleVolume" + ee);
 		}
 		return originalCanHandleVolume.apply(this, arguments);
 	};	
@@ -451,9 +411,9 @@ tmp = function () {
 	// Disabling scanning, but loading cache
 	oldCallback = FskCache._diskSource.synchronizeCallback;
 	FskCache._diskSource.synchronizeCallback = function() {
-		var scanMode = PARAMS.Core.config.cardScanMode;
 		try {
-			if (scanMode === "disabledLoadCache") {
+			if (PARAMS.Core && PARAMS.Core.config 
+				&& PARAMS.Core.config.cardScanMode === "disabledLoadCache") {
 				this.target.synchronizedSource();
 				this.target.synchronizeDone();
 				this.stack.pop();
@@ -513,7 +473,8 @@ tmp = function () {
 		};
 		
 		// Fix periodicals node
-		kbook.model.getPeriodicalLatestItem = function (/* unused node */) {
+		var getPeriodicalLatestItemCalls = 0;
+		kbook.model.getPeriodicalLatestItem = function (node) {
 			return periodicalsNode.latestItem;
 		};
 
@@ -532,7 +493,6 @@ tmp = function () {
 
 			// If periodicals node was moved, we need to construct it manually, prior to setHomeCover
 			if (node.nodes[2] !== periodicalsNode) {
-				// TODO is this still needed?
 				periodicalsNode.construct();
 			}
 			
@@ -598,114 +558,8 @@ tmp = function () {
 			this.setParticularVariable(homeView, 'RIGHT_ITEM_NAME_COMMENT', rightItemTitle + '||' + rightItemComment);
 		};
 	};
-	
-	
-	// Add Cyrilic support
-	var patchStringCompare = function () {
-		var origToUpperCase, origToLowerCase, origLocaleCompare, isCyr;
-		origLocaleCompare = String.prototype.localeCompare;
-		origToUpperCase = String.prototype.toUpperCase;
-		origToLowerCase = String.prototype.toLowerCase;
+	makeRootNodesMovable();
 
-		isCyr = function (code) {
-			return code >= 1040 && code <= 1103;
-		};
-		
-		// Ignoring the case of mixed latin/cyr strings
-		String.prototype.localeCompare = function (a) {
-			var i, n, code, codeA, cyr, cyrA, ch, chA;
-			if (a === null) {
-				return (1);
-			}
-
-			if (this.length > 0 && a.length > 0) {
-				code = this.charCodeAt(0);
-				codeA = a.charCodeAt(0);
-				cyr = isCyr(code);
-				cyrA = isCyr(codeA);
-
-				// Neither is cyrillic
-				if (!cyr && !cyrA) {
-					return origLocaleCompare.call(this, a);
-				}
-
-				// Both are cyrillic
-				if (cyr && cyrA) {
-					for (i = 0, n = Math.min (this.length, a.length); i < n; i++) {
-						ch = this.charAt(i).toLowerCase();
-						chA = a.charAt(i).toLowerCase();
-						code = this.charCodeAt(i);
-						codeA = a.charCodeAt(i);
-						
-						
-						if (ch === chA) {
-							// Same char, but different case
-							if (code !== codeA) {
-								return code > codeA ? -1 : 1;
-							}
-						} else {
-							return ch.charCodeAt(0) > chA.charCodeAt(0) ? 1 : -1;
-						}
-					}
-				} else {
-					// one is cyrillic, one not
-					return code > codeA ? 1 : -1; 
-				}
-			}
-			
-			if (a.length === this.length) {
-				return 0;
-			}
-			
-			return this.length  > a.length ? 1 : -1;
-		};
-		
-		String.prototype.toUpperCase = function () {
-			var i, n, code, ch, upCh, result;
-			result = "";
-			for (i = 0, n = this.length; i < n; i++) {
-				code = this.charCodeAt(i);
-				ch = this.charAt(i);
-				if (!isCyr(code)) {
-					upCh = origToUpperCase.call(ch);
-				} else {
-					if (code === 1105) {
-						upCh = "Ё";
-					} else if (code > 1071) {
-						upCh = String.fromCharCode(code - 32);
-					} else {
-						upCh = ch;
-					}
-				}
-				result += upCh;
-			}
-			return result;
-		};
-
-		String.prototype.toLowerCase = function () {
-			var i, n, code, ch, loCh, result;
-			result = "";
-			for (i = 0, n = this.length; i < n; i++) {
-				code = this.charCodeAt(i);
-				ch = this.charAt(i);
-				if (!isCyr(code)) {
-					loCh = origToLowerCase.call(ch);
-				} else {
-					if (code === 1025) {
-						loCh = "ё";
-					} else if (code < 1072) {
-						loCh = String.fromCharCode(code + 32);
-					} else {
-						loCh = ch;
-					}
-				}
-				result += loCh;
-			}
-			return result;
-		};
-	};
-
-	patchStringCompare();
 };
 
 try {

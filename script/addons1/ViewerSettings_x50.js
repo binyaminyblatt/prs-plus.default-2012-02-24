@@ -3,7 +3,7 @@
 //	choose if Overlap in 2page mode is masked, 
 //	disables doubleTapAction and so dictionary
 //	toggle border color grey/white
-//	disable pageturn gesture
+//	disable pageturen gesture
 // Author: Mark Nord
 //
 // History:
@@ -18,22 +18,40 @@
 //	2011-09-04 Mark Nord - added some appropriate icons (avoid "SEARCH" / #39 as this will break the Options-Sub-Menu)
 //	2011-09-08 quisvir - Renamed scrolling (in zoom lock) to panning
 //	2011-09-13 quisvir - Added input dialog for custom contrast & brightness values
-//	2011-09-29 quisvir - Added Page Turn by Single Tap
-//	2011-10-01 quisvir - Close reading popup menu (dict etc) and cancel selection by tapping page
-//	2011-10-05 quisvir - Added 1-Column split for 350 & 650
-//	2011-10-09 Mark Nord - fixed #182 MaskOverlap for PRS-950
-//	2011-10-13 quisvir - Fixed #196 "No Page Turn with Gestures" doesn't disable Multi-Page Turn
-//  2011-10-13 Ben Chenoweth - assigned more icons
-//	2011-10-24 quisvir - Fixed #203 "Book rotation scribbled notes origin incorrect"
-//	2011-11-26 quisvir - Fixed Issue #228 "No Page Turn with Gestures" doesn't disable page turns through pageShortcutOverlayModel
-//	2011-11-28 quisvir - Moved touch-related code to Touch Settings addon
 
 tmp = function() {
 
 	// Localize	 	
 	var L = Core.lang.getLocalizer("ViewerSettings_x50");
-	var log = Core.log.getLogger('ViewerSettings_x50');
 
+	// Constants
+	var zoomlockold;
+	
+	// Enable panning in Zoom Lock mode
+	var oldZoomdoDrag = Fskin.kbookZoomOverlay.doDrag;
+	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
+		zoomlockold = this.isZoomLock;
+		if (ViewerSettings_x50.options.ZoomLockPanning == "true" && zoomlockold) this.isZoomLock = false;
+		oldZoomdoDrag.apply(this, arguments);
+		this.isZoomLock = zoomlockold;
+	}
+	
+	var oldZoomOverlaydone = Fskin.kbookZoomOverlay.done;
+	Fskin.kbookZoomOverlay.done = function () {
+		if (zoomlockold) this.isZoomLock = true;
+		oldZoomOverlaydone.apply(this, arguments);
+		this.isZoomlock = zoomlockold;
+	};
+
+	Fskin.kbookZoomOverlay.canLine = function () {
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_x50.options.ZoomLockPanning != "true") return true;
+		else return false;
+	};
+
+	Fskin.kbookZoomOverlay.canLineAndHold = function () {
+		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && ViewerSettings_x50.options.ZoomLockPanning != "true") return true;
+		else return false;
+	};
 	
 	// Change custom contrast variable if user has entered valid number
 	kbook.model.container.doContrastChange = function (text) {
@@ -66,22 +84,24 @@ tmp = function() {
 		if (ViewerSettings_x50.options.BindToRestoreButton == "true") {
 			this.org_slider_1 = ViewerSettings_x50.options.CustomContrast;
 			this.org_slider_2 = ViewerSettings_x50.options.CustomBrightness;
-		} else {
+		}
+		else {
 			this.org_slider_1 = contrast;
 			this.org_slider_2 = brightness;
 		}
 		this.ToneUpdate(contrast, brightness);
 	};
 	
-	/*/ overload to enable landscape-mode split in 3 - for debuging with PRS-650  
-	var oldKbookPageCheckNaturalInfo = kbook.kbookPage.checkNaturalInfo;
-	kbook.kbookPage.checkNaturalInfo = function (naturalBounds) {
-		oldKbookPageCheckNaturalInfo.apply(this, arguments);
-		if (this.partsNatural === 2) this.partsNatural = 3;
-	} // end debug code*/
+	// overload kbook.kbookPage.doSelectWord called by kbook.kbookPage.readingTracker.doubleTap to disable Dictionary
+	var oldDoSelectWord = kbook.kbookPage.doSelectWord;
+	var doSelectWord = function (){
+		if (ViewerSettings_x50.options.NoDictionary === "false") {
+			return oldDoSelectWord.apply(this, arguments);
+		}
+	}
 
 	// overload kbookPage.draw to peek into & patch
-	kbook.kbookPage.draw = function (event) {
+	var draw = function (event) {
 		var data, window, x, y, width, height, cache, naturalBounds, range, ratioX, ratioY, rct, state, backup, bitmap, cutout, u, xMin, xSize, yMin, ySize, size, minOverlap, maxOverlap, yMinN, yMaxN, parts, j, half, mark1, mark2, span, bounds, c, minSpan, maxSpan, i, bound, bound_y, update;
 		minOverlap =[];
 		maxOverlap =[];
@@ -106,8 +126,8 @@ tmp = function() {
 				ratioX = naturalBounds.width / this.sourcePageWidth;
 				ratioY = naturalBounds.height / this.sourcePageHeight;
 				this.portMatrixReviseRatio = Math.max(ratioX, ratioY);
-				this.portMatrixReviseX = naturalBounds.x + (naturalBounds.width - (this.sourcePageWidth * this.portMatrixReviseRatio)) / 2;
-				this.portMatrixReviseY = naturalBounds.y + (naturalBounds.height - (this.sourcePageHeight * this.portMatrixReviseRatio)) / 2;
+				this.portMatrixReviseX = naturalBounds.x + naturalBounds.width - (this.sourcePageWidth * this.portMatrixReviseRatio) / 2;
+				this.portMatrixReviseY = naturalBounds.y + naturalBounds.height - (this.sourcePageHeight * this.portMatrixReviseRatio) / 2;
 			}
 			if (this.marginRemove) {
 				if (!this.marginRemoveDrawRect) {
@@ -165,7 +185,7 @@ tmp = function() {
 						yMaxN = this.yMaxNatural;
 						parts = this.partsNatural;
 						if (parts == 2) {
-							/* original (defsk-ed) code
+							/* original code
 							minOverlap[0] = yMaxN - size;
 							maxOverlap[0] = yMinN + size; */
 							// fixed Mark Nord
@@ -175,23 +195,19 @@ tmp = function() {
 						else {
 							if (parts === 3) {
 								if (this.yOffset === yMinN) {
-									/* original (defsk-ed) code
-									minOverlap[0] = <global>.Math.floor(yMaxN + yMinN - size / 2);
-									maxOverlap[0] = yMinN + size;
-									in genaral swap min/max */
-									maxOverlap[0] = Math.floor((yMaxN + yMinN - size) / 2);
-									minOverlap[0] = yMinN + size;
+									minOverlap[0] = Math.floor(yMaxN + yMinN - size / 2);
+									maxOverlap[0] = size; //yMinN + size;
 								}
 								else {
 									if (this.yOffset !== yMaxN - size) {
-										maxOverlap[0] = Math.floor((yMaxN + yMinN - size) / 2);
-										minOverlap[0] = yMinN + size;
-										maxOverlap[1] = yMaxN - size;
-										minOverlap[1] = Math.floor((yMaxN + yMinN + size) / 2);
+										minOverlap[0] = Math.floor(yMaxN + yMinN - size / 2);
+										maxOverlap[0] = yMinN + size;
+										minOverlap[1] = yMaxN - size;
+										maxOverlap[1] = Math.floor(yMaxN + yMinN + size / 2);
 									}
 									else {
-										maxOverlap[0] = yMaxN - size;
-										minOverlap[0] = Math.floor((yMaxN + yMinN + size) / 2);
+										minOverlap[0] = yMaxN - size;
+										maxOverlap[0] = Math.floor(yMaxN + yMinN + size / 2);
 									}
 								}
 							}
@@ -283,66 +299,7 @@ tmp = function() {
 			this.monochrome.setFrameInfo(this.getCurrentID(), this.mapPage(this.getPage()), this.getPageOffset(), this.getPart(), this.yOffset);
 		}
 	};
-	
-	// 1-Column split
-	if (Core.config.model != '950') {
-		// add 1-column split function to be called from selectStyleOverlay.xml
-		kbook.model.container.sandbox.SELECT_STYLE_OVERLAY_GROUP.sandbox.VIEW.sandbox.SELECT_STYLE_OVERLAY.sandbox.doSplitPage2x1 = function () {
-			if (kbook.model.container.getVariable('ORIENTATION')) {
-				Core.ui.showMsg(L('ONLY_IN_PORTRAIT_ORIENTATION'));
-				return;
-			}
-			kbook.model.doSomething('switchNormalPage');
-			kbook.model.doSomething('switchSplitPage', 2);
-			pageSelectStyleOverlayModel.closeCurrentOverlay();
-		}
-		
-		// add calculations for 1-column split to resize function
-		var oldresizePageSplitPage = kbook.kbookPage.resizePageSplitPage;
-		kbook.kbookPage.resizePageSplitPage = function (splitNumber) {
-			if (splitNumber == 2) {
-				var screenWidth, screenHeight, pageWidth, pageHeight, xOffset, yOffset, bounds;
-				screenWidth = this.getSize(false) - 2 * this.marginWidth;
-				screenHeight = this.getSize(true) - 2 * this.marginHeight;
-				pageWidth = this._pageWidth;
-				pageHeight = this._pageHeight;
-				xOffset = 0;
-				yOffset = 0;
-				bounds = this.getPageCache(this.getPage(), this.getPageOffset(), this.getPart()).naturalBounds;
-				if (bounds) {
-					pageWidth = Math.floor(bounds.width / this.ratio);
-					xOffset = Math.floor(bounds.x / this.ratio);
-					pageHeight = Math.floor(bounds.height / this.ratio);
-					yOffset = Math.floor(bounds.y / this.ratio);
-				}
-				if (screenWidth <= pageWidth) {
-					Core.ui.showMsg(L('ONLY_TALL_DOCUMENTS'));
-					this.switchNormalPage();
-					return;
-				}
-				this.ratio = screenWidth / pageWidth;
-				this.overlapX = 0;
-				this.overlapY = pageHeight * ((screenWidth/pageWidth) - 1);
-				this.splitX = [xOffset * this.ratio, xOffset * this.ratio];
-				this.splitY = [0,pageHeight - this.overlapY];
-				this.splitWidth = screenWidth;
-				this.splitHeight = screenHeight;
-				this.splitNumber = 2;
-				this.numberOfLines = 2;
-				this.numberOfColumns = 1;
-				this.resizePage();
-				this.moveOffset(this.splitX[this.currentSplit], this.splitY[this.currentSplit]);
-			} else oldresizePageSplitPage.apply(this, arguments);
-		};
-		
-		// activate 1-column-split radio button if style is active
-		var oldopenSelectStyle = pageSelectStyleOverlayModel.openSelectStyle;
-		pageSelectStyleOverlayModel.openSelectStyle = function () {
-			oldopenSelectStyle.apply(this, arguments);
-			if (kbook.model.doSomething('getSplitPageColumns') == 1) this.setVariable('PAGE_STYLE_NO', 6);
-		};
-	};
-	
+
 	var ViewerSettings_x50 = {
 		name: "ViewerSettings_x50",
 		settingsGroup: "viewer", // "advanced",
@@ -357,7 +314,18 @@ tmp = function() {
 					"true": L("VALUE_TRUE"),
 					"false": L("VALUE_FALSE")
 				}
-			},
+			},	
+			{
+				name: "NoDictionary",
+				title: L("OPTION_NODICT"),
+				icon: "NODICTIONARY",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}
+			},	
 			{
 				name: "BorderColor",
 				title: L("OPTION_BORDERCOLOR"),
@@ -370,8 +338,30 @@ tmp = function() {
 				}									
 			},
 			{
+				name: "NoGesturePageTurn",
+				title: L("OPTION_NOGESTURE"),
+				icon: "GESTURE",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}	
+			},
+			{
+				name: "ZoomLockPanning",
+				title: L("ZOOMLOCK_PANNING"),
+				icon: "#41",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}
+			},
+			{
 			groupTitle: L("CUSTOM_VIEW_SETTINGS"),
-			groupIcon: "CONTRAST",
+			// groupIcon: "BRIGHT_CONT",
 			optionDefs: [
 				{
 					name: "CustomContrast",
@@ -398,18 +388,43 @@ tmp = function() {
 					valueTitles: {
 						"true": L("VALUE_TRUE"),
 						"false": L("VALUE_FALSE")
-					}
 				}
-			]}
+				},
+			],
+			}
 		],
+		/**
+		* @constructor
+		*/
 		onInit: function () {
-			if (ViewerSettings_x50.options.BorderColor === 'white') kbook.kbookPage.borderColor = Color.rgb.parse('white');
+			kbook.kbookPage.draw = draw;
+			kbook.kbookPage.doSelectWord = doSelectWord;
+			this.onSettingsChanged();
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			kbook.kbookPage.borderColor = (ViewerSettings_x50.options.BorderColor === 'grey') ? Color.rgb.parse('#6D6D6D') : Color.rgb.parse('white');
+			kbook.kbookPage.canLine = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+			if (ViewerSettings_x50.options.BorderColor === 'grey') 
+				{kbook.kbookPage.borderColor=Color.rgb.parse('#6D6D6D')
+			} else { kbook.kbookPage.borderColor=Color.rgb.parse('white')
+			}
 			if (propertyName == "CustomContrast" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_CONTRAST") + ':', '', 'doContrastChange', '', true, 'number');
 			if (propertyName == "CustomBrightness" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_BRIGHTNESS") + ':', '', 'doBrightnessChange', '', true, 'number');
-		}
+		},
+		actions: [{
+			name: "toggleGestureOnOff",
+			title: L("ACTION_toggleGestureOnOff"),
+			group: "Utils",
+			icon: "SETTINGS",
+			action: function () {
+				if (ViewerSettings_x50.options.NoGesturePageTurn === "true") {
+					ViewerSettings_x50.options.NoGesturePageTurn = "false";
+				}
+				else {
+					ViewerSettings_x50.options.NoGesturePageTurn = "true";
+				}
+			kbook.kbookPage.canLine = (ViewerSettings_x50.options.NoGesturePageTurn === "true") ? function () {return false;} : function () {return !this.preventLine;};
+			}
+		}] 	
 	};
 
 	Core.addAddon(ViewerSettings_x50);

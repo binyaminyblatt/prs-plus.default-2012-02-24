@@ -30,8 +30,6 @@
 //  2011-06-12 Ben Chenoweth - Added (white) move counter during puzzles.
 //  2011-06-14 Ben Chenoweth - Added more puzzles: total of 90 checkmate in 2 moves; 180 checkmate in 3 moves; 45 checkmate in 4 moves.
 //  2011-08-23 Ben Chenoweth - Changed the way puzzles are loaded.
-//  2011-09-26 Ben Chenoweth - Fixed a problem with valid moves for kings; added a work-around for rare AI failure.
-//  2011-11-02 Ben Chenoweth - Added AI speed-up if there is only one possible move.
 
 var tmp = function () {
 	var sMovesList;
@@ -101,7 +99,6 @@ var tmp = function () {
 	var dirs = [10, -10];
 	var level = 2; // "Medium"
 	var automode = true; // reader controls the black pieces
-	var oldlevel;
 	
 	// Undo
 	var undoboard;
@@ -412,7 +409,6 @@ var tmp = function () {
 	
 				if (automode) {
 					FskUI.Window.update.call(kbook.model.container.getWindow());
-					oldlevel=level;
 					this.doSize();
 				}
 			}
@@ -783,12 +779,8 @@ var tmp = function () {
 			etc.aBoard[startSq] = nPiece;
 			etc.aBoard[endSq] = nTarget;
 			if (bKingInCheck) {
-				//exception: if king is moving to take king (even if this places the moving king in check), then this is a valid move
-				nTargetType = nTarget & 7;
-				if (nTargetType!=2) {
-					//this.bubble("tracelog","Invalid move for king");
-					return (false);
-				}
+				//this.bubble("tracelog","Invalid move for king");
+				return (false);
 			}
 		} else {
 			// if piece other than king moves, will king still be in check?
@@ -1037,49 +1029,6 @@ var tmp = function () {
 			bGameNotOver = true;
 		}
 		return;
-	}
-	
-	target.findNumberOfMoves = function () {
-		flagWhoMoved ^= 8;
-		var iExamX, iExamY, iExamPc;
-		var noOfMoves = 0;
-		var myKing = kings[flagWhoMoved >> 3 ^ 1];
-		
-		bCheck = this.isThreatened(myKing % 10 - 2, (myKing - myKing % 10) / 10 - 2, flagWhoMoved);
-		var pcInCheckColor = flagWhoMoved ^ 8;
-		for (var iExamSq = 22; iExamSq <= 99; iExamSq++) {
-			// search the board
-			if (iExamSq % 10 < 2) {
-				continue;
-			}
-			//this.bubble("tracelog","iExamSq="+iExamSq);
-			iExamX = (iExamSq - 2) % 10;
-			iExamY = Math.floor((iExamSq - 22) / 10);
-			//iExamX = iExamSq % 10 - 2;
-			//iExamY = (iExamSq - iExamSq % 10) / 10 - 2;
-			iExamPc = etc.aBoard[iExamSq];
-			if ((iExamPc > 0) && ((iExamPc & 8 ^ 8) === flagWhoMoved)) {
-				// found a piece of the side whose king is in check
-				//this.bubble("tracelog","Piece "+iExamPc+" found at="+iExamSq+" of color "+pcInCheckColor);
-				for (var iWaySq = 22; iWaySq <= 99; iWaySq++) {
-					// search the board looking for a valid move that will get them out of check
-					if (iWaySq % 10 < 2) {
-						continue;
-					}
-					//this.bubble("tracelog","iWaySq="+iWaySq);
-					iTempX = (iWaySq - 2) % 10;
-					iTempY = Math.floor((iWaySq - 22) / 10);
-					if (this.isValidMove(iExamX, iExamY, iTempX, iTempY, bCheck, pcInCheckColor, false)) {
-						//this.bubble("tracelog","Apparently, this is a valid move.  Piece at X="+iExamX+", Y="+iExamY+", to X="+iTempX+", Y="+iTempY);
-						noOfMoves++;
-						if (noOfMoves>1) break;
-					}
-				}
-			}
-		}
-		this.bubble("tracelog","noOfMoves="+noOfMoves);
-		flagWhoMoved ^= 8;
-		return noOfMoves;
 	}
 	
 	target.getPcByParams = function (nParamId, nWhere) {
@@ -1542,7 +1491,6 @@ var tmp = function () {
 			}
 			this.writePieces();
 			this.updateUndo();
-			level=oldlevel;
 
 			// check for checkmate / stalemate
 			this.getInCheckPieces();
@@ -1557,7 +1505,6 @@ var tmp = function () {
 			// black needs to do an automove if game not over and in automode
 			if ((bGameNotOver) && (automode) && (etc.bBlackSide)) {
 				FskUI.Window.update.call(kbook.model.container.getWindow());
-				oldlevel=level;
 				this.doSize();
 			}
 	
@@ -1572,21 +1519,6 @@ var tmp = function () {
 				this.getInCheckPieces();
 				flagWhoMoved ^= 8;
 				etc.bBlackSide = !etc.bBlackSide;
-			}
-			if (bGameNotOver) {
-				// try to find move at lesser level
-				level--;
-				if (level==0) {
-					level=oldlevel;
-					// output AI failure message
-					this.checkStatus.setValue("AI failed. Sorry!");
-					return;
-				} else {
-					this.prepare();
-					this.doSize();
-					level=oldlevel;
-					return;
-				}
 			}
 		}
 		return;
@@ -1700,7 +1632,7 @@ var tmp = function () {
 	
 	//*************************************making moves
 	target.findmove = function () {
-		var s, e, pn, themove, sb, bs, noOfMoves;
+		var s, e, pn, themove, sb, bs;
 		evaluees = parsees = prunees = 0;
 	
 		if (etc.bBlackSide) {
@@ -1708,17 +1640,8 @@ var tmp = function () {
 		} else {
 			bmove = 0;
 		}
-		
-		//check to see if there is only one possible move available
-		noOfMoves=target.findNumberOfMoves();
-		
-		if (noOfMoves==1) {
-			//this.bubble("tracelog","Finding a move for "+bmove+", level="+1);
-			themove = this.treeclimber(1, bmove, 0, 120, 120, Al, Bt, ep);
-		} else {
-			//this.bubble("tracelog","Finding a move for "+bmove+", level="+level);
-			themove = this.treeclimber(level, bmove, 0, 120, 120, Al, Bt, ep);
-		}
+		//this.bubble("tracelog","Finding a move for "+bmove);
+		themove = this.treeclimber(level, bmove, 0, 120, 120, Al, Bt, ep);
 		pn = themove[0];
 		s = themove[1];
 		e = themove[2];
@@ -1762,6 +1685,7 @@ var tmp = function () {
 			test = test || (s == t[1] && e == t[2]);
 		}
 		if (!test) {
+			going = 0;
 			this.messageStatus.setValue("No such move...");
 			return 0;
 		}
@@ -1771,18 +1695,15 @@ var tmp = function () {
 		// now see whether in check after this move, by getting the best reply.  
 		board[e] = S;
 		board[s] = 0;
-		/*p = pieces[bmove];
+		p = pieces[bmove];
 		for (z = 0; z < p.length; z++) {
 			if (p[z][1] == s) p[z][1] = e;
-		}*/
+		}
 	
 		themove = this.treeclimber(0, 8 - bmove, 0, 120, 120, Al, Bt, ep);
-		//this.bubble("tracelog","got this far: themove="+themove);
 		if (themove[0] > 400) {
 			//this.bubble("tracelog","in check");
-			board[s] = S;
-			board[e] = E;	
-			return 0;
+			return false;
 		}
 	
 		//if got this far, the move is accepted. 

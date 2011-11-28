@@ -2,8 +2,7 @@
 Build script for PRS+ project
 
 History:
-	2011-03-01 kartu - Rewritten from scratch
-	2011-09-30 kartu - Added Unix support
+2011-03-01 kartu - Rewritten from scratch
 -->
 <project default="buildAll">
 	<!--======================================================================== 
@@ -42,10 +41,6 @@ History:
 		<exclude name="ViewerSettings_x50.js" />
 		<exclude name="ViewerSettings_600.js" />
 		<exclude name="BookManagement_x50.js" />
-		<exclude name="Calendar.js" />
-		<exclude name="AuthorList.js" />
-		<exclude name="SaveNotepadData.js" />
-		<exclude name="TouchSettings_x50.js" />
 	</patternset>
 	<patternset id="addons_600_x50">
 		<include name="**/*" />
@@ -57,7 +52,6 @@ History:
 		<exclude name="StandardActions.js" />
 		<exclude name="TextEncoding.js" />
 		<exclude name="TextScale.js" />
-		<exclude name="Calendar_nt.js" />
 	</patternset>
 	<patternset id="addons_300">
 		<patternset refid="addons_300_505" />
@@ -70,7 +64,6 @@ History:
 		<patternset refid="addons_600_x50" />
 		<exclude name="ViewerSettings_x50.js" />
 		<exclude name="BookManagement_x50.js" />
-		<exclude name="TouchSettings_x50.js" />
 	</patternset>
 	<patternset id="addons_350" >
 		<patternset refid="addons_600_x50" />
@@ -84,15 +77,6 @@ History:
 		<patternset refid="addons_600_x50" />
 		<exclude name="ViewerSettings_600.js" />
 	</patternset>
-	
-	<!--======================================================================== 
-		Init tools
-	========================================================================-->
-	<chmod perm="+x">
-		<fileset file="tools/mkcramfs" />
-		<fileset file="tools/cramfsck" />
-	</chmod>
-
 	
 	<!--======================================================================== 
 		Tasks
@@ -233,7 +217,6 @@ History:
 		<delete dir="${beta}"/>
 		<mkdir dir="${beta}/addons"/>
 		<mkdir dir="${beta}/addons1"/>
-		<mkdir dir="${beta}/addons2"/>
 		<mkdir dir="${beta}/core"/>
 		
 		<echo>Copying model specific addon resources</echo>
@@ -244,11 +227,6 @@ History:
 		</copy>
 		<copy todir="${beta}/addons1">
 			<fileset dir="${src}/addons1" >
-			 	<patternset refid="addons_${model}" />
-			</fileset>
-		</copy>
-		<copy todir="${beta}/addons2">
-			<fileset dir="${src}/addons2" >
 			 	<patternset refid="addons_${model}" />
 			</fileset>
 		</copy>
@@ -286,10 +264,6 @@ History:
 		<attrib readonly="true" verbose="true">
 			<fileset dir="../firmware/binaries" />
 		</attrib>
-		<!-- Exec flag on linux -->
-		<chmod perm="+x">
-			<fileset dir="../firmware/binaries" />
-		</chmod>
 		
 		<echo>Copying binaries for PRS-${model}</echo>
 		<copy todir="${prsp.dir}" verbose="true">
@@ -318,17 +292,6 @@ History:
 					<patternset refid="addons_${model}" />
 				</fileset>
 				<fileset dir="${SRC.ADDONS}1">
-					<include name="*.js"/>
-				</fileset>
-			</intersect>
-		</concat>
-		<!-- addons 2 folder -->
-		<concat destfile="${prsp.dir}/addons2.js" encoding="UTF-8">
-			<intersect>
-				<fileset dir="${SRC.ADDONS}2">
-					<patternset refid="addons_${model}" />
-				</fileset>
-				<fileset dir="${SRC.ADDONS}2">
 					<include name="*.js"/>
 				</fileset>
 			</intersect>
@@ -407,8 +370,8 @@ History:
 				<arg value="@{file}" />
 			</exec>
 			<var name="diff" unset="true" />
-			<fileset dir="@{folder}" id="diff">
-				<different targetdir="tmp/test.cramfs" ignoreFileTimes="true" />
+			<fileset dir="tmp/test.cramfs" id="diff">
+				<different targetdir="@{folder}" ignoreFileTimes="true" />
 				<exclude name="**/*.lnk" />
 			</fileset>
 			<foreach param="error" target="test.cramfs.error">

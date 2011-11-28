@@ -205,6 +205,16 @@
 			}	
 		</function>	
 		<function id="initialized"><![CDATA[
+			try {
+				if (FileSystem.getFileInfo(System.applyEnvironment('[prspSafeModeFile]')) === undefined) {
+					if (FileSystem.getFileInfo(System.applyEnvironment('[prspBetaStartupFile]'))) {
+						this.callScript(System.applyEnvironment('[prspBetaStartupFile]'));
+					} else {
+						this.callScript(System.applyEnvironment('[prspStartupFile]'));
+					}
+				}
+			} catch (ignore) {
+			}
 			USBDispatcher.doRegister(this.getWindow())
 			this.getDevice().doProcessed(100);
 			if (ebook && "delayLoadSettings" in ebook)

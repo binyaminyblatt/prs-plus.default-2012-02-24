@@ -17,8 +17,6 @@
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" based on code found by Ben Chenoweth
 //	2011-07-06 Ben Chenoweth - Minor fix to StandbyImage (mime not needed)
 //	2011-08-18 Mark Nord - fixed current page as StandbyImage + display of localised "sleeping.." instead of the clock
-//	2011-10-04 quisvir - Always show book covers in portrait mode and keep aspect ratio
-//	2011-10-07 quisvir - Fixed #190 "Continue searching from the begining doesn't work" (Sony bug)
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -28,17 +26,56 @@
 
 var tmp = function() {
 
-	// Fix continue searching from beginning/end
-	pageSearchResultOverlayModel.onForward = function () {
-		var ret = this.forwardSearch();
-		if (ret) this.onOpenSearchResult();
-	};
+	// Standby image
+	var oldStandbyImageDraw = standbyImage.draw;
 	
-	pageSearchResultOverlayModel.onBackward = function () {
-		var ret = this.backwardSearch();
-		if (ret) this.onOpenSearchResult();
+	standbyImage.draw = function() {
+		var window, ditheredBitmap;
+		var newpath, newbitmap, mode, dither, oldTextStyle, oldTextSize, oldPenColor, L;
+		window = this.root.window;
+		mode = Core.addonByName.StandbyImage.options.mode;
+		dither = Core.addonByName.StandbyImage.options.dither === "true";		
+		try {
+			if (mode === 'cover') {
+				// attempt to use current book cover
+				newpath = kbook.model.currentBook.media.source.path + kbook.model.currentBook.media.path;
+				newbitmap = BookUtil.thumbnail.createFileThumbnail(newpath, this.width, this.height);
+				ditheredBitmap = newbitmap.dither(dither);
+				newbitmap.close();			
+				if (ditheredBitmap) {
+					window.drawBitmap(ditheredBitmap, this.x, this.y, this.width, this.height);
+					ditheredBitmap.close();	
+					}
+				}	
+		} catch (ignore) {
+		}
+		
+		if (!newbitmap && (mode !== 'act_page')) {
+			oldStandbyImageDraw.apply(this);	
+		} else {
+			if (mode === 'act_page') {
+				L = Core.lang.getLocalizer("StandbyImage");
+				// Save old styles
+				oldTextStyle = window.getTextStyle();
+				oldTextSize = window.getTextSize();
+				oldPenColor = window.getPenColor();
+				// Settings
+				window.setTextStyle("bold");
+				window.setTextSize(22);
+				// Drawing
+				window.beginDrawing();
+				window.setPenColor(Color.black);
+				window.fillRectangle(445, 770, 155, 30);
+				window.setPenColor(Color.white);
+				window.drawText(L("VALUE_SLEEPING"), 455, 770, 135, 30);
+				window.endDrawing();
+				// Restore pen color, text size & style
+				window.setTextStyle(oldTextStyle);
+				window.setTextSize(oldTextSize);
+				window.setPenColor(oldPenColor);
+			}	
+		}
 	};
-	
 	// Workaround for # Text Memo open => press root leads to reboot
 	kbook.kbookNotepad.exit = function(param) {
 		var note = this.note;

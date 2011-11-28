@@ -4,7 +4,6 @@
 //
 // History:
 //	2011-03-02 kartu - Initial version
-//	2011-11-20 kartu - Fixed #215 fb2epub converter doesn't work with cards with disabled scanning
 //
 try {
 	tmp = function() {
@@ -16,7 +15,7 @@ try {
 		TMP_FILE = "prsp_temp_file"; // temporary file
 		
 		fb2toepub = function (originalSrc, originalDest) {
-			var cmd, size, tmpDir, usingTemp, src, dest, mount;
+			var cmd, size, tmpDir, usingTemp, src, dest;
 			// SD / MS card is not mounted => not visible to normal executables
 			// Hence in that case we need to first copy source file to a temp location, 
 			// then move 
@@ -48,19 +47,6 @@ try {
 				dest = originalDest;
 			}
 			
-			// Might need to "mount"
-			mount = null;
-			if (Core.text.startsWith(originalSrc, Core.shell.MS_MOUNT_PATH)) {
-				mount = Core.shell.MS;
-			} else if (Core.text.startsWith(originalSrc, Core.shell.SD_MOUNT_PATH)) {
-				mount = Core.shell.SD;
-			}
-			
-			// Mount if needed
-			if (mount !== null) {
-				Core.shell.mount(mount);
-			}
-			
 			try {
 				cmd = FB2EPUB + " -s " + STYLES_DIR + " \"" + src + "\" \"" + dest + "\"";
 				log.trace(cmd);
@@ -72,11 +58,6 @@ try {
 						Core.io.deleteFile(src);
 					} catch (ignore) {
 					}
-				}
-				
-				// umount
-				if (mount !== null) {
-					Core.shell.umount(mount);
 				}
 			}
 
@@ -94,34 +75,30 @@ try {
 				}
 				
 				epubPath = this.path + ".epub";
-				Core.ui.showMsg([L("CONVERTING_FB2"), L("NORMALLY_TAKES")], 0);					
+				Core.ui.showMsg([L("CONVERTING_FB2"), L("NORMALLY_TAKES")], 0);
 				fb2toepub(this.path, epubPath);
 				Core.ui.showMsg(L("OPENING"), 0);
+				media = Core.media.loadMedia(epubPath);
+				node = Core.media.createMediaNode(media, this.parent);
 				
-				node = this.createMediaNode(epubPath, this.title, this.parent, undefined, this.needsMount);
-				
-				if (node !== null) {
-					// Replace this node with created media node
-					nodes = this.parent.nodes;
-					for (i = 0, n = nodes.length; i < n; i++) {
-						if (nodes[i] === this) {
-							nodes[i] = node;
-							break;
-						}
+				// Replace this node with created media node
+				nodes = this.parent.nodes;
+				for (i = 0, n = nodes.length; i < n; i++) {
+					if (nodes[i] === this) {
+						nodes[i] = node;
+						break;
 					}
-					
-					// Jump to newly created node
-					this.gotoNode(node, kbook.model);
-				} else {
-					Core.ui.showMsg(L("ERROR"), 0);
 				}
+				
+				// Jump to newly created node
+				this.gotoNode(node, kbook.model);
 			} catch (e) {
 				Core.ui.showMsg(L("ERROR"), 0);
 				log.error("enterFB2Node", e);
 			}
 		};
 		
-		createFB2Node = function (path, title, parent, createMediaNode, needsMount) {
+		createFB2Node = function (path, title, parent) {
 			var node, media, epubPath;
 			try {
 				epubPath = path + ".epub";
@@ -140,8 +117,6 @@ try {
 				node.type = "book";
 				node.path = path;
 				node.enter = enterFB2Node;
-				node.needsMount = needsMount;
-				node.createMediaNode = createMediaNode;
 				return node;
 			} catch (e) {
 				log.error("in createFB2Node " + path, e);
@@ -154,7 +129,7 @@ try {
 			return null;
 		};
 		
-		createMediaNode = function (path, title, parent, createMediaNode, needsMount) {
+		createMediaNode = function (path, title, parent) {
 			var ext = FileSystem.getExtension(path);
 			
 			switch (ext) {
@@ -163,7 +138,7 @@ try {
 						break;
 					} // fallthrough
 				case "fb2":
-					return createFB2Node(path, title, parent, createMediaNode, needsMount);
+					return createFB2Node(path, title, parent);
 				case "png":
 				case "jpg":
 				case "jpeg":

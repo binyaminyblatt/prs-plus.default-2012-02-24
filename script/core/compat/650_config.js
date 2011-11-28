@@ -24,26 +24,16 @@
 //	2011-08-28 Ben Chenoweth - Moved games into Games node
 //	2011-09-04 Mark Nord - NodeKinds.getIcon modified to accept "#icon-number" (not consistent across model-border but speeds up testing)
 //	2011-09-14 kartu - renamed games & utils into games
-//	2011-10-13 quisvir - Fixed #192 Games folder is on the wrong place
-//	2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
-//	2011-10-19 Ben Chenoweth - Added ALT icons; reverted BOOK to 2 and PICTURE to 4
-//	2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
-// 	2011-10-22 Mark Nord - Fix for node "games" in customNodes (instead of "") it's now consitstend for all x50
-//	2011-11-13 kartu - changed rootNode to a function, since node is not available at the time config file is loaded
-//	2011-11-20 quisvir - Added Author List
-//  2011-11-23 Ben Chenoweth - Added TEXT_MEMO
-//  2011-11-24 Ben Chenoweth - Added HANDWRITING_ALT
-//	2011-11-28 quisvir - Added STYLUS
  
 return {
 	// Menu icon indices 
 	NodeKinds: {
 		EMPTY: 1000,
 		ALL_BOOKS: 1,
-		BOOK: 2, // 17
+		BOOK: 17, // 2
 		FILE: 2,
 		AUDIO: 3,
-		PICTURE: 4,  // 18
+		PICTURE: 18,  // 4 
 		SETTINGS: 5,
 		AUTHOR: 6,
 		CONTINUE: 7,
@@ -52,7 +42,7 @@ return {
 		BOOKMARK: 10,
 		NOTES: 10,
 		LIST: 11,
-		BOOK_HISTORY: 1, // 11
+		BOOK_HISTORY: 11,
 		CLOCK: 12,
 		PAUSE: 13,
 		PLAY: 14,
@@ -74,9 +64,6 @@ return {
 		GESTURE: 38,
 		SEARCH: 39,
 		NODICTIONARY: 40,
-		STYLUS: 41,
-		COLLECTION: 42,
-		TEXT_MEMO: 50,
 		KEYBOARD: 51,
 		ROOT_MENU: 53,
 		INTERNAL_MEM: 54,
@@ -119,35 +106,25 @@ return {
 		BRIGHTNESS: 110,
 		CONTRAST: 111,
 		
-		BOOK_ALT: 112,
-		PICTURE_ALT: 113,
-		SEARCH_ALT: 114,
-		HANDWRITING_ALT: 115,
-		
 		DEFAULT: 87,
 		
 		// big icons shonw in home menu
 		LARGE_BOOK_HISTORY: 2,
-		LARGE_AUTHOR: 2,
 		LARGE_FOLDER: 4,
 		LARGE_MORE: 5,
-		LARGE_GAME: 6,
-		LARGE_DATE: 7,
 		
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {
-			try{
-				var kind, i;
-				if (type === "home") {
-					kind = this["HOME_" + strKind];
-					if (typeof kind === "undefined") {
-						kind = this.HOME_FOLDER;
-					}
-				} else if (type === "homeLarge") {
-					kind = this["LARGE_" + strKind];
-					if (typeof kind === "undefined") {
-						kind = this.LARGE_FOLDER;
-					}				
+		try{
+			var kind, i;
+			if (type === "home") {
+				kind = this["HOME_" + strKind];
+				if (typeof kind === "undefined") {
+					kind = this.HOME_FOLDER;
+				}
+			} else if (type === "homeLarge") {
+				// if it is undefined, leave it as is
+				kind = this["LARGE_" + strKind];
 				} else {
 					i = strKind.lastIndexOf("#");
 					if (i > -1) {
@@ -156,14 +133,14 @@ return {
 						kind = this[strKind];
 					}
 				}
-				if (typeof kind === "undefined") {
-					kind = this.FOLDER;
-				}
-				return kind;
+			if (typeof kind === "undefined") {
+				kind = this.FOLDER;
 			}
-			catch (e) {
-				return this.FOLDER;
-			}
+			return kind;
+		}
+		catch (e) {
+			return this.FOLDER;
+		}
 		}
 	},
 	
@@ -177,8 +154,8 @@ return {
 		home_h: "kHome-hold",
 		size: "kSize",
 		size_h: "kSize-hold",
-		option: "kOption",
-		option_h: "kOption-hold"
+		menu: "kOption",
+		menu_h: "kOption-hold"
 	},
 	// does device have numeric keys
 	hasNumericButtons: false,
@@ -210,35 +187,34 @@ return {
 	},
 	
 	// Root node for menu customizer
-	rootNode: function() { return kbook.root.nodes[0] },
+	rootNode: kbook.root.nodes[0],
 	
 	// Menu configuration
 	prspMenu: {
 		// Container nodes
 		customContainers: [
 			{ name: "more", title: "NODE_MORE", icon: "MORE", parent: "root"},
-			{ name: "games", title: "NODE_GAMES", shortName: "Games", icon: "GAME"}
+			{ name: "", title: "NODE_GAMES", shortName: "Games", icon: "GAME"}
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
 			{ name: "PRSPSettings", parent: "settings", position: 0},
+			{ name: "", parent: "more" },
 			{ name: "collections", parent: "more" },
 			{ name: "periodicals", parent: "more" },
 			{ name: "notes", parent: "more" },
-			{ name: "games", parent: "more" },
 			{ name: "Calculator", parent: "more" },
-			{ name: "Calendar", parent: "more" },
-			{ name: "AuthorList", parent: "more" },
-			{ name: "Chess", parent: "games" },
-			{ name: "Draughts", parent: "games" },
-			{ name: "FiveBalls", parent: "games" },	
-			{ name: "FiveRow", parent: "games" },	
-			{ name: "FreeCell", parent: "games" },
-			{ name: "Mahjong", parent: "games" },
-			{ name: "MineSweeper", parent: "games" },
-			{ name: "Solitaire", parent: "games" },
-			{ name: "Sudoku", parent: "games" },
-			{ name: "XOCubed", parent: "games" }
+			{ name: "Calendar", parent: "more" },	
+			{ name: "Chess", parent: "" },
+			{ name: "Draughts", parent: "" },
+			{ name: "FiveBalls", parent: "" },	
+			{ name: "FiveRow", parent: "" },	
+			{ name: "FreeCell", parent: "" },
+			{ name: "Mahjong", parent: "" },
+			{ name: "MineSweeper", parent: "" },
+			{ name: "Solitaire", parent: "" },
+			{ name: "Sudoku", parent: "" },
+			{ name: "XOCubed", parent: "" }
 		],
 		movableNodes: [0, 0, 1, 1, 1],
 		defaultLayout: [
