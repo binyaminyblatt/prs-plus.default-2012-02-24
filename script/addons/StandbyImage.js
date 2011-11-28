@@ -11,6 +11,7 @@
 //  2011-11-25 Ben Chenoweth - icon on standby and shutdown now separate options
 //	2011-11-26 quisvir - separate standby/shutdown text
 //	2011-11-27 quisvir - made customtext code more flexible, added scaling option
+//  2011-11-28 Ben Chenoweth - Added event overlay option
 //
 //	TODO: set/restore portrait orientation on shutdown
 
@@ -174,8 +175,7 @@ tmp = function() {
 	
 	standbyImage.draw = function () {
 	
-		var opt, mode, win, w, h, path, bitmap, bounds, ratio, width, height, x, y, oldPencolor, oldTextStyle, oldTextSize, oldTextAlignmentX, oldTextAlignmentY,
-			icon, iconX, file, content, lines, match, i, customText;
+		var opt, mode, win, w, h, path, bitmap, bounds, ratio, width, height, x, y, oldPencolor, oldTextStyle, oldTextSize, oldTextAlignmentX, oldTextAlignmentY, icon, iconX, file, content, lines, match, i, eventsonly, customText;
 		opt = StandbyImage.options;
 		mode = (shutdown) ? opt.ShutdownMode : opt.StandbyMode;
 		win = this.getWindow();
@@ -234,7 +234,8 @@ tmp = function() {
 					break;
 				case 'calendar':
 					try {
-						Core.addonByName.Calendar.drawStandbyWidget(win);
+						eventsonly=false;
+						Core.addonByName.Calendar.drawStandbyWidget(win, eventsonly);
 					} catch (e) { log.error(e); }
 					break;
 			}
@@ -286,6 +287,12 @@ tmp = function() {
 				}
 				if (!customText || customText === '') customText = L('CUSTOM_TEXT_NOT_FOUND');
 				win.drawText(customText, 0, h-30, w, 30);
+			}
+			
+			// Display events overlay
+			if ((opt.DisplayEventsOverlay === 'true') && (mode !== 'calendar')) {
+				eventsonly=true;
+				Core.addonByName.Calendar.drawStandbyWidget(win, eventsonly);
 			}
 		}
 		win.endDrawing();
@@ -348,6 +355,17 @@ tmp = function() {
 						"false": L("VALUE_FALSE")
 					}
 				},
+				{
+					name: "DisplayEventsOverlay",
+					title: L("DISPLAY_EVENTS_OVERLAY"),
+					icon: "DATE",
+					defaultValue: "false",
+					values: ["true", "false"],
+					valueTitles: {
+						"true": L("VALUE_TRUE"),
+						"false": L("VALUE_FALSE")
+					}
+				}				
 			]},
 			{
 			groupTitle: L('SHUTDOWN_IMAGE'),
