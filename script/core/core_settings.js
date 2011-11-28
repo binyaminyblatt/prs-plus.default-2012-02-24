@@ -18,6 +18,7 @@
 //	2011-10-13 quisvir - Fixed #187 "Arrow" icon in "PRS+ Settings" slot is missing
 //  2011-10-19 Ben Chenoweth - Changed BOOK to BOOK_ALT
 //	2011-11-25 quisvir - Allow temporary redirect after selecting setting
+//	2011-11-28 qusivir - Sort PRS+ Settings nodes by title
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -267,6 +268,12 @@ tmp = function() {
 		for (i = 0, n = addons.length; i < n; i++) {
 			Core.settings.createAddonSettings(addons[i]);
 		}
+		// Sort nodes by title
+		prspSettingsNode.nodes.sort(function(a, b){
+			if (a.title < b.title) return -1;
+			if (a.title > b.title) return 1;
+			return 0;
+		});
 	};
 
 	// Creates entry under "Settings => PRS+ Settings" corresponding to the addon.
