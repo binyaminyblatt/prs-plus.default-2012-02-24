@@ -6,17 +6,15 @@
 // History:
 //	2010-06-05 Mark Nord - initial release
 //	2010-12-05 Mark Nord - prepared for PRS+ 2.0.x
-//			       Translation and Icon to be added
 
 tmp = function() {
-	//var L = Core.lang.getLocalizer("Calc");
+	var L = Core.lang.getLocalizer("Calc");
 	var Calc = {
 		name: "Calculator",
-		//title: L("TITLE"),		// to be added to language asset
+		title: L("TITLE"),
 		//description: L("DESCRIPTION"),	// to be added to language asset
-		title: "Calculator",
 		description: "Scientific calculator",
-		icon: "CALC",			// to be added to Core.config.compat.NodeKinds
+		icon: "CALC",
 		activate: function () {
 			kbook.autoRunRoot.sandbox._icon = Core.config.compat.NodeKinds.getIcon("CALC",0);
 			kbook.autoRunRoot.sandbox._title = Calc.title;
