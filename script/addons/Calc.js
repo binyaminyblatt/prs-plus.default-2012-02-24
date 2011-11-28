@@ -22,6 +22,7 @@ tmp = function() {
 			kbook.autoRunRoot.sandbox._title = Calc.title;
 			kbook.autoRunRoot.sandbox.hasNumericButtons = Core.config.compat.hasNumericButtons;
 			kbook.autoRunRoot.sandbox.getSoValue = Core.system.getSoValue;
+			kbook.autoRunRoot.sandbox.gamesSavePath = Core.config.userGamesSavePath;
 			kbook.autoRunRoot.path = Core.config.addonsPath + "Calc/calculator.xml";
 			kbook.autoRunRoot.enterIf(kbook.model);
 		},

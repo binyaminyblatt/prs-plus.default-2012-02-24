@@ -5,6 +5,7 @@
 // History:
 //	2011-05-17 kartu - 600: Removed "XS" level 
 //		ALL: Restart warning message is shown at most once per hour
+//	2011-11-20 kartu - Removed unused "DESCRIPTION"
 
 tmp = function() {
 	var LRFTextScale, defVal, L, ZOOM_VALUES, ZOOM_VALUE_NAMES, ZOOM_LEVEL_NAMES, scaleMin, scaleMax,
@@ -25,7 +26,6 @@ tmp = function() {
 	LRFTextScale = {
 		name: "LRFTextScale",
 		title: L("TITLE"),
-		description: L("DESCRIPTION"),
 		icon: "TEXT_SCALE"
 	};
 	

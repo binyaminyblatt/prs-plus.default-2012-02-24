@@ -334,7 +334,7 @@
 		<string id="STR_NODE_TITLE_NEWDELIVERY" value="Nueva entrega" />
 		<string id="STR_NODE_TITLE_DICTIONARY" value="Diccionario" />
 		<string id="STR_HOME_SEEALL" value="Ver todo" />
-		<string id="STR_HOME_CONTINUEREADING_LASTREAD" value="Leído últimamente:" />
+		<string id="STR_HOME_CONTINUEREADING_LASTREAD" value="Última lectura:" />
 		<string id="STR_COUNTER_PERIODICAL_N" value=" periódicos" />
 		<string id="STR_COUNTER_PERIODICAL_1" value="1 periódico" />
 		<string id="STR_COUNTER_PERIODICAL_0" value="Ningún periódico" />
