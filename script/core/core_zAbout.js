@@ -11,8 +11,6 @@
 //	2010-06-27 kartu - Adapted for 300
 //	2011-01-29 kartu - Adapted for x50
 //	2011-02-27 kartu - Fixed #69 PRS+ About information missing
-//	2011-11-04 kartu - Added Dutch & Turkish translation credits
-//	2011-11-25 Mark Nord - Added Available Space Info for 300/505/600
 
 try {
 	// dummy function, to avoid introducing global vars
@@ -26,11 +24,10 @@ try {
 
 		aboutText = 
 			"Author: Mikheil Sukhiashvili aka kartu (kartu3@gmail.com) using work of: " + 
-			"igorsk, boroda, amutin, obelix, pepak, kravitz, Mark Nord, Ben Chenoweth, quisvir and others.\n" +
+			"igorsk, boroda, amutin, obelix, pepak, kravitz, Mark Nord, Ben Chenoweth and others.\n" +
 			"Translations by:\n" +
 			"     Catalan: surquizu\n" +
 			"     Czech: Hobogen, milanv\n" +
-			"     Dutch: DrMerry\n" +
 			"     French: VICTORSJG, Duglum, ronnn, dpierron\n" +
 			"     Georgian: rawerfas, kartu\n" +
 			"     German: Duglum, klawong, Mark Nord\n" +			
@@ -39,14 +36,12 @@ try {
 			"     Russian: SLL, boroda, amutin, happyhgy\n" +
 			"     Simplified Chinese: thawk, frank0734\n" +
 			"     Spanish: surquizu, VICTORSJG, Carlos\n" +
-			"     Turkish: Ugur Bulgan, Abdullah Demirci \n" +
 			"     Ukrainian: Bookoman\n" +
-			"© GNU Lesser General Public License. \n";
-			
+			"© GNU Lesser General Public License.";
+		
 		initAbout = function() {
-			var about, data, records, record, record1, record2, prspFirmwareVersion, oldAboutGetValue;
-
-			// About insert record for PRS+
+			var about, data, records, record, record1, prspFirmwareVersion;
+			// About
 			about = kbook.model.container.sandbox.ABOUT_GROUP.sandbox.ABOUT;
 			data = about.sandbox.data;
 			records = data.records;
@@ -56,81 +51,7 @@ try {
 			record.sandbox.text = "PRS+ " + prspFirmwareVersion + "\n" + aboutText;
 			record.sandbox.kind = 4;
 			records.splice(0, 0, record);
-			about.dataChanged();
-
-			// hook getValue() from sandbox	
-			oldAboutGetValue = about.getValue;
-
-			about.getValue = function(record, field) {
-			var	iterator, volume, info, result, text, L, L2, convUnitOfStrage,
-				strageInternalCapacity = 0, strageInternalFree = 0, strageMsCapacity = 0,
-				strageMsFree = 0, strageSDCapacity = 0, strageSDFree = 0,
-				simulateNANDPath = 'C:/', simulateSDPath = 'b:/', simulateMSPath = 'a:/';
-
-			L = Core.lang.getLocalizer("Screenshot");
-			L2 = Core.lang.getLocalizer("StatusBar_PageIndex");
-
-			convUnitOfStrage = function (data) {
-				var strUnit, strRetVal, dataBuf, nCounter, dataBufInt;
-				strUnit = [ 'B', 'KB', 'MB', 'GB', 'TB', 'PB' ];
-				dataBuf = data;
-				nCounter = 0;
-				while (dataBuf >= 1024 && nCounter < strUnit.length) {
-					dataBuf = dataBuf / 1024;
-					nCounter++;
-				}
-				if (nCounter == 0) {
-					strRetVal = (dataBuf == 0)?'0':'1.0' + 'KB';
-				}
-				else {
-					dataBufInt = Math.floor(dataBuf);
-					if (dataBuf == dataBufInt || dataBufInt >= 1000) {
-						strRetVal = dataBufInt + strUnit[nCounter];
-					}
-					else {
-					strRetVal = dataBuf.toString().substring(0, 5) + strUnit[nCounter];
-					}
-				}
-				return strRetVal;
-			}; 
-
-			// Available Space
-			try{	
-				if ((record.sandbox.kind === 4) && (field == "text")) {
-					iterator = new FileSystem.Iterator();
-					while (volume = iterator.getNext()) {
-						info = FileSystem.getVolumeInfo(volume.id);
-						if (volume.path === simulateNANDPath || volume.path === '/Data/') {
-							strageInternalCapacity = info.capacity;
-							strageInternalFree = info.free;
-						}
-						if (volume.path === simulateMSPath || volume.name === 'Memory Stick') {
-							strageMsCapacity = info.capacity;
-							strageMsFree = info.free;
-						}
-						if (volume.path === simulateSDPath || volume.name === 'SD Card') {
-							strageSDCapacity = info.capacity;
-							strageSDFree = info.free;
-						}
-					}
-					result = record.sandbox.text;
-					text = '\n' + L('AVAILABLESPACE') + ':\n';
-					text += L('INTERNAL_MEMORY') + ': ' + convUnitOfStrage(strageInternalFree) + ' ' + L2('OF') + ' ' + 
-						convUnitOfStrage(strageInternalCapacity) + '\n';
-					if (strageMsCapacity > 0) {
-						text += L('MEMORY_STICK') + ': ' + convUnitOfStrage(strageMsFree) + ' ' + L2('OF') + ' ' + 
-						convUnitOfStrage(strageMsCapacity) + '\n';
-					}	
-					if (strageSDCapacity > 0) {
-						text += L('SD_CARD') + ': ' + convUnitOfStrage(strageSDFree) + ' ' + L2('OF') + ' ' + 
-						convUnitOfStrage(strageSDCapacity);
-					}	
-					result += text;
-					return result;
-				}
-				} catch (ignore) {} 
-			return oldAboutGetValue.apply(this, arguments);
-			};	
+			about.dataChanged();			
 		};
 		
 		initAboutX50 = function() {

@@ -126,7 +126,7 @@
 			<string key="kHold1" do="doHold1"/>
 			<string key="kHold2" do="doHold2"/>
 			<string key="kHold3" do="doHold3"/>
-			<string key="kHold4" do="doMenu"/>
+			<string key="kHold4" do="doHold4"/>
 			<string key="kHold5" do="doHold5"/>
 			<string key="kHold6" do="doHold6"/>
 			<string key="kHold7" do="doHold7"/>
@@ -147,9 +147,7 @@
 			<checkBoolean key="kLight" can="canLight" do="doLight"/>
 			<boolean key="kVolumePlus" do="doLoud"/>
 			<boolean key="kVolumeMinus" do="doQuiet"/>
-			<!--boolean key="kMute" do="doMute"/-->
-			<boolean key="kHold0" do="doMute"/>
-			<boolean key="kHold1" do="doMute"/>
+			<boolean key="kMute" do="doMute"/>
 			<customHold key="kPowerSwitch" hold="doPowerSwitchHold" up="doPowerSwitch" holdTime="3000"/>
 			
 			<boolean key="kSize" do="doSize"/>

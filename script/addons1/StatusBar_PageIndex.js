@@ -20,7 +20,6 @@
 //	2010-05-24 kravitz - Fixed getPpm() result checking
 //	2010-07-21 kartu - Refactored as Statusbar "plugin"
 //	2010-11-29 kartu - ALL: implemented #16 "88.1% (add decimal) in statusbar"
-//	2011-10-13 quisvir - Fixed "Remaining Time: 2:60" (thanks flobauke)
 
 tmp = function() {
 	var log, L, lastTime, lastPage, ppmHistory, ppmIdx, MAX_PPM_HISTORY,
@@ -97,9 +96,9 @@ tmp = function() {
 		if (ppm === NA) {
 			return NA;
 		}
-		t = Math.round(pages / ppm);
+		t = pages / ppm;
 		hours = Math.floor(t / 60);
-		minutes = t % 60;
+		minutes = Math.round(t % 60);
 		if (hours > 0) {
 			if (minutes < 10) {
 				minutes = "0" + minutes;

@@ -6,13 +6,9 @@
 //	2010-06-27 kartu - Adapted for 300 from former KeyBindings addon
 //	2010-11-28 kartu - 600: Implemented #31 "Use Volume buttons to move through history"
 //				300: Fixed "next/prev" page actions consuming "goto page" key events 
-//	2011-10-27 Mark Nord - ported bubbleActions from x50
-//	2011-10-28 Mark Nord - fixed issue #206
-//	2011-11-26 Mark Nord - Added issue #218 TOC Action for 300/505
 
 tmp = function() {
-	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled,
-		addBubbleActions, addOptionalActions, doBubble, doBubbleFunc;
+	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled;
 	NAME = "StandardActions";
 	L = Core.lang.getLocalizer(NAME);
 	log = Core.log.getLogger(NAME);
@@ -39,93 +35,50 @@ tmp = function() {
 		model.doBlink();
 	};
 
-	// Generic "bubbling" code, bubbles using currently focused item;
-	doBubble = function(cmd, param) {
-		var currentNode, focus;
-		currentNode = model.current;
-		if (currentNode) {
-			focus = kbook.model.container.getWindow().focus;
-			if (focus) {
-				try {
-					focus.bubble(cmd, param);
-				} catch (e) {
-					log.error("in doBubble, command " + cmd, e);
-				}
-			} else {
-				model.doBlink();
-			}
-		}
-	};
-	
-	doBubbleFunc = function() {
-		doBubble(this.bubble);
-	};
-	
-	// Adds "bubblable" actions, if model supports them
-	addBubbleActions = function (actions) {
-		var bubbles, bubble, icons, i, m, n;
-		bubbles = ["doMark",   "doMarkMenu", "doMenu", "doSize",     "doRoot"   ];
-		icons   = ["BOOKMARK", "BOOKMARK",   "BACK",   "TEXT_SCALE", "ROOT_MENU"];
-		for (i = 0, n = bubbles.length; i < n; i ++) {
-			bubble = bubbles[i];
-			if (model[bubble]) {
-				actions.push( {
-					name: "BubbleAction_" + bubble,
-					title: L("ACTION_" + bubble),
-					group: "Book",
-					icon: icons[i],
-					bubble: bubble,
-					action: doBubbleFunc
-				});
-			}
-		}
-		bubbles = undefined;
-	};
-	
-	addOptionalActions = function(actions) {
-		if (Core.config.compat.hasVolumeButtons) {
-			actions.push({
-				name: "NextSong",
-				title: L("ACTION_NEXT_SONG"),
-				group: "Other",
-				icon: "NEXT_SONG",
-				action: function () {
-					model.doGotoNextSong();
-				}
-			});
-			actions.push({
-				name: "PreviousSong",
-				title: L("ACTION_PREVIOUS_SONG"),
-				group: "Other",
-				icon: "PREVIOUS_SONG",
-				action: function () {
-					model.doGotoPreviousSong();
-				}
-			});
-			
-		}
-		// FIXME: implicit "is touchscreen device"
-		if (Core.config.compat.hasJoypadButtons) {
-			actions.push({
-				name: "GotoLink",
-				title: L("ACTION_GOTO_LINK"),
-				group: "Book",
-				icon: "NEXT_PAGE",
-				action: function () {
-					if (isBookEnabled()) {
-						book.doCenter();
-					} else {
-						model.doBlink();
-					}
-				}
-			});
-		}
-	};	
-	
 	StandardActions = {
 		name: NAME,
 		title: L("TITLE"),
 		icon: "SETTINGS",
+		onPreInit: function() {
+			if (Core.config.compat.hasVolumeButtons) {
+				this.actions.push({
+					name: "NextSong",
+					title: L("ACTION_NEXT_SONG"),
+					group: "Other",
+					icon: "NEXT_SONG",
+					action: function () {
+						model.doGotoNextSong();
+					}
+				});
+				this.actions.push({
+					name: "PreviousSong",
+					title: L("ACTION_PREVIOUS_SONG"),
+					group: "Other",
+					icon: "PREVIOUS_SONG",
+					action: function () {
+						model.doGotoPreviousSong();
+					}
+				});
+				
+			}
+			// FIXME: implicit "is touchscreen device"
+			if (Core.config.compat.hasJoypadButtons) {
+				this.actions.push({
+					name: "GotoLink",
+					title: L("ACTION_GOTO_LINK"),
+					group: "Book",
+					icon: "NEXT_PAGE",
+					action: function () {
+						if (isBookEnabled()) {
+							book.doCenter();
+						} else {
+							return true;
+						}
+					}
+				});
+			}
+		},
+		
 		actions: [
 			{
 				name: "Shutdown",
@@ -145,7 +98,7 @@ tmp = function() {
 					if (isBookEnabled()) {
 						book.doNext();
 					} else {
-						model.doBlink();
+						return true;
 					}
 				}
 			},
@@ -158,7 +111,7 @@ tmp = function() {
 					if (isBookEnabled()) {
 						book.doPrevious();
 					} else {
-						model.doBlink();
+						return true;
 					}
 				}
 			},
@@ -171,7 +124,7 @@ tmp = function() {
 					if (isBookEnabled()) {
 						doHistory(-1);
 					} else {
-						model.doBlink();
+						return true;
 					}
 				}
 			},
@@ -184,24 +137,10 @@ tmp = function() {
 					if (isBookEnabled()) {
 						doHistory(1);
 					} else {
-						model.doBlink();
+						return true;
 					}
 				}
 			},
-			{
-				name: "OpenTOC",
-				title: L("ACTION_OPEN_TOC"),
-				group: "Book",
-				icon: "LIST",
-				action: function () {
-					var parent = kbook.model.current.parent;
-					if (isBookEnabled()) {
-						parent.gotoNode(parent.nodes[4],kbook.model);
-					} else {
-						model.doBlink();
-					}
-				}
-			}, 
 			{
 				name: "ContinueReading",
 				title: L("ACTION_CONTINUE_READING"),
@@ -211,25 +150,10 @@ tmp = function() {
 					// Show current book
 					kbook.model.onEnterContinue();
 				}
-			},
-			{
-				name: "doRotate",
-				title: L("ACTION_doRotate"),
-				group: "Other",
-				icon: 23,
-				action: function () {
-					ebook.rotate();
-				}
 			}
 		]
 	};
-	// Optional actions depending on the model  
-	try {
-		addBubbleActions(StandardActions.actions);
-		addOptionalActions(StandardActions.actions);
-	} catch (e) {
-		log.trace("Failed to add optional/bubble actions " + e);
-	}
+
 	Core.addAddon(StandardActions);
 };
 try {

@@ -24,16 +24,6 @@
 //		Solitaire by Ben Chenoweth
 //	2011-08-28 Ben Chenoweth - Moved games into Games node
 //	2011-09-14 kartu - renamed games & utils into games
-//	2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
-//	2011-10-19 Ben Chenoweth - Added ALT icons
-//	2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
-//	2011-10-29 Ben Chenoweth - Added some keyCodes (kMute, kSize and kHome) for key bindings
-//	2011-10-29 Mark Nord - Added keyCodes for holding Volume+, Volume-, Home and Size (needs patched ebookSystem.so)
-//	2011-10-29 Ben Chenoweth - Added Option and Hold Option to key bindings
-//	2011-11-05 kartu - Shifted BF,BH and games to the bottom of "More" list
-//	2011-11-20 quisvir - Added Author List
-//  2011-11-23 Ben Chenoweth - Added TEXT_MEMO
-//  2011-11-24 Ben Chenoweth - Added HANDWRITING_ALT
 
 return {
 	// Menu icon indices 
@@ -52,14 +42,13 @@ return {
 		BOOKMARK: 10,
 		NOTES: 10,
 		LIST: 11,
-		BOOK_HISTORY: 1, // 11
+		BOOK_HISTORY: 11,
 		CLOCK: 12,
 		PAUSE: 13,
 		PLAY: 14,
 		INFO: 15,
 		LOCK: 16,
 		BOOKS: 17,
-		COLLECTION: 17,
 		PICTURES: 18,
 		CROSSED_BOX: 19,
 		DATE: 22,
@@ -71,7 +60,6 @@ return {
 		SHUTDOWN: 31,
 		TEXT_SCALE: 74, // 39
 		SEARCH: 39,
-		TEXT_MEMO: 50,
 		KEYBOARD: 51,
 		ROOT_MENU: 53,
 		INTERNAL_MEM: 54,
@@ -83,7 +71,7 @@ return {
 		STANDBY: 83,
 		GESTURE: 38,
 		NODICTIONARY: 40,
-		STYLUS: 41,
+		ZOOMSCROLL: 41,
 		
 		UNCHECKED: 60,
 		CHECKED: 61,
@@ -108,11 +96,6 @@ return {
 		PREVIOUS: 81,
 		NEXT: 82,
 		
-		BOOK_ALT: 84,
-		PICTURE_ALT: 85,
-		SEARCH_ALT: 86,
-		HANDWRITING_ALT: 87,
-		
 		DEFAULT: 62,
 		
 		// smaller icons shown in home menu bottom
@@ -120,17 +103,11 @@ return {
 		HOME_NOTES: 7, 
 		HOME_BOOK_HISTORY: 8,
 		HOME_COLLECTIONS: 8,
-		HOME_AUTHOR: 8,
 		HOME_FOLDER: 9,
-		HOME_GAME: 10,
-		HOME_DATE: 11,
 		
 		// big icons shonw in home menu
 		LARGE_BOOK_HISTORY: 3,
-		LARGE_AUTHOR: 3,
 		LARGE_FOLDER: 4,
-		LARGE_GAME: 5,
-		LARGE_DATE: 6,		
 		
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {
@@ -141,10 +118,8 @@ return {
 					kind = this.HOME_FOLDER;
 				}
 			} else if (type === "homeLarge") {
+				// if it is undefined, leave it as is
 				kind = this["LARGE_" + strKind];
-				if (typeof kind === "undefined") {
-					kind = this.LARGE_FOLDER;
-				}
 			} else {
 				kind = this[strKind];
 				if (typeof kind === "undefined") {
@@ -158,16 +133,8 @@ return {
 	
 	// PRS+ abstract key code to actual key code, model specific
 	keyCodes: {
-		volume_down: "kVolumeMinus",
-		volume_down_h: "kHold0",
-		volume_up: "kVolumePlus",
-		volume_up_h: "kHold1",
-		home: "kHome",
-		home_h: "kHold2",
-		size: "kSize",
-		size_h: "kHold3",
-		option: "kOption",
-		option_h: "kHold4"
+		volume_down: "kVolumeMinus", 
+		volume_up: "kVolumePlus"
 	},
 	// does device have numeric keys
 	hasNumericButtons: false,
@@ -178,7 +145,7 @@ return {
 	// are there joypad buttons
 	hasJoypadButtons: false,
 	// are there "other" buttons
-	hasOtherButtons: true,
+	hasOtherButtons: false,
 	// Are there SD/MS card slots
 	hasCardSlots: true,
 	
@@ -204,15 +171,14 @@ return {
 		],
 		// Nodes assigned to certain nodes
 		customNodes: [
+			{ name: "BookHistory", parent: "more"},
+			{ name: "BrowseFolders", parent: "more"},
+			{ name: "games", parent: "more" },
 			{ name: "collections", parent: "more" },
 			{ name: "notes", parent: "more"},
 			{ name: "PRSPSettings", parent: "more" },
-			{ name: "BookHistory", parent: "more"},
-			{ name: "BrowseFolders", parent: "more"},
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },
-			{ name: "AuthorList", parent: "more" },
-			{ name: "games", parent: "more" },
 			{ name: "Chess", parent: "games" },
 			{ name: "Draughts", parent: "games" },
 			{ name: "FiveBalls", parent: "games" },	

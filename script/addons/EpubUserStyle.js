@@ -13,22 +13,21 @@
 //	2010-04-28 kravitz - Fixed user .css files path
 //	2010-11-30 kartu - Refactoring Core.stirng => Core.text
 //	2011-02-07 kartu - Added Core.config.userCSSFile support (instead of hardcoded style.css)
-//	2011-11-20 kartu - Added sorting to CSS files
 
 tmp = function() {
-	var L, endsWith, USER_CSS, DISABLED, EpubUserStyle;
 	// Localize
-	L = Core.lang.getLocalizer("EpubUserStyle");
-	endsWith = Core.text.endsWith;
+	var L = Core.lang.getLocalizer("EpubUserStyle");
+
+	var endsWith = Core.text.endsWith;
 
 	// Constants
-	USER_CSS = Core.config.userCSSFile;
+	var USER_CSS = Core.config.userCSSFile;
 	if (USER_CSS === undefined) {
 		USER_CSS = "style.css";
 	}
-	DISABLED = "disabled";
+	var DISABLED = "disabled";
 
-	EpubUserStyle = {
+	var EpubUserStyle = {
 		name: "EpubUserStyle",
 		settingsGroup: "viewer",
 		optionDefs: [
@@ -47,7 +46,6 @@ tmp = function() {
 		* @constructor
 		*/
 		onPreInit : function () {
-			var i, n, od, path, cssFiles;
 			this.root = Core.config.userCSSPath;
 
 			// Init epubCssFile values
@@ -55,17 +53,22 @@ tmp = function() {
 				// epub folder doesn't exist, nothing to do
 				return;
 			}
-			
-			// Load available list of CSS files and use it as option values 
-			cssFiles = Core.io.listFiles(this.root, ".css"); // loads sorted list
-			od = this.optionDefs[0];
-			for (i = 0, n = cssFiles.length; i < n; i++) {
-				path = cssFiles[i];
-				if (path !== USER_CSS) {
-					od.values.push(path);
-					od.valueTitles[path]  = path;
+			var iterator = new FileSystem.Iterator(this.root);
+			try {
+				var item, path;
+				var od = this.optionDefs[0];
+				while (item = iterator.getNext()) {
+					if (item.type == "file") {
+						path = item.path;
+						if (path !== USER_CSS && endsWith(path, ".css")) {
+							od.values.push(path);
+							od.valueTitles[path]  = path;
+						}
+					}
 				}
-			}			
+			} finally {
+				iterator.close();
+			}
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			if (newValue === DISABLED) {

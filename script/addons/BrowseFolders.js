@@ -30,19 +30,12 @@
 //	2011-06-26 kartu - Applied Shura1oplot's changes (".." item, action grouping, more icons)
 //	2011-08-10 Shura1oplot - Added show file size in comment option
 //	2011-09-16 Mark Nord - Added FileType & FileSize to FileName in comment
-//	2011-10-09 kartu - ALL: Fixed #171 "The "Copy to IM..." menu items are not present in Card via Mount, if card scanning is not disabled"
-//	2011-11-13 kartu - ALL: Fixed bug that prevented SD/MS card scan mode from being changed on the fly
-//			x50: Fixed bug that caused SD/MS card scan options to be ignored on the first boot
-//	2011-11-14 kartu - ALL: Fixed #214 MSG_COPYING_BOOK not translated
-//	2011-11-15 Mark Nord - ALL: Fixed Fix #214 there is another one in Line 248
-//	2011-11-20 kartu - Fixed #215 fb2epub converter doesn't work with cards with disabled scanning
 //
-
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
-		compareFields, supportedMIMEs, createLazyInitNode, constructLazyNode, ACTION_ICON,
-		doCopyAndOpen, doCopy, doOpenHere, doGotoParent, browseFoldersNode, ENABLED, DISABLED;
+		compareFields, supportedMIMEs, createArchiveNode, createLazyInitNode, constructLazyNode, ACTION_ICON,
+		doCopyAndOpen, doCopy, doOpenHere, browseFoldersNode, ENABLED, DISABLED;
 	
 	ENABLED = "enabled";
 	DISABLED = "disabled";
@@ -132,10 +125,11 @@ tmp = function() {
 		}
 	};
 	
-	createLazyInitNode = function (path, title, parent, needsMount) {
+	createLazyInitNode = function (path, title, parent) {
 		var node;
-		if (needsMount !== undefined || BrowseFolders.options.cardScan === DISABLED && !Core.text.startsWith(path, "/Data")) {
-			// if SD/MS scan is disabled and we are not in internal memory			
+		if (BrowseFolders.options.cardScan === DISABLED && !Core.text.startsWith(path, "/Data")) {
+			// if SD/MS scan is disabled and we are not in internal memory
+			
 			node = Core.ui.createContainerNode({
 					title: title,
 					icon: "BOOK",
@@ -157,11 +151,9 @@ tmp = function() {
 	
 	createMediaNode = function (path, title, parent, dummy, needsMount) {
 		var node, mime, extension, size, sizeStr;
-		node = needsMount !== undefined ? null : Core.media.createMediaNode(path, parent);
+		node = Core.media.createMediaNode(path, parent);
 		extension = Core.io.extractExtension(path);
-		sizeStr = "";
-		
-		// Size in comment
+		sizeStr="";
 		if (BrowseFolders.options.fileSizeInComment === ENABLED) {
 			size = Core.io.getFileSize(path) / 1024;
 			if (size > 1024) {
@@ -175,11 +167,9 @@ tmp = function() {
 			// Either file that is not a media, or unscanned
 			mime = FileSystem.getMIMEType(path);
 			if (supportedMIMEs[mime]) {
-				node = createLazyInitNode(path, title, parent, needsMount);
+				node = createLazyInitNode(path, title, parent);
 			} else {
-				// or convertable, 
-				// convertable node needs media constructor for converted file
-				node = Core.convert.createMediaNode(path, title, parent, createMediaNode, needsMount);
+				node = Core.convert.createMediaNode(path, title, parent);
 			}
 		} else if (BrowseFolders.options.sortMode === "filenameAsComment") {
 			node._mycomment = function() {
@@ -228,7 +218,7 @@ tmp = function() {
 	
 	doCopy = function () {
 		var fileName, path, needsMount;
-		Core.ui.showMsg(L("MSG_COPYING_BOOK"), 1);
+		Core.ui.showMsg("MSG_COPYING_BOOK", 1);
 		try {
 			// mount, if needed
 			needsMount = this.parent.needsMount;
@@ -247,7 +237,7 @@ tmp = function() {
 				Core.shell.umount(needsMount);
 			}
 		} catch (ignore) {
-			Core.ui.showMsg(L("MSG_ERROR_COPYING_BOOK"));	
+			Core.ui.showMsg("MSG_ERROR_COPYING_BOOK");	
 		}
 	};
 	
@@ -315,11 +305,6 @@ tmp = function() {
 		this.nodes = [copyAndOpenNode, copyNode];		
 	};
 	
-	// goto .. function
-	doGotoParent = function() {
-		this.gotoNode(this.parent.parent, kbook.model);
-	};
-	
 	// Constructs folder node
 	folderConstruct = function() {
 		var path, nodes, iterator, item, factory, node;
@@ -336,7 +321,9 @@ tmp = function() {
 						(path !== "/") && ((path !== "/Data" + BrowseFolders.options.imRoot + "/") ||
 						FileSystem.getFileInfo("b:/") || FileSystem.getFileInfo("a:/"))) {
 					node = createFolderNode(path, "..", this, undefined, this.needsMount);
-					node.enter = doGotoParent;
+					node.enter = function() {
+						this.gotoNode(this.parent.parent, kbook.model);
+					};
 					nodes.push(node);
 				}
 				
@@ -629,7 +616,7 @@ tmp = function() {
 			}
 			
 			// Bootstrap code knows only Core, not this addon
-			if (propertyName === "cardScan") {
+			if (propertyName === "cardScanMode") {
 				Core.config.cardScanMode = newValue;
 			}
 			
