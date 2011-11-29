@@ -5,6 +5,7 @@
 //
 // History:
 //	2011-11-28 quisvir - Initial version
+//	2011-11-29 quisvir - Fixed bug that broke page taps if 'extend' option was disabled
 
 tmp = function() {
 
@@ -123,28 +124,25 @@ tmp = function() {
 	}
 	
 	// Extend tap area for links in books
-	var oldHitLink = Fskin.bookScroller.hitLink;
-	Fskin.bookScroller.hitLink = function (cache) {
-		if (opt.ExtendTapAreas === 'true') {
-			var links, d, j, link, bounds, c, i, r;
-			links = cache.links;
-			if (links) {
-				d = links.length;
-				for (j=0;j<d;j++) {
-					link = links[j];
-					bounds = link.getBounds();
-					c = bounds.length;
-					for (i=0;i<c;i++) {
-						r = bounds[i];
-						if (cache.x > r.left-10 && cache.x < r.right+20 && cache.y > r.top-10 && cache.y < r.bottom+20) {
-							link.cache = cache;
-							return link;
-						}
+	var oldHitLink, newHitLink;
+	oldHitLink = Fskin.bookScroller.hitLink;
+	newHitLink = function (cache) {
+		var links, d, j, link, bounds, c, i, r;
+		links = cache.links;
+		if (links) {
+			d = links.length;
+			for (j=0;j<d;j++) {
+				link = links[j];
+				bounds = link.getBounds();
+				c = bounds.length;
+				for (i=0;i<c;i++) {
+					r = bounds[i];
+					if (cache.x > r.left-10 && cache.x < r.right+20 && cache.y > r.top-10 && cache.y < r.bottom+20) {
+						link.cache = cache;
+						return link;
 					}
 				}
 			}
-		} else {
-			return oldHitLink.apply(this, arguments);
 		}
 	};
 	
@@ -412,8 +410,10 @@ tmp = function() {
 		},
 		onInit: function () {
 			opt = this.options;
+			if (opt.ExtendTapAreas === 'true') Fskin.bookScroller.hitLink = newHitLink;
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+			if (propertyName === 'ExtendTapAreas') Fskin.bookScroller.hitLink = (newValue === 'true') ? newHitLink : oldHitLink;
 		},
 		actions: [{
 			name: 'SwipingToggle',
@@ -423,6 +423,7 @@ tmp = function() {
 			action: function () {
 				opt.DisableAllSwipes = (opt.DisableAllSwipes === 'true') ? 'false' : 'true';
 				Core.ui.showMsg(L('DISABLE_ALL_SWIPES') + ': ' + ((opt.DisableAllSwipes == 'true')?L('VALUE_TRUE'):L('VALUE_FALSE')));
+				Core.settings.saveOptions(TouchSettings);
 			}
 		},
 		{
