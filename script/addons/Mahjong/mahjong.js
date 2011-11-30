@@ -15,6 +15,7 @@
 //  2011-07-06 Ben Chenoweth - Added ability to click on congratulations message to make it disappear.
 //  2011-09-11 Ben Chenoweth - Selection now passes to new tile if tile does not complete a pair; numCurrent now correct at start of game.
 //  2011-11-29 Ben Chenoweth - Fixed bug where I, II, III and IV tiles were not being counted in available moves.
+//  2011-11-30 Ben Chenoweth - Fixed bug where I, II, III and IV tiles were not being counted in available moves (second attempt).
 
 var tmp = function () {
 	var hasNumericButtons = kbook.autoRunRoot.hasNumericButtons;
@@ -296,19 +297,16 @@ var tmp = function () {
 				}
 			}
 		}
-		// look for I, II, III and IV
-		for (var m = 0; m < 4; m++) {
-			for (var n = m+1; n < 4; n++) {
-				if ((such[m] == 'F') && (such[n] == 'F')) {
-					such[m]=='G';
-					such[n]=='G';
-					aeh += 1;
-				}
-			}
-		}
 		for (var m = 0; m < such.length; m++) {
 			if (such[m] == 'F') aeh -= 1;
 		}
+		// look for I, II, III and IV
+		var wilds = 0;
+		for (var m = 0; m < 4; m++) {
+			if (such[m] == 'F') wilds++;
+		}
+		if  ((wilds==2) || (wilds==3)) aeh += 1;
+		if (wilds==4) aeh += 2;
 		this.currentNum.setValue('Rest ' + this.restL + '/' + aeh);
 		//this.bubble("tracelog","this.restL="+this.restL);
 		// check for win
