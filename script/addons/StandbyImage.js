@@ -12,6 +12,7 @@
 //	2011-11-26 quisvir - separate standby/shutdown text
 //	2011-11-27 quisvir - made customtext code more flexible, added scaling option
 //  2011-11-28 Ben Chenoweth - Added event overlay option (on standby and/or shutdown)
+//	2011-12-01 quisvir - Fixed issue #238 "505: does not display custom Standby text"
 //
 //	TODO: set/restore portrait orientation on shutdown
 
@@ -182,7 +183,7 @@ tmp = function() {
 		
 		//Model sniffing: 300/505
 		//win.width / win.height isn't update after ebook.rotate!? giving w:800 h:600 
-		if (!standbyImage.color) {
+		if (!standbyImage.color && mode !== 'act_page') {
 			w = 600; 
 			h = 800; 
 		} else {
@@ -272,6 +273,7 @@ tmp = function() {
 			
 			// Display custom standby/shutdown text from customtext.cfg
 			if ((shutdown && opt.DisplayShutdownText === 'true') || (!shutdown && opt.DisplayStandbyText === 'true')) {
+				win.setPenColor(Color.black);
 				win.fillRectangle(0, h-30, w, 30);
 				win.setPenColor(Color.white);
 				win.setTextStyle(1);
