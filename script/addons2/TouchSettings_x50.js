@@ -6,6 +6,7 @@
 // History:
 //	2011-11-28 quisvir - Initial version
 //	2011-11-29 quisvir - Fixed bug that broke page taps if 'extend' option was disabled
+//	2011-12-01 quisvir - Adjusted extended tap areas
 
 tmp = function() {
 
@@ -137,7 +138,7 @@ tmp = function() {
 				c = bounds.length;
 				for (i=0;i<c;i++) {
 					r = bounds[i];
-					if (cache.x > r.left-10 && cache.x < r.right+20 && cache.y > r.top-10 && cache.y < r.bottom+20) {
+					if (cache.x > r.left-15 && cache.x < r.right+15 && cache.y > r.top-15 && cache.y < r.bottom+15) {
 						link.cache = cache;
 						return link;
 					}
