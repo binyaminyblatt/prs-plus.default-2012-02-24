@@ -13,6 +13,7 @@
 //	2011-02-27 kartu - Fixed #69 PRS+ About information missing
 //	2011-11-04 kartu - Added Dutch & Turkish translation credits
 //	2011-11-25 Mark Nord - Added Available Space Info for 300/505/600
+//	2011-12-02 Mark Nord - Fix to show Available Space also with English-locales
 
 try {
 	// dummy function, to avoid introducing global vars
@@ -42,6 +43,7 @@ try {
 			"     Turkish: Ugur Bulgan, Abdullah Demirci \n" +
 			"     Ukrainian: Bookoman\n" +
 			"© GNU Lesser General Public License. \n";
+
 			
 		initAbout = function() {
 			var about, data, records, record, record1, record2, prspFirmwareVersion, oldAboutGetValue;
@@ -53,7 +55,7 @@ try {
 			record1 = data.getRecord(1);
 			record = new Fskin.TableRecord(data, record1);
 			prspFirmwareVersion = Core.io.getFileContent(System.applyEnvironment("[prspVersionFile]"), "n/a");
-			record.sandbox.text = "PRS+ " + prspFirmwareVersion + "\n" + aboutText;
+			record.sandbox.text = "PRS+ " + prspFirmwareVersion + "\n" + aboutText + "#SPACE#\n\n\n";
 			record.sandbox.kind = 4;
 			records.splice(0, 0, record);
 			about.dataChanged();
@@ -124,8 +126,8 @@ try {
 					if (strageSDCapacity > 0) {
 						text += L('SD_CARD') + ': ' + convUnitOfStrage(strageSDFree) + ' ' + L2('OF') + ' ' + 
 						convUnitOfStrage(strageSDCapacity);
-					}	
-					result += text;
+					}
+					result = result.substring(0, result.lastIndexOf("#SPACE#")) + text;
 					return result;
 				}
 				} catch (ignore) {} 
