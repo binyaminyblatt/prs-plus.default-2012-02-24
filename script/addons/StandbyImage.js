@@ -13,15 +13,17 @@
 //	2011-11-27 quisvir - made customtext code more flexible, added scaling option
 //  2011-11-28 Ben Chenoweth - Added event overlay option (on standby and/or shutdown)
 //	2011-12-01 quisvir - Fixed issue #238 "505: does not display custom Standby text"
+//	2011-12-03 quisvir - Added Auto Standby/Shutdown Time options
 //
 //	TODO: set/restore portrait orientation on shutdown
 
 
 tmp = function() {
-	var L, log, orgOrientation, shutdown, oldStandbyImageDraw, getBookCover;
+	var L, LX, log, orgOrientation, shutdown, oldStandbyImageDraw, getBookCover;
 	
 	// Localize
 	L = Core.lang.getLocalizer("StandbyImage");
+	LX = Core.lang.LX;
 	log = Core.log.getLogger("StandbyImage");
 	
 	// Constants
@@ -159,21 +161,8 @@ tmp = function() {
 		} catch (ignore) {}
 		return null;
 	};
-	
-	// Assign correct functions for each model
-	switch (Core.config.model) {
-		case "350":
-		case "650":
-		case "950":
-			oldStandbyImageDraw = standbyImage.draw;
-		case "600":
-			getBookCover = getBookCoverNew;
-			break;
-		default:
-			standbyImage = {};
-			getBookCover = getBookCoverOld;
-	}
-	
+		
+	if (!standbyImage) standbyImage = {};
 	standbyImage.draw = function () {
 	
 		var opt, mode, win, w, h, path, bitmap, bounds, ratio, width, height, x, y, oldPencolor, oldTextStyle, oldTextSize, oldTextAlignmentX, oldTextAlignmentY, icon, iconX, file, content, lines, match, i, eventsonly, customText;
@@ -446,6 +435,7 @@ tmp = function() {
 			},
 		],
 		onPreInit: function () {
+			// For pre-x50 models, change system standby option to random wallpaper
 			switch (Core.config.model) {
 				case "505":
 				case "300":
@@ -454,7 +444,85 @@ tmp = function() {
 					this.optionDefs[0].optionDefs[0].defaultValue = "white";
 					this.optionDefs[1].optionDefs[0].values = ["random", "white", "black", "cover", "calendar"];
 			}
+			
+			// Assign correct functions for each model, add auto standby/shutdown time for 600+
+			switch (Core.config.model) {
+				case "350":
+				case "650":
+				case "950":
+					oldStandbyImageDraw = standbyImage.draw;
+				case "600":
+					getBookCover = getBookCoverNew;
+					this.optionDefs.push(
+						{
+							name: "AutoStandbyTime",
+							title: L("AUTO_STANDBY_TIME"),
+							icon: "CLOCK",
+							defaultValue: "default",
+							values: ["default", "1", "2", "3", "5", "10", "15", "20", "30", "45", "60", "120"],
+							valueTitles: {
+								"default": L("VALUE_DEFAULT"),
+								"1": LX("MINUTES", 1),
+								"2": LX("MINUTES", 2),
+								"3": LX("MINUTES", 3),
+								"5": LX("MINUTES", 5),
+								"10": LX("MINUTES", 10),
+								"15": LX("MINUTES", 15),
+								"20": LX("MINUTES", 20),
+								"30": LX("MINUTES", 30),
+								"45": LX("MINUTES", 45),
+								"60": LX("MINUTES", 60),
+								"120": LX("MINUTES", 120),
+							}
+						},
+						{
+							name: "AutoShutdownTime",
+							title: L("AUTO_SHUTDOWN_TIME"),
+							icon: "CLOCK",
+							defaultValue: "default",
+							values: ["default", "1", "3", "6", "12", "24", "48", "72", "96", "120", "144", "168"],
+							valueTitles: {
+								"default": L("VALUE_DEFAULT"),
+								"1": LX("HOURS", 1),
+								"3": LX("HOURS", 3),
+								"6": LX("HOURS", 6),
+								"12": LX("HOURS", 12),
+								"24": LX("HOURS", 24),
+								"48": LX("HOURS", 48),
+								"72": LX("HOURS", 72),
+								"96": LX("HOURS", 96),
+								"120": LX("HOURS", 120),
+								"144": LX("HOURS", 144),
+								"168": LX("HOURS", 168),
+							}
+						}
+					);
+					break;
+				default:
+					getBookCover = getBookCoverOld;
+			}
 		},
+		onInit: function () {
+			if (this.options.AutoStandbyTime) {
+				if (this.options.AutoStandbyTime !== 'default') ebook.device.rtc.autoStandby._initialize(Number(this.options.AutoStandbyTime) * 60);
+				if (this.options.AutoShutdownTime !== 'default') ebook.device.rtc.autoShutdown._initialize(Number(this.options.AutoShutdownTime) * 3600, ebook.device.rtc.autoShutdown.lowCaseTime);
+			}
+		},
+		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+			if (propertyName === 'AutoStandbyTime') {
+				if (newValue === 'default') {
+					ebook.device.rtc.autoStandby._initialize(ebook.device.rtc.autoStandby.time);
+				} else {
+					ebook.device.rtc.autoStandby._initialize(Number(newValue) * 60);
+				}
+			} else if (propertyName === 'AutoShutdownTime') {
+				if (newValue === 'default') {
+					ebook.device.rtc.autoShutdown._initialize(ebook.device.rtc.autoShutdown.time, ebook.device.rtc.autoShutdown.lowCaseTime);
+				} else {
+					ebook.device.rtc.autoShutdown._initialize(Number(newValue) * 3600, ebook.device.rtc.autoShutdown.lowCaseTime);
+				}
+			}
+		}
 	}
 
 	Core.addAddon(StandbyImage);
