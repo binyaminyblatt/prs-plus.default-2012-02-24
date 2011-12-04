@@ -27,17 +27,16 @@
 //	2011-10-04 quisvir - Add option to treat periodicals as books
 //	2011-11-20 quisvir - Added sub-collection support (max 1 sub-level, using | as separator)
 //	2011-11-25 quisvir - Added booklist option 'Select Collection' & action
+//	2011-12-04 quisvir - Split cycle booklist action into cycle forward & backward actions
 
 tmp = function() {
 
-	var L, LX, log, opt, bookChanged, booklistTrigger, doSelectCollection, selectCollectionConstruct, selectCollectionDestruct, tempCollectionNode, oldParentNode;
+	var L, LX, log, opt, bookChanged, booklistTrigger1, booklistTrigger2, doSelectCollection, selectCollectionConstruct, selectCollectionDestruct, tempCollectionNode, oldParentNode;
 	
 	L = Core.lang.getLocalizer('BookManagement');
 	LX = Core.lang.LX;
 	log = Core.log.getLogger('BookManagement');
 	
-	bookChanged = false;
-	booklistTrigger = false;
 	
 	// Treat Periodicals as Books
 	var oldBooksFilter = kbook.root.children.deviceRoot.children.books.filter;
@@ -318,7 +317,7 @@ tmp = function() {
 						if (opt.CurrentCollection) {
 							for (i=0;i<colls&&result2.getRecord(i).title!=opt.CurrentCollection;i++);
 							if (i==colls) i=0;
-							else if (booklistTrigger) i++;
+							else if (booklistTrigger1) i++;
 						}
 						while (i<colls) {
 							coll = result2.getRecord(i);
@@ -381,14 +380,18 @@ tmp = function() {
 					}
 				break;
 			}
-			if (booklistTrigger) {
-				if (!nodes.length) {
+			if (!nodes.length) {
+				if (booklistTrigger1) {
 					if (opt.HomeMenuBooklist == 5) opt.HomeMenuBooklist = 0;
 					else opt.HomeMenuBooklist++;
 					continue;
+				} else if (booklistTrigger2) {
+					if (opt.HomeMenuBooklist == 0) opt.HomeMenuBooklist = 5;
+					else opt.HomeMenuBooklist--;
+					continue;
 				}
-				booklistTrigger = false;
 			}
+			booklistTrigger1 = booklistTrigger2 = false;
 			break;
 		}
 	};
@@ -448,12 +451,12 @@ tmp = function() {
 			opt.HomeMenuBooklist = parseInt(opt.HomeMenuBooklist);
 		},
 		actions: [{
-			name: 'CycleHomeMenuBooklist',
-			title: L('CYCLE_HOME_MENU_BOOKLIST'),
+			name: 'BookListCycleForward',
+			title: L('BOOKLIST_CYCLE_FORWARD'),
 			group: 'Other',
 			icon: 'BOOKS',
 			action: function () {
-				booklistTrigger = true;
+				booklistTrigger1 = true;
 				if (opt.HomeMenuBooklist == 5) opt.HomeMenuBooklist = 0;
 				else if (opt.HomeMenuBooklist != 3) {
 					opt.HomeMenuBooklist++;
@@ -468,8 +471,28 @@ tmp = function() {
 			}
 		},
 		{
-			name: 'SelectCollection',
-			title: L('SELECT_COLLECTION'),
+			name: 'BookListCycleBackward',
+			title: L('BOOKLIST_CYCLE_BACKWARD'),
+			group: 'Other',
+			icon: 'BOOKS',
+			action: function () {
+				booklistTrigger2 = true;
+				if (opt.HomeMenuBooklist == 0) opt.HomeMenuBooklist = 5;
+				else {
+					opt.HomeMenuBooklist--;
+					opt.CurrentCollection = '';
+				}
+				if (kbook.model.currentNode.title == 'deviceRoot') {
+					kbook.root.nodes[0].nodes[6].update(kbook.model);
+					kbook.menuHomeThumbnailBookData.setNode(kbook.root.nodes[0].nodes[6]);
+				}
+				else bookChanged = true;
+				Core.settings.saveOptions(BookManagement_x50); // FIXME radio button in PRS+ settings isn't updated
+			}
+		},
+		{
+			name: 'BookListSelectCollection',
+			title: L('BOOKLIST_SELECT_COLLECTION'),
 			group: 'Other',
 			icon: 'BOOKS',
 			action: function () {
