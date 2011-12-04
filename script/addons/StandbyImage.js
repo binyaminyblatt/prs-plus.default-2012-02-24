@@ -14,6 +14,7 @@
 //  2011-11-28 Ben Chenoweth - Added event overlay option (on standby and/or shutdown)
 //	2011-12-01 quisvir - Fixed issue #238 "505: does not display custom Standby text"
 //	2011-12-03 quisvir - Added Auto Standby/Shutdown Time options
+//	2011-12-04 quisvir - Fixed regression that broke fallback to system standby function
 //
 //	TODO: set/restore portrait orientation on shutdown
 
@@ -161,8 +162,21 @@ tmp = function() {
 		} catch (ignore) {}
 		return null;
 	};
-		
-	if (!standbyImage) standbyImage = {};
+	
+	// Assign correct functions for each model
+	switch (Core.config.model) {
+		case "350":
+		case "650":
+		case "950":
+			oldStandbyImageDraw = standbyImage.draw;
+		case "600":
+			getBookCover = getBookCoverNew;
+			break;
+		default:
+			standbyImage = {};
+			getBookCover = getBookCoverOld;
+	}
+	
 	standbyImage.draw = function () {
 	
 		var opt, mode, win, w, h, path, bitmap, bounds, ratio, width, height, x, y, oldPencolor, oldTextStyle, oldTextSize, oldTextAlignmentX, oldTextAlignmentY, icon, iconX, file, content, lines, match, i, eventsonly, customText;
@@ -445,14 +459,12 @@ tmp = function() {
 					this.optionDefs[1].optionDefs[0].values = ["random", "white", "black", "cover", "calendar"];
 			}
 			
-			// Assign correct functions for each model, add auto standby/shutdown time for 600+
+			// Add auto standby/shutdown time for 600+
 			switch (Core.config.model) {
 				case "350":
 				case "650":
 				case "950":
-					oldStandbyImageDraw = standbyImage.draw;
 				case "600":
-					getBookCover = getBookCoverNew;
 					this.optionDefs.push(
 						{
 							name: "AutoStandbyTime",
@@ -497,9 +509,6 @@ tmp = function() {
 							}
 						}
 					);
-					break;
-				default:
-					getBookCover = getBookCoverOld;
 			}
 		},
 		onInit: function () {
