@@ -115,6 +115,7 @@ tmp = function() {
 			var futureevents = [];
 			var altTodaysDay = todaysDay+1;
 			if (altTodaysDay==8) altTodaysDay=1;
+			var linelimit = 7;
 	
 			if (!eventsonly) {
 				// window is already blank, so start with the top bar
@@ -229,12 +230,22 @@ tmp = function() {
 					if ((events[j][2] == todaysDate) && (events[j][1] == todaysMonth) && (events[j][3] <= todaysYear)) {
 						todayevents.push(events[j][5]);
 					}
+					// add next month's events or events coming up in this month to future events
+					if ((events[j][3] <= todaysYear) && ((todaysMonth == events[j][1] - 1) || ((todaysMonth == events[j][1]) && (todaysDate < events[j][2])))) {
+						futureevents.push(["", events[j][1], events[j][2], todaysYear, events[j][4], events[j][5]]);
+					} else if ((events[j][3] <= todaysYear+1) && (todaysMonth == 12) && (events[j][1] == 1)) {
+						futureevents.push(["", events[j][1], events[j][2], todaysYear+1, events[j][4], events[j][5]]);
+					}
 				}
 				if (events[j][0] == "F") {
 					if ((events[j][1] == 3) && (events[j][2] == 0) && (events[j][3] == 0) ) {
 						if (easterday == todaysDate && eastermonth == todaysMonth) {
 							todayevents.push(events[j][5]);
-						} 
+						}
+						// add easter event to future events if easter is next month or coming up in this month 
+						if ((todaysMonth < eastermonth) || ((todaysMonth == eastermonth) && (todaysDate < easterday))) {
+							futureevents.push(["", eastermonth, easterday, todaysYear, events[j][4], events[j][5]]);
+						}
 					} else {
 						var floater = Calendar.floatingholiday(year,events[j][1],events[j][2],events[j][3]);
 						if ((todaysMonth == 5) && (events[j][1] == 5) && (events[j][2] == 4) && (events[j][3] == 2)) {
@@ -246,16 +257,36 @@ tmp = function() {
 						} else if ((events[j][1] == todaysMonth) && (floater == todaysDate)) {
 							todayevents.push(events[j][5]);
 						}
+						// add next month's events or events coming up in this month to future events
+						if ((events[j][3] <= todaysYear) && ((todaysMonth == events[j][1] - 1) || ((todaysMonth == events[j][1]) && (todaysDate < floater)))) {
+							futureevents.push(["", events[j][1], floater, todaysYear, events[j][4], events[j][5]]);
+						} else if ((events[j][3] <= todaysYear+1) && (todaysMonth == 12) && (events[j][1] == 1)) {
+							futureevents.push(["", events[j][1], floater, todaysYear+1, events[j][4], events[j][5]]);
+						}
 					}
 				}
 				if (events[j][0] == "") {
 					if ((events[j][2] == todaysDate) && (events[j][1] == todaysMonth) && (events[j][3] == todaysYear)) {
 						todayevents.push(events[j][5]);
 					}
+					// add next month's events or events coming up in this month to future events
+					if ((events[j][3] == todaysYear) && ((todaysMonth == events[j][1] - 1) || ((todaysMonth == events[j][1]) && (todaysDate < events[j][2])))) {
+						futureevents.push(["", events[j][1], events[j][2], todaysYear, events[j][4], events[j][5]]);
+					} else if ((events[j][3] == todaysYear+1) && (todaysMonth == 12) && (events[j][1] == 1)) {
+						futureevents.push(["", events[j][1], events[j][2], todaysYear+1, events[j][4], events[j][5]]);
+					}
 				}
 				if (events[j][0] == "M") {
 					if ((events[j][2] == todaysDate) && (events[j][3] <= todaysYear)) {
 						todayevents.push(events[j][5]);
+					}
+					// add next month's events or events coming up in this month to future events
+					if ((events[j][3] <= todaysYear) && (todaysDate < events[j][2])) {
+						futureevents.push(["", todaysMonth, events[j][2], todaysYear, events[j][4], events[j][5]]);
+					} else if ((events[j][3] <= todaysYear) && (todaysDate > events[j][2]) && (todaysMonth < 12)) {
+						futureevents.push(["", todaysMonth+1, events[j][2], todaysYear, events[j][4], events[j][5]]);
+					} else if ((events[j][3] <= todaysYear+1) && (todaysMonth == 12)) {
+						futureevents.push(["", 1, events[j][2], todaysYear+1, events[j][4], events[j][5]]);
 					}
 				}
 				if (events[j][0] == "W") {
@@ -263,10 +294,12 @@ tmp = function() {
 						if (events[j][3] == todaysDay) {
 							todayevents.push(events[j][5]);
 						}
+						// TODO: Add weekly events to future events
 					} else {
 						if (events[j][3] == altTodaysDay) {
 							todayevents.push(events[j][5]);
 						}
+						// TODO: Add weekly events to future events
 					}		
 				}
 			}
@@ -331,27 +364,57 @@ tmp = function() {
 				}
 			}
 			
-			if ((!eventsonly) || (todayevents.length>0)) {
+			if ((!eventsonly) || (todayevents.length>0) || (futureevents.length>0)) {
 				// output today's events
+				win.setPenColor(Color.black);
 				win.fillRectangle(47, 579, w-101, h-608);
 				win.setPenColor(Color.white);
 				win.fillRectangle(48, 580, w-103, h-610);
 				win.setPenColor(Color.black);
-				win.setTextStyle(1);
-				win.setTextSize(24);
-				win.setTextAlignment(0, 0);
-				win.drawText(L("TODAYS_EVENTS"), 50, 582, w-107, 24);
-				win.setTextStyle(0);
 				win.setTextSize(20);
-				win.setTextAlignment(1, 0);
-				for (var i=0; i<todayevents.length; i++) {
-					if (i==8) break; // only room for 8 lines (this is a guess and may be changed!)
-					win.drawText(todayevents[i], 50, (i-1)*22+630, w-107, 22);
+				var i = 0;
+				if (todayevents.length>0) {
+					win.setTextStyle(1);
+					win.setTextAlignment(0, 0);
+					win.drawText(L("TODAYS_EVENTS"), 50, 582, w-107, 24);
+					win.setTextStyle(0);
+					win.setTextAlignment(1, 0);
+					for (i=0; i<todayevents.length; i++) {
+						if (i==linelimit) break; // only room for a limited number of lines
+						win.drawText(todayevents[i], 50, (i-1)*22+630, w-107, 22);
+					}
+				}
+				if (futureevents.length>0) {
+					// sort events
+					futureevents.sort(Calendar.sortDay);
+					futureevents.sort(Calendar.sortMonth);
+					futureevents.sort(Calendar.sortYear);
+				
+					// output future events
+					win.setTextStyle(1);
+					win.setTextAlignment(0, 0);
+					if (i==0) {
+						win.drawText(L("FUTURE_EVENTS"), 50, 582, w-107, 24);
+					} else {
+						win.drawText(L("FUTURE_EVENTS"), 50, (i-1)*22+630, w-107, 24);
+						linelimit--;
+					}
+					win.setTextStyle(0);
+					win.setTextAlignment(1, 0);
+					for (var j=i; (j-i)<futureevents.length; j++) {
+						if (j==linelimit) break; // only room for a limited number of lines
+						var datestring;
+						//datestring = futureevents[j-i][3]+"/"+Calendar.pad(futureevents[j-i][1],2)+"/"+Calendar.pad(futureevents[j-i][2],2); // YYYY/MM/DD
+						//datestring = Calendar.pad(futureevents[j-i][1],2)+"/"+Calendar.pad(futureevents[j-i][2],2)+"/"+futureevents[j-i][3]; // MM/DD/YYYY
+						datestring = Calendar.pad(futureevents[j-i][2],2)+"/"+Calendar.pad(futureevents[j-i][1],2)+"/"+futureevents[j-i][3]; // DD/MM/YYYY
+						if (i==0) {
+							win.drawText(datestring+" - "+futureevents[j-i][5], 50, (j-1)*22+630, w-107, 22);
+						} else {
+							win.drawText(datestring+" - "+futureevents[j-i][5], 50, (j-0)*22+630, w-107, 22);
+						}
+					}
 				}
 			}
-			
-			// TODO: output future events
-			
 		},
 		easter: function (year) {
 			var a = year % 19;
@@ -444,6 +507,25 @@ tmp = function() {
 				}
 			}
 			return 3;
+		},
+		pad: function (number, length) {
+			var str = '' + number;
+			while (str.length < length) {
+				str = '0' + str;
+			}
+			return str;
+		},
+		sortDay: function (a,b) {
+			// sorts the event array using the day    
+			return ((a[2] < b[2]) ? -1 : ((a[2] > b[2]) ? 1 : 0));
+		},
+		sortMonth: function (a,b) {
+			// sorts the event array using the month    
+			return ((a[1] < b[1]) ? -1 : ((a[1] > b[1]) ? 1 : 0));
+		},
+		sortYear: function (a,b) {
+			// sorts the event array using the year    
+			return ((a[3] < b[3]) ? -1 : ((a[3] > b[3]) ? 1 : 0));
 		}
 	};
 	
