@@ -28,15 +28,17 @@
 //	2011-11-20 quisvir - Added sub-collection support (max 1 sub-level, using | as separator)
 //	2011-11-25 quisvir - Added booklist option 'Select Collection' & action
 //	2011-12-04 quisvir - Split cycle booklist action into cycle forward & backward actions
+//  2011-12-04 Ben Chenoweth - Added "Next/Previous Books In History" actions
 
 tmp = function() {
 
-	var L, LX, log, opt, bookChanged, booklistTrigger1, booklistTrigger2, doSelectCollection, selectCollectionConstruct, selectCollectionDestruct, tempCollectionNode, oldParentNode;
+	var L, LX, log, opt, bookChanged, booklistTrigger1, booklistTrigger2, doSelectCollection, selectCollectionConstruct, selectCollectionDestruct, tempCollectionNode, oldParentNode, numCurrentBook;
 	
 	L = Core.lang.getLocalizer('BookManagement');
 	LX = Core.lang.LX;
 	log = Core.log.getLogger('BookManagement');
 	
+	numCurrentBook = 0;
 	
 	// Treat Periodicals as Books
 	var oldBooksFilter = kbook.root.children.deviceRoot.children.books.filter;
@@ -276,7 +278,7 @@ tmp = function() {
 					var i, j, history=[], record;
 					history = Core.addonByName.BookHistory.getBookList();
 					j = (current) ? 1 : 0;
-					for (i=0;nodes.length<3&&i+j<history.length;i++) {
+					for (i=numCurrentBook;nodes.length<3&&i+j<history.length;i++) {
 						record = Core.media.findMedia(history[i+j]);
 						if (record) {
 							if (record.periodicalName && opt.PeriodicalsAsBooks == 'false') continue;
@@ -498,6 +500,49 @@ tmp = function() {
 			action: function () {
 				doSelectCollection();
 			}
+		},
+		{
+			name: 'NextBooksInHistory',
+			title: L('NEXT_BOOKS_IN_HISTORY'),
+			group: 'Other',
+			icon: 'NEXT',
+			action: function () {
+				var j, history=[];
+				if (opt.HomeMenuBooklist == 1) {
+					if (kbook.model.currentNode.title == 'deviceRoot') {
+						history = Core.addonByName.BookHistory.getBookList();
+						numCurrentBook += 3;
+						j = (kbook.model.currentBook) ? 1 : 0;
+						if (numCurrentBook >= history.length-j) {
+							numCurrentBook -= 3;
+						} else {
+							kbook.root.nodes[0].nodes[6].update(kbook.model);
+							kbook.menuHomeThumbnailBookData.setNode(kbook.root.nodes[0].nodes[6]);
+						}
+					}
+				}
+			}
+		},
+		{
+			name: 'PreviousBooksInHistory',
+			title: L('PREVIOUS_BOOKS_IN_HISTORY'),
+			group: 'Other',
+			icon: 'PREVIOUS',
+			action: function () {
+				var history=[];
+				if (opt.HomeMenuBooklist == 1) {
+					if (kbook.model.currentNode.title == 'deviceRoot') {
+						history = Core.addonByName.BookHistory.getBookList();
+						numCurrentBook -= 3;
+						if (numCurrentBook < 0) {
+							numCurrentBook = 0;
+						} else {
+							kbook.root.nodes[0].nodes[6].update(kbook.model);
+							kbook.menuHomeThumbnailBookData.setNode(kbook.root.nodes[0].nodes[6]);
+						}
+					}
+				}
+			}
 		}],
 		optionDefs: [
 			{
@@ -687,7 +732,8 @@ tmp = function() {
 				opt.CurrentCollection = '';
 			}
 			if (propertyName == 'HomeMenuBooklist' && newValue == 5) doSelectCollection();
-		},
+			numCurrentBook = 0;
+		}
 	};
 
 	Core.addAddon(BookManagement_x50);
