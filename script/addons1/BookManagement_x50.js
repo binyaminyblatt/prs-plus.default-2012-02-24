@@ -29,6 +29,7 @@
 //	2011-11-25 quisvir - Added booklist option 'Select Collection' & action
 //	2011-12-04 quisvir - Split cycle booklist action into cycle forward & backward actions
 //  2011-12-04 Ben Chenoweth - Added "Next/Previous Books In History" actions
+//  2011-12-05 Ben Chenoweth - Reset "Last Opened Books" when new book selected
 
 tmp = function() {
 
@@ -218,6 +219,7 @@ tmp = function() {
 	kbook.model.onEnterDeviceRoot = function () {
 		oldOnEnterDeviceRoot.apply(this, arguments);
 		if (opt.HomeMenuBooklist && bookChanged) {
+			numCurrentBook = 0; // reset "last opened books" so that most recently opened books are displayed
 			kbook.root.nodes[0].nodes[6].update(kbook.model);
 			bookChanged = false;
 		}
