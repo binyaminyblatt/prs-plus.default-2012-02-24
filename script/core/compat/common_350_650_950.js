@@ -34,6 +34,7 @@
 //	2011-11-17 kartu - Removed debug statement
 //	2011-11-21 quisvir - Moved Standby Image code to addon
 //	2011-12-05 quisvir - Fixed node comments if node.comment is undefined
+//	2012-12-05 quisvir - Added tapAndHoldAction to available actions
 
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -711,6 +712,13 @@ tmp = function () {
 	};
 
 	patchStringCompare();
+	
+	// Add tapAndHoldAction to available actions
+	var oldGestureBaseInit = BookUtil.gestureBase.initialize;
+	BookUtil.gestureBase.initialize = function (root, container) {
+		this.actions.push(BookUtil.tapAndHoldAction);
+		oldGestureBaseInit.apply(this, arguments);
+	};
 };
 
 try {
