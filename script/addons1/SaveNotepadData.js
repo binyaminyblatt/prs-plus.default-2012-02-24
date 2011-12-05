@@ -11,6 +11,7 @@
 //  2011-11-27 Ben Chenoweth - Added saving Bookmark Comments and Scribbles
 //  2011-11-28 Ben Chenoweth - Minor code cleaning
 //  2011-11-29 Ben Chenoweth - All Bookmark Comments from one book are now saved in one TXT file
+//  2011-12-05 Ben Chenoweth - Added confirmation option
 
 tmp = function() {
 	var L, log, oldNotepadDataSave, oldNotepadFreehandDataSave;
@@ -42,7 +43,11 @@ tmp = function() {
 			}
 			stream.writeLine("</svg>");
 			stream.close();
-		} catch(e) { log.error("Save as SVG failed!"); }
+			return path;
+		} catch(e) {
+			log.error("Save as SVG failed!");
+			return false;
+		}
 	}
 	
 	var saveHandwritingJPG = function (name, svg, width, height) {
@@ -63,13 +68,17 @@ tmp = function() {
 				// Update nodes so that new image is visible
 				kbook.root.update();
 			} catch (ignore) { }
-		} catch (e) { log.error("Save as JPG failed!"); }
+			return path;
+		} catch (e) {
+			log.error("Save as JPG failed!");
+			return false;
+		}
 	}
 	
 	// Save NOTES and HANDWRITINGS
 	var oldNotepadDataSave = kbook.notepadData.save;
 	kbook.notepadData.save = function () {
-		var folder, media, name, path, width, height, stream, chr34, tab, svg, count, x, points, maker, bitmap, stream;
+		var folder, media, name, path, msg1, msg2, width, height, stream, chr34, tab, svg, count, x, points, maker, bitmap, stream;
 		try {
 			media = this.media;
 			if (media) {				
@@ -79,8 +88,20 @@ tmp = function() {
 						FileSystem.ensureDirectory(folder);
 						name = media.path.substring(media.path.lastIndexOf('/') + 1);
 						path = folder + name + ".txt";
+						folder = SaveNotepadData.options.saveTo;
 						Core.io.setFileContent(path, media.note.text);
-					} catch (e) { log.error("Save as TXT failed!"); }
+					} catch (ee) {
+						msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+						msg2 = L("FAILED_TO_SAVE");
+						log.error("Save as TXT failed!");
+					}
+					if (SaveNotepadData.options.showSaveProgress === "on") {
+						if (msg1 === undefined) {
+							msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
+							msg2 = path;
+						}
+						Core.ui.showMsg([msg1, msg2]);
+					}
 				}
 				if (media.type === 'drawing') {
 					try {
@@ -89,10 +110,32 @@ tmp = function() {
 						width = parseInt(media.note.drawing.width);
 						height = parseInt(media.note.drawing.height);
 						if (SaveNotepadData.options.saveHandwritingSVG === 'on') {
-							saveHandwritingSVG(name, svg, width, height);
+							path = saveHandwritingSVG(name, svg, width, height);
+							if (SaveNotepadData.options.showSaveProgress === "on") {
+								folder = SaveNotepadData.options.saveTo;
+								if (path) {
+									msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
+									msg2 = path;
+								} else {
+									msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+									msg2 = L("FAILED_TO_SAVE");
+								}
+								Core.ui.showMsg([msg1, msg2]);
+							}
 						}
 						if (SaveNotepadData.options.saveHandwritingJPG === 'on') {
-							saveHandwritingJPG(name, svg, width, height);
+							path = saveHandwritingJPG(name, svg, width, height);
+							if (SaveNotepadData.options.showSaveProgress === "on") {
+								folder = SaveNotepadData.options.saveTo;
+								if (path) {
+									msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
+									msg2 = path;
+								} else {
+									msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+									msg2 = L("FAILED_TO_SAVE");
+								}
+								Core.ui.showMsg([msg1, msg2]);
+							}
 						}
 					} catch (e) { }
 				}
@@ -139,18 +182,39 @@ tmp = function() {
 									stream.writeLine(str);
 									stream.close();
 								} catch(e) {
-									// fallback
+									try {
+										// fallback
+										name = Date.now();
+										path = folder + name + ".txt";
+										str = this.VAR_KEYBUF;
+										Core.io.setFileContent(path, str);
+									} catch(ee) {
+										msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+										msg2 = L("FAILED_TO_SAVE");
+									}
+								}
+							} else {
+								try {
+									// I don't think this is possible, but you never know!
 									name = Date.now();
 									path = folder + name + ".txt";
 									str = this.VAR_KEYBUF;
 									Core.io.setFileContent(path, str);
+								} catch (ee) {
+									msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+									msg2 = L("FAILED_TO_SAVE");
 								}
-							} else {
-								// I don't think this is possible, but you never know!
-								name = Date.now();
-								path = folder + name + ".txt";
-								str = this.VAR_KEYBUF;
-								Core.io.setFileContent(path, str);
+							}
+							if (SaveNotepadData.options.showSaveProgress === "on") {
+								folder = SaveNotepadData.options.saveTo;
+								if (path) {
+									msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
+									msg2 = path;
+								} else {
+									msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+									msg2 = L("FAILED_TO_SAVE");
+								}
+								Core.ui.showMsg([msg1, msg2]);
 							}
 						}
 					}
@@ -163,7 +227,7 @@ tmp = function() {
 	// Save BOOKMARK SCRIBBLES
 	var oldPageScribbleEditorOverlayModelCloseAnnotationEditor = pageScribbleEditorOverlayModel.closeAnnotationEditor;
 	pageScribbleEditorOverlayModel.closeAnnotationEditor = function (saveflag) {
-		var note, svg, width, height, name;
+		var note, svg, width, height, name, path;
 		if ((SaveNotepadData.options.saveHandwritingSVG === 'on') || (SaveNotepadData.options.saveHandwritingJPG === 'on')) {
 			folder = SaveNotepadData.options.saveTo + "Notepads/";
 			FileSystem.ensureDirectory(folder);
@@ -179,10 +243,32 @@ tmp = function() {
 								height = 320; // guessed
 								name = Date.now();
 								if (SaveNotepadData.options.saveHandwritingJPG === 'on') {
-									saveHandwritingJPG(name, svg, width, height);
+									path = saveHandwritingJPG(name, svg, width, height);
+									if (SaveNotepadData.options.showSaveProgress === "on") {
+										folder = SaveNotepadData.options.saveTo;
+										if (path) {
+											msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
+											msg2 = path;
+										} else {
+											msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+											msg2 = L("FAILED_TO_SAVE");
+										}
+										Core.ui.showMsg([msg1, msg2]);
+									}
 								}
 								if (SaveNotepadData.options.saveHandwritingSVG === 'on') {
-									saveHandwritingSVG(name, svg, width, height);
+									path = saveHandwritingSVG(name, svg, width, height);
+									if (SaveNotepadData.options.showSaveProgress === "on") {
+										folder = SaveNotepadData.options.saveTo;
+										if (path) {
+											msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
+											msg2 = path;
+										} else {
+											msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+											msg2 = L("FAILED_TO_SAVE");
+										}
+										Core.ui.showMsg([msg1, msg2]);
+									}
 								}
 							}
 						}
@@ -231,6 +317,17 @@ tmp = function() {
 				title: L("SAVE_HANDWRITING_JPG"),
 				icon: "HANDWRITING_ALT",
 				defaultValue: "off",
+				values: ["on", "off"],
+				valueTitles: {
+					"on": L("FEEDBACK_ON"),
+					"off": L("FEEDBACK_OFF")
+				}
+			},
+			{
+				name: "showSaveProgress",
+				title: L("OPT_FEEDBACK"),
+				icon: "SETTING",
+				defaultValue: "on",
 				values: ["on", "off"],
 				valueTitles: {
 					"on": L("FEEDBACK_ON"),
