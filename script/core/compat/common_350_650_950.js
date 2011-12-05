@@ -33,6 +33,7 @@
 //	2011-11-15 kartu - Yet another fix to SD/MS card scanning
 //	2011-11-17 kartu - Removed debug statement
 //	2011-11-21 quisvir - Moved Standby Image code to addon
+//	2011-12-05 quisvir - Fixed node comments if node.comment is undefined
 
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -168,18 +169,22 @@ tmp = function () {
 			try {
 				// Hook comment field
 				kbook.commentField.format = function (item /* unused , name */) {
-					if (item && item._mycomment !== undefined) {
-						if ((typeof item._mycomment) === "function") {
-							try {
-								return item._mycomment();
-							} catch (e) {
-								return "<error calling _mycomment>";
+					if (item) {
+						if (item._mycomment !== undefined) {
+							if (typeof item._mycomment === "function") {
+								try {
+									return item._mycomment();
+								} catch (e) {
+									return "<error calling _mycomment>";
+								}
+							} else {
+								return item._mycomment;
 							}
+						} else if (item.comment !== undefined) {
+							return item.comment;
 						} else {
-							return item._mycomment;
+							return "";
 						}
-					} else if (item && item.comment !== undefined) {
-						return item.comment;
 					}
 				};
 			} catch (e) {
