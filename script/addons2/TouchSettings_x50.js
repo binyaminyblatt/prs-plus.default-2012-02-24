@@ -7,6 +7,7 @@
 //	2011-11-28 quisvir - Initial version
 //	2011-11-29 quisvir - Fixed bug that broke page taps if 'extend' option was disabled
 //	2011-12-01 quisvir - Adjusted extended tap areas
+//	2011-12-05 quisvir - Added DoubleTap Speed option
 
 tmp = function() {
 
@@ -329,6 +330,14 @@ tmp = function() {
 						'true': L('VALUE_TRUE'),
 						'false': L('VALUE_FALSE')
 					}
+				},
+				{
+					name: 'DoubleTapSpeed',
+					title: L('DOUBLETAP_SPEED'),
+					icon: 'STYLUS',
+					helpText: L('DOUBLETAP_SPEED_HELPTEXT'),
+					defaultValue: '500',
+					values: ['50', '125', '250', '375', '500', '625', '750', '875', '1000'],
 				}]
 			},
 			{
@@ -412,9 +421,18 @@ tmp = function() {
 		onInit: function () {
 			opt = this.options;
 			if (opt.ExtendTapAreas === 'true') Fskin.bookScroller.hitLink = newHitLink;
+			if (opt.DoubleTapSpeed !== '500') {
+				BookUtil.gesture.tracker.gesture.actions[3].time = Number(opt.DoubleTapSpeed);
+				BookUtil.gesture.tracker.gesture.actions[4].time = Number(opt.DoubleTapSpeed);
+			}
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			if (propertyName === 'ExtendTapAreas') Fskin.bookScroller.hitLink = (newValue === 'true') ? newHitLink : oldHitLink;
+			if (propertyName === 'ExtendTapAreas') {
+				Fskin.bookScroller.hitLink = (newValue === 'true') ? newHitLink : oldHitLink;
+			} else if (propertyName === 'DoubleTapSpeed') {
+				BookUtil.gesture.tracker.gesture.actions[3].time = Number(newValue);
+				BookUtil.gesture.tracker.gesture.actions[4].time = Number(newValue);
+			}
 		},
 		actions: [{
 			name: 'SwipingToggle',
