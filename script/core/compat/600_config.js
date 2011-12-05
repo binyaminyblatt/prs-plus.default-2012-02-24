@@ -34,6 +34,7 @@
 //	2011-11-20 quisvir - Added Author List
 //  2011-11-23 Ben Chenoweth - Added TEXT_MEMO
 //  2011-11-24 Ben Chenoweth - Added HANDWRITING_ALT
+//	2011-12-06 quisvir - Removed BH & BF from customNodes to avoid duplication in More Applications (issue #237)
 
 return {
 	// Menu icon indices 
@@ -207,8 +208,6 @@ return {
 			{ name: "collections", parent: "more" },
 			{ name: "notes", parent: "more"},
 			{ name: "PRSPSettings", parent: "more" },
-			{ name: "BookHistory", parent: "more"},
-			{ name: "BrowseFolders", parent: "more"},
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },
 			{ name: "AuthorList", parent: "more" },
