@@ -34,6 +34,7 @@
 //	2011-11-14 kartu - Fixed #207 Collection sorting is broken for cyrillic
 //	2011-11-20 quisvir - Added sub-collection support (max 1 sub-level, using | as separator)
 //	2011-11-21 quisvir - Moved Standby Image code to addon
+//	2012-12-05 quisvir - Added tapAndHoldAction to available actions
 //
 //-----------------------------------------------------------------------------------------------------
 // Localization related code is model specific.  
@@ -496,7 +497,14 @@ var tmp = function() {
 		};
 	};
 
-	patchStringCompare();	
+	patchStringCompare();
+	
+	// Add tapAndHoldAction to available actions
+	var oldGestureBaseInit = BookUtil.gestureBase.initialize;
+	BookUtil.gestureBase.initialize = function (root, container) {
+		this.actions.push(BookUtil.tapAndHoldAction);
+		oldGestureBaseInit.apply(this, arguments);
+	};	
 };
 
 try {
