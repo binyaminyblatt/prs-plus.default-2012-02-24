@@ -7,7 +7,7 @@
 //	2011-11-28 quisvir - Initial version
 //	2011-11-29 quisvir - Fixed bug that broke page taps if 'extend' option was disabled
 //	2011-12-01 quisvir - Adjusted extended tap areas
-//	2011-12-05 quisvir - Added DoubleTap Speed option
+//	2011-12-05 quisvir - Added options for DoubleTap speed & disabling bookmark tapping
 
 tmp = function() {
 
@@ -119,10 +119,16 @@ tmp = function() {
 		this.doCloseShortcut();
 	};
 	
-	// Disable Dictionary by double tap
+	// Disable Dictionary by DoubleTap
 	var oldDoSelectWord = kbook.kbookPage.doSelectWord;
 	kbook.kbookPage.doSelectWord = function () {
-		if (opt.DisableDictionary === 'false') return oldDoSelectWord.apply(this, arguments);
+		if (opt.DisableDictionary !== 'true') return oldDoSelectWord.apply(this, arguments);
+	}
+	
+	// Disable Bookmark by DoubleTap
+	var oldHitMark = kbook.kbookPage.hitMark;
+	kbook.kbookPage.hitMark = function (cache) {
+		if (opt.DisableBookmark !== 'true') return oldHitMark.apply(this, arguments);
 	}
 	
 	// Extend tap area for links in books
@@ -301,6 +307,17 @@ tmp = function() {
 					name: 'DisableDictionary',
 					title: L('DISABLE_DICT_DOUBLETAP'),
 					icon: 'NODICTIONARY',
+					defaultValue: 'false',
+					values: ['true', 'false'],
+					valueTitles: {
+						'true': L('VALUE_TRUE'),
+						'false': L('VALUE_FALSE')
+					}
+				},
+				{
+					name: 'DisableBookmark',
+					title: L('DISABLE_BOOKMARK_TAPPING'),
+					icon: 'BOOKMARK',
 					defaultValue: 'false',
 					values: ['true', 'false'],
 					valueTitles: {
