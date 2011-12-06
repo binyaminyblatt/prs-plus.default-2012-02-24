@@ -15,6 +15,7 @@
 //	2011-12-01 quisvir - Fixed issue #238 "505: does not display custom Standby text"
 //	2011-12-03 quisvir - Added Auto Standby/Shutdown Time options
 //	2011-12-04 quisvir - Fixed regression that broke fallback to system standby function
+//	2011-12-07 quisvir - Fixed fallback to oldStandbyImageDraw on shutdown
 //
 //	TODO: set/restore portrait orientation on shutdown
 
@@ -226,6 +227,7 @@ tmp = function() {
 					if (!bitmap) {
 						if (oldStandbyImageDraw) {
 							this.color = Color.white; // used by oldStandbyImageDraw, not present in shutdown context
+							if (shutdown) kbook.model.setStandbyPicturePath();
 							oldStandbyImageDraw.apply(this);
 						} else {
 							bitmap = getRandomWallpaper();
