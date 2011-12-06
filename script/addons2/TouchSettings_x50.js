@@ -9,6 +9,7 @@
 //	2011-12-01 quisvir - Adjusted extended tap areas
 //	2011-12-05 quisvir - Added options for DoubleTap speed & disabling bookmark tapping
 //	2011-12-06 quisvir - Added option to swith Tap/DoubleTap, disabled bookmark tapping option for now
+//	2011-12-06 quisvir - Fixed Bookmark Tapping option
 
 tmp = function() {
 
@@ -141,11 +142,23 @@ tmp = function() {
 		if (opt.DisableDictionary !== 'true') return oldDoSelectWord.apply(this, arguments);
 	}
 	
-	// Disable Bookmark by DoubleTap
-	/*var oldHitMark = kbook.kbookPage.hitMark;
+	// Disable Bookmark Tapping
 	kbook.kbookPage.hitMark = function (cache) {
-		if (opt.DisableBookmark !== 'true') return oldHitMark.apply(this, arguments);
-	}*/
+		var y, x, bounds, rct, obj0;
+		if (opt.DisableBookmarkTaps === 'true') return;
+		if (cache.error || cache.page >= this.countPages(true)) return;
+		y = cache.y + this.marginHeight;
+		x = cache.x + this.marginWidth;
+		bounds = this.calcMark(false);
+		rct = Fskin.scratchRectangle;
+		if (!this.facing || cache.isRightPage) {
+			rct.set(bounds[0].x, bounds[0].y, bounds[0].width, bounds[0].height);
+		} else {
+			rct.set(bounds[1].x, bounds[1].y, bounds[1].width, bounds[1].height);
+		}
+		obj0 = { x: x, y: y };
+		if (rct.contains(obj0)) return cache;
+	}
 	
 	// Extend tap area for links in books
 	var oldHitLink, newHitLink;
@@ -330,8 +343,8 @@ tmp = function() {
 						'false': L('VALUE_FALSE')
 					}
 				},
-				/*{
-					name: 'DisableBookmark',
+				{
+					name: 'DisableBookmarkTaps',
 					title: L('DISABLE_BOOKMARK_TAPPING'),
 					icon: 'BOOKMARK',
 					defaultValue: 'false',
@@ -340,7 +353,7 @@ tmp = function() {
 						'true': L('VALUE_TRUE'),
 						'false': L('VALUE_FALSE')
 					}
-				},*/
+				},
 				{
 					name: 'ClosePopupByPageTap',
 					title: L('CLOSE_POPUP_BY_PAGE_TAP'),
