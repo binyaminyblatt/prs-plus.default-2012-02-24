@@ -8,6 +8,7 @@
 //	2011-11-29 quisvir - Fixed bug that broke page taps if 'extend' option was disabled
 //	2011-12-01 quisvir - Adjusted extended tap areas
 //	2011-12-05 quisvir - Added options for DoubleTap speed & disabling bookmark tapping
+//	2011-12-06 quisvir - Added option to swith Tap/DoubleTap, disabled bookmark tapping option for now
 
 tmp = function() {
 
@@ -56,13 +57,28 @@ tmp = function() {
 	oldDoBlink = kbook.model.doBlink;
 	doNothingFunc = function () {};
 	
-	// On tap, get coordinates from readingTracker
+	// On tap (doubletap if switched), get coordinates from readingTracker
 	var oldReadingTrackerTap = kbook.kbookPage.readingTracker.tap;
 	kbook.kbookPage.readingTracker.tap = function (target, x, y) {
 		readingTapX = x;
 		readingTapY = y;
-		oldReadingTrackerTap.apply(this, arguments);
+		if (opt.SwitchPageTaps === 'false') {
+			oldReadingTrackerTap.apply(this, arguments);
+		} else {
+			oldReadingTrackerDoubleTap.apply(this, arguments);
+		}
 	};
+	
+	var oldReadingTrackerDoubleTap = kbook.kbookPage.readingTracker.doubleTap;
+	kbook.kbookPage.readingTracker.doubleTap = function (target, x, y) {
+		readingTapX = x;
+		readingTapY = y;
+		if (opt.SwitchPageTaps === 'false') {
+			oldReadingTrackerDoubleTap.apply(this, arguments);
+		} else {
+			oldReadingTrackerTap.apply(this, arguments);
+		}
+	}
 	
 	// Call pageTapAction, but only if tap is not a link, highlight etc.
 	var oldOnPageTapped = kbook.kbookPage.onPageTapped;
@@ -126,10 +142,10 @@ tmp = function() {
 	}
 	
 	// Disable Bookmark by DoubleTap
-	var oldHitMark = kbook.kbookPage.hitMark;
+	/*var oldHitMark = kbook.kbookPage.hitMark;
 	kbook.kbookPage.hitMark = function (cache) {
 		if (opt.DisableBookmark !== 'true') return oldHitMark.apply(this, arguments);
-	}
+	}*/
 	
 	// Extend tap area for links in books
 	var oldHitLink, newHitLink;
@@ -314,7 +330,7 @@ tmp = function() {
 						'false': L('VALUE_FALSE')
 					}
 				},
-				{
+				/*{
 					name: 'DisableBookmark',
 					title: L('DISABLE_BOOKMARK_TAPPING'),
 					icon: 'BOOKMARK',
@@ -324,7 +340,7 @@ tmp = function() {
 						'true': L('VALUE_TRUE'),
 						'false': L('VALUE_FALSE')
 					}
-				},
+				},*/
 				{
 					name: 'ClosePopupByPageTap',
 					title: L('CLOSE_POPUP_BY_PAGE_TAP'),
@@ -355,6 +371,17 @@ tmp = function() {
 					helpText: L('DOUBLETAP_SPEED_HELPTEXT'),
 					defaultValue: '500',
 					values: ['50', '125', '250', '375', '500', '625', '750', '875', '1000'],
+				},
+				{
+					name: 'SwitchPageTaps',
+					title: L('SWITCH_PAGE_TAPS'),
+					icon: 'STYLUS',
+					defaultValue: 'false',
+					values: ['true', 'false'],
+					valueTitles: {
+						'true': L('VALUE_TRUE'),
+						'false': L('VALUE_FALSE')
+					}
 				}]
 			},
 			{
@@ -497,6 +524,17 @@ tmp = function() {
 				} else {
 					kbook.model.doBlink();
 				}
+			}
+		},
+		{
+			name: 'SwitchPageTaps',
+			title: L('SWITCH_PAGE_TAPS'),
+			group: 'Utils',
+			icon: 'STYLUS',
+			action: function () {
+				opt.SwitchPageTaps = (opt.SwitchPageTaps === 'true') ? 'false' : 'true';
+				Core.ui.showMsg(L('SWITCH_PAGE_TAPS') + ': ' + ((opt.SwitchPageTaps == 'true')?L('VALUE_TRUE'):L('VALUE_FALSE')));
+				Core.settings.saveOptions(TouchSettings);
 			}
 		}]
 	};
