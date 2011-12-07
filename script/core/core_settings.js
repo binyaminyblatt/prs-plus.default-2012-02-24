@@ -19,6 +19,7 @@
 //  2011-10-19 Ben Chenoweth - Changed BOOK to BOOK_ALT
 //	2011-11-25 quisvir - Allow temporary redirect after selecting setting
 //	2011-11-28 qusivir - Sort PRS+ Settings nodes by title
+//	2011-12-07 quisvir - Exposed doCreateSingleSetting
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -489,6 +490,9 @@ tmp = function() {
 		},
 		getAddonNode: function() {
 			return prspSettingsNode;
+		},
+		createSingleSetting: function (parent, optionDef, addon) {
+			doCreateSingleSetting(parent, optionDef, addon);
 		}
 	});
 };
