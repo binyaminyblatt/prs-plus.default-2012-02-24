@@ -30,6 +30,7 @@
 //	2011-12-04 quisvir - Split cycle booklist action into cycle forward & backward actions
 //  2011-12-04 Ben Chenoweth - Added "Next/Previous Books In History" actions
 //  2011-12-05 Ben Chenoweth - Reset "Last Opened Books" when new book selected
+//	2011-12-07 quisvir - Cosmetic changes
 
 tmp = function() {
 
@@ -44,37 +45,50 @@ tmp = function() {
 	// Treat Periodicals as Books
 	var oldBooksFilter = kbook.root.children.deviceRoot.children.books.filter;
 	kbook.root.children.deviceRoot.children.books.filter = function (result) {
-		if (opt.PeriodicalsAsBooks == 'true') return result;
-		else return oldBooksFilter.apply(this, arguments);
+		if (opt.PeriodicalsAsBooks === 'true') {
+			return result;
+		} else {
+			return oldBooksFilter.apply(this, arguments);
+		}
 	}
 	
 	var oldIsPeriodical = FskCache.text.isPeriodical;
 	FskCache.text.isPeriodical = function () {
-		if (opt.PeriodicalsAsBooks == 'true') return false;
-		else return oldIsPeriodical.apply(this, arguments);
+		if (opt.PeriodicalsAsBooks === 'true') {
+			return false;
+		} else {
+			return oldIsPeriodical.apply(this, arguments);
+		}
 	}
 	
 	var oldIsNewspaper = FskCache.text.isNewspaper;
 	FskCache.text.isNewspaper = function () {
-		if (opt.PeriodicalsAsBooks == 'true') return false;
-		else return oldIsNewspaper.apply(this, arguments);
+		if (opt.PeriodicalsAsBooks === 'true') {
+			return false;
+		} else {
+			return oldIsNewspaper.apply(this, arguments);
+		}
 	}
 	
 	var oldOnEnterShortCutBook = kbook.model.onEnterShortCutBook;
 	kbook.model.onEnterShortCutBook = function (node) {
-		if (opt.PeriodicalsAsBooks == 'true' && node.periodicalName) this.currentNode.gotoNode(node, this);
-		else oldOnEnterShortCutBook.apply(this, arguments);
+		if (opt.PeriodicalsAsBooks === 'true' && node.periodicalName) {
+			this.currentNode.gotoNode(node, this);
+		} else {
+			oldOnEnterShortCutBook.apply(this, arguments);
+		}
 	};
 	
 	// Keep new flag as is on opening book
 	var oldOnChangeBook = kbook.model.onChangeBook;
 	kbook.model.onChangeBook = function (node) {
-		if (this.currentPath) oldOnChangeBook.apply(this, arguments);
-		else {
+		if (this.currentPath) {
+			oldOnChangeBook.apply(this, arguments);
+		} else {
 			if (this.currentBook) opt.CurrentCollection = '';
 			var newflag = node.opened;
 			oldOnChangeBook.apply(this, arguments);
-			if (opt.ManualNewFlag == 'true') node.opened = newflag;
+			if (opt.ManualNewFlag === 'true') node.opened = newflag;
 			bookChanged = true;
 		}
 	}
@@ -89,34 +103,36 @@ tmp = function() {
 	// Show book menu option if preference is set
 	kbook.optMenu.isDisable = function (part) {
 		if (this.hasString(part, 'manualnewflag')) {
-			if (opt.ManualNewFlag == 'true') {
+			if (opt.ManualNewFlag === 'true') {
 				part.text = (kbook.model.currentBook.opened) ? L('SETNEWFLAG') : L('REMOVENEWFLAG');
 				return Fskin.overlayTool.isDisable(part);
+			} else {
+				return true;
 			}
-			else return true;
+		} else {
+			return Fskin.overlayTool.isDisable(part);
 		}
-		else return Fskin.overlayTool.isDisable(part);
 	}
 
 	// Hide default collections
 	var oldKbookPlaylistNode = kbook.root.kbookPlaylistNode.construct;
 	kbook.root.kbookPlaylistNode.construct = function () {
 		oldKbookPlaylistNode.apply(this, arguments);
-		if (opt.HideAddNewCollection == 'true') {
+		if (opt.HideAddNewCollection === 'true') {
 			this.nodes.splice(this.purchasedNodeIndex + 1,1);
 			this.constNodesCount--;
 		}
-		if (opt.HidePurchasedBooks == 'true') {
+		if (opt.HidePurchasedBooks === 'true') {
 			this.nodes.splice(this.purchasedNodeIndex,1);
 			this.constNodesCount--;
 			this.presetItemsCount--;
 		}
-		if (opt.HideUnreadPeriodicals == 'true') {
+		if (opt.HideUnreadPeriodicals === 'true') {
 			this.nodes.splice(this.purchasedNodeIndex - 1,1);
 			this.constNodesCount--;
 			this.presetItemsCount--;
 		}
-		if (opt.HideUnreadBooks == 'true') {
+		if (opt.HideUnreadBooks === 'true') {
 			this.nodes.splice(this.purchasedNodeIndex - 2,1);
 			this.constNodesCount--;
 			this.presetItemsCount--;
@@ -131,10 +147,10 @@ tmp = function() {
 		while (i < c) {
 			title = nodes[i].title;
 			idx = title.indexOf('|');
-			if (idx != -1) {
+			if (idx !== -1) {
 				nodes[i].name = nodes[i].title = title.slice(idx+1);
 				coll = title.slice(0,idx);
-				if (last == coll) {
+				if (last === coll) {
 					nodes[i].parent = nodes[next-1];
 					nodes[next-1].nodes.push(nodes.splice(i,1)[0]);
 					i--; c--;
@@ -162,30 +178,35 @@ tmp = function() {
 	
 	// Draw reading progress instead of 'last read' date/time
 	kbook.model.getContinueDate = function (node) {
-		if (opt.ShowReadingProgressCurrent == 'true' && this.currentBook) {
+		if (opt.ShowReadingProgressCurrent === 'true' && this.currentBook) {
 			var page = this.currentBook.media.ext.currentPosition.page + 1;
 			if (page < Number(opt.OnlyShowFromPage)) return node.nodes[0].lastReadDate;
 			var pages = this.currentBook.media.ext.history[0].pages;
 			return readingProgressComment(page, pages, opt.ProgressFormatCurrent);
+		} else {
+			return node.nodes[0].lastReadDate;
 		}
-		else return node.nodes[0].lastReadDate;
 	}
 	
 	// Draw reading progress below thumbnails (both home screen and book lists)
 	var oldThumbnaildrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
+		var record, page, pages, msg;
 		oldThumbnaildrawRecord.apply(this, arguments);
-		var record, page, pages, msg, opt = BookManagement_x50.options;
-		if (kbook.model.currentNode.title == 'deviceRoot' && offset == 2) {
-			if (opt.HomeMenuBooklist == 5) msg = opt.SelectedCollection;
-			else if (opt.HomeMenuBooklist == 3 && opt.CurrentCollection) msg = L('NEXT_IN') + ' ' + opt.CurrentCollection;
-			else msg = BookManagement_x50.optionDefs[0].optionDefs[0].valueTitles[opt.HomeMenuBooklist];
+		if (kbook.model.currentNode.title === 'deviceRoot' && offset === 2) {
+			if (opt.HomeMenuBooklist === 5) {
+				msg = opt.SelectedCollection;
+			} else if (opt.HomeMenuBooklist === 3 && opt.CurrentCollection) {
+				msg = L('NEXT_IN') + ' ' + opt.CurrentCollection;
+			} else {
+				msg = BookManagement_x50.optionDefs[0].optionDefs[0].valueTitles[opt.HomeMenuBooklist];
+			}
 			msg = msg.replace('|',': '); // sub-collections
 			this.skin.styles[6].draw(this.getWindow(), msg, 0, y-25, this.width, this.textCommentHeight);
 		}
 		record = this.menu.getRecord(offset);
-		if (record && opt.ShowReadingProgressThumbs == 'true') {
-			if (record.kind != 2 || !record.media.ext || !record.media.ext.history.length || (this.statusVisible && (record.media.sourceid > 1 || this.menu.getFixSelectPosition() || record.expiration))) return;
+		if (record && opt.ShowReadingProgressThumbs === 'true') {
+			if (record.kind !== 2 || !record.media.ext || !record.media.ext.history.length || (this.statusVisible && (record.media.sourceid > 1 || this.menu.getFixSelectPosition() || record.expiration))) return;
 			page = record.media.ext.currentPosition.page + 1;
 			if (page < Number(opt.OnlyShowFromPage)) return;
 			pages = record.media.ext.history[0].pages;
@@ -228,13 +249,14 @@ tmp = function() {
 	// Update 'next in collection' booklist after collection edit
 	var oldFinishCollectionEdit = kbook.model.finishCollectionEdit;
 	kbook.model.finishCollectionEdit = function () {
-		var i, change, current, opt = BookManagement_x50.options;
-		if (this.colManTgtNode && (opt.HomeMenuBooklist == 3 || opt.HomeMenuBooklist == 5)) {
+		var i, change, current;
+		if (this.colManTgtNode && (opt.HomeMenuBooklist === 3 || opt.HomeMenuBooklist === 5)) {
 			current = (opt.CurrentCollection) ? opt.CurrentCollection : opt.SelectedCollection;
-			if (this.colManTgtNode.kind == 42 && this.colManTgtNode.title == current) change = true;
-			else if (this.colManTgtNode.kind == 17) {
-				for (i=0;i<this.colManItems.length&&this.colManItems[i].title!=current;i++);
-				if (i != this.colManItems.length) change = true;
+			if (this.colManTgtNode.kind === 42 && this.colManTgtNode.title === current) {
+				change = true;
+			} else if (this.colManTgtNode.kind === 17) {
+				for (i=0;i<this.colManItems.length&&this.colManItems[i].title!==current;i++);
+				if (i !== this.colManItems.length) change = true;
 			}
 			if (change) {
 				bookChanged = true;
@@ -246,21 +268,24 @@ tmp = function() {
 	
 	// Customize book list in home menu
 	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
-		var i, nodes, prototype, cache, result, result2, current, records, node, model, opt;
+		var i, nodes, prototype, cache, result, result2, current, records, node, model, obj0;
 		FskCache.tree.xdbNode.construct.call(this);
 		model = kbook.model;
-		opt = BookManagement_x50.options;
 		nodes = this.nodes = [];
 		prototype = this.prototype;
 		cache = this.cache;
 		while (cache) {
-			if (opt.IgnoreCards == 'true') result = cache.getSourceByName('mediaPath').textMasters;
-			else result = cache.textMasters;
-			if (opt.PeriodicalsAsBooks == 'false') result = this.filter(result);
+			if (opt.IgnoreCards === 'true') {
+				result = cache.getSourceByName('mediaPath').textMasters;
+			} else {
+				result = cache.textMasters;
+			}
+			if (opt.PeriodicalsAsBooks === 'false') result = this.filter(result);
 			records = result.count();
 			if (!records) return;
-			if (model.currentBook) current = model.currentBook.media;
-			else if (model.currentPath) {
+			if (model.currentBook) {
+				current = model.currentBook.media;
+			} else if (model.currentPath) {
 				result2 = result.db.search('indexPath',model.currentPath);
 				if (result2.count()) current = result2.getRecord(0);
 			}
@@ -283,7 +308,7 @@ tmp = function() {
 					for (i=numCurrentBook;nodes.length<3&&i+j<history.length;i++) {
 						record = Core.media.findMedia(history[i+j]);
 						if (record) {
-							if (record.periodicalName && opt.PeriodicalsAsBooks == 'false') continue;
+							if (record.periodicalName && opt.PeriodicalsAsBooks === 'false') continue;
 							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 							node.cache = cache;
 							node.media = record;
@@ -299,7 +324,7 @@ tmp = function() {
 						// Find other books by same author, excluding current book
 						for (i=0;i<records;i++) {
 							record = result.getRecord(i);
-							if (record.author == author && record.id != id) list.push(i);
+							if (record.author === author && record.id !== id) list.push(i);
 						}
 						// Shuffle book list and add first 3 items to nodes
 						list = arrayShuffle(list);
@@ -319,9 +344,12 @@ tmp = function() {
 						result2.sort('indexPlaylist');
 						colls = result2.count();
 						if (opt.CurrentCollection) {
-							for (i=0;i<colls&&result2.getRecord(i).title!=opt.CurrentCollection;i++);
-							if (i==colls) i=0;
-							else if (booklistTrigger1) i++;
+							for (i=0;i<colls&&result2.getRecord(i).title!==opt.CurrentCollection;i++);
+							if (i===colls) {
+								i=0;
+							} else if (booklistTrigger1) {
+								i++;
+							}
 						}
 						while (i<colls) {
 							coll = result2.getRecord(i);
@@ -348,14 +376,15 @@ tmp = function() {
 					books = arrayShuffle(books);
 					for (i=0,j=0;i<3&&j<books.length;i++,j++) {
 						record = result.getRecord(books[j]);
-						if (record.id == id) i--;
-						else {
+						if (record.id === id) {
+							i--;
+						} else {
 							node = nodes[i] = xs.newInstanceOf(prototype);
 							node.cache = cache;
 							node.media = record;
 						}
 					}
-				break;
+					break;
 				case 5: // Booklist option: Select collection
 					var i, id, idx, result2, colls, coll, books;
 					if (!opt.SelectedCollection) break;
@@ -363,8 +392,8 @@ tmp = function() {
 					result2 = cache.playlistMasters;
 					result2.sort('indexPlaylist');
 					colls = result2.count();
-					for (i=0;i<colls&&result2.getRecord(i).title!=opt.SelectedCollection;i++);
-					if (i == colls) break;
+					for (i=0;i<colls&&result2.getRecord(i).title!==opt.SelectedCollection;i++);
+					if (i === colls) break;
 					// Selected Collection found
 					coll = result2.getRecord(i);
 					books = coll.items;
@@ -372,26 +401,32 @@ tmp = function() {
 					i = (idx) ? idx : 0;
 					while (nodes.length < 3) {
 						if (idx) {
-							if (i == books.length) i = 0;
-							if (books[i].id == id) break;
+							if (i === books.length) i = 0;
+							if (books[i].id === id) break;
 						} else {
-							if (i == books.length) break;
+							if (i === books.length) break;
 						}
 						node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 						node.cache = cache;
 						node.media = cache.getRecord(books[i].id);
 						i++;
 					}
-				break;
+					break;
 			}
 			if (!nodes.length) {
 				if (booklistTrigger1) {
-					if (opt.HomeMenuBooklist == 5) opt.HomeMenuBooklist = 0;
-					else opt.HomeMenuBooklist++;
+					if (opt.HomeMenuBooklist === 5) {
+						opt.HomeMenuBooklist = 0;
+					} else {
+						opt.HomeMenuBooklist++;
+					}
 					continue;
 				} else if (booklistTrigger2) {
-					if (opt.HomeMenuBooklist == 0) opt.HomeMenuBooklist = 5;
-					else opt.HomeMenuBooklist--;
+					if (opt.HomeMenuBooklist === 0) {
+						opt.HomeMenuBooklist = 5;
+					} else {
+						opt.HomeMenuBooklist--;
+					}
 					continue;
 				}
 			}
@@ -442,7 +477,7 @@ tmp = function() {
 		Core.settings.saveOptions(BookManagement_x50);
 		kbook.root.nodes[0].nodes[6].update(kbook.model);
 		kbook.menuHomeThumbnailBookData.setNode(kbook.root.nodes[0].nodes[6]);
-		this.currentNode.gotoNode(((oldNode.title == L('BOOK_SELECTION'))?oldNode.parent:oldNode), this);
+		this.currentNode.gotoNode(((oldNode.title === L('BOOK_SELECTION'))?oldNode.parent:oldNode), this);
 	}
 		
 	var BookManagement_x50 = {
@@ -461,16 +496,18 @@ tmp = function() {
 			icon: 'BOOKS',
 			action: function () {
 				booklistTrigger1 = true;
-				if (opt.HomeMenuBooklist == 5) opt.HomeMenuBooklist = 0;
-				else if (opt.HomeMenuBooklist != 3) {
+				if (opt.HomeMenuBooklist === 5) {
+					opt.HomeMenuBooklist = 0;
+				} else if (opt.HomeMenuBooklist !== 3) {
 					opt.HomeMenuBooklist++;
 					opt.CurrentCollection = '';
 				}
-				if (kbook.model.currentNode.title == 'deviceRoot') {
+				if (kbook.model.currentNode.title === 'deviceRoot') {
 					kbook.root.nodes[0].nodes[6].update(kbook.model);
 					kbook.menuHomeThumbnailBookData.setNode(kbook.root.nodes[0].nodes[6]);
+				} else {
+					bookChanged = true;
 				}
-				else bookChanged = true;
 				Core.settings.saveOptions(BookManagement_x50); // FIXME radio button in PRS+ settings isn't updated
 			}
 		},
@@ -481,16 +518,18 @@ tmp = function() {
 			icon: 'BOOKS',
 			action: function () {
 				booklistTrigger2 = true;
-				if (opt.HomeMenuBooklist == 0) opt.HomeMenuBooklist = 5;
-				else {
+				if (opt.HomeMenuBooklist === 0) {
+					opt.HomeMenuBooklist = 5;
+				} else {
 					opt.HomeMenuBooklist--;
 					opt.CurrentCollection = '';
 				}
-				if (kbook.model.currentNode.title == 'deviceRoot') {
+				if (kbook.model.currentNode.title === 'deviceRoot') {
 					kbook.root.nodes[0].nodes[6].update(kbook.model);
 					kbook.menuHomeThumbnailBookData.setNode(kbook.root.nodes[0].nodes[6]);
+				} else {
+					bookChanged = true;
 				}
-				else bookChanged = true;
 				Core.settings.saveOptions(BookManagement_x50); // FIXME radio button in PRS+ settings isn't updated
 			}
 		},
@@ -510,8 +549,8 @@ tmp = function() {
 			icon: 'NEXT',
 			action: function () {
 				var j, history=[];
-				if (opt.HomeMenuBooklist == 1) {
-					if (kbook.model.currentNode.title == 'deviceRoot') {
+				if (opt.HomeMenuBooklist === 1) {
+					if (kbook.model.currentNode.title === 'deviceRoot') {
 						history = Core.addonByName.BookHistory.getBookList();
 						numCurrentBook += 3;
 						j = (kbook.model.currentBook) ? 1 : 0;
@@ -532,8 +571,8 @@ tmp = function() {
 			icon: 'PREVIOUS',
 			action: function () {
 				var history=[];
-				if (opt.HomeMenuBooklist == 1) {
-					if (kbook.model.currentNode.title == 'deviceRoot') {
+				if (opt.HomeMenuBooklist === 1) {
+					if (kbook.model.currentNode.title === 'deviceRoot') {
 						history = Core.addonByName.BookHistory.getBookList();
 						numCurrentBook -= 3;
 						if (numCurrentBook < 0) {
@@ -729,11 +768,11 @@ tmp = function() {
 			},
 		],
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			if (propertyName == 'HomeMenuBooklist' || propertyName == 'IgnoreCards') {
+			if (propertyName === 'HomeMenuBooklist' || propertyName === 'IgnoreCards') {
 				bookChanged = true;
 				opt.CurrentCollection = '';
 			}
-			if (propertyName == 'HomeMenuBooklist' && newValue == 5) doSelectCollection();
+			if (propertyName === 'HomeMenuBooklist' && newValue === 5) doSelectCollection();
 			numCurrentBook = 0;
 		}
 	};

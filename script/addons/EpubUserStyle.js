@@ -69,14 +69,14 @@ tmp = function() {
 			}			
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			var password;
+			var current, password;
 			if (newValue === DISABLED) {
 				FileSystem.deleteFile(EpubUserStyle.root + USER_CSS);
 			} else {
 				Core.io.copyFile(EpubUserStyle.root + newValue, EpubUserStyle.root + USER_CSS);
 			}
 			// Reload current book if it is an epub file
-			var current = kbook.model.currentBook;
+			current = kbook.model.currentBook;
 			if (current && current.media.mime === 'application/epub+zip') {
 				current.media.close(kbook.bookData);
 				kbook.bookData.setData(null);
