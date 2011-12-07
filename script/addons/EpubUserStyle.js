@@ -14,6 +14,7 @@
 //	2010-11-30 kartu - Refactoring Core.stirng => Core.text
 //	2011-02-07 kartu - Added Core.config.userCSSFile support (instead of hardcoded style.css)
 //	2011-11-20 kartu - Added sorting to CSS files
+//	2011-12-07 quisvir - Added automatic epub reloading & action to change CSS from within book
 
 tmp = function() {
 	var L, endsWith, USER_CSS, DISABLED, EpubUserStyle;
@@ -68,13 +69,33 @@ tmp = function() {
 			}			
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+			var password;
 			if (newValue === DISABLED) {
 				FileSystem.deleteFile(EpubUserStyle.root + USER_CSS);
 			} else {
 				Core.io.copyFile(EpubUserStyle.root + newValue, EpubUserStyle.root + USER_CSS);
 			}
-			Core.ui.showMsg([L("MSG_WARNING")]);
-		}
+			// Reload current book if it is an epub file
+			var current = kbook.model.currentBook;
+			if (current && current.media.mime === 'application/epub+zip') {
+				current.media.close(kbook.bookData);
+				kbook.bookData.setData(null);
+				password = (kbook.model.protectedBookInfo) ? kbook.model.protectedBookInfo.password : null; // only used on x50
+				current.media.load(current.cache, kbook.model, kbook.model.onChangeBookCallback, password);
+			}
+		},
+		actions: [{
+			name: 'ChangeEpubCSS',
+			title: L('OPTION_EPUB_CSS_FILE'),
+			group: 'Book',
+			icon: 'FONT',
+			action: function () {
+				// Attach temporary setting node to currentNode; epub reload is handled by onSettingsChanged
+				var currentNode = kbook.model.currentNode;
+				Core.addonByName.PRSPSettings.createSingleSetting(currentNode, this.addon.optionDefs[0], this.addon);
+				currentNode.gotoNode(currentNode.nodes.pop(), kbook.model);
+			}
+		}]
 	};
 
 	Core.addAddon(EpubUserStyle);
