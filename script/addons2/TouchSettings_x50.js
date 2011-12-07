@@ -10,6 +10,7 @@
 //	2011-12-05 quisvir - Added options for DoubleTap speed & disabling bookmark tapping
 //	2011-12-06 quisvir - Added option to swith Tap/DoubleTap, disabled bookmark tapping option for now
 //	2011-12-06 quisvir - Fixed Bookmark Tapping option
+//	2011-12-07 quisvir - Cosmetic changes
 
 tmp = function() {
 
@@ -127,7 +128,7 @@ tmp = function() {
 	pageShortcutOverlayModel.doTap = function (x, y) {
 		if (kbook.model.doSomething('checkTap', x, y)) {
 			kbook.model.doSomething('doTap', x, y);
-		} else if (opt.ClosePopupByPageTap == 'true') {
+		} else if (opt.ClosePopupByPageTap === 'true') {
 			kbook.model.doSomething('selectNone');
 		} else {
 			kbook.model.doBlink();
@@ -195,7 +196,7 @@ tmp = function() {
 			this.fail();
 			return false;
 		}
-		if (this.direction != Gesture.noDirection) {
+		if (this.direction !== Gesture.noDirection) {
 			if (Math.abs(y - this.firstDownY) > Math.abs(x - this.firstDownX)) {
 				if (y - this.firstDownY > 0) {
 					this.direction = Gesture.bottomDirection;
@@ -293,7 +294,7 @@ tmp = function() {
 	// In Zoom Lock, enable panning
 	var oldZoomOverlayDoDrag = Fskin.kbookZoomOverlay.doDrag;
 	Fskin.kbookZoomOverlay.doDrag = function (x, y, type, tapCount) {
-		if (opt.ZoomLockPanning == 'true' && this.isZoomLock) {
+		if (opt.ZoomLockPanning === 'true' && this.isZoomLock) {
 			zoomLockOld = this.isZoomLock;
 			this.isZoomLock = false;
 			oldZoomOverlayDoDrag.apply(this, arguments);
@@ -310,7 +311,7 @@ tmp = function() {
 	};
 
 	Fskin.kbookZoomOverlay.canLine = Fskin.kbookZoomOverlay.canLineAndHold = function () {
-		if (this.getVariable('STATE') == 'PAGE' && this.isZoomLock && opt.ZoomLockPanning == 'false') {
+		if (this.getVariable('STATE') === 'PAGE' && this.isZoomLock && opt.ZoomLockPanning === 'false') {
 			return true;
 		} else {
 			return false;
@@ -498,7 +499,7 @@ tmp = function() {
 			icon: 'GESTURE',
 			action: function () {
 				opt.DisableAllSwipes = (opt.DisableAllSwipes === 'true') ? 'false' : 'true';
-				Core.ui.showMsg(L('DISABLE_ALL_SWIPES') + ': ' + ((opt.DisableAllSwipes == 'true')?L('VALUE_TRUE'):L('VALUE_FALSE')));
+				Core.ui.showMsg(L('DISABLE_ALL_SWIPES') + ': ' + ((opt.DisableAllSwipes === 'true')?L('VALUE_TRUE'):L('VALUE_FALSE')));
 				Core.settings.saveOptions(TouchSettings);
 			}
 		},
@@ -546,7 +547,7 @@ tmp = function() {
 			icon: 'STYLUS',
 			action: function () {
 				opt.SwitchPageTaps = (opt.SwitchPageTaps === 'true') ? 'false' : 'true';
-				Core.ui.showMsg(L('SWITCH_PAGE_TAPS') + ': ' + ((opt.SwitchPageTaps == 'true')?L('VALUE_TRUE'):L('VALUE_FALSE')));
+				Core.ui.showMsg(L('SWITCH_PAGE_TAPS') + ': ' + ((opt.SwitchPageTaps === 'true')?L('VALUE_TRUE'):L('VALUE_FALSE')));
 				Core.settings.saveOptions(TouchSettings);
 			}
 		}]

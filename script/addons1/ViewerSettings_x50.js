@@ -27,6 +27,7 @@
 //	2011-10-24 quisvir - Fixed #203 "Book rotation scribbled notes origin incorrect"
 //	2011-11-26 quisvir - Fixed Issue #228 "No Page Turn with Gestures" doesn't disable page turns through pageShortcutOverlayModel
 //	2011-11-28 quisvir - Moved touch-related code to Touch Settings addon
+//	2011-12-07 quisvir - Cosmetic changes
 
 tmp = function() {
 
@@ -38,11 +39,18 @@ tmp = function() {
 	// Change custom contrast variable if user has entered valid number
 	kbook.model.container.doContrastChange = function (text) {
 		var msg, value = parseInt(text);
-		if (isNaN(value)) msg = L("ERROR_NOT_A_NUMBER");
-		else if (value < -127 || value > 127) msg = L("ERROR_NOT_WITHIN_RANGE") + ' [-127 / 127]';
-		else ViewerSettings_x50.options.CustomContrast = value.toString(); // without toString(), option comment displays an error for negative values
-		if (msg) ViewerSettings_x50.options.CustomContrast = 0;
-		else msg = L("CUSTOM_VIEW_MSG");
+		if (isNaN(value)) {
+			msg = L("ERROR_NOT_A_NUMBER");
+		} else if (value < -127 || value > 127) {
+			msg = L("ERROR_NOT_WITHIN_RANGE") + ' [-127 / 127]';
+		} else {
+			ViewerSettings_x50.options.CustomContrast = value.toString(); // without toString(), option comment displays an error for negative values
+		}
+		if (msg) {
+			ViewerSettings_x50.options.CustomContrast = 0;
+		} else {
+			msg = L("CUSTOM_VIEW_MSG");
+		}
 		Core.ui.showMsg(msg);
 		Core.settings.saveOptions(ViewerSettings_x50);
 	}
@@ -50,11 +58,18 @@ tmp = function() {
 	// Change custom brightness variable if user has entered valid number
 	kbook.model.container.doBrightnessChange = function (text) {
 		var msg, value = parseInt(text);
-		if (isNaN(value)) msg = L("ERROR_NOT_A_NUMBER");
-		else if (value < -225 || value > 225) msg = L("ERROR_NOT_WITHIN_RANGE") + ' [-225 / 225]';
-		else ViewerSettings_x50.options.CustomBrightness = value.toString();
-		if (msg) ViewerSettings_x50.options.CustomBrightness = 0;
-		else msg = L("CUSTOM_VIEW_MSG");
+		if (isNaN(value)) {
+			msg = L("ERROR_NOT_A_NUMBER");
+		} else if (value < -225 || value > 225) {
+			msg = L("ERROR_NOT_WITHIN_RANGE") + ' [-225 / 225]';
+		} else {
+			ViewerSettings_x50.options.CustomBrightness = value.toString();
+		}
+		if (msg) {
+			ViewerSettings_x50.options.CustomBrightness = 0;
+		} else {
+			msg = L("CUSTOM_VIEW_MSG");
+		}
 		Core.ui.showMsg(msg);
 		Core.settings.saveOptions(ViewerSettings_x50);
 	}
@@ -63,7 +78,7 @@ tmp = function() {
 	pageOptionToneCurveEditorOverlayModel.initToneCurveEditor = function () {
 		var contrast = parseInt(this.targetModel.doSomething('getContrast'));
 		var brightness = parseInt(this.targetModel.doSomething('getBrightness'));
-		if (ViewerSettings_x50.options.BindToRestoreButton == "true") {
+		if (ViewerSettings_x50.options.BindToRestoreButton === "true") {
 			this.org_slider_1 = ViewerSettings_x50.options.CustomContrast;
 			this.org_slider_2 = ViewerSettings_x50.options.CustomBrightness;
 		} else {
@@ -285,7 +300,7 @@ tmp = function() {
 	};
 	
 	// 1-Column split
-	if (Core.config.model != '950') {
+	if (Core.config.model !== '950') {
 		// add 1-column split function to be called from selectStyleOverlay.xml
 		kbook.model.container.sandbox.SELECT_STYLE_OVERLAY_GROUP.sandbox.VIEW.sandbox.SELECT_STYLE_OVERLAY.sandbox.doSplitPage2x1 = function () {
 			if (kbook.model.container.getVariable('ORIENTATION')) {
@@ -300,7 +315,7 @@ tmp = function() {
 		// add calculations for 1-column split to resize function
 		var oldresizePageSplitPage = kbook.kbookPage.resizePageSplitPage;
 		kbook.kbookPage.resizePageSplitPage = function (splitNumber) {
-			if (splitNumber == 2) {
+			if (splitNumber === 2) {
 				var screenWidth, screenHeight, pageWidth, pageHeight, xOffset, yOffset, bounds;
 				screenWidth = this.getSize(false) - 2 * this.marginWidth;
 				screenHeight = this.getSize(true) - 2 * this.marginHeight;
@@ -332,14 +347,16 @@ tmp = function() {
 				this.numberOfColumns = 1;
 				this.resizePage();
 				this.moveOffset(this.splitX[this.currentSplit], this.splitY[this.currentSplit]);
-			} else oldresizePageSplitPage.apply(this, arguments);
+			} else {
+				oldresizePageSplitPage.apply(this, arguments);
+			}
 		};
 		
 		// activate 1-column-split radio button if style is active
 		var oldopenSelectStyle = pageSelectStyleOverlayModel.openSelectStyle;
 		pageSelectStyleOverlayModel.openSelectStyle = function () {
 			oldopenSelectStyle.apply(this, arguments);
-			if (kbook.model.doSomething('getSplitPageColumns') == 1) this.setVariable('PAGE_STYLE_NO', 6);
+			if (kbook.model.doSomething('getSplitPageColumns') === 1) this.setVariable('PAGE_STYLE_NO', 6);
 		};
 	};
 	
@@ -407,8 +424,8 @@ tmp = function() {
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			kbook.kbookPage.borderColor = (ViewerSettings_x50.options.BorderColor === 'grey') ? Color.rgb.parse('#6D6D6D') : Color.rgb.parse('white');
-			if (propertyName == "CustomContrast" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_CONTRAST") + ':', '', 'doContrastChange', '', true, 'number');
-			if (propertyName == "CustomBrightness" && newValue == "Custom") kbook.model.openLineInput(L("CUSTOM_BRIGHTNESS") + ':', '', 'doBrightnessChange', '', true, 'number');
+			if (propertyName === "CustomContrast" && newValue === "Custom") kbook.model.openLineInput(L("CUSTOM_CONTRAST") + ':', '', 'doContrastChange', '', true, 'number');
+			if (propertyName === "CustomBrightness" && newValue === "Custom") kbook.model.openLineInput(L("CUSTOM_BRIGHTNESS") + ':', '', 'doBrightnessChange', '', true, 'number');
 		}
 	};
 
