@@ -16,6 +16,7 @@
 //	2011-12-03 quisvir - Added Auto Standby/Shutdown Time options
 //	2011-12-04 quisvir - Fixed regression that broke fallback to system standby function
 //	2011-12-07 quisvir - Fixed fallback to oldStandbyImageDraw on shutdown
+//	2011-12-07 quisvir - Fixed shutdown image not displaying on auto-shutdown (issue #242)
 //
 //	TODO: set/restore portrait orientation on shutdown
 
@@ -64,18 +65,26 @@ tmp = function() {
 		}
 		oldResume.apply(this);
 	};
-	
+		
 	// Quit: if no exit code already set, call standbyimage, set exit code 6
 	var oldDoQuit = Fskin.window.doQuit;
 	Fskin.window.doQuit = function () {
-		try {
-			if (!FileSystem.getFileInfo('/tmp/exitcode')) {
-				shutdown = true;
-				standbyImage.draw.call(kbook.model.container);
-				ebook.setExitCode(6);
-			}
-		} catch(ignore) {}
-		oldDoQuit.apply(this);
+		var container = kbook.model.container;
+		// If device is in standby (auto-shutdown), wake it up first
+		if (container.getVariable('STANDBY_STATE') === 0) {
+			container.bubble("setKeyHandlerActive", true);
+			container.bubble('doPowerSwitch');
+			kbook.model.doDeviceShutdown();
+		} else {
+			try {
+				if (!FileSystem.getFileInfo('/tmp/exitcode')) {
+					shutdown = true;
+					standbyImage.draw.call(container);
+					ebook.setExitCode(6);
+				}
+			} catch(ignore) {}
+			oldDoQuit.apply(this);
+		}
 	};
 	
 	// getBookCover for 600+ and for epub on 300/505
