@@ -36,13 +36,14 @@
 //	2011-11-14 kartu - ALL: Fixed #214 MSG_COPYING_BOOK not translated
 //	2011-11-15 Mark Nord - ALL: Fixed Fix #214 there is another one in Line 248
 //	2011-11-20 kartu - Fixed #215 fb2epub converter doesn't work with cards with disabled scanning
-//
+//	2011-12-08 Ben Chenoweth - Archive support (using on Shura1oplot's code); added CBZ and CBR to supported archives
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
-		compareFields, supportedMIMEs, createLazyInitNode, constructLazyNode, ACTION_ICON,
-		doCopyAndOpen, doCopy, doOpenHere, doGotoParent, browseFoldersNode, ENABLED, DISABLED;
+		compareFields, supportedMIMEs, supportedArchives, createArchiveNode, createLazyInitNode,
+		constructLazyNode, ACTION_ICON, doCopyAndOpen, doCopy, doOpenHere, doUnpackHere, doGotoParent,
+		browseFoldersNode, ENABLED, DISABLED;
 	
 	ENABLED = "enabled";
 	DISABLED = "disabled";
@@ -50,13 +51,9 @@ tmp = function() {
 	L = Core.lang.getLocalizer("BrowseFolders");
 	startsWith = Core.text.startsWith;
 	trim = Core.text.trim;
-	supportedMIMEs = {
-		"application/rtf": true,
-		"application/pdf": true,
-		"application/epub+zip": true,
-		"application/x-sony-bbeb": true,
-		"text/plain": true
-	};
+	supportedMIMEs = Core.media.supportedMIMEs;
+	supportedArchives = Core.unpacker.supportedArchives;
+	
 	ACTION_ICON = "BACK";
 
 	//-----------------------------------------------------------------------------------------------------------------------------
@@ -154,13 +151,25 @@ tmp = function() {
 		node.path = path;
 		return node;
 	};
-	
+
+	createArchiveNode = function (path, title, parent) {
+		var node;
+		node = Core.ui.createContainerNode({
+			title: title,
+			icon: "ARCHIVE",
+			parent: parent
+		});
+		node.enter = doUnpackHere;
+		node.path = path;
+		return node;
+	};
+		
 	createMediaNode = function (path, title, parent, dummy, needsMount) {
 		var node, mime, extension, size, sizeStr;
 		node = needsMount !== undefined ? null : Core.media.createMediaNode(path, parent);
 		extension = Core.io.extractExtension(path);
 		sizeStr = "";
-		
+
 		// Size in comment
 		if (BrowseFolders.options.fileSizeInComment === ENABLED) {
 			size = Core.io.getFileSize(path) / 1024;
@@ -176,7 +185,9 @@ tmp = function() {
 			mime = FileSystem.getMIMEType(path);
 			if (supportedMIMEs[mime]) {
 				node = createLazyInitNode(path, title, parent, needsMount);
-			} else {
+			} else if  (supportedArchives[extension]) {
+ 				node = createArchiveNode(path, title, parent);
+ 			} else {
 				// or convertable, 
 				// convertable node needs media constructor for converted file
 				node = Core.convert.createMediaNode(path, title, parent, createMediaNode, needsMount);
@@ -284,6 +295,29 @@ tmp = function() {
 			}
 		} else {
 			this.gotoNode(foldersNode, kbook.model);
+		}
+	};
+
+	doUnpackHere = function () {
+		var path, parent, outputDir, nodes, i, n;
+		path = this.path;
+		parent = this.parent;
+		outputDir = Core.io.extractPath(path) + Core.io.extractFileName(path, true) + "/";
+		Core.ui.showMsg(L("MSG_UNPACKING"), 1);
+		try {
+			Core.unpacker.unpack(path, outputDir);
+			Core.media.scanDirectory(outputDir);
+			this.gotoNode(parent, kbook.model);
+			parent.update();
+			nodes = parent.nodes;
+			for (i = 0, n = nodes.length; i < n; i++) {
+				if (outputDir === nodes[i].path) {
+					parent.gotoNode(nodes[i], kbook.model);
+					break;
+				}
+			}
+		} catch (ignore) {
+			Core.ui.showMsg(L("MSG_ERROR_UNPACK"));
 		}
 	};
 	
