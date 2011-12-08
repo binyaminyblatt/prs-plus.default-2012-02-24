@@ -551,7 +551,7 @@ tmp = function() {
 			if (Core.config.model === "300" || Core.config.model ==="505") {
 				var oldEBookSetAutoStandby = ebook.setAutoStandby;
 				ebook.setAutoStandby = function (time) {
-					if (StandbyImage.options.AutoStandbyTime !== 'default') {
+					if (StandbyImage.options.AutoStandbyTime !== 'default' && time > 0) {
 						time = (Number(StandbyImage.options.AutoStandbyTime) * 60);
 					}
 					oldEBookSetAutoStandby(time);
