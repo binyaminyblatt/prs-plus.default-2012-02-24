@@ -11,6 +11,7 @@
 //	2011-12-06 quisvir - Added option to swith Tap/DoubleTap, disabled bookmark tapping option for now
 //	2011-12-06 quisvir - Fixed Bookmark Tapping option
 //	2011-12-07 quisvir - Cosmetic changes
+//	2011-12-08 quisvir - Added option to disable predictive text
 
 tmp = function() {
 
@@ -319,6 +320,18 @@ tmp = function() {
 	};
 	
 	
+	/*** OTHER ***/
+	
+	var oldGetCandidate = FskPredictive.group.getCandidate;
+	FskPredictive.group.getCandidate = function (prefix, index) {
+		if (opt.DisablePredictive === 'true') {
+			return null;
+		} else {
+			return oldGetCandidate.apply(this, arguments);
+		}
+	}
+	
+	
 	var TouchSettings = {
 		name: 'TouchSettings',
         title: L('TITLE'),
@@ -471,7 +484,19 @@ tmp = function() {
 						'false': L('VALUE_FALSE')
 					}
 				}]
-			}
+			},
+			{
+				name: 'DisablePredictive',
+				title: L('DISABLE_PREDICTIVE'),
+				icon: 'KEYBOARD',
+				defaultValue: 'false',
+				values: ['true', 'false'],
+				valueTitles: {
+					'true': L('VALUE_TRUE'),
+					'false': L('VALUE_FALSE')
+				}
+			},
+			
 		],
 		onPreInit: function () {
 			createTouchOptions();
