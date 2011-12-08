@@ -12,6 +12,7 @@
 //  2011-11-28 Ben Chenoweth - Minor code cleaning
 //  2011-11-29 Ben Chenoweth - All Bookmark Comments from one book are now saved in one TXT file
 //  2011-12-05 Ben Chenoweth - Added confirmation option
+//  2011-12-08 Ben Chenoweth - Code cleaning; failure message now compulsory (success message still optional)
 
 tmp = function() {
 	var L, log, oldNotepadDataSave, oldNotepadFreehandDataSave;
@@ -78,7 +79,8 @@ tmp = function() {
 	// Save NOTES and HANDWRITINGS
 	var oldNotepadDataSave = kbook.notepadData.save;
 	kbook.notepadData.save = function () {
-		var folder, media, name, path, msg1, msg2, width, height, stream, chr34, tab, svg, count, x, points, maker, bitmap, stream;
+		var folder, media, name, path, msg1, msg2, failed, width, height, stream, chr34, tab, svg, count, x, points, maker, bitmap, stream;
+		failed = false;
 		try {
 			media = this.media;
 			if (media) {				
@@ -91,11 +93,12 @@ tmp = function() {
 						folder = SaveNotepadData.options.saveTo;
 						Core.io.setFileContent(path, media.note.text);
 					} catch (ee) {
-						msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+						msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];					
 						msg2 = L("FAILED_TO_SAVE");
+						failed = true;
 						log.error("Save as TXT failed!");
 					}
-					if (SaveNotepadData.options.showSaveProgress === "on") {
+					if ((SaveNotepadData.options.showSaveProgress === "on") || (failed)) {
 						if (msg1 === undefined) {
 							msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
 							msg2 = path;
@@ -111,31 +114,20 @@ tmp = function() {
 						height = parseInt(media.note.drawing.height);
 						if (SaveNotepadData.options.saveHandwritingSVG === 'on') {
 							path = saveHandwritingSVG(name, svg, width, height);
-							if (SaveNotepadData.options.showSaveProgress === "on") {
-								folder = SaveNotepadData.options.saveTo;
-								if (path) {
-									msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
-									msg2 = path;
-								} else {
-									msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
-									msg2 = L("FAILED_TO_SAVE");
-								}
-								Core.ui.showMsg([msg1, msg2]);
-							}
 						}
 						if (SaveNotepadData.options.saveHandwritingJPG === 'on') {
 							path = saveHandwritingJPG(name, svg, width, height);
-							if (SaveNotepadData.options.showSaveProgress === "on") {
-								folder = SaveNotepadData.options.saveTo;
-								if (path) {
-									msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
-									msg2 = path;
-								} else {
-									msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
-									msg2 = L("FAILED_TO_SAVE");
-								}
-								Core.ui.showMsg([msg1, msg2]);
+						}
+						if ((SaveNotepadData.options.showSaveProgress === "on") || (!path)) {
+							folder = SaveNotepadData.options.saveTo;
+							if (path) {
+								msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
+								msg2 = path;
+							} else {
+								msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];					
+								msg2 = L("FAILED_TO_SAVE");
 							}
+							Core.ui.showMsg([msg1, msg2]);
 						}
 					} catch (e) { }
 				}
@@ -147,7 +139,8 @@ tmp = function() {
 	// Save BOOKMARK COMMENTS
 	var oldPageCommentEditorOverlayModelCloseAnnotationEditor = pageCommentEditorOverlayModel.closeAnnotationEditor;
 	pageCommentEditorOverlayModel.closeAnnotationEditor = function (saveflag) {
-		var folder, note, media, name, path, title, author, stream, bookmark, page, date, str;
+		var folder, note, media, name, path, title, author, stream, bookmark, page, date, str, failed;
+		failed = false;
 		if (SaveNotepadData.options.saveTextMemo === 'on') {
 			folder = SaveNotepadData.options.saveTo + "Notepads/";
 			FileSystem.ensureDirectory(folder);
@@ -189,8 +182,9 @@ tmp = function() {
 										str = this.VAR_KEYBUF;
 										Core.io.setFileContent(path, str);
 									} catch(ee) {
-										msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+										msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];					
 										msg2 = L("FAILED_TO_SAVE");
+										failed = true;
 									}
 								}
 							} else {
@@ -201,17 +195,18 @@ tmp = function() {
 									str = this.VAR_KEYBUF;
 									Core.io.setFileContent(path, str);
 								} catch (ee) {
-									msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+									msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];					
 									msg2 = L("FAILED_TO_SAVE");
+									failed = true;
 								}
 							}
-							if (SaveNotepadData.options.showSaveProgress === "on") {
+							if ((SaveNotepadData.options.showSaveProgress === "on") || (failed)) {
 								folder = SaveNotepadData.options.saveTo;
-								if (path) {
+								if (msg1 === undefined) {
 									msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
 									msg2 = path;
 								} else {
-									msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
+									msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];					
 									msg2 = L("FAILED_TO_SAVE");
 								}
 								Core.ui.showMsg([msg1, msg2]);
@@ -244,31 +239,20 @@ tmp = function() {
 								name = Date.now();
 								if (SaveNotepadData.options.saveHandwritingJPG === 'on') {
 									path = saveHandwritingJPG(name, svg, width, height);
-									if (SaveNotepadData.options.showSaveProgress === "on") {
-										folder = SaveNotepadData.options.saveTo;
-										if (path) {
-											msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
-											msg2 = path;
-										} else {
-											msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
-											msg2 = L("FAILED_TO_SAVE");
-										}
-										Core.ui.showMsg([msg1, msg2]);
-									}
 								}
 								if (SaveNotepadData.options.saveHandwritingSVG === 'on') {
 									path = saveHandwritingSVG(name, svg, width, height);
-									if (SaveNotepadData.options.showSaveProgress === "on") {
-										folder = SaveNotepadData.options.saveTo;
-										if (path) {
-											msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
-											msg2 = path;
-										} else {
-											msg1 = L("SAVING_TO") + saveToValueTitles[folder];					
-											msg2 = L("FAILED_TO_SAVE");
-										}
-										Core.ui.showMsg([msg1, msg2]);
+								}
+								if ((SaveNotepadData.options.showSaveProgress === "on") || (!path)) {
+									folder = SaveNotepadData.options.saveTo;
+									if (path) {
+										msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];
+										msg2 = path;
+									} else {
+										msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];					
+										msg2 = L("FAILED_TO_SAVE");
 									}
+									Core.ui.showMsg([msg1, msg2]);
 								}
 							}
 						}
