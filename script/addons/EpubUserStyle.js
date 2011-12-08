@@ -15,6 +15,7 @@
 //	2011-02-07 kartu - Added Core.config.userCSSFile support (instead of hardcoded style.css)
 //	2011-11-20 kartu - Added sorting to CSS files
 //	2011-12-07 quisvir - Added automatic epub reloading & action to change CSS from within book
+//  2011-12-08 Mark Nord - Use of Core.ui.getCurrentNode in "action"
 
 tmp = function() {
 	var L, endsWith, USER_CSS, DISABLED, EpubUserStyle;
@@ -91,8 +92,7 @@ tmp = function() {
 			icon: 'FONT',
 			action: function () {
 				// Attach temporary setting node to currentNode; epub reload is handled by onSettingsChanged
-				// fork: x50 kbook.model.currentNode; 300/500 kbook.model.current
-				var currentNode = kbook.model.currentNode ? kbook.model.currentNode : kbook.model.current;            
+				var currentNode = Core.ui.getCurrentNode();           
 				Core.addonByName.PRSPSettings.createSingleSetting(currentNode, this.addon.optionDefs[0], this.addon);
 				currentNode.gotoNode(currentNode.nodes.pop(), kbook.model);
 			}
