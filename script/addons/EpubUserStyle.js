@@ -91,7 +91,8 @@ tmp = function() {
 			icon: 'FONT',
 			action: function () {
 				// Attach temporary setting node to currentNode; epub reload is handled by onSettingsChanged
-				var currentNode = kbook.model.currentNode;
+				// fork: x50 kbook.model.currentNode; 300/500 kbook.model.current
+				var currentNode = kbook.model.currentNode ? kbook.model.currentNode : kbook.model.current;            
 				Core.addonByName.PRSPSettings.createSingleSetting(currentNode, this.addon.optionDefs[0], this.addon);
 				currentNode.gotoNode(currentNode.nodes.pop(), kbook.model);
 			}
