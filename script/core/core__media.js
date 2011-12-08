@@ -11,11 +11,21 @@
 //	2010-11-11 kartu - Added isImage function
 //	2011-03-02 kartu - Added loadMedia, 
 //			createMediaNode assumes path is actually media object, if its type is not string
-//
+//	2011-12-08 Ben Chenoweth - Archive support (using on Shura1oplot's code); scanDirectory is now recursive
+
 tmp = function() {
-	var findLibrary, findMedia, loadMedia, createMediaNode, isImage, startsWith;
+	var supportedMIMEs, findLibrary, findMedia, loadMedia, scanDirectory, createMediaNode, isImage, startsWith;
 	// Shortcut
 	startsWith = Core.text.startsWith; 
+
+	supportedMIMEs = {
+		//"audio/mpeg": true,
+		"application/rtf": true,
+		"application/pdf": true,
+		"application/epub+zip": true,
+		"application/x-sony-bbeb": true,
+		"text/plain": true
+	};
 	
 	/**
 	* Finds kinoma "source" (instance of FskCache.source) corresponding to the given full path
@@ -63,6 +73,28 @@ tmp = function() {
 		return item;
 	};
 
+	/**
+	* Searchs unscanned media files in directory and adds it to library
+	*/
+	scanDirectory = function (path) {
+		var iterator, item, itemFullPath, name, mime;
+		iterator = new FileSystem.Iterator(path);
+		while (item = iterator.getNext()) {
+			itemFullPath = path + item.path;
+			if (item.type === 'directory') {
+				// item is a folder, so recursively scan the folder
+				scanDirectory(itemFullPath + "/");
+			} else {
+				mime = FileSystem.getMIMEType(itemFullPath);
+				if (supportedMIMEs[mime]) {
+					if (!findMedia(itemFullPath)) {
+						loadMedia(itemFullPath);
+						kbook.root.update();
+					}
+				}
+			}
+		}
+	};
 	
 	/**
 	* Creates media node (book, image, note etc) for media with a given path, returns null if media cannot be found.
@@ -87,6 +119,22 @@ tmp = function() {
 					node.parent = parent;
 					node.depth = parent.depth + 1;
 					node.type = mediaTypesStr[i];
+					/*try {
+						if (mediaTypesStr[i]==="audio") {
+							node.onEnter = kbook.model.onEnterSong(this);
+							node.onSelect = kbook.model.onSelectDefault(this);
+							node.kind = 3;
+							node.playingKind = 14;
+							node.comment = Core.io.extractFileName(path);
+							//log.trace("node.comment="+node.comment);
+						}
+					} catch(e) { log.trace("Error trying to make media node"); } */
+					//log.trace("Looking in node:");
+					//for (var name in node) {
+					//	if (node.hasOwnProperty(name)) {
+					//		log.trace(name+"="+node[name]);
+					//	}
+					//}
 					return node;
 				}
 			}
@@ -101,6 +149,7 @@ tmp = function() {
 	};
 	
 	Core.media = {
+		supportedMIMEs: supportedMIMEs,
 		/**
 		* Finds media (book, image, audio, etc) with a given path
 		* @returns null, if media cannot be found
@@ -117,6 +166,10 @@ tmp = function() {
 		*/
 		findLibrary: findLibrary,
 		
+		/**
+		* Searchs unscanned media files in directory and adds it to library
+		*/
+		scanDirectory: scanDirectory,
 		
 		/**
 		* Creates node corresponding to the given path with a given title
