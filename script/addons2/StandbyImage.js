@@ -8,15 +8,16 @@
 //	2011-11-21 quisvir - Rewritten to merge all relevant code, add shutdown image support, icon, custom text
 //	2011-11-22 quisvir - Implemented bugfixes from Mark Nord, fixed standby icon indices
 //	2011-11-22 Mark Nord - some more tweaks to get it working with 300/505
-//  2011-11-25 Ben Chenoweth - icon on standby and shutdown now separate options
+//	2011-11-25 Ben Chenoweth - icon on standby and shutdown now separate options
 //	2011-11-26 quisvir - separate standby/shutdown text
 //	2011-11-27 quisvir - made customtext code more flexible, added scaling option
-//  2011-11-28 Ben Chenoweth - Added event overlay option (on standby and/or shutdown)
+//	2011-11-28 Ben Chenoweth - Added event overlay option (on standby and/or shutdown)
 //	2011-12-01 quisvir - Fixed issue #238 "505: does not display custom Standby text"
 //	2011-12-03 quisvir - Added Auto Standby/Shutdown Time options
 //	2011-12-04 quisvir - Fixed regression that broke fallback to system standby function
 //	2011-12-07 quisvir - Fixed fallback to oldStandbyImageDraw on shutdown
 //	2011-12-07 quisvir - Fixed shutdown image not displaying on auto-shutdown (issue #242)
+//	2011-12-08 Mark Nord - Added Auto Standby Time option for 300/505
 //
 //	TODO: set/restore portrait orientation on shutdown
 
@@ -28,7 +29,7 @@ tmp = function() {
 	L = Core.lang.getLocalizer("StandbyImage");
 	LX = Core.lang.LX;
 	log = Core.log.getLogger("StandbyImage");
-	
+
 	// Constants
 	orgOrientation = 0;
 
@@ -464,6 +465,29 @@ tmp = function() {
 			switch (Core.config.model) {
 				case "505":
 				case "300":
+					this.optionDefs.push(
+						{
+							name: "AutoStandbyTime",
+							title: L("AUTO_STANDBY_TIME"),
+							icon: "CLOCK",
+							defaultValue: "default",
+							values: ["default", "1", "2", "3", "5", "10", "15", "20", "30", "45", "90", "120"],
+							valueTitles: {
+								"default": L("VALUE_DEFAULT"),
+								"1": LX("MINUTES", 1),
+								"2": LX("MINUTES", 2),
+								"3": LX("MINUTES", 3),
+								"5": LX("MINUTES", 5),
+								"10": LX("MINUTES", 10),
+								"15": LX("MINUTES", 15),
+								"20": LX("MINUTES", 20),
+								"30": LX("MINUTES", 30),
+								"45": LX("MINUTES", 45),
+								"90": LX("MINUTES", 90),
+								"120": LX("MINUTES", 120),
+							}
+						}
+					);
 				case "600":
 					this.optionDefs[0].optionDefs[0].values = ["random", "white", "black", "cover", "act_page", "calendar"];
 					this.optionDefs[0].optionDefs[0].defaultValue = "white";
@@ -523,6 +547,27 @@ tmp = function() {
 			}
 		},
 		onInit: function () {
+			// model sniffing
+			if (Core.config.model === "300" || Core.config.model ==="505") {
+				var oldEBookSetAutoStandby = ebook.setAutoStandby;
+				ebook.setAutoStandby = function (time) {
+					if (StandbyImage.options.AutoStandbyTime !== 'default') {
+						time = (Number(StandbyImage.options.AutoStandbyTime) * 60);
+					}
+					oldEBookSetAutoStandby(time);
+				};
+				// adjust like 600/x50
+				this.options.AutoShutdownTime = 'default';
+				ebook.device = {
+					rtc : {
+						autoStandby : {
+							time : 3600,
+							_initialize : ebook.setAutoStandby
+						}
+					}		
+				};
+			}
+			// general code
 			if (this.options.AutoStandbyTime) {
 				if (this.options.AutoStandbyTime !== 'default') ebook.device.rtc.autoStandby._initialize(Number(this.options.AutoStandbyTime) * 60);
 				if (this.options.AutoShutdownTime !== 'default') ebook.device.rtc.autoShutdown._initialize(Number(this.options.AutoShutdownTime) * 3600, ebook.device.rtc.autoShutdown.lowCaseTime);
