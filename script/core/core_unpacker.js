@@ -5,7 +5,7 @@
 // History:
 //	2011-08-09 Shura1oplot - Initial version
 //  2011-12-08 Ben Chenoweth - Added CBR and CBZ to supported archives; commented out unrar for now
-//  2011-12-09 Ben Chenoweth - Reinstated unrar
+//  2011-12-09 Ben Chenoweth - Reinstated unrar & default password switch
 //
 try {
 	tmp = function() {
@@ -49,8 +49,8 @@ try {
 			} else {
 				cmdOutputDir = " \"" + outputDir + "\"";
 			}
-			//return UNRAR + " x -p\"" + password  + "\" -y \"" + path + "\"" + cmdOutputDir;
-			return UNRAR + " x -y \"" + path + "\"" + cmdOutputDir;
+			return UNRAR + " x -p\"" + password  + "\" -y \"" + path + "\"" + cmdOutputDir;
+			//return UNRAR + " x -y \"" + path + "\"" + cmdOutputDir;
 		};
 		
 		getP7zipCmdLine = function (path, outputDir, password) {
@@ -60,8 +60,8 @@ try {
 			} else {
 				cmdOutputDir = " -o\"" + outputDir + "\"";
 			}
-			//return P7ZIP + cmdOutputDir + " -p\"" + password  + "\" -y x \"" + path + "\"";
-			return P7ZIP + cmdOutputDir + " -y x \"" + path + "\"";
+			return P7ZIP + cmdOutputDir + " -p\"" + password  + "\" -y x \"" + path + "\"";
+			//return P7ZIP + cmdOutputDir + " -y x \"" + path + "\"";
 		};
 		
 		Core.unpacker = {
