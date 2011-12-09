@@ -387,7 +387,7 @@ tmp = function() {
 					// Iterate over item's content
 					iterator = new FileSystem.Iterator(path);
 					while (item = iterator.getNext()) {
-						if ((item.type === "directory") || (item.type === "folder")) {
+						if (item.type === "directory") {
 							factory = createFolderNode;
 						} else {
 							factory = createMediaNode;

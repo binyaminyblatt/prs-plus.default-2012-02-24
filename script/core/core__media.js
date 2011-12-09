@@ -81,8 +81,8 @@ tmp = function() {
 		iterator = new FileSystem.Iterator(path);
 		while (item = iterator.getNext()) {
 			itemFullPath = path + item.path;
-			if ((item.type === 'directory') || (item.type === 'folder')){
-				// item is a folder, so recursively scan the folder
+			if (item.type === 'directory') {
+				// item is a directory, so recursively scan the directory
 				scanDirectory(itemFullPath + "/");
 			} else {
 				mime = FileSystem.getMIMEType(itemFullPath);
