@@ -1,4 +1,4 @@
-// Name: Unpacker
+// Name: Archiver
 // Description: Support rar, zip and 7z archives.
 // Author: Shura1oplot
 //
@@ -6,6 +6,7 @@
 //	2011-08-09 Shura1oplot - Initial version
 //  2011-12-08 Ben Chenoweth - Added CBR and CBZ to supported archives; commented out unrar for now
 //  2011-12-09 Ben Chenoweth - Reinstated unrar & default password switch
+//  2011-12-09 Ben Chenoweth - Renamed file from core_unpacker.js to core_archiver.js
 //
 try {
 	tmp = function() {
@@ -38,7 +39,7 @@ try {
 				//log.trace(cmd);
 				Core.shell.exec(cmd);
 			} catch (e) {
-				log.error("unpacker", e);
+				log.error("archiver", e);
 			}
 		};
 		
@@ -64,7 +65,7 @@ try {
 			//return P7ZIP + cmdOutputDir + " -y x \"" + path + "\"";
 		};
 		
-		Core.unpacker = {
+		Core.archiver = {
 			supportedArchives: supportedArchives,
 			unpack: unpack
 		};
@@ -72,5 +73,5 @@ try {
 	
 	tmp();
 } catch (e) {
-	log.error("Error in core_unpacker.js", e);
+	log.error("Error in core_archiver.js", e);
 }
