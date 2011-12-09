@@ -299,22 +299,31 @@ tmp = function() {
 	};
 
 	doUnpackHere = function () {
-		var path, parent, outputDir, nodes, i, n;
+		var path, parent, outputDir, nodes, i, n, needsMount;
 		path = this.path;
 		parent = this.parent;
 		outputDir = Core.io.extractPath(path) + Core.io.extractFileName(path, true) + "/";
 		Core.ui.showMsg(L("MSG_UNPACKING"), 1);
 		try {
-			Core.unpacker.unpack(path, outputDir);
-			Core.media.scanDirectory(outputDir);
-			this.gotoNode(parent, kbook.model);
-			parent.update();
-			nodes = parent.nodes;
-			for (i = 0, n = nodes.length; i < n; i++) {
-				if (outputDir === nodes[i].path) {
-					parent.gotoNode(nodes[i], kbook.model);
-					break;
+			// mount, if needed
+			needsMount = this.parent.needsMount;
+			if (needsMount !== undefined) {
+				Core.shell.mount(needsMount);
+			}
+			try {
+				Core.unpacker.unpack(path, outputDir);
+				Core.media.scanDirectory(outputDir);
+				this.gotoNode(parent, kbook.model);
+				parent.update();
+				nodes = parent.nodes;
+				for (i = 0, n = nodes.length; i < n; i++) {
+					if (outputDir === nodes[i].path) {
+						parent.gotoNode(nodes[i], kbook.model);
+						break;
+					}
 				}
+			} finally {
+				Core.shell.umount(needsMount);
 			}
 		} catch (ignore) {
 			Core.ui.showMsg(L("MSG_ERROR_UNPACK"));
@@ -378,7 +387,7 @@ tmp = function() {
 					// Iterate over item's content
 					iterator = new FileSystem.Iterator(path);
 					while (item = iterator.getNext()) {
-						if (item.type === "directory") {
+						if ((item.type === "directory") || (item.type === "folder")) {
 							factory = createFolderNode;
 						} else {
 							factory = createMediaNode;
