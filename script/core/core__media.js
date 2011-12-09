@@ -81,7 +81,7 @@ tmp = function() {
 		iterator = new FileSystem.Iterator(path);
 		while (item = iterator.getNext()) {
 			itemFullPath = path + item.path;
-			if (item.type === 'directory') {
+			if ((item.type === 'directory') || (item.type === 'folder')){
 				// item is a folder, so recursively scan the folder
 				scanDirectory(itemFullPath + "/");
 			} else {
