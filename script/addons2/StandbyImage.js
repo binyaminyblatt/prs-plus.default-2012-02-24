@@ -18,6 +18,7 @@
 //	2011-12-07 quisvir - Fixed fallback to oldStandbyImageDraw on shutdown
 //	2011-12-07 quisvir - Fixed shutdown image not displaying on auto-shutdown (issue #242)
 //	2011-12-08 Mark Nord - Added Auto Standby Time option for 300/505
+//	2011-12-10 quisvir - Merged Auto Standby Time options
 //
 //	TODO: set/restore portrait orientation on shutdown
 
@@ -459,69 +460,44 @@ tmp = function() {
 					"false": L("VALUE_FALSE")
 				}
 			},
+			{
+				name: "AutoStandbyTime",
+				title: L("AUTO_STANDBY_TIME"),
+				icon: "CLOCK",
+				defaultValue: "default",
+				values: ["default", "1", "3", "5", "10", "15", "20", "30", "60", "120"],
+				valueTitles: {
+					"default": L("VALUE_DEFAULT"),
+					"1": LX("MINUTES", 1),
+					"3": LX("MINUTES", 3),
+					"5": LX("MINUTES", 5),
+					"10": LX("MINUTES", 10),
+					"15": LX("MINUTES", 15),
+					"20": LX("MINUTES", 20),
+					"30": LX("MINUTES", 30),
+					"60": LX("MINUTES", 60),
+					"120": LX("MINUTES", 120),
+				}
+			}
 		],
 		onPreInit: function () {
 			// For pre-x50 models, change system standby option to random wallpaper
 			switch (Core.config.model) {
 				case "505":
 				case "300":
-					this.optionDefs.push(
-						{
-							name: "AutoStandbyTime",
-							title: L("AUTO_STANDBY_TIME"),
-							icon: "CLOCK",
-							defaultValue: "default",
-							values: ["default", "1", "2", "3", "5", "10", "15", "20", "30", "45", "90", "120"],
-							valueTitles: {
-								"default": L("VALUE_DEFAULT"),
-								"1": LX("MINUTES", 1),
-								"2": LX("MINUTES", 2),
-								"3": LX("MINUTES", 3),
-								"5": LX("MINUTES", 5),
-								"10": LX("MINUTES", 10),
-								"15": LX("MINUTES", 15),
-								"20": LX("MINUTES", 20),
-								"30": LX("MINUTES", 30),
-								"45": LX("MINUTES", 45),
-								"90": LX("MINUTES", 90),
-								"120": LX("MINUTES", 120),
-							}
-						}
-					);
 				case "600":
 					this.optionDefs[0].optionDefs[0].values = ["random", "white", "black", "cover", "act_page", "calendar"];
 					this.optionDefs[0].optionDefs[0].defaultValue = "white";
 					this.optionDefs[1].optionDefs[0].values = ["random", "white", "black", "cover", "calendar"];
 			}
 			
-			// Add auto standby/shutdown time for 600+
+			// Add auto-shutdown time for 600+
 			switch (Core.config.model) {
 				case "350":
 				case "650":
 				case "950":
 				case "600":
 					this.optionDefs.push(
-						{
-							name: "AutoStandbyTime",
-							title: L("AUTO_STANDBY_TIME"),
-							icon: "CLOCK",
-							defaultValue: "default",
-							values: ["default", "1", "2", "3", "5", "10", "15", "20", "30", "45", "60", "120"],
-							valueTitles: {
-								"default": L("VALUE_DEFAULT"),
-								"1": LX("MINUTES", 1),
-								"2": LX("MINUTES", 2),
-								"3": LX("MINUTES", 3),
-								"5": LX("MINUTES", 5),
-								"10": LX("MINUTES", 10),
-								"15": LX("MINUTES", 15),
-								"20": LX("MINUTES", 20),
-								"30": LX("MINUTES", 30),
-								"45": LX("MINUTES", 45),
-								"60": LX("MINUTES", 60),
-								"120": LX("MINUTES", 120),
-							}
-						},
 						{
 							name: "AutoShutdownTime",
 							title: L("AUTO_SHUTDOWN_TIME"),
