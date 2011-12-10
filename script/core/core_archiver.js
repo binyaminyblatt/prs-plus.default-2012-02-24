@@ -7,20 +7,54 @@
 //  2011-12-08 Ben Chenoweth - Added CBR and CBZ to supported archives; commented out unrar for now
 //  2011-12-09 Ben Chenoweth - Reinstated unrar & default password switch
 //  2011-12-09 Ben Chenoweth - Renamed file from core_unpacker.js to core_archiver.js
+//  2011-12-10 Ben Chenoweth - Added list function
 //
 try {
 	tmp = function() {
-		var L, supportedArchives, defaultPassword, UNRAR, P7ZIP, unpack, getRarCmdLine, getP7zipCmdLine;
+		var L, supportedArchives, defaultPassword, UNRAR, P7ZIP, RESULT_FILE, unpack, getRarCmdLine, getP7zipCmdLine;
 		UNRAR = System.applyEnvironment("[prspPath]") + "unrar";
 		P7ZIP = System.applyEnvironment("[prspPath]") + "7za";
+		RETURNED_LIST = "/tmp/returnedlist";
 		supportedArchives = {
 			"7z": true,
 			"rar": true,
 			"zip": true,
 			"cbz": true,
-			"cbr": true,
+			"cbr": true
 		};
 		defaultPassword = "qwerty";
+
+		list = function (path, outputDir, password) {
+			var extension, result;
+			
+			if (password === undefined) {
+				password = defaultPassword;
+			}
+			
+			extension = Core.io.extractExtension(path);
+			if ((extension === "rar") || (extension === "cbr")) {
+				cmd = getRarCmdLine(path, outputDir, password, "list");
+			} else {
+				cmd = getP7zipCmdLine(path, outputDir, password, "list");
+			}
+			try {
+				try {
+					FileSystem.deleteFile(RETURNED_LIST);
+				} catch (ignore) {
+				}
+				log.trace(cmd);
+				Core.shell.exec(cmd);
+				result = Core.io.getFileContent(RETURNED_LIST, "222");
+				log.trace("result="+result);
+				if (result !== "222") {
+					return result;
+				} else {
+					return null;
+				}
+			} catch (e) {
+				log.error("archiver", e);
+			}
+		};
 
 		unpack = function (path, outputDir, password) {
 			var extension;
@@ -31,9 +65,9 @@ try {
 			
 			extension = Core.io.extractExtension(path);
 			if ((extension === "rar") || (extension === "cbr")) {
-				cmd = getRarCmdLine(path, outputDir, password);
+				cmd = getRarCmdLine(path, outputDir, password, "unpack");
 			} else {
-				cmd = getP7zipCmdLine(path, outputDir, password);
+				cmd = getP7zipCmdLine(path, outputDir, password, "unpack");
 			}
 			try {
 				//log.trace(cmd);
@@ -43,30 +77,35 @@ try {
 			}
 		};
 		
-		getRarCmdLine = function (path, outputDir, password) {
+		getRarCmdLine = function (path, outputDir, password, action) {
 			var cmdOutputDir;
 			if (outputDir === undefined) {
 				cmdOutputDir = "";
 			} else {
 				cmdOutputDir = " \"" + outputDir + "\"";
 			}
-			return UNRAR + " x -p\"" + password  + "\" -y \"" + path + "\"" + cmdOutputDir;
-			//return UNRAR + " x -y \"" + path + "\"" + cmdOutputDir;
+			switch (action) {
+				case 'unpack' : return UNRAR + " x -p\"" + password  + "\" -y \"" + path + "\"" + cmdOutputDir;
+				case 'list' : return UNRAR + " -p\"" + password  + "\" lP \"" + path + "\" >" + RETURNED_LIST;
+			}
 		};
 		
-		getP7zipCmdLine = function (path, outputDir, password) {
+		getP7zipCmdLine = function (path, outputDir, password, action) {
 			var cmdOutputDir;
 			if (outputDir === undefined) {
 				cmdOutputDir = "";
 			} else {
 				cmdOutputDir = " -o\"" + outputDir + "\"";
 			}
-			return P7ZIP + cmdOutputDir + " -p\"" + password  + "\" -y x \"" + path + "\"";
-			//return P7ZIP + cmdOutputDir + " -y x \"" + path + "\"";
+			switch (action) {
+				case 'unpack' : return P7ZIP + cmdOutputDir + " -p\"" + password  + "\" -y x \"" + path + "\"";
+				case 'list' : return P7ZIP + " -p\"" + password  + "\" l -PRSP \"" + path + "\" >" + RETURNED_LIST;
+			}
 		};
-		
+
 		Core.archiver = {
 			supportedArchives: supportedArchives,
+			list: list,
 			unpack: unpack
 		};
 	};
