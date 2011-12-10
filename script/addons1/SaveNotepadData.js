@@ -13,6 +13,7 @@
 //  2011-11-29 Ben Chenoweth - All Bookmark Comments from one book are now saved in one TXT file
 //  2011-12-05 Ben Chenoweth - Added confirmation option
 //  2011-12-08 Ben Chenoweth - Code cleaning; failure message now compulsory (success message still optional)
+//  2011-12-10 Ben Chenoweth - Added option to override Text Note with contents of changed TXT file
 
 tmp = function() {
 	var L, log, oldNotepadDataSave, oldNotepadFreehandDataSave;
@@ -261,7 +262,44 @@ tmp = function() {
 			} catch(e) { log.error("Bookmark Handwriting save failed!"); }
 		}
 		oldPageScribbleEditorOverlayModelCloseAnnotationEditor.apply(this, arguments);
-	}
+	};
+	
+	// Override contents of TEXT NOTE using changed TXT file
+	var oldNotepadDataSetData = kbook.notepadData.setData;
+	kbook.notepadData.setData = function (media) {
+		var folder, name, path;
+		try {
+			if (media) {
+				if ((media.type === 'text') && (SaveNotepadData.options.overrideTextMemo === 'on')) {
+					//replace media.note.text with contents of TXT file with same note name (if it exists and is different)
+					folder = SaveNotepadData.options.saveTo + "Notepads/";
+					FileSystem.ensureDirectory(folder);
+					name = media.path.substring(media.path.lastIndexOf('/') + 1);
+					path = folder + name + ".txt";
+					folder = SaveNotepadData.options.saveTo;
+					if (FileSystem.getFileInfo(path)) {
+						// saved note of same name as media note exists
+						content = Core.io.getFileContent(path, "222");
+						if (content !== "222") {
+							if (media.note.text !== content) {
+								// content is different
+								media.note.text = content;
+								msg1 = L("LOADING_FROM") + " " + saveToValueTitles[folder];
+								msg2 = path;
+								Core.ui.showMsg([msg1, msg2]);
+							}
+						}
+					}
+				}
+			}
+		} catch (e) {
+			msg1 = L("LOADING_FROM") + " " + saveToValueTitles[folder];					
+			msg2 = L("FAILED_TO_LOAD");
+			Core.ui.showMsg([msg1, msg2]);
+			log.error("Override NOTE with TXT failed!");
+		}
+		oldNotepadDataSetData.apply(this, arguments);
+	};
 	
 	var saveToValueTitles = {
 		"a:/": L("MEMORY_STICK"),
@@ -277,6 +315,17 @@ tmp = function() {
 			{
 				name: "saveTextMemo",
 				title: L("SAVE_TEXT_MEMO"),
+				icon: "TEXT_MEMO",
+				defaultValue: "off",
+				values: ["on", "off"],
+				valueTitles: {
+					"on": L("FEEDBACK_ON"),
+					"off": L("FEEDBACK_OFF")
+				}
+			},
+			{
+				name: "overrideTextMemo",
+				title: L("OVERRIDE_TEXT_MEMO"),
 				icon: "TEXT_MEMO",
 				defaultValue: "off",
 				values: ["on", "off"],
