@@ -52,7 +52,7 @@ tmp = function() {
 	startsWith = Core.text.startsWith;
 	trim = Core.text.trim;
 	supportedMIMEs = Core.media.supportedMIMEs;
-	supportedArchives = Core.unpacker.supportedArchives;
+	supportedArchives = Core.archiver.supportedArchives;
 	
 	ACTION_ICON = "BACK";
 
