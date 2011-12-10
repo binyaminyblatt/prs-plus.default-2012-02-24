@@ -7,6 +7,7 @@
 //		ALL: Restart warning message is shown at most once per hour
 //	2011-11-20 kartu - Removed unused "DESCRIPTION"
 //	2011-12-09 quisvir - Added action to reformat current book
+//	2011-12-10 quisvir - Fixed bookData bug spotted by Mark
 
 tmp = function() {
 	var LRFTextScale, defVal, L, ZOOM_VALUES, ZOOM_VALUE_NAMES, ZOOM_LEVEL_NAMES, scaleMin, scaleMax,
@@ -35,7 +36,7 @@ tmp = function() {
 			action: function () {
 				if (!kbook.model.currentBook) return;
 				var data = kbook.bookData;
-				kbook.model.currentBook.media.browseTo(data.data, undefined, undefined, undefined, undefined, false, data.width, data.height, data.book.facing);
+				kbook.model.currentBook.media.browseTo(data, undefined, undefined, undefined, undefined, false, data.width, data.height, data.book.facing);
 				data.book.dataChanged();
 			}
 		}]
