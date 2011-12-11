@@ -4,6 +4,7 @@ Build script for PRS+ project
 History:
 	2011-03-01 kartu - Rewritten from scratch
 	2011-09-30 kartu - Added Unix support
+	2011-12-12 kartu - Fixed runonce.sh (removed "archive" attribute)
 -->
 <project default="buildAll">
 	<!--======================================================================== 
@@ -116,6 +117,12 @@ History:
 		<echo>Building installation package for model PRS-${model}</echo>
 		<propertycopy name="isFlashable" from="FLASHABLE_${model}" override="true" silent="true" />
 		
+		<!-- Clear read only attribute from runonce.sh -->
+		<attrib archive="true" verbose="true">
+			<fileset file="../installer/data/runonce.sh" />
+		</attrib>
+
+
 		<if>
 			<equals arg1="${isFlashable}" arg2="true" />
 			<then>

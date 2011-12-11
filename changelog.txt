@@ -9,6 +9,12 @@
  * x50: Added Touch Settings addon (Tap, Swipe & Zoom options)
  * x50: Home menu booklist: Added 'Select Collection' option & action
 
+=== 2.0.17 release candidate 3 ===
+ * x50: Fixed Issue #244 "books deleted using PC do not dissapear if scanning is "disabled (load cache)""
+ * ALL: Fixed missing translation
+ * ALL: Fixed #237 ALL: Menu Customization is buggy
+ * ALL: Fixed Issue #234 "Mah Jong reports "no more moves" when moves are still available"
+
 === 2.0.16 release candidate 2 (26.11.2011) ===
  * ALL: Minor translation fixes (RUS, TUR)
  * ALL: StandbyImage: Fix for scaling bug in Sony code
