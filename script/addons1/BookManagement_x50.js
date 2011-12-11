@@ -1,4 +1,4 @@
-// Name: BookManagement_x50
+// Name: BookManagement_x50
 // Description: Allows to set 'new' flag manually, to hide default collections,
 //				to show reading progress in home menu and thumbnail views
 //				and to customize home menu booklist
@@ -348,7 +348,7 @@ tmp = function() {
 					}
 					break;
 				case 3: // Booklist option: next books in collection
-					// FIXME doesn't work properly with cycle backwards, next/previous books
+					// FIXME doesn't work properly with cycle backwards
 					var i=0, j, k, id, result2, colls, coll, books;
 					if (current) {
 						id = current.id;
@@ -548,15 +548,6 @@ tmp = function() {
 			}
 		},
 		{
-			name: 'BookListSelectCollection',
-			title: L('BOOKLIST_SELECT_COLLECTION'),
-			group: 'Other',
-			icon: 'BOOKS',
-			action: function () {
-				doSelectCollection();
-			}
-		},
-		{
 			name: 'BookListNextBooks',
 			title: L('BOOKLIST_NEXT_BOOKS'),
 			group: 'Other',
@@ -584,6 +575,15 @@ tmp = function() {
 					trigger4 = true;
 					updateBookList();
 				}
+			}
+		},
+		{
+			name: 'BookListSelectCollection',
+			title: L('BOOKLIST_SELECT_COLLECTION'),
+			group: 'Other',
+			icon: 'BOOKS',
+			action: function () {
+				doSelectCollection();
 			}
 		}],
 		optionDefs: [
