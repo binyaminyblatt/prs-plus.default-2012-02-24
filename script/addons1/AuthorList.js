@@ -22,7 +22,7 @@ tmp = function() {
 	authorsNode = null;
 	
 	authorsNodeConstruct = function () {
-		var i, c, result, record, author, path, books, node;
+		var i, c, result, record, author, path, books, node, obj0, obj1;
 		authors = [];
 		this.nodes = [];
 		result = kbook.model.cache.textMasters;
