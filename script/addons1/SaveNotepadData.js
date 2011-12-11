@@ -14,6 +14,7 @@
 //  2011-12-05 Ben Chenoweth - Added confirmation option
 //  2011-12-08 Ben Chenoweth - Code cleaning; failure message now compulsory (success message still optional)
 //  2011-12-10 Ben Chenoweth - Added option to override Text Note with contents of changed TXT file
+//  2011-12-11 Ben Chenoweth - Added error code to log.error calls
 
 tmp = function() {
 	var L, log, oldNotepadDataSave, oldNotepadFreehandDataSave;
@@ -47,7 +48,7 @@ tmp = function() {
 			stream.close();
 			return path;
 		} catch(e) {
-			log.error("Save as SVG failed!");
+			log.error("Save as SVG failed!", e);
 			return false;
 		}
 	}
@@ -72,7 +73,7 @@ tmp = function() {
 			} catch (ignore) { }
 			return path;
 		} catch (e) {
-			log.error("Save as JPG failed!");
+			log.error("Save as JPG failed!", e);
 			return false;
 		}
 	}
@@ -97,7 +98,7 @@ tmp = function() {
 						msg1 = L("SAVING_TO") + " " + saveToValueTitles[folder];					
 						msg2 = L("FAILED_TO_SAVE");
 						failed = true;
-						log.error("Save as TXT failed!");
+						log.error("Save as TXT failed!", ee);
 					}
 					if ((SaveNotepadData.options.showSaveProgress === "on") || (failed)) {
 						if (msg1 === undefined) {
@@ -133,7 +134,7 @@ tmp = function() {
 					} catch (e) { }
 				}
 			}
-		} catch (e) { log.error("Save failed!"); }
+		} catch (e) { log.error("Save failed!", e); }
 		return oldNotepadDataSave.apply(this);
 	}
 	
@@ -215,7 +216,7 @@ tmp = function() {
 						}
 					}
 				}
-			} catch (e) { log.error("Bookmark Note save failed!"); }
+			} catch (e) { log.error("Bookmark Note save failed!", e); }
 		}
 		oldPageCommentEditorOverlayModelCloseAnnotationEditor.apply(this, arguments);
 	}
@@ -259,7 +260,7 @@ tmp = function() {
 						}
 					}
 				}
-			} catch(e) { log.error("Bookmark Handwriting save failed!"); }
+			} catch(e) { log.error("Bookmark Handwriting save failed!", e); }
 		}
 		oldPageScribbleEditorOverlayModelCloseAnnotationEditor.apply(this, arguments);
 	};
@@ -296,7 +297,7 @@ tmp = function() {
 			msg1 = L("LOADING_FROM") + " " + saveToValueTitles[folder];					
 			msg2 = L("FAILED_TO_LOAD");
 			Core.ui.showMsg([msg1, msg2]);
-			log.error("Override NOTE with TXT failed!");
+			log.error("Override NOTE with TXT failed!", e);
 		}
 		oldNotepadDataSetData.apply(this, arguments);
 	};
