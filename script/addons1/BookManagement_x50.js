@@ -32,11 +32,12 @@
 //  2011-12-05 Ben Chenoweth - Reset "Last Opened Books" when new book selected
 //	2011-12-07 quisvir - Cosmetic changes
 //	2011-12-11 quisvir - Extended 'Next/Previous Books' to all booklist options
+//	2011-12-12 quisvir - Changed booklist construct to check numCurrentBook right away; various changes
 
 tmp = function() {
 
 	var L, LX, log, opt, bookChanged, trigger1, trigger2, trigger3, trigger4, doSelectCollection, selectCollectionConstruct,
-		selectCollectionDestruct, tempCollectionNode, oldParentNode, numCurrentBook, foundCurrent;
+		selectCollectionDestruct, tempCollectionNode, oldParentNode, numCurrentBook, updateBookList;
 	
 	L = Core.lang.getLocalizer('BookManagement');
 	LX = Core.lang.LX;
@@ -192,7 +193,7 @@ tmp = function() {
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
 		var record, page, pages, msg, nodes;
 		oldThumbnaildrawRecord.apply(this, arguments);
-		if (kbook.model.STATE === 'MENU_HOME' && offset === 2) {
+		if (xs.isInstanceOf(kbook.model.currentNode, kbook.root.children.deviceRoot) && offset === 2) {
 			if (opt.HomeMenuBooklist === 5) {
 				msg = opt.SelectedCollection;
 			} else if (opt.HomeMenuBooklist === 3 && opt.CurrentCollection) {
@@ -230,12 +231,6 @@ tmp = function() {
 		}
 	}
 
-	// Code to randomize array from jsfromhell.com
-	arrayShuffle = function (v) {
-		for (var j, x, i = v.length; i; j = parseInt(Math.random() * i), x = v[--i], v[i] = v[j], v[j] = x);
-		return v;
-	};
-
 	// Update deviceroot on enter
 	var oldOnEnterDeviceRoot = kbook.model.onEnterDeviceRoot;
 	kbook.model.onEnterDeviceRoot = function () {
@@ -270,8 +265,8 @@ tmp = function() {
 		oldFinishCollectionEdit.apply(this, arguments);
 	}
 	
-	var updateBookList = function () {
-		if (kbook.model.STATE === 'MENU_HOME') {
+	updateBookList = function () {
+		if (xs.isInstanceOf(kbook.model.currentNode, kbook.root.children.deviceRoot)) {
 			kbook.root.getBookThumbnailsNode().update(kbook.model);
 			kbook.menuHomeThumbnailBookData.setNode(kbook.root.getBookThumbnailsNode());
 		} else {
@@ -281,7 +276,7 @@ tmp = function() {
 	
 	// Customize book list in home menu
 	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
-		var i, nodes, prototype, cache, result, result2, current, records, node, model, obj0, loop;
+		var i, nodes, prototype, cache, result, result2, current, records, node, model, obj0;
 		FskCache.tree.xdbNode.construct.call(this);
 		model = kbook.model;
 		nodes = this.nodes = [];
@@ -309,7 +304,8 @@ tmp = function() {
 					obj0.by = 'indexDate';
 					obj0.order = xdb.descending;
 					result.sort_c(obj0);
-					for(i=numCurrentBook;nodes.length<3&&i<records;i++) {
+					if (numCurrentBook && numCurrentBook >= records) numCurrentBook -= 3;
+					for(i = numCurrentBook; nodes.length < 3 && i < records; i++) {
 						node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 						node.cache = cache;
 						node.media = result.getRecord(i);
@@ -319,10 +315,11 @@ tmp = function() {
 					var i, j, history=[], record;
 					history = Core.addonByName.BookHistory.getBookList();
 					j = (current) ? 1 : 0;
-					for (i=numCurrentBook;nodes.length<3&&i+j<history.length;i++) {
-						record = Core.media.findMedia(history[i+j]);
+					if (numCurrentBook && numCurrentBook + j >= history.length) numCurrentBook -= 3;
+					for (i = numCurrentBook + j; nodes.length < 3 && i < history.length; i++) {
+						record = Core.media.findMedia(history[i]);
 						if (record) {
-							if (record.periodicalName && opt.PeriodicalsAsBooks === 'false') continue;
+							if (record.periodicalName && opt.PeriodicalsAsBooks === 'false') continue; // FIXME numCurrentBook -=3 goes wrong in this case
 							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 							node.cache = cache;
 							node.media = record;
@@ -334,97 +331,90 @@ tmp = function() {
 					if (!current) break;
 					id = current.id;
 					author = current.author;
-					if (author) {
-						// Find other books by same author, excluding current book
-						for (i=0;i<records;i++) {
-							record = result.getRecord(i);
-							if (record.author === author && record.id !== id) list.push(i);
-						}
-						for (i=numCurrentBook;nodes.length<3&&i<list.length;i++) {
-							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
-							node.cache = cache;
-							node.media = result.getRecord(list[i]);
-						}
+					if (!author) break;
+					// Find other books by same author, excluding current book
+					for (i = 0; i < records; i++) {
+						record = result.getRecord(i);
+						if (record.author === author && record.id !== id) list.push(i);
+					}
+					if (numCurrentBook && numCurrentBook >= list.length) numCurrentBook -= 3;
+					for (i = numCurrentBook; nodes.length < 3 && i < list.length; i++) {
+						node = nodes[nodes.length] = xs.newInstanceOf(prototype);
+						node.cache = cache;
+						node.media = result.getRecord(list[i]);
 					}
 					break;
 				case 3: // Booklist option: next books in collection
 					// FIXME doesn't work properly with cycle backwards
-					var i=0, j, k, id, result2, colls, coll, books;
-					if (current) {
-						id = current.id;
-						// Switch to collections cache
-						result2 = cache.playlistMasters;
-						result2.sort('indexPlaylist');
-						colls = result2.count();
-						if (opt.CurrentCollection) {
-							for (i=0;i<colls&&result2.getRecord(i).title!==opt.CurrentCollection;i++);
-							if (i===colls) {
-								i=0;
-							} else if (trigger1) {
-								i++;
-							}
-						}
-						while (i<colls) {
-							coll = result2.getRecord(i);
-							books = coll.count();
-							j = coll.getItemIndex(id) + 1;
-							if (j && j<books) {
-								// Current book found in collection where it's not the last book
-								j += numCurrentBook;
-								for (k=0;k<3&&j<books;j++,k++) {
-									node = nodes[k] = xs.newInstanceOf(prototype);
-									node.cache = cache;
-									node.media = cache.getRecord(coll.items[j].id);
-								}
-								break;
-							}
+					var i=0, j, id, result2, colls, coll, books;
+					if (!current) break;
+					id = current.id;
+					// Switch to collections cache
+					result2 = cache.playlistMasters;
+					result2.sort('indexPlaylist');
+					colls = result2.count();
+					if (opt.CurrentCollection) {
+						for (i = 0; i < colls && result2.getRecord(i).title !== opt.CurrentCollection; i++);
+						if (i === colls) {
+							// CC not found, so start from beginning
+							i=0;
+						} else if (trigger1) {
+							// CC found, but trigger used, so start from next
 							i++;
 						}
 					}
-					opt.CurrentCollection = (nodes.length || trigger3) ? coll.title : '';
+					while (i < colls) {
+						coll = result2.getRecord(i);
+						books = coll.count();
+						j = coll.getItemIndex(id) + 1;
+						if (j && j < books) {
+							// Current book found in collection where it's not the last book
+							if (numCurrentBook && numCurrentBook + j >= books) numCurrentBook -= 3;
+							for (j += numCurrentBook; nodes.length < 3 && j < books; j++) {
+								node = nodes[nodes.length] = xs.newInstanceOf(prototype);
+								node.cache = cache;
+								node.media = cache.getRecord(coll.items[j].id);
+							}
+							break;
+						}
+						i++;
+					}
+					opt.CurrentCollection = (nodes.length) ? coll.title : '';
 					break;
 				case 4: // Booklist option: random books
-					var i, j, id, books=[], record;
-					if (current) id = current.id;
-					for (i=0;i<records;i++) books.push(i);
-					books = arrayShuffle(books);
-					for (i=0,j=0;i<3&&j<books.length;i++,j++) {
-						record = result.getRecord(books[j]);
-						if (record.id === id) {
-							i--;
-						} else {
-							node = nodes[i] = xs.newInstanceOf(prototype);
+					var i, books='/', record;
+					if (current) books += current.id+'/';
+					while (nodes.length < 3 && books.length < records) {
+						i = Math.floor(Math.random() * records);
+						record = result.getRecord(i);
+						if (books.indexOf('/'+record.id+'/') === -1) {
+							// Random book is not current book and not already placed, so add to list
+							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 							node.cache = cache;
 							node.media = record;
+							books += record.id+'/';
 						}
 					}
 					break;
 				case 5: // Booklist option: Select collection
-					var i, id, idx, result2, colls, coll, books;
+					var i, id, idx, result2, colls, coll, books=[];
 					if (!opt.SelectedCollection) break;
 					if (current) id = current.id;
 					result2 = cache.playlistMasters;
 					result2.sort('indexPlaylist');
 					colls = result2.count();
-					for (i=0;i<colls&&result2.getRecord(i).title!==opt.SelectedCollection;i++);
+					for (i = 0; i < colls && result2.getRecord(i).title !== opt.SelectedCollection; i++);
 					if (i === colls) break;
 					// Selected Collection found
 					coll = result2.getRecord(i);
-					books = coll.items;
-					i = numCurrentBook;
-					if (foundCurrent && numCurrentBook) {
-						i++;
-					} else {
-						foundCurrent = false;
+					for (i = 0; i < coll.items.length; i++) {
+						if (coll.items[i].id !== id) books.push(coll.items[i].id);
 					}
-					for (i;nodes.length<3&&i<books.length;i++) {
-						if (books[i].id === id) {
-							foundCurrent = true;
-							continue;
-						}
+					if (numCurrentBook && numCurrentBook >= books.length) numCurrentBook -= 3;
+					for (i = numCurrentBook; nodes.length < 3 && i < books.length; i++) {
 						node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 						node.cache = cache;
-						node.media = cache.getRecord(books[i].id);
+						node.media = cache.getRecord(books[i]);
 					}
 					break;
 			}
@@ -443,14 +433,6 @@ tmp = function() {
 						opt.HomeMenuBooklist--;
 					}
 					continue;
-				} else if (trigger3) {
-					// No further books in this list, show previous 3 if possible
-					kbook.model.doBlink();
-					if (!loop) {
-						numCurrentBook -= 3;
-						loop = true;
-						continue;
-					}
 				}
 			}
 			trigger1 = trigger2 = trigger3 = trigger4 = false;
