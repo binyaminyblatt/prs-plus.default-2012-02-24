@@ -34,6 +34,7 @@
 //  2011-11-23 Ben Chenoweth - Added TEXT_MEMO
 //  2011-11-24 Ben Chenoweth - Added HANDWRITING_ALT
 //	2011-11-28 quisvir - Added STYLUS
+//	2011-12-13 quisvir - Added NOBOOKMARK
  
 return {
 	// Menu icon indices 
@@ -61,6 +62,7 @@ return {
 		BOOKS: 17,
 		PICTURES: 18,
 		CROSSED_BOX: 19,
+		NOBOOKMARK: 21,
 		DATE: 22,
 		LANDSCAPE: 24,
 		ABOUT: 25,
