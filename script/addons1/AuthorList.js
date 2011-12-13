@@ -70,7 +70,7 @@ tmp = function() {
 	
 	authorsNodeDestruct = function () {
 		authors = [];
-		this.nodes = [];
+		this.nodes = null;
 	};
 	
 	authorConstruct = function () {
@@ -83,7 +83,7 @@ tmp = function() {
 	};
 	
 	authorDestruct = function () {
-		this.nodes = [];
+		this.nodes = null;
 	};
 	
 	var AuthorList = {
