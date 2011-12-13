@@ -38,6 +38,7 @@
 //	2011-11-20 kartu - Fixed #215 fb2epub converter doesn't work with cards with disabled scanning
 //	2011-12-08 Ben Chenoweth - Archive support (using on Shura1oplot's code); added CBZ and CBR to supported archives
 //	2011-12-12 kartu - Changed mounted card order to SD/MS from MS/SD
+//	2011-12-14 quisvir - Added preliminary archive browsing support (alpha)
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -157,10 +158,11 @@ tmp = function() {
 		var node;
 		node = Core.ui.createContainerNode({
 			title: title,
-			icon: "ARCHIVE",
-			parent: parent
+			icon: "FOLDER",
+			parent: parent,
+			construct: archiveRootConstruct,
+			destruct: archiveRootDestruct
 		});
-		node.enter = doUnpackHere;
 		node.path = path;
 		return node;
 	};
@@ -298,7 +300,114 @@ tmp = function() {
 			this.gotoNode(foldersNode, kbook.model);
 		}
 	};
+	
+	var currentArchive;
+	var archiveRootConstruct = function () {
+		log.trace('archiveRootConstruct');
+		var d, f, list;
+		this.insidePath = '';
+		
+		// Create and fill currentArchive object
+		currentArchive = {
+			path: this.path,
+			dirs: [],
+			files: []
+		};
+		d = currentArchive.dirs;
+		f = currentArchive.files;		
+		
+		list = Core.archiver.list(this.path).split('\n');
+		for (i = 0; i < list.length; i++) {
+			switch (list[i].slice(0,1)) {
+				case 'f':
+					f.push(list[i].split('\t')[2]);
+					break;
+				case 'd':
+					d.push(list[i].split('\t')[2]);
+			}
+		};
+		d.sort();
+		f.sort();
+				
+		// Call general construct function
+		archiveFolderConstruct.call(this);
+	};
 
+	var archiveRootDestruct = function () {
+		log.trace('archiveRootDestruct');
+		currentArchive = null;
+		this.nodes = null;
+	}
+	
+	var archiveFolderConstruct = function () {
+		log.trace('archiveFolderConstruct');
+		var node, nodes, d, f, path, i;
+		nodes = this.nodes = [];
+		d = currentArchive.dirs;
+		f = currentArchive.files;
+		path = this.insidePath;
+		
+		// Create folder nodes
+		for (i = 0; i < d.length; i++) {
+			idx = d[i].indexOf(path);
+			if (idx === 0) {
+				rest = d[i].slice(idx + path.length);
+				if (rest && rest.indexOf('/') === -1) {
+					node = Core.ui.createContainerNode({
+						title: rest,
+						icon: 'FOLDER',
+						parent: this,
+						construct: archiveFolderConstruct,
+						destruct: archiveFolderDestruct
+					});
+					node.insidePath = path + rest + '/';
+					nodes.push(node);
+				}
+			}
+		}
+		
+		// Create file nodes
+		for (i = 0; i < f.length; i++) {
+			idx = f[i].indexOf(path);
+			if (idx === 0) {
+				rest = f[i].slice(idx + path.length);
+				if (rest && rest.indexOf('/') === -1) {
+					log.error('Listing file', rest);
+					node = Core.ui.createContainerNode({ // TODO differentiate between filetypes
+						title: rest,
+						// icon: 'FOLDER',
+						parent: this,
+					});
+					node.enter = archiveDummyEnter;
+					node.insidePath = f[i];
+					nodes.push(node);
+				}
+			}
+		}
+	}
+	
+	var archiveFolderDestruct = function () {
+		log.trace('archiveFolderDestruct');
+		this.nodes = null;
+	}
+	
+	var archiveDummyEnter = function () {
+		log.trace('archiveDummyEnter');
+		var path, file, node;
+		path = Core.io.extractPath(currentArchive.path) + '~temp~/';
+		file = path + Core.io.extractFileName(this.insidePath);
+		
+		// Extract file from archive
+		// TODO clear temp folder whenever possible (before file open, on file close, on startup?)
+		FileSystem.ensureDirectory(path);
+		Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);
+		
+		// Load & open media
+		Core.media.loadMedia(file);
+		node = Core.media.createMediaNode(file, this.parent);
+		this.parent.gotoNode(node, kbook.model);
+	}
+	
 	doUnpackHere = function () {
 		var path, parent, outputDir, nodes, i, n, needsMount;
 		path = this.path;
