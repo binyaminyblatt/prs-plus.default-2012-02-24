@@ -12,6 +12,7 @@
 //	2011-12-06 quisvir - Fixed Bookmark Tapping option
 //	2011-12-07 quisvir - Cosmetic changes
 //	2011-12-08 quisvir - Added option to disable predictive text
+//	2011-12-13 quisvir - Added option to prevent popup menu overlapping selection
 
 tmp = function() {
 
@@ -53,13 +54,13 @@ tmp = function() {
 	
 	/*** TAP RELATED ***/
 	
-	var readingTapX, readingTapY, oldSelectNoneWithoutUpdate, oldDoBlink, doNothingFunc;
+	var readingTapX, readingTapY, oldSelectNoneWithoutUpdate, oldDoBlink, doNothingFunc, PreventPopupOverlap;
 	
 	// Functions used for page tap actions
 	oldSelectNoneWithoutUpdate = kbook.kbookPage.selectNoneWithoutUpdate;
 	oldDoBlink = kbook.model.doBlink;
 	doNothingFunc = function () {};
-	
+		
 	// On tap (doubletap if switched), get coordinates from readingTracker
 	var oldReadingTrackerTap = kbook.kbookPage.readingTracker.tap;
 	kbook.kbookPage.readingTracker.tap = function (target, x, y) {
@@ -68,6 +69,7 @@ tmp = function() {
 		if (opt.SwitchPageTaps === 'false') {
 			oldReadingTrackerTap.apply(this, arguments);
 		} else {
+			if (opt.PreventPopupOverlap === 'true') PreventPopupOverlap();
 			oldReadingTrackerDoubleTap.apply(this, arguments);
 		}
 	};
@@ -77,9 +79,26 @@ tmp = function() {
 		readingTapX = x;
 		readingTapY = y;
 		if (opt.SwitchPageTaps === 'false') {
+			if (opt.PreventPopupOverlap === 'true') PreventPopupOverlap();
 			oldReadingTrackerDoubleTap.apply(this, arguments);
 		} else {
 			oldReadingTrackerTap.apply(this, arguments);
+		}
+	}
+	
+	// Move Dictionary Popup to top of screen if tap in bottom (and vice versa)
+	PreventPopupOverlap = function () {
+		var target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
+		if (readingTapY > target.getWindow().height-230) {
+			if (target.y !== 0) {
+				target.terminateContents(target.root);
+				target.changeLayout(0, undefined, 0, 0, 183, undefined);
+				target.initializeContents(target.root);
+			}
+		} else if (target.y === 0) {
+			target.terminateContents(target.root);
+			target.changeLayout(0, undefined, 0, undefined, 183, 0);
+			target.initializeContents(target.root);
 		}
 	}
 	
@@ -358,9 +377,9 @@ tmp = function() {
 					}
 				},
 				{
-					name: 'DisableBookmarkTaps',
-					title: L('DISABLE_BOOKMARK_TAPPING'),
-					icon: 'BOOKMARK',
+					name: 'PreventPopupOverlap',
+					title: L('PREVENT_POPUP_OVERLAP'),
+					icon: 'NODICTIONARY',
 					defaultValue: 'false',
 					values: ['true', 'false'],
 					valueTitles: {
@@ -372,6 +391,17 @@ tmp = function() {
 					name: 'ClosePopupByPageTap',
 					title: L('CLOSE_POPUP_BY_PAGE_TAP'),
 					icon: 'CROSSED_BOX',
+					defaultValue: 'false',
+					values: ['true', 'false'],
+					valueTitles: {
+						'true': L('VALUE_TRUE'),
+						'false': L('VALUE_FALSE')
+					}
+				},
+				{
+					name: 'DisableBookmarkTaps',
+					title: L('DISABLE_BOOKMARK_TAPPING'),
+					icon: 'NOBOOKMARK',
 					defaultValue: 'false',
 					values: ['true', 'false'],
 					valueTitles: {
