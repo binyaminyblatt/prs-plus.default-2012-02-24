@@ -28,6 +28,7 @@
 //	2011-11-26 quisvir - Fixed Issue #228 "No Page Turn with Gestures" doesn't disable page turns through pageShortcutOverlayModel
 //	2011-11-28 quisvir - Moved touch-related code to Touch Settings addon
 //	2011-12-07 quisvir - Cosmetic changes
+//	2011-12-14 quisvir - Added action to toggle True Landscape mode in book
 
 tmp = function() {
 
@@ -35,6 +36,49 @@ tmp = function() {
 	var L = Core.lang.getLocalizer("ViewerSettings_x50");
 	var log = Core.log.getLogger('ViewerSettings_x50');
 
+	// Functions and vars for toggleTrueLandscape action
+	var orgOrientation, docWidth, docHeight, oldIsScrollView, falseFunc, toggleTrueLandscape, restoreLandscape, oldOnEnterOrientation1, oldOnEnterOrientation2;
+	oldIsScrollView = kbook.kbookPage.isScrollView;
+	falseFunc = function () { return false };
+	docWidth = Number(System.applyEnvironment('[kFskDocumentViewerWidth]'));
+	docHeight = Number(System.applyEnvironment('[kFskDocumentViewerHeight]'));
+	orgOrientation = null;
+	
+	toggleTrueLandscape = function () {
+		var book;
+		if (kbook.model.STATE !== 'PAGE') return;
+		book = kbook.bookData.book;
+		book.clearSplitParts();
+		if (orgOrientation === null) {
+			orgOrientation = ebook.getOrientation();
+			kbook.kbookPage.isScrollView = falseFunc;
+			if (orgOrientation === 0 || orgOrientation === 2) ebook.rotate((kbook.model.orientationToRotateFlag)?3:1);
+			book.mediaRebrowse(docHeight + 30, docWidth - 30, false, false);
+		} else {
+			if (orgOrientation !== null) ebook.rotate(orgOrientation);
+			restoreLandscape(true);
+		}
+	}
+	
+	restoreLandscape = function (current) {
+		if (orgOrientation !== null) {
+			kbook.kbookPage.isScrollView = oldIsScrollView;
+			if (current === true && kbook.model.currentBook) kbook.bookData.book.mediaRebrowse(docWidth, docHeight, false, false);
+			orgOrientation = null;
+		}
+	}
+	
+	oldOnEnterOrientation1 = kbook.model.onEnterOrientation;
+	kbook.model.onEnterOrientation = function (node) {
+		restoreLandscape(true);
+		oldOnEnterOrientation1.apply(this, arguments);
+	}
+	
+	oldOnEnterOrientation2 = kbook.kbookPage.onEnterOrientation;
+	kbook.kbookPage.onEnterOrientation = function () {
+		restoreLandscape(true);
+		oldOnEnterOrientation2.apply(this, arguments);
+	}
 	
 	// Change custom contrast variable if user has entered valid number
 	kbook.model.container.doContrastChange = function (text) {
@@ -420,13 +464,23 @@ tmp = function() {
 			]}
 		],
 		onInit: function () {
+			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, restoreLandscape, true);
 			if (ViewerSettings_x50.options.BorderColor === 'white') kbook.kbookPage.borderColor = Color.rgb.parse('white');
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			kbook.kbookPage.borderColor = (ViewerSettings_x50.options.BorderColor === 'grey') ? Color.rgb.parse('#6D6D6D') : Color.rgb.parse('white');
 			if (propertyName === "CustomContrast" && newValue === "Custom") kbook.model.openLineInput(L("CUSTOM_CONTRAST") + ':', '', 'doContrastChange', '', true, 'number');
 			if (propertyName === "CustomBrightness" && newValue === "Custom") kbook.model.openLineInput(L("CUSTOM_BRIGHTNESS") + ':', '', 'doBrightnessChange', '', true, 'number');
-		}
+		},
+		actions: [{
+			name: "toggleTrueLandscape",
+			title: L("TOGGLE_TRUE_LANDSCAPE"),
+			group: "Book",
+			icon: "LANDSCAPE",
+			action: function () {
+				toggleTrueLandscape();
+			}
+		}]
 	};
 
 	Core.addAddon(ViewerSettings_x50);
