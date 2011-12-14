@@ -12,9 +12,10 @@
 //	2011-03-02 kartu - Added loadMedia, 
 //			createMediaNode assumes path is actually media object, if its type is not string
 //	2011-12-08 Ben Chenoweth - Archive support (using on Shura1oplot's code); scanDirectory is now recursive
+//  2011-12-14 Ben Chenoweth - Added supportedExtensions
 
 tmp = function() {
-	var supportedMIMEs, findLibrary, findMedia, loadMedia, scanDirectory, createMediaNode, isImage, startsWith;
+	var supportedMIMEs, supportedExtensions, findLibrary, findMedia, loadMedia, scanDirectory, createMediaNode, isImage, startsWith;
 	// Shortcut
 	startsWith = Core.text.startsWith; 
 
@@ -25,6 +26,18 @@ tmp = function() {
 		"application/epub+zip": true,
 		"application/x-sony-bbeb": true,
 		"text/plain": true
+	};
+	
+	supportedExtensions = {
+		"rtf": true,
+		"pdf": true,
+		"epub": true,
+		"lrf": true,
+		"txt": true,
+		"fb2": true,
+		"jpeg": true,
+		"jpg": true,
+		"png": true
 	};
 	
 	/**
@@ -150,6 +163,9 @@ tmp = function() {
 	
 	Core.media = {
 		supportedMIMEs: supportedMIMEs,
+		
+		supportedExtensions: supportedExtensions,
+		
 		/**
 		* Finds media (book, image, audio, etc) with a given path
 		* @returns null, if media cannot be found
