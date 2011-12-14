@@ -45,14 +45,17 @@ tmp = function() {
 	orgOrientation = null;
 	
 	toggleTrueLandscape = function () {
-		var book;
+		var book, orient;
 		if (kbook.model.STATE !== 'PAGE') return;
 		book = kbook.bookData.book;
 		book.clearSplitParts();
 		if (orgOrientation === null) {
 			orgOrientation = ebook.getOrientation();
 			kbook.kbookPage.isScrollView = falseFunc;
-			if (orgOrientation === 0 || orgOrientation === 2) ebook.rotate((kbook.model.orientationToRotateFlag)?3:1);
+			if (orgOrientation === 0 || orgOrientation === 2) {
+				orient = (kbook.model.orientationToRotateFlag) ? 3 : 1;
+				ebook.rotate(orient);
+			}
 			book.mediaRebrowse(docHeight + 30, docWidth - 30, false, false);
 		} else {
 			if (orgOrientation !== null) ebook.rotate(orgOrientation);
