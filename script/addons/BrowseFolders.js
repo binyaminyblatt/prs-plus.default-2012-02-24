@@ -39,6 +39,7 @@
 //	2011-12-08 Ben Chenoweth - Archive support (using on Shura1oplot's code); added CBZ and CBR to supported archives
 //	2011-12-12 kartu - Changed mounted card order to SD/MS from MS/SD
 //	2011-12-14 quisvir - Added preliminary archive browsing support (alpha)
+//  2011-12-14 Ben Chenoweth - Correct icons for archive contents; temp files deleted
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -55,7 +56,7 @@ tmp = function() {
 	trim = Core.text.trim;
 	supportedMIMEs = Core.media.supportedMIMEs;
 	supportedArchives = Core.archiver.supportedArchives;
-	
+	supportedExtensions = Core.media.supportedExtensions;
 	ACTION_ICON = "BACK";
 
 	//-----------------------------------------------------------------------------------------------------------------------------
@@ -158,7 +159,7 @@ tmp = function() {
 		var node;
 		node = Core.ui.createContainerNode({
 			title: title,
-			icon: "FOLDER",
+			icon: "ARCHIVE",
 			parent: parent,
 			construct: archiveRootConstruct,
 			destruct: archiveRootDestruct
@@ -334,14 +335,20 @@ tmp = function() {
 	};
 
 	var archiveRootDestruct = function () {
+		var parent;
 		log.trace('archiveRootDestruct');
+		parent = this.parent;
+		path = parent.path + '~temp~/';
+		log.trace("Deleting "+path);
+		Core.io.deleteDirectory(path);
 		currentArchive = null;
 		this.nodes = null;
+		parent.update();
 	}
 	
 	var archiveFolderConstruct = function () {
 		log.trace('archiveFolderConstruct');
-		var node, nodes, d, f, path, i;
+		var node, nodes, d, f, path, i, ext, fileicon;
 		nodes = this.nodes = [];
 		d = currentArchive.dirs;
 		f = currentArchive.files;
@@ -373,17 +380,40 @@ tmp = function() {
 				rest = f[i].slice(idx + path.length);
 				if (rest && rest.indexOf('/') === -1) {
 					log.error('Listing file', rest);
-					node = Core.ui.createContainerNode({ // TODO differentiate between filetypes
-						title: rest,
-						// icon: 'FOLDER',
-						parent: this,
-					});
-					node.enter = archiveDummyEnter;
-					node.insidePath = f[i];
-					nodes.push(node);
+					ext = Core.io.extractExtension(rest);
+					switch (ext) {
+						case 'rtf':
+						case 'pdf':
+						case 'epub':
+						case 'lrf':
+						case 'fb2':
+						case 'txt':
+							fileicon = 'BOOK_ALT';
+							break;
+						case 'jpg':
+						case 'jpeg':
+						case 'png':
+							fileicon = 'PICTURE_ALT';
+							break;
+						default:
+							fileicon = 'CROSSED_BOX';
+							break;
+					}
+					if (fileicon !== 'CROSSED_BOX') {
+						node = Core.ui.createContainerNode({
+							title: rest,
+							icon: fileicon,
+							parent: this,
+						});
+						node.enter = archiveDummyEnter;
+						node.insidePath = f[i];
+						nodes.push(node);
+					} else {
+						// hide other files
+					}
 				}
-			}
-		}
+            }
+        }
 	}
 	
 	var archiveFolderDestruct = function () {
@@ -399,6 +429,7 @@ tmp = function() {
 		
 		// Extract file from archive
 		// TODO clear temp folder whenever possible (before file open, on file close, on startup?)
+		Core.io.emptyDirectory(path);
 		FileSystem.ensureDirectory(path);
 		Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);
 		

@@ -12,6 +12,7 @@
 //	2011-03-03 kartu - Added moveFile, deleteFile, getFileSize
 //	2011-04-24 kartu - Added extractFileName, extractExtension, pathExists, getUnusedPath
 //	2011-11-22 Mark Nord - Modified extractExtension to return only portion after the last "." except for fb2.zip
+//  2011-12-14 Ben Chenoweth - Added emptyDirectory, deleteDirectory
 
 try {
 	Core.io = {
@@ -98,6 +99,35 @@ try {
 		deleteFile: function (path) {
 			if (FileSystem.getFileInfo(path)) {
 				FileSystem.deleteFile(path);
+			}
+		},
+		
+		// Empties directory, if it exists.
+		//
+		// Throws exceptions on errors
+		emptyDirectory: function (path) {
+			var items, item;
+			log.trace("emptying directory "+path);
+			if (this.pathExists(path)) {
+				items = this.listFiles(path);
+				for (item in items) {
+					log.trace("deleting item "+items[item]);
+					this.deleteFile(path + "/" + items[item]);
+					log.trace("success");
+				}
+				log.trace("emptying successful");
+			}
+		},
+		
+		// Deletes directory, if it exists.
+		//
+		// Throws exceptions on errors
+		deleteDirectory: function (path) {
+			if (this.pathExists(path)) {
+				log.trace("deleting directory "+path);
+				this.emptyDirectory(path);
+				FileSystem.deleteDirectory(path);
+				log.trace("deleting successful");
 			}
 		},
 		
