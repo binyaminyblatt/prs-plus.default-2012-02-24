@@ -386,9 +386,7 @@ tmp = function() {
 				}
 				if (futureevents.length>0) {
 					// sort events
-					futureevents.sort(Calendar.sortDay);
-					futureevents.sort(Calendar.sortMonth);
-					futureevents.sort(Calendar.sortYear);
+					futureevents.sort(Calendar.sortEvents);
 				
 					// output future events
 					win.setTextStyle(1);
@@ -515,18 +513,15 @@ tmp = function() {
 			}
 			return str;
 		},
-		sortDay: function (a,b) {
-			// sorts the event array using the day    
-			return ((a[2] < b[2]) ? -1 : ((a[2] > b[2]) ? 1 : 0));
-		},
-		sortMonth: function (a,b) {
-			// sorts the event array using the month    
-			return ((a[1] < b[1]) ? -1 : ((a[1] > b[1]) ? 1 : 0));
-		},
-		sortYear: function (a,b) {
-			// sorts the event array using the year    
-			return ((a[3] < b[3]) ? -1 : ((a[3] > b[3]) ? 1 : 0));
-		}
+		sortEvents: function (a,b) {
+		   if (a[3] < b[3]) return -1;
+		   else if (a[3] > b[3]) return 1;
+		   else if (a[1] < b[1]) return -1;
+		   else if (a[1] > b[1]) return 1;
+		   else if (a[2] < b[2]) return -1;
+		   else if (a[2] > b[2]) return 1;
+		   return 0;
+		}		
 	};
 	
 	Core.addAddon(Calendar);
