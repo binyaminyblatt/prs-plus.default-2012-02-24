@@ -19,8 +19,8 @@
 //	2011-12-07 quisvir - Fixed shutdown image not displaying on auto-shutdown (issue #242)
 //	2011-12-08 Mark Nord - Added Auto Standby Time option for 300/505
 //	2011-12-10 quisvir - Merged Auto Standby Time options
+//	2011-12-15 quisvir - Added set/restore portrait orientation on shutdown/startup
 //
-//	TODO: set/restore portrait orientation on shutdown
 
 
 tmp = function() {
@@ -67,14 +67,26 @@ tmp = function() {
 		}
 		oldResume.apply(this);
 	};
-		
+	
+	// Shutdown: set orientation to portrait
+	var oldDoDeviceShutdown = kbook.model.doDeviceShutdown;
+	kbook.model.doDeviceShutdown = function () {
+		var orient = ebook.getOrientation();
+		if (orient) {
+			StandbyImage.options.orgOrientation = orient.toString();
+			Core.settings.saveOptions(StandbyImage);
+			ebook.rotate(0);
+		}
+		oldDoDeviceShutdown.apply(this, arguments);
+	}
+	
 	// Quit: if no exit code already set, call standbyimage, set exit code 6
 	var oldDoQuit = Fskin.window.doQuit;
 	Fskin.window.doQuit = function () {
 		var container = kbook.model.container;
 		// If device is in standby (auto-shutdown), wake it up first
 		if (container.getVariable('STANDBY_STATE') === 0) {
-			container.bubble("setKeyHandlerActive", true);
+			container.bubble('setKeyHandlerActive', true);
 			container.bubble('doPowerSwitch');
 			kbook.model.doDeviceShutdown();
 		} else {
@@ -478,7 +490,12 @@ tmp = function() {
 					"60": LX("MINUTES", 60),
 					"120": LX("MINUTES", 120),
 				}
-			}
+			},
+			{
+				name: 'orgOrientation',
+				defaultValue: '',
+				hidden: 'true',
+			},
 		],
 		onPreInit: function () {
 			// For pre-x50 models, change system standby option to random wallpaper
@@ -523,6 +540,7 @@ tmp = function() {
 			}
 		},
 		onInit: function () {
+			var opt = this.options;
 			// model sniffing
 			if (Core.config.model === "300" || Core.config.model ==="505") {
 				var oldEBookSetAutoStandby = ebook.setAutoStandby;
@@ -533,7 +551,7 @@ tmp = function() {
 					oldEBookSetAutoStandby(time);
 				};
 				// adjust like 600/x50
-				this.options.AutoShutdownTime = 'default';
+				opt.AutoShutdownTime = 'default';
 				ebook.device = {
 					rtc : {
 						autoStandby : {
@@ -544,9 +562,15 @@ tmp = function() {
 				};
 			}
 			// general code
-			if (this.options.AutoStandbyTime) {
-				if (this.options.AutoStandbyTime !== 'default') ebook.device.rtc.autoStandby._initialize(Number(this.options.AutoStandbyTime) * 60);
-				if (this.options.AutoShutdownTime !== 'default') ebook.device.rtc.autoShutdown._initialize(Number(this.options.AutoShutdownTime) * 3600, ebook.device.rtc.autoShutdown.lowCaseTime);
+			if (opt.AutoStandbyTime) {
+				if (opt.AutoStandbyTime !== 'default') ebook.device.rtc.autoStandby._initialize(Number(opt.AutoStandbyTime) * 60);
+				if (opt.AutoShutdownTime !== 'default') ebook.device.rtc.autoShutdown._initialize(Number(opt.AutoShutdownTime) * 3600, ebook.device.rtc.autoShutdown.lowCaseTime);
+			}
+			// Restore orientation
+			if (opt.orgOrientation) {
+				ebook.rotate(opt.orgOrientation);
+				opt.orgOrientation = '';
+				Core.settings.saveOptions(StandbyImage);
 			}
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
