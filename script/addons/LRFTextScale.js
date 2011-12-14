@@ -31,7 +31,7 @@ tmp = function() {
 		icon: "TEXT_SCALE",
 		actions: [{
 			name: "ReformatCurrentBook",
-			title: "REFORMAT_CURRENT_BOOK",
+			title: L("REFORMAT_CURRENT_BOOK"),
 			group: "Book",
 			action: function () {
 				if (!kbook.model.currentBook) return;
