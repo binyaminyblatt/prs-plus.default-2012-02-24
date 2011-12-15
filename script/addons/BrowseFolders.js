@@ -39,7 +39,7 @@
 //	2011-12-08 Ben Chenoweth - Archive support (using on Shura1oplot's code); added CBZ and CBR to supported archives
 //	2011-12-12 kartu - Changed mounted card order to SD/MS from MS/SD
 //	2011-12-14 quisvir - Added preliminary archive browsing support (alpha)
-//  2011-12-14 Ben Chenoweth - Correct icons for archive contents; temp files deleted
+//	2011-12-14 Ben Chenoweth - Correct icons for archive contents; temp files deleted
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -348,7 +348,7 @@ tmp = function() {
 	
 	var archiveFolderConstruct = function () {
 		log.trace('archiveFolderConstruct');
-		var node, nodes, d, f, path, i, ext, fileicon;
+		var node, nodes, d, f, path, i, ext, fileIcon;
 		nodes = this.nodes = [];
 		d = currentArchive.dirs;
 		f = currentArchive.files;
@@ -388,21 +388,21 @@ tmp = function() {
 						case 'lrf':
 						case 'fb2':
 						case 'txt':
-							fileicon = 'BOOK_ALT';
+							fileIcon = 'BOOK_ALT';
 							break;
 						case 'jpg':
 						case 'jpeg':
 						case 'png':
-							fileicon = 'PICTURE_ALT';
+							fileIcon = 'PICTURE_ALT';
 							break;
 						default:
-							fileicon = 'CROSSED_BOX';
+							fileIcon = 'CROSSED_BOX';
 							break;
 					}
-					if (fileicon !== 'CROSSED_BOX') {
+					if (fileIcon !== 'CROSSED_BOX') {
 						node = Core.ui.createContainerNode({
 							title: rest,
-							icon: fileicon,
+							icon: fileIcon,
 							parent: this,
 						});
 						node.enter = archiveDummyEnter;
