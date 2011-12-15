@@ -33,6 +33,7 @@
 //	2011-12-07 quisvir - Cosmetic changes
 //	2011-12-11 quisvir - Extended 'Next/Previous Books' to all booklist options
 //	2011-12-12 quisvir - Changed booklist construct to check numCurrentBook right away; various changes
+//	2011-12-15 quisvir - Added Notepads filter to home menu booklist
 
 tmp = function() {
 
@@ -283,9 +284,35 @@ tmp = function() {
 		}
 	}
 	
+	// Filter notepads & periodicals for home menu booklist
+	var filterBooklist = function (result) {
+		var c, i, record;
+		c = result.count();
+		if (opt.PeriodicalsAsBooks === 'true') {
+			for (i = 0; i < c; i++) {
+				record = result.getRecord(i);
+				if (record.path.slice(0,9) === 'Notepads/') {
+					result.removeID(record.id);
+					c--;
+					i--;
+				}
+			}
+		} else {
+			for (i = 0; i < c; i++) {
+				record = result.getRecord(i);
+				if (record.periodicalName || record.path.slice(0,9) === 'Notepads/') {
+					result.removeID(record.id);
+					c--;
+					i--;
+				}
+			}
+		}
+		return result;
+	}
+	
 	// Customize book list in home menu
 	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
-		var i, nodes, prototype, cache, result, result2, current, records, node, model, obj0;
+		var i, nodes, prototype, cache, result, result2, current, records, node, model;
 		FskCache.tree.xdbNode.construct.call(this);
 		model = kbook.model;
 		nodes = this.nodes = [];
@@ -297,7 +324,7 @@ tmp = function() {
 		} else {
 			result = cache.textMasters;
 		}
-		if (opt.PeriodicalsAsBooks === 'false') result = this.filter(result);
+		result = filterBooklist(result);
 		records = result.count();
 		if (!records) return;
 		if (model.currentBook) {
@@ -309,12 +336,12 @@ tmp = function() {
 		while (1) {
 			switch (opt.HomeMenuBooklist) {
 				case 0: // Booklist option: last added books
-					obj0 = {};
-					obj0.by = 'indexDate';
-					obj0.order = xdb.descending;
-					result.sort_c(obj0);
+					result.sort_c({
+						by: 'indexDate',
+						order: xdb.descending
+					});
 					if (numCurrentBook && numCurrentBook >= records) numCurrentBook -= 3;
-					for(i = numCurrentBook; nodes.length < 3 && i < records; i++) {
+					for (i = numCurrentBook; nodes.length < 3 && i < records; i++) {
 						node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 						node.cache = cache;
 						node.media = result.getRecord(i);
@@ -761,11 +788,16 @@ tmp = function() {
 			},
 		],
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			if (propertyName === 'HomeMenuBooklist' || propertyName === 'IgnoreCards') {
-				bookChanged = true;
-				opt.CurrentCollection = '';
+			switch (propertyName) {
+				case 'PeriodicalsAsBooks':
+					bookChanged = true;
+					break;
+				case 'IgnoreCards':
+				case 'HomeMenuBooklist':
+					bookChanged = true;
+					opt.CurrentCollection = '';
+					if (newValue === 5) doSelectCollection();
 			}
-			if (propertyName === 'HomeMenuBooklist' && newValue === 5) doSelectCollection();
 			numCurrentBook = 0;
 		}
 	};

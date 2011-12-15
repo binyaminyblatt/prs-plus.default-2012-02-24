@@ -138,14 +138,14 @@ tmp = function() {
 			// if SD/MS scan is disabled and we are not in internal memory			
 			node = Core.ui.createContainerNode({
 					title: title,
-					icon: "BOOK",
+					icon: "BOOK_ALT",
 					parent: parent,
 					construct: constructLazyNode
 			});				
 		} else {
 			node = Core.ui.createContainerNode({
 					title: title,
-					icon: "BOOK",
+					icon: "BOOK_ALT",
 					parent: parent
 			});
 			node.enter = doOpenHere;
