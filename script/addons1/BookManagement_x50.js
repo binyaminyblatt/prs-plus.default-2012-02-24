@@ -191,29 +191,38 @@ tmp = function() {
 	// Draw reading progress below thumbnails (both home screen and book lists)
 	var oldThumbnaildrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
-		var record, page, pages, msg, nodes;
+		var home, record, page, pages, msg, nodes;
 		oldThumbnaildrawRecord.apply(this, arguments);
-		if (xs.isInstanceOf(kbook.model.currentNode, kbook.root.children.deviceRoot) && offset === 2) {
-			if (opt.HomeMenuBooklist === 5) {
-				msg = opt.SelectedCollection;
-			} else if (opt.HomeMenuBooklist === 3 && opt.CurrentCollection) {
-				msg = L('NEXT_IN') + ' ' + opt.CurrentCollection;
-			} else {
-				msg = BookManagement_x50.optionDefs[0].optionDefs[0].valueTitles[opt.HomeMenuBooklist];
+		if (xs.isInstanceOf(kbook.model.currentNode, kbook.root.children.deviceRoot)) {
+			home = true;
+			if (offset === 2) {
+				if (opt.HomeMenuBooklist === 5) {
+					msg = opt.SelectedCollection;
+				} else if (opt.HomeMenuBooklist === 3 && opt.CurrentCollection) {
+					msg = L('NEXT_IN') + ' ' + opt.CurrentCollection;
+				} else {
+					msg = BookManagement_x50.optionDefs[0].optionDefs[0].valueTitles[opt.HomeMenuBooklist];
+				}
+				msg = msg.replace('|',': '); // sub-collections
+				nodes = kbook.root.getBookThumbnailsNode().nodes;
+				if (nodes.length) msg += ' (' + (numCurrentBook + 1) + ((nodes.length > 1) ? '-' + (numCurrentBook + nodes.length) + ')' : ')');
+				this.skin.styles[6].draw(this.getWindow(), msg, 0, y-25, this.width, this.textCommentHeight);
 			}
-			msg = msg.replace('|',': '); // sub-collections
-			nodes = kbook.root.getBookThumbnailsNode().nodes;
-			if (nodes.length) msg += ' (' + (numCurrentBook + 1) + ((nodes.length > 1) ? '-' + (numCurrentBook + nodes.length) + ')' : ')');
-			this.skin.styles[6].draw(this.getWindow(), msg, 0, y-25, this.width, this.textCommentHeight);
 		}
-		record = this.menu.getRecord(offset);
-		if (record && opt.ShowReadingProgressThumbs === 'true') {
-			if (record.kind !== 2 || !record.media.ext || !record.media.ext.history.length || (this.statusVisible && (record.media.sourceid > 1 || this.menu.getFixSelectPosition() || record.expiration))) return;
-			page = record.media.ext.currentPosition.page + 1;
-			if (page < Number(opt.OnlyShowFromPage)) return;
-			pages = record.media.ext.history[0].pages;
-			msg = readingProgressComment(page, pages, opt.ProgressFormatThumbs);
-			parts.commentStyle.draw(this.getWindow(), msg, x+this.marginWidth, this.getNy(this.getTy(y),Math.min(this.getTh(height),this.thumbnailHeight))+this.textNameHeight+this.marginNameAndComment + 23, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
+		switch (opt.ShowReadingProgressThumbs) {
+			case 'false':
+				return;
+			case 'home':
+				if (!home) return;
+			case 'all':
+				record = this.menu.getRecord(offset);
+				if (!record || record.kind !== 2 || !record.media.ext || !record.media.ext.history.length) return;
+				if (this.statusVisible && (record.media.sourceid > 1 || this.menu.getFixSelectPosition() || record.expiration)) return;
+				page = record.media.ext.currentPosition.page + 1;
+				if (page < Number(opt.OnlyShowFromPage)) return;
+				pages = record.media.ext.history[0].pages;
+				msg = readingProgressComment(page, pages, opt.ProgressFormatThumbs);
+				parts.commentStyle.draw(this.getWindow(), msg, x+this.marginWidth, this.getNy(this.getTy(y),Math.min(this.getTh(height),this.thumbnailHeight))+this.textNameHeight+this.marginNameAndComment + 23, this.getCw(width, Fskin.scratchRectangle.width), this.textCommentHeight);
 		}
 	};
 	
@@ -637,9 +646,10 @@ tmp = function() {
 				title: L('SHOW_READING_PROGRESS_THUMBS'),
 				icon: 'BOOKMARK',
 				defaultValue: 'false',
-				values: ['true','false'],
+				values: ['all', 'home', 'false'],
 				valueTitles: {
-					'true': L('VALUE_TRUE'),
+					'all': L('ALL_THUMBNAIL_VIEWS'),
+					'home': L('HOME_MENU_ONLY'),
 					'false': L('VALUE_FALSE')
 				}
 				},

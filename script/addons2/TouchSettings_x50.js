@@ -54,7 +54,7 @@ tmp = function() {
 	
 	/*** TAP RELATED ***/
 	
-	var readingTapX, readingTapY, oldSelectNoneWithoutUpdate, oldDoBlink, doNothingFunc, PreventPopupOverlap;
+	var readingTapX, readingTapY, oldSelectNoneWithoutUpdate, oldDoBlink, doNothingFunc, preventPopupOverlap;
 	
 	// Functions used for page tap actions
 	oldSelectNoneWithoutUpdate = kbook.kbookPage.selectNoneWithoutUpdate;
@@ -69,7 +69,7 @@ tmp = function() {
 		if (opt.SwitchPageTaps === 'false') {
 			oldReadingTrackerTap.apply(this, arguments);
 		} else {
-			if (opt.PreventPopupOverlap === 'true') PreventPopupOverlap();
+			if (opt.PreventPopupOverlap === 'true') preventPopupOverlap();
 			oldReadingTrackerDoubleTap.apply(this, arguments);
 		}
 	};
@@ -79,7 +79,7 @@ tmp = function() {
 		readingTapX = x;
 		readingTapY = y;
 		if (opt.SwitchPageTaps === 'false') {
-			if (opt.PreventPopupOverlap === 'true') PreventPopupOverlap();
+			if (opt.PreventPopupOverlap === 'true') preventPopupOverlap();
 			oldReadingTrackerDoubleTap.apply(this, arguments);
 		} else {
 			oldReadingTrackerTap.apply(this, arguments);
@@ -87,7 +87,7 @@ tmp = function() {
 	}
 	
 	// Move Dictionary Popup to top of screen if tap in bottom (and vice versa)
-	PreventPopupOverlap = function () {
+	preventPopupOverlap = function () {
 		var target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
 		if (readingTapY > target.getWindow().height-230) {
 			if (target.y !== 0) {
@@ -390,7 +390,7 @@ tmp = function() {
 				{
 					name: 'ClosePopupByPageTap',
 					title: L('CLOSE_POPUP_BY_PAGE_TAP'),
-					icon: 'CROSSED_BOX',
+					icon: 'NODICTIONARY',
 					defaultValue: 'false',
 					values: ['true', 'false'],
 					valueTitles: {
