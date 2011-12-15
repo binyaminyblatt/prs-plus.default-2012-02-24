@@ -107,15 +107,11 @@ try {
 		// Throws exceptions on errors
 		emptyDirectory: function (path) {
 			var items, item;
-			log.trace("emptying directory "+path);
 			if (this.pathExists(path)) {
 				items = this.listFiles(path);
 				for (item in items) {
-					log.trace("deleting item "+items[item]);
 					this.deleteFile(path + "/" + items[item]);
-					log.trace("success");
 				}
-				log.trace("emptying successful");
 			}
 		},
 		
@@ -124,10 +120,8 @@ try {
 		// Throws exceptions on errors
 		deleteDirectory: function (path) {
 			if (this.pathExists(path)) {
-				log.trace("deleting directory "+path);
 				this.emptyDirectory(path);
 				FileSystem.deleteDirectory(path);
-				log.trace("deleting successful");
 			}
 		},
 		
