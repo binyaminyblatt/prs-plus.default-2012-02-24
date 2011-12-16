@@ -113,6 +113,7 @@ return {
 		PICTURE_ALT: 85,
 		SEARCH_ALT: 86,
 		HANDWRITING_ALT: 87,
+		COMIC: 88,
 		
 		DEFAULT: 62,
 		

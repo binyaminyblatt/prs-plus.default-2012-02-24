@@ -86,6 +86,7 @@ return {
 		BOOK_ALT: 63,
 		PICTURE_ALT: 64,
 		SEARCH_ALT: 65,
+		COMIC: 66,
 		
 		DEFAULT: 41,
 		

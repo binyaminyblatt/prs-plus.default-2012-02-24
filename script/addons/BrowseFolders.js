@@ -40,6 +40,7 @@
 //	2011-12-12 kartu - Changed mounted card order to SD/MS from MS/SD
 //	2011-12-14 quisvir - Added preliminary archive browsing support (alpha)
 //	2011-12-14 Ben Chenoweth - Correct icons for archive contents; temp files deleted
+//	2011-12-16 Ben Chenoweth - Archives on SD/MS listable (in mount mode); CBR/CBZ (now with icon) on IM readable with NEXT/PREV buttons
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -155,12 +156,19 @@ tmp = function() {
 		return node;
 	};
 
-	createArchiveNode = function (path, title, parent) {
-		var node;
+	createArchiveNode = function (path, title, parent, needsMount) {
+		var node, extension, icon;
+		extension = Core.io.extractExtension(path);
+		if ((extension === 'cbr') || (extension === 'cbz')) {
+			icon = "COMIC";
+		} else {
+			icon = "ARCHIVE";
+		}		
 		node = Core.ui.createContainerNode({
 			title: title,
-			icon: "ARCHIVE",
 			parent: parent,
+			icon: icon,
+			needsMount: needsMount,
 			construct: archiveRootConstruct,
 			destruct: archiveRootDestruct
 		});
@@ -183,14 +191,14 @@ tmp = function() {
 			} else {
 				sizeStr = size.toFixed(0) + " KB";
 			}
-		}	
+		}
 		if (node === null) {
 			// Either file that is not a media, or unscanned
 			mime = FileSystem.getMIMEType(path);
 			if (supportedMIMEs[mime]) {
 				node = createLazyInitNode(path, title, parent, needsMount);
-			} else if  (supportedArchives[extension]) {
- 				node = createArchiveNode(path, title, parent);
+			} else if (supportedArchives[extension]) {
+ 				node = createArchiveNode(path, title, parent, needsMount);
  			} else {
 				// or convertable, 
 				// convertable node needs media constructor for converted file
@@ -302,36 +310,50 @@ tmp = function() {
 		}
 	};
 	
-	var currentArchive;
+	var browsingArchive;
+	var currentNode;
 	var archiveRootConstruct = function () {
 		log.trace('archiveRootConstruct');
 		var d, f, list;
-		this.insidePath = '';
 		
-		// Create and fill currentArchive object
-		currentArchive = {
-			path: this.path,
-			dirs: [],
-			files: []
-		};
-		d = currentArchive.dirs;
-		f = currentArchive.files;		
-		
-		list = Core.archiver.list(this.path).split('\n');
-		for (i = 0; i < list.length; i++) {
-			switch (list[i].slice(0,1)) {
-				case 'f':
-					f.push(list[i].split('\t')[2]);
-					break;
-				case 'd':
-					d.push(list[i].split('\t')[2]);
+		try {
+			this.insidePath = '';
+			
+			// Create and fill currentArchive object
+			currentArchive = {
+				path: this.path,
+				needsMount: this.needsMount,
+				dirs: [],
+				files: []
+			};
+			d = currentArchive.dirs;
+			f = currentArchive.files;
+			
+			if (currentArchive.needsMount !== undefined) {
+				Core.shell.mount(currentArchive.needsMount);
+			}		
+			list = Core.archiver.list(this.path).split('\n');
+			for (i = 0; i < list.length; i++) {
+				switch (list[i].slice(0,1)) {
+					case 'f':
+						f.push(list[i].split('\t')[2]);
+						break;
+					case 'd':
+						d.push(list[i].split('\t')[2]);
+				}
+			};
+			d.sort();
+			f.sort();
+		} catch(e) {
+			log.error("Error in archiveRootConstruct",e);
+		} finally {
+			if (currentArchive.needsMount !== undefined) {
+				Core.shell.umount(currentArchive.needsMount);
 			}
-		};
-		d.sort();
-		f.sort();
-				
+		}
+		
 		// Call general construct function
-		archiveFolderConstruct.call(this);
+		archiveFolderConstruct.call(this);		
 	};
 
 	var archiveRootDestruct = function () {
@@ -339,7 +361,6 @@ tmp = function() {
 		log.trace('archiveRootDestruct');
 		parent = this.parent;
 		path = parent.path + '~temp~/';
-		log.trace("Deleting "+path);
 		Core.io.deleteDirectory(path);
 		currentArchive = null;
 		this.nodes = null;
@@ -368,6 +389,7 @@ tmp = function() {
 						destruct: archiveFolderDestruct
 					});
 					node.insidePath = path + rest + '/';
+					node.needsMount = this.parent.needsMount;
 					nodes.push(node);
 				}
 			}
@@ -379,7 +401,6 @@ tmp = function() {
 			if (idx === 0) {
 				rest = f[i].slice(idx + path.length);
 				if (rest && rest.indexOf('/') === -1) {
-					log.error('Listing file', rest);
 					ext = Core.io.extractExtension(rest);
 					switch (ext) {
 						case 'rtf':
@@ -407,6 +428,7 @@ tmp = function() {
 						});
 						node.enter = archiveDummyEnter;
 						node.insidePath = f[i];
+						node.needsMount = this.parent.needsMount;
 						nodes.push(node);
 					} else {
 						// hide other files
@@ -418,25 +440,99 @@ tmp = function() {
 	
 	var archiveFolderDestruct = function () {
 		log.trace('archiveFolderDestruct');
+		browsingArchive = false;
 		this.nodes = null;
 	}
 	
 	var archiveDummyEnter = function () {
 		log.trace('archiveDummyEnter');
-		var path, file, node;
-		path = Core.io.extractPath(currentArchive.path) + '~temp~/';
-		file = path + Core.io.extractFileName(this.insidePath);
-		
-		// Extract file from archive
-		// TODO clear temp folder whenever possible (before file open, on file close, on startup?)
-		Core.io.emptyDirectory(path);
-		FileSystem.ensureDirectory(path);
-		Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);
-		
-		// Load & open media
-		Core.media.loadMedia(file);
-		node = Core.media.createMediaNode(file, this.parent);
-		this.parent.gotoNode(node, kbook.model);
+		var path, file, node, needsMount;
+		try {
+			// mount, if needed
+			needsMount = this.parent.needsMount;
+			if (needsMount !== undefined) {
+				Core.shell.mount(needsMount);
+			}
+			if (Core.text.startsWith(currentArchive.path, "/Data")) {
+				path = Core.io.extractPath(currentArchive.path) + '~temp~/';
+			} else {
+				path = '/tmp/~temp~/';
+			}
+			file = path + Core.io.extractFileName(this.insidePath);
+
+			// Extract file from archive
+			// TODO clear temp folder whenever possible (before file open, on file close, on startup?)
+			FileSystem.ensureDirectory(path);
+			Core.io.emptyDirectory(path);
+			Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);
+			
+			if (Core.text.startsWith(path, "/Data")) {
+				// Load & open media
+				browsingArchive = true;
+				Core.media.loadMedia(file);
+				node = Core.media.createMediaNode(file, this.parent);
+				currentNode = this;
+				this.parent.gotoNode(node, kbook.model);
+			} else {
+				browsingArchive = false;
+				Core.ui.showMsg("Viewing files on SD or MS not possible yet!");
+			}
+		} catch (ignore) {
+			Core.ui.showMsg(L("MSG_ERROR_UNPACK"));
+			Core.shell.umount(needsMount);
+		} finally {
+			if (needsMount !== undefined) {
+				Core.shell.umount(needsMount);
+			}		
+		}
+	}
+	
+	var oldDoGotoNextPicture = kbook.model.doGotoNextPicture;
+	kbook.model.doGotoNextPicture = function () {
+		var parent, nodes, nextNode, i, n;
+		if ((this.STATE == 'PICTURE') && (browsingArchive)) {
+			// move to next image in archive
+			parent = currentNode.parent;
+			nodes = parent.nodes;
+			nextNode = null;
+			for (i = 0, n = nodes.length; i < n; i++) {
+				if ((nodes[i].insidePath === currentNode.insidePath) && (i+1<n)) {
+					nextNode = nodes[i+1];
+					break;
+				}
+			}
+			if (nextNode) {
+				parent.gotoNode(nextNode, kbook.model);
+			} else {
+				this.doBlink();
+			}
+		} else {
+			oldDoGotoNextPicture.apply(this);
+		}
+	}
+	
+	var oldDoGotoPreviousPicture = kbook.model.doGotoPreviousPicture;
+	kbook.model.doGotoPreviousPicture = function () {
+		var parent, nodes, prevNode, i, n;
+		if ((this.STATE == 'PICTURE') && (browsingArchive)) {
+			// move to previous image in archive
+			parent = currentNode.parent;
+			nodes = parent.nodes;
+			prevNode = null;
+			for (i = 0, n = nodes.length; i < n; i++) {
+				if ((nodes[i].insidePath === currentNode.insidePath) && (i-1>=0)) {
+					prevNode = nodes[i-1];
+					break;
+				}
+			}
+			if (prevNode) {
+				parent.gotoNode(prevNode, kbook.model);
+			} else {
+				this.doBlink();
+			}
+		} else {
+			oldDoGotoPreviousPicture.apply(this);
+		}
 	}
 	
 	doUnpackHere = function () {
