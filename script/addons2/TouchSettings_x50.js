@@ -13,6 +13,7 @@
 //	2011-12-07 quisvir - Cosmetic changes
 //	2011-12-08 quisvir - Added option to disable predictive text
 //	2011-12-13 quisvir - Added option to prevent popup menu overlapping selection
+//	2011-12-17 quisvir - Some options moved to DictionaryOptions_x50
 
 tmp = function() {
 
@@ -54,13 +55,13 @@ tmp = function() {
 	
 	/*** TAP RELATED ***/
 	
-	var readingTapX, readingTapY, oldSelectNoneWithoutUpdate, oldDoBlink, doNothingFunc, preventPopupOverlap;
+	var readingTapX, readingTapY, oldSelectNoneWithoutUpdate, oldDoBlink, doNothingFunc;
 	
 	// Functions used for page tap actions
 	oldSelectNoneWithoutUpdate = kbook.kbookPage.selectNoneWithoutUpdate;
 	oldDoBlink = kbook.model.doBlink;
 	doNothingFunc = function () {};
-		
+	
 	// On tap (doubletap if switched), get coordinates from readingTracker
 	var oldReadingTrackerTap = kbook.kbookPage.readingTracker.tap;
 	kbook.kbookPage.readingTracker.tap = function (target, x, y) {
@@ -69,7 +70,7 @@ tmp = function() {
 		if (opt.SwitchPageTaps === 'false') {
 			oldReadingTrackerTap.apply(this, arguments);
 		} else {
-			if (opt.PreventPopupOverlap === 'true') preventPopupOverlap();
+			Core.addonByName.DictionaryOptions.pageDoubleTap(x, y);
 			oldReadingTrackerDoubleTap.apply(this, arguments);
 		}
 	};
@@ -79,26 +80,10 @@ tmp = function() {
 		readingTapX = x;
 		readingTapY = y;
 		if (opt.SwitchPageTaps === 'false') {
-			if (opt.PreventPopupOverlap === 'true') preventPopupOverlap();
+			Core.addonByName.DictionaryOptions.pageDoubleTap(x, y);
 			oldReadingTrackerDoubleTap.apply(this, arguments);
 		} else {
 			oldReadingTrackerTap.apply(this, arguments);
-		}
-	}
-	
-	// Move Dictionary Popup to top of screen if tap in bottom (and vice versa)
-	preventPopupOverlap = function () {
-		var target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
-		if (readingTapY > target.getWindow().height-230) {
-			if (target.y !== 0) {
-				target.terminateContents(target.root);
-				target.changeLayout(0, undefined, 0, 0, 183, undefined);
-				target.initializeContents(target.root);
-			}
-		} else if (target.y === 0) {
-			target.terminateContents(target.root);
-			target.changeLayout(0, undefined, 0, undefined, 183, 0);
-			target.initializeContents(target.root);
 		}
 	}
 	
@@ -143,25 +128,6 @@ tmp = function() {
 			touchAction = false;
 		}
 	};
-	
-	// Close reading popup menu (dict etc) and cancel selection by tapping page
-	pageShortcutOverlayModel.doTap = function (x, y) {
-		if (kbook.model.doSomething('checkTap', x, y)) {
-			kbook.model.doSomething('doTap', x, y);
-		} else if (opt.ClosePopupByPageTap === 'true') {
-			kbook.model.doSomething('selectNone');
-		} else {
-			kbook.model.doBlink();
-			return;
-		}
-		this.doCloseShortcut();
-	};
-	
-	// Disable Dictionary by DoubleTap
-	var oldDoSelectWord = kbook.kbookPage.doSelectWord;
-	kbook.kbookPage.doSelectWord = function () {
-		if (opt.DisableDictionary !== 'true') return oldDoSelectWord.apply(this, arguments);
-	}
 	
 	// Disable Bookmark Tapping
 	kbook.kbookPage.hitMark = function (cache) {
@@ -308,7 +274,7 @@ tmp = function() {
 	// In Zoom Lock, move to top on next page
 	Fskin.kbookZoomOverlay.doNext = function () {
 		this.getModel().doNext();
-		if (this.isZoomLock && opt.ZoomLockMoveToTop) kbook.model.doSomething('scrollTo', 0, 0);
+		if (this.isZoomLock && opt.ZoomLockMoveToTop === 'true') kbook.model.doSomething('scrollTo', 0, 0);
 	}
 	
 	// In Zoom Lock, enable panning
@@ -364,39 +330,6 @@ tmp = function() {
 					groupTitle: L('CUSTOM_PAGE_TAP_ACTIONS'),
 					groupIcon: 'STYLUS',
 					optionDefs: []
-				},
-				{
-					name: 'DisableDictionary',
-					title: L('DISABLE_DICT_DOUBLETAP'),
-					icon: 'NODICTIONARY',
-					defaultValue: 'false',
-					values: ['true', 'false'],
-					valueTitles: {
-						'true': L('VALUE_TRUE'),
-						'false': L('VALUE_FALSE')
-					}
-				},
-				{
-					name: 'PreventPopupOverlap',
-					title: L('PREVENT_POPUP_OVERLAP'),
-					icon: 'NODICTIONARY',
-					defaultValue: 'false',
-					values: ['true', 'false'],
-					valueTitles: {
-						'true': L('VALUE_TRUE'),
-						'false': L('VALUE_FALSE')
-					}
-				},
-				{
-					name: 'ClosePopupByPageTap',
-					title: L('CLOSE_POPUP_BY_PAGE_TAP'),
-					icon: 'NODICTIONARY',
-					defaultValue: 'false',
-					values: ['true', 'false'],
-					valueTitles: {
-						'true': L('VALUE_TRUE'),
-						'false': L('VALUE_FALSE')
-					}
 				},
 				{
 					name: 'DisableBookmarkTaps',
@@ -526,7 +459,6 @@ tmp = function() {
 					'false': L('VALUE_FALSE')
 				}
 			},
-			
 		],
 		onPreInit: function () {
 			createTouchOptions();
@@ -535,16 +467,16 @@ tmp = function() {
 			opt = this.options;
 			if (opt.ExtendTapAreas === 'true') Fskin.bookScroller.hitLink = newHitLink;
 			if (opt.DoubleTapSpeed !== '500') {
-				BookUtil.gesture.tracker.gesture.actions[3].time = Number(opt.DoubleTapSpeed);
-				BookUtil.gesture.tracker.gesture.actions[4].time = Number(opt.DoubleTapSpeed);
+				BookUtil.gesture.tracker.gesture.actions[3].time = parseInt(opt.DoubleTapSpeed);
+				BookUtil.gesture.tracker.gesture.actions[4].time = parseInt(opt.DoubleTapSpeed);
 			}
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			if (propertyName === 'ExtendTapAreas') {
 				Fskin.bookScroller.hitLink = (newValue === 'true') ? newHitLink : oldHitLink;
 			} else if (propertyName === 'DoubleTapSpeed') {
-				BookUtil.gesture.tracker.gesture.actions[3].time = Number(newValue);
-				BookUtil.gesture.tracker.gesture.actions[4].time = Number(newValue);
+				BookUtil.gesture.tracker.gesture.actions[3].time = parseInt(newValue);
+				BookUtil.gesture.tracker.gesture.actions[4].time = parseInt(newValue);
 			}
 		},
 		actions: [{
