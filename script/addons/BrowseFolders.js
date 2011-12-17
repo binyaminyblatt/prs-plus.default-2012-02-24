@@ -41,6 +41,7 @@
 //	2011-12-14 quisvir - Added preliminary archive browsing support (alpha)
 //	2011-12-14 Ben Chenoweth - Correct icons for archive contents; temp files deleted
 //	2011-12-16 Ben Chenoweth - Archives on SD/MS listable (in mount mode); CBR/CBZ (now with icon) on IM readable with NEXT/PREV buttons
+//	2011-12-17 Ben Chenoweth - Archives page index now correct; remembers zoom on NEXT
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -487,10 +488,11 @@ tmp = function() {
 		}
 	}
 	
+	// functions for BrowseComics
 	var oldDoGotoNextPicture = kbook.model.doGotoNextPicture;
 	kbook.model.doGotoNextPicture = function () {
 		var parent, nodes, nextNode, i, n;
-		if ((this.STATE == 'PICTURE') && (browsingArchive)) {
+		if (browsingArchive) {
 			// move to next image in archive
 			parent = currentNode.parent;
 			nodes = parent.nodes;
@@ -514,7 +516,7 @@ tmp = function() {
 	var oldDoGotoPreviousPicture = kbook.model.doGotoPreviousPicture;
 	kbook.model.doGotoPreviousPicture = function () {
 		var parent, nodes, prevNode, i, n;
-		if ((this.STATE == 'PICTURE') && (browsingArchive)) {
+		if (browsingArchive) {
 			// move to previous image in archive
 			parent = currentNode.parent;
 			nodes = parent.nodes;
@@ -532,6 +534,46 @@ tmp = function() {
 			}
 		} else {
 			oldDoGotoPreviousPicture.apply(this);
+		}
+	}
+	
+	var oldSetPictureIndexCount = kbook.model.setPictureIndexCount;
+	kbook.model.setPictureIndexCount = function (node) {
+		var parent, nodes, i, n, val;
+		if (browsingArchive) {
+			parent = currentNode.parent;
+			nodes = parent.nodes;
+			for (i = 0, n = nodes.length; i < n; i++) {
+				if (nodes[i].insidePath === currentNode.insidePath) {
+					break;
+				}
+			}
+			i++;
+			val = i + 'fskin:/l/strings/STR_UI_PARTS_OF'.idToString() + n;
+			if (this.PICTURE_INDEX_COUNT != val) {
+				this.PICTURE_INDEX_COUNT = val;
+				this.changed();
+			}		
+		} else {
+			oldSetPictureIndexCount.apply(this, arguments);
+		}
+	}
+	
+	// move to top on next page
+	imageZoomOverlayModel.doNext = function () {
+		var currentZoomRate;
+		if (browsingArchive) {
+			if (this.SHOW == true) {
+				this.container.target.bubble('doNext');
+				this.container.zoomChange();
+				// FIXME: Move to top left corner of image
+			} else {
+				this.closeCurrentOverlay();
+				this.container.target.bubble('doNext');
+			}
+		} else {
+			this.closeCurrentOverlay();
+			this.container.target.bubble('doNext');
 		}
 	}
 	
