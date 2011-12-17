@@ -3585,7 +3585,7 @@
 			<group id="VIEW_SHORTCUT3" left="0" right="0" top="60" height="42">
 				<button2icon id="btn_chgDic" skin="btn_chgDic2" left="10" right="10" height="40" do="doChangeDictionary" bw="4"/>
 			</group>
-			<exLine skin="line_shortcut" left="14" right="14" bottom="79" height="2"/>
+			<exLine skin="line_shortcut" left="14" right="14" top="102" height="2"/> <!-- PRS+ change: bottom="79" to top="102" -->
 
 
 			<!-- line space is 3 dot.  lineSpaceing= 3*72/kFskDocumentViewerDefaultDPI = 3*72/167 = 1.2934 -->
