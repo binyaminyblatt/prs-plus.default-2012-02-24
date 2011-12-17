@@ -441,16 +441,16 @@ tmp = function() {
 					name: "CustomContrast",
 					title: L("CUSTOM_CONTRAST"),
 					icon: "CONTRAST",
-					defaultValue: 0,
-					values: [0,"Custom"],
+					defaultValue: '0',
+					values: ['0',"Custom"],
 					valueTitles: { "Custom": L("VALUE_CUSTOM") }
 				},
 				{
 					name: "CustomBrightness",
 					title: L("CUSTOM_BRIGHTNESS"),
 					icon: "BRIGHTNESS",					
-					defaultValue: 0,
-					values: [0,"Custom"],
+					defaultValue: '0',
+					values: ['0',"Custom"],
 					valueTitles: { "Custom": L("VALUE_CUSTOM") }
 				},
 				{

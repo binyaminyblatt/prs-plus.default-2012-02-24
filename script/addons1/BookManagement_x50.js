@@ -692,15 +692,15 @@ tmp = function() {
 				name: 'BookList',
 				title: L('BOOK_SELECTION'),
 				icon: 'BOOKS',
-				defaultValue: 0,
-				values: [0, 1, 2, 3, 4, 5],
+				defaultValue: '0',
+				values: ['0', '1', '2', '3', '4', '5'],
 				valueTitles: {
-					0: L('LAST_ADDED_BOOKS'),
-					1: L('LAST_OPENED_BOOKS'),
-					2: L('BOOKS_BY_SAME_AUTHOR'),
-					3: L('NEXT_BOOKS_IN_COLLECTION'),
-					4: L('RANDOM_BOOKS'),
-					5: L('SELECT_COLLECTION') + '...'
+					'0': L('LAST_ADDED_BOOKS'),
+					'1': L('LAST_OPENED_BOOKS'),
+					'2': L('BOOKS_BY_SAME_AUTHOR'),
+					'3': L('NEXT_BOOKS_IN_COLLECTION'),
+					'4': L('RANDOM_BOOKS'),
+					'5': L('SELECT_COLLECTION') + '...'
 				}
 			},
 			{
@@ -870,6 +870,7 @@ tmp = function() {
 			numCur = 0;
 			switch (propertyName) {
 				case 'BookList':
+					opt.BookList = parseInt(newValue);
 					if (newValue === 5) doSelectCollection();
 				case 'IgnoreCards':
 					opt.CurrentCollection = '';
