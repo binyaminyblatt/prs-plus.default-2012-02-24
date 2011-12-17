@@ -20,6 +20,7 @@
 //	2011-11-25 quisvir - Allow temporary redirect after selecting setting
 //	2011-11-28 qusivir - Sort PRS+ Settings nodes by title
 //	2011-12-07 quisvir - Exposed doCreateSingleSetting
+//	2011-12-17 quisvir - Minor change to show numerical settings correctly
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -126,7 +127,7 @@ tmp = function() {
 						icon: "UNCHECKED",
 						comment: ""
 					});
-					if (v === options[optionDef.name]) {
+					if (v === options[optionDef.name].toString()) {
 						node.selected = true;
 						Core.ui.setNodeIcon(node, "CHECKED");
 					}
@@ -160,7 +161,7 @@ tmp = function() {
 						icon: core_setting_translateIcon(optionDef, v),
 						comment: ""
 					});
-					if (v === options[optionDef.name]) {
+					if (v === options[optionDef.name].toString()) {
 						node.selected = true;
 					}
 					group.nodes.push(node);
