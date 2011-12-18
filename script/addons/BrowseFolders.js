@@ -42,6 +42,7 @@
 //	2011-12-14 Ben Chenoweth - Correct icons for archive contents; temp files deleted
 //	2011-12-16 Ben Chenoweth - Archives on SD/MS listable (in mount mode); CBR/CBZ (now with icon) on IM readable with NEXT/PREV buttons
 //	2011-12-17 Ben Chenoweth - Archives page index now correct; remembers zoom on NEXT
+//	2011-12-18 Ben Chenoweth - Flush archive items from library on exiting; move to top left on NEXT
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -441,7 +442,21 @@ tmp = function() {
 	
 	var archiveFolderDestruct = function () {
 		log.trace('archiveFolderDestruct');
+		var nodes;
 		browsingArchive = false;
+		if (Core.text.startsWith(currentArchive.path, "/Data")) {
+			// remove files from library
+			path = Core.io.extractPath(currentArchive.path) + '~temp~/';
+			nodes = this.nodes;
+			for (i = 0, n = nodes.length; i < n; i++) {
+				file = path + Core.io.extractFileName(nodes[i].insidePath);
+				item=Core.media.findMedia(file);
+				if (item) {
+					FskCache.source.deleteRecord(item.id);
+					FskCache.source.flush(true);
+				}
+			}
+		}
 		this.nodes = null;
 	}
 	
@@ -561,12 +576,16 @@ tmp = function() {
 	
 	// move to top on next page
 	imageZoomOverlayModel.doNext = function () {
-		var currentZoomRate;
+		var timer;
 		if (browsingArchive) {
 			if (this.SHOW == true) {
 				this.container.target.bubble('doNext');
 				this.container.zoomChange();
-				// FIXME: Move to top left corner of image
+				timer = this.timer = new HardwareTimer();
+				timer.target = this;
+				timer.onCallback = this.onCallback;
+				timer.onClockChange = this.onCallback;
+				timer.schedule(100);
 			} else {
 				this.closeCurrentOverlay();
 				this.container.target.bubble('doNext');
@@ -575,6 +594,14 @@ tmp = function() {
 			this.closeCurrentOverlay();
 			this.container.target.bubble('doNext');
 		}
+	}
+	
+	imageZoomOverlayModel.onCallback = function () {
+		var target;
+		target = this.target;
+		target.timer = null;
+		kbook.model.doSomething('scrollTo', -100, -100);
+		this.container.zoomChange();
 	}
 	
 	doUnpackHere = function () {
