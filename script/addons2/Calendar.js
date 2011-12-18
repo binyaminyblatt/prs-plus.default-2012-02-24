@@ -385,8 +385,15 @@ tmp = function() {
 					}
 				}
 				if (futureevents.length>0) {
+					// pad day and month fields
+					for (var k=0; k<futureevents.length; k++) {
+						futureevents[k][1]=Calendar.pad(futureevents[k][1],2);
+						futureevents[k][2]=Calendar.pad(futureevents[k][2],2);
+					}
+					
 					// sort events
 					futureevents.sort(Calendar.sortEvents);
+					
 				
 					// output future events
 					win.setTextStyle(1);
@@ -402,9 +409,9 @@ tmp = function() {
 					for (var j=i; (j-i)<futureevents.length; j++) {
 						if (j==linelimit) break; // only room for a limited number of lines
 						var datestring;
-						//datestring = futureevents[j-i][3]+"/"+Calendar.pad(futureevents[j-i][1],2)+"/"+Calendar.pad(futureevents[j-i][2],2); // YYYY/MM/DD
-						//datestring = Calendar.pad(futureevents[j-i][1],2)+"/"+Calendar.pad(futureevents[j-i][2],2)+"/"+futureevents[j-i][3]; // MM/DD/YYYY
-						datestring = Calendar.pad(futureevents[j-i][2],2)+"/"+Calendar.pad(futureevents[j-i][1],2)+"/"+futureevents[j-i][3]; // DD/MM/YYYY
+						//datestring = futureevents[j-i][3]+"/"+futureevents[j-i][1]+"/"+futureevents[j-i][2]; // YYYY/MM/DD
+						//datestring = futureevents[j-i][1]+"/"+futureevents[j-i][2]+"/"+futureevents[j-i][3]; // MM/DD/YYYY
+						datestring = futureevents[j-i][2]+"/"+futureevents[j-i][1]+"/"+futureevents[j-i][3]; // DD/MM/YYYY
 						if (i==0) {
 							win.drawText(datestring+" - "+futureevents[j-i][5], 50, (j-1)*22+630, w-107, 22);
 						} else {
