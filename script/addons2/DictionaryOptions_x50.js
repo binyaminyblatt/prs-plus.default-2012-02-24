@@ -5,6 +5,7 @@
 //
 // History:
 //	2011-12-17 quisvir - Initial version
+//	2011-12-18 quisvir - Added next/previous buttons to popup; added custom functions for reinitializing coordinates
 
 tmp = function() {
 
@@ -12,6 +13,74 @@ tmp = function() {
 	L = Core.lang.getLocalizer('DictionaryOptions');
 	log = Core.log.getLogger('DictionaryOptions');
 	
+	
+	// General function to recursively terminate coordinates of container content
+	var doTerminateCoordinates = function (target, first) {
+		var i, c;
+		c = target.contents;
+		if (c) {
+			for (i = c.length - 1; i >= 0; i--) {
+				doTerminateCoordinates(c[i], false);
+			}
+		}
+		if (!first) {
+			target.invalidate();
+			target.terminateCoordinates(target.root, target.container);
+		}
+	}
+	
+	// General function to recursively initialize coordinates of container content
+	var doInitializeCoordinates = function (target, first) {
+		var i, c;
+		c = target.contents;
+		if (!first) {
+			target.initializeCoordinates(target.root, target.container);
+			target.invalidate();
+		}
+		if (c) {
+			for (i = c.length - 1; i >= 0; i--) {
+				doInitializeCoordinates(c[i], false);
+			}
+		}
+	}
+	
+	// Button in popup: Previous entry in dictionary
+	kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT.sandbox.doPreviousDicEntry = function () {
+		NextPrevDicEntry.call(this, true);
+	}
+	
+	// Button in popup: Next entry in dictionary
+	kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT.sandbox.doNextDicEntry = function () {
+		NextPrevDicEntry.call(this, false);
+	}
+	
+	// Find and set next/previous dictionary entry
+	var NextPrevDicEntry = function (back) {
+		var data, index, key, dicIndex, item;
+		data = kbook.dictionaryData;
+		if (!data.countSimpleRecords()) return;
+		index = data.getSimpleResultDicIndex().index;
+		index = (back) ? index - 1 : index + 1;
+		key = new Chunk('AAA=');
+		dicIndex = new kbook.model.DicIndex(index, key);
+		item = data.dictionary.getItemFromDicIndex(dicIndex);
+		data.record_0 = item;
+		data.simpleRecord = new kbook.DictionaryRecord(item);
+		data.simpleRecord.setMode('simple');
+		data.simple_records = [data.simpleRecord];
+		this.setVariable('VAR_UPDATE', false);
+		this.setVariable('VAR_UPDATE', true);
+	}
+	
+	// Show/hide next/previous buttons in popup depending on dictionary results
+	var oldOpenShortcut2 = pageShortcutOverlayModel.openShortcut2;
+	pageShortcutOverlayModel.openShortcut2 = function (str) {
+		var show;
+		oldOpenShortcut2.apply(this, arguments);
+		show = kbook.dictionaryData.countSimpleRecords() ? true : false;
+		this.container.sandbox.VIEW_SHORTCUT.sandbox.VIEW_SHORTCUT2.sandbox.BTN_PREVDICENTRY.show(show);
+		this.container.sandbox.VIEW_SHORTCUT.sandbox.VIEW_SHORTCUT2.sandbox.BTN_NEXTDICENTRY.show(show);
+	}
 	
 	// Disable dictionary by DoubleTap
 	var oldDoSelectWord = kbook.kbookPage.doSelectWord;
@@ -28,14 +97,14 @@ tmp = function() {
 		target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
 		if (y < kbook.model.container.height - height - 40) {
 			if (target.y === 0) {
-				target.terminateContents(target.root);
+				doTerminateCoordinates(target, true);
 				target.changeLayout(0, undefined, 0, undefined, height, 0);
-				target.initializeContents(target.root);
+				doInitializeCoordinates(target, true);
 			}
 		} else if (target.y !== 0) {
-			target.terminateContents(target.root);
+			doTerminateCoordinates(target, true);
 			target.changeLayout(0, undefined, 0, 0, height, undefined);
-			target.initializeContents(target.root);
+			doInitializeCoordinates(target, true);
 		}
 	}
 	
@@ -56,15 +125,10 @@ tmp = function() {
 	// Set Dictionary Popup lines
 	var oldSetRenderParameter = kbook.dictionaryRecord.setRenderParameter;
 	kbook.dictionaryRecord.setRenderParameter = function (bounds, mode, bgColor, textSize, lineSpacing, columnSpacing, columnWidth, maxLines, fitHeightFlag) {
-		if (oldSetRenderParameter.apply(this, arguments)) {
-			if (maxLines === 3 && opt.popupLines !== 3) {
-				this.viewer.set(dictionary.viewer.Property.maxLines, opt.popupLines);
-				this.maxLines = opt.popupLines;
-			}
-			return true;
-		} else {
-			return false;
+		if (maxLines === 3 && opt.popupLines !== 3) {
+			arguments[7] = opt.popupLines;
 		}
+		return oldSetRenderParameter.apply(this, arguments);
 	}
 	
 	// Set dictionary popup size on first book load (onInit is too soon)
@@ -72,10 +136,10 @@ tmp = function() {
 		var target;
 		if (opt.popupLines !== 3) {
 			target = this.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
-			target.sandbox.DIC_BTN.changeLayout(14, undefined, 14, undefined, opt.popupLines * 23 + 10, 0);
-			target.terminateContents(target.root);
+			doTerminateCoordinates(target, true);
 			target.changeLayout(0, undefined, 0, undefined, opt.popupLines * 23 + 114, 0);
-			target.initializeContents(target.root);
+			doInitializeCoordinates(target, true);
+			target.sandbox.DIC_BTN.changeLayout(14, undefined, 14, undefined, opt.popupLines * 23 + 10, 0);
 		}
 		Core.events.unsubscribe(Core.events.EVENTS.BOOK_CHANGED, initPopupSize);
 	}
@@ -83,12 +147,12 @@ tmp = function() {
 	var DictionaryOptions = {
 		name: 'DictionaryOptions',
         title: L('TITLE'),
-		icon: 'NODICTIONARY',
+		icon: 'DICTIONARY',
 		optionDefs: [
 			{
 				name: 'disableDictDoubleTap',
 				title: L('DISABLE_DICT_DOUBLETAP'),
-				icon: 'SETTINGS',
+				icon: 'NODICTIONARY',
 				defaultValue: 'false',
 				values: ['true', 'false'],
 				valueTitles: {
@@ -99,7 +163,7 @@ tmp = function() {
 			{
 				name: 'preventPopupOverlap',
 				title: L('PREVENT_POPUP_OVERLAP'),
-				icon: 'SETTINGS',
+				icon: 'ABOUT',
 				defaultValue: 'false',
 				values: ['true', 'false'],
 				valueTitles: {
@@ -110,7 +174,7 @@ tmp = function() {
 			{
 				name: 'closePopupByPageTap',
 				title: L('CLOSE_POPUP_BY_PAGE_TAP'),
-				icon: 'SETTINGS',
+				icon: 'STYLUS',
 				defaultValue: 'false',
 				values: ['true', 'false'],
 				valueTitles: {
@@ -121,7 +185,7 @@ tmp = function() {
 			{
 				name: 'popupLines',
 				title: L('DICT_POPUP_LINES'),
-				icon: 'SETTINGS',
+				icon: 'ABOUT',
 				defaultValue: '3',
 				values: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
 				valueTitles: {
@@ -139,10 +203,10 @@ tmp = function() {
 			if (propertyName === 'popupLines') {
 				opt.popupLines = parseInt(newValue);
 				target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
-				target.sandbox.DIC_BTN.changeLayout(14, undefined, 14, undefined, opt.popupLines * 23 + 10, 0);
-				target.terminateContents(target.root);
+				doTerminateCoordinates(target, true);
 				target.changeLayout(0, undefined, 0, undefined, opt.popupLines * 23 + 114, 0);
-				target.initializeContents(target.root);
+				doInitializeCoordinates(target, true);
+				target.sandbox.DIC_BTN.changeLayout(14, undefined, 14, undefined, opt.popupLines * 23 + 10, 0);
 			}
 		},
 		pageDoubleTap: function (x, y) {
