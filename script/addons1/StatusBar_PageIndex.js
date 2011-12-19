@@ -21,11 +21,12 @@
 //	2010-07-21 kartu - Refactored as Statusbar "plugin"
 //	2010-11-29 kartu - ALL: implemented #16 "88.1% (add decimal) in statusbar"
 //	2011-10-13 quisvir - Fixed "Remaining Time: 2:60" (thanks flobauke)
+//	2011-12-19 quisvir - Added option "pages to next chapter"
 
 tmp = function() {
 	var log, L, lastTime, lastPage, ppmHistory, ppmIdx, MAX_PPM_HISTORY,
 		MAX_DELAY, NA, resetCounter, getPpm, getTimeLeft, updateIndexBook,
-		updateIndexMenu;
+		updateIndexMenu, toc, nextChapter, prevChapter, getChapterPages, getToc, resetToC;
 	log = Core.log.getLogger("StatusBar_PageIndex");
 	L = Core.lang.getLocalizer("StatusBar_PageIndex");
 
@@ -109,10 +110,50 @@ tmp = function() {
 			return minutes;
 		}
 	};
+	
+	resetToC = function () {
+		toc = nextChapter = prevChapter = undefined;
+	}
+	
+	// Returns number of pages to next chapter
+	getChapterPages = function (i) {
+		var j;
+		if (toc === undefined) {
+			toc = [];
+			getToc(kbook.model.currentBook.media.content.bookmarks);
+			toc.sort(function (a,b) { return a-b });
+		}
+		if (nextChapter && nextChapter > i) {
+			if (!prevChapter || prevChapter <= i) {
+				return nextChapter - i;
+			}
+		}
+		for (j = 0; j < toc.length; j++) { // TODO start from nextChapter
+			if (toc[j] > i) {
+				prevChapter = (j > 0) ? toc[j - 1] : undefined;
+				nextChapter = toc[j];
+				return nextChapter - i;
+			}
+		}
+		return null;
+	}
 
+	// Creates array of bookmarks entry page numbers
+	getToc = function (bm) {
+		var j;
+		for (j = 0; j < bm.length; j++) {
+			try {
+				toc.push(bm[j].mark.getPage());
+			} catch(ignore) {}
+			if (bm[j].bookmarks) {
+				getToc(bm[j].bookmarks);
+			}
+		}
+	}
+	
 	updateIndexBook = function () {
 		try {
-			var c, ii, i, per, roundedPer, show, timeLeft, ppm;
+			var c, ii, i, per, roundedPer, show, timeLeft, ppm, pages;
 			switch (StatusBar.options.indexBookMode) {
 				case "always":
 					break;
@@ -165,6 +206,14 @@ tmp = function() {
 					ppm = getPpm(i);
 					timeLeft = getTimeLeft(ppm, c - i);
 					show = ii + " / " + c +  " (" + ppm + " / " + timeLeft + ")";
+					break;
+				case "XdivYchapt":
+					pages = getChapterPages(i - 1);
+					if (pages) {
+						show = ii + " / " + c +  " (" + pages + ")";
+					} else {
+						show = ii + " / " + c;
+					}
 					break;
 				default:
 					show = ii + " " + L("OF") + " " + c;
@@ -234,7 +283,7 @@ tmp = function() {
 						title: L("INDEX_STYLE_BOOK"),
 						icon: "LIST",
 						defaultValue: "XdivY",
-						values: ["XofY", "XofYper", "XdivY", "XdivYper", "XremYper", "XremYperRem", "XdivYstats0", "XdivYstats1", "XdivYstats2"],
+						values: ["XofY", "XofYper", "XdivY", "XdivYper", "XremYper", "XremYperRem", "XdivYstats0", "XdivYstats1", "XdivYstats2", "XdivYchapt"],
 						valueTitles: {
 							XofY: "5 " + L("OF") + " 100",
 							XofYper: "5 " + L("OF") + " 100 (5%)",
@@ -244,7 +293,8 @@ tmp = function() {
 							XremYperRem: "5 + 95 (95%)",
 							XdivYstats0: L("VALUE_STATS0"),
 							XdivYstats1: L("VALUE_STATS1"),
-							XdivYstats2: L("VALUE_STATS2")
+							XdivYstats2: L("VALUE_STATS2"),
+							XdivYchapt: L("VALUE_CHAPTER")
 						}
 					},
 					{
@@ -287,6 +337,7 @@ tmp = function() {
 	
 	// Reset index on book change
 	Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, resetCounter);
+	Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, resetToC, true);
 };
 try {
 	tmp();
