@@ -6,6 +6,7 @@
 			<cutout id="selectcalsquare" x="0" y="0" width="70" height="70"/>
 			<cutout id="highlightcalsquare" x="70" y="0" width="70" height="70"/>
 			<cutout id="calendarsquare" x="140" y="0" width="70" height="70" columns="70"/>
+			<cutout id="transparentsquare" x="0" y="70" width="20" height="20" columns="20"/>
         </texture>
     </assets>	
 </document>
