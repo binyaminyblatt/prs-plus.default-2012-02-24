@@ -58,7 +58,6 @@ tmp = function() {
 	var NextPrevDicEntry = function (back) {
 		var data, index, key, dicIndex, item;
 		data = kbook.dictionaryData;
-		if (!data.countSimpleRecords()) return;
 		index = data.getSimpleResultDicIndex().index;
 		index = (back) ? index - 1 : index + 1;
 		key = new Chunk('AAA=');
