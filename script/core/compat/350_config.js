@@ -34,6 +34,7 @@
 //  2011-11-24 Ben Chenoweth - Added HANDWRITING_ALT
 //	2011-11-28 quisvir - Added STYLUS
 //	2011-12-13 quisvir - Added NOBOOKMARK
+//	2011-12-17 quisvir - Added DICTIONARY
 
 return {
 	// Menu icon indices 
@@ -79,6 +80,7 @@ return {
 		COLLECTION: 42,
 		TEXT_MEMO: 50,
 		KEYBOARD: 51,
+		DICTIONARY: 52,
 		ROOT_MENU: 53,
 		INTERNAL_MEM: 54,
 		MS: 55,
