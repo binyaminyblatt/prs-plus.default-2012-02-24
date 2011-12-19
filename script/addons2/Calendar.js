@@ -368,8 +368,12 @@ tmp = function() {
 				// output today's events
 				win.setPenColor(Color.black);
 				win.fillRectangle(47, 579, w-101, h-608);
-				win.setPenColor(Color.white);
-				win.fillRectangle(48, 580, w-103, h-610);
+				if (!eventsonly) {
+					win.setPenColor(Color.white);
+					win.fillRectangle(48, 580, w-103, h-610);					
+				} else {
+					kbook.model.container.cutouts['transparentsquare'].fill(win, 0, 0, 48, 580, w-103, h-610); // 0 = white, transparency 128
+				}
 				win.setPenColor(Color.black);
 				win.setTextSize(20);
 				var i = 0;
@@ -413,9 +417,9 @@ tmp = function() {
 						//datestring = futureevents[j-i][1]+"/"+futureevents[j-i][2]+"/"+futureevents[j-i][3]; // MM/DD/YYYY
 						datestring = futureevents[j-i][2]+"/"+futureevents[j-i][1]+"/"+futureevents[j-i][3]; // DD/MM/YYYY
 						if (i==0) {
-							win.drawText(datestring+" - "+futureevents[j-i][5], 50, (j-1)*22+630, w-107, 22);
+							win.drawText(" "+datestring+" - "+futureevents[j-i][5], 50, (j-1)*22+630, w-107, 22);
 						} else {
-							win.drawText(datestring+" - "+futureevents[j-i][5], 50, (j-0)*22+630, w-107, 22);
+							win.drawText(" "+datestring+" - "+futureevents[j-i][5], 50, (j-0)*22+630, w-107, 22);
 						}
 					}
 				}
