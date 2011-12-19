@@ -367,7 +367,7 @@ tmp = function() {
 			if ((!eventsonly) || (todayevents.length>0) || (futureevents.length>0)) {
 				// output today's events
 				win.setPenColor(Color.black);
-				win.fillRectangle(47, 579, w-101, h-608);
+				win.frameRectangle(47, 579, w-101, h-608);
 				if (!eventsonly) {
 					win.setPenColor(Color.white);
 					win.fillRectangle(48, 580, w-103, h-610);					
