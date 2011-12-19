@@ -43,13 +43,14 @@
 //	2011-12-16 Ben Chenoweth - Archives on SD/MS listable (in mount mode); CBR/CBZ (now with icon) on IM readable with NEXT/PREV buttons
 //	2011-12-17 Ben Chenoweth - Archives page index now correct; remembers zoom on NEXT
 //	2011-12-18 Ben Chenoweth - Flush archive items from library on exiting; move to top left on NEXT
+//	2011-12-19 Ben Chenoweth - Options for what to do with books in archive (copy to IM, copy to IM and open, preview)
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
 		compareFields, supportedMIMEs, supportedArchives, createArchiveNode, createLazyInitNode,
-		constructLazyNode, ACTION_ICON, doCopyAndOpen, doCopy, doOpenHere, doUnpackHere, doGotoParent,
-		browseFoldersNode, ENABLED, DISABLED;
+		constructLazyNode, archiveBookNodeEnter, ACTION_ICON, doCopyAndOpen, doCopy, doOpenHere,
+		doUnpackHere, doGotoParent, browseFoldersNode, ENABLED, DISABLED;
 	
 	ENABLED = "enabled";
 	DISABLED = "disabled";
@@ -165,7 +166,7 @@ tmp = function() {
 			icon = "COMIC";
 		} else {
 			icon = "ARCHIVE";
-		}		
+		}
 		node = Core.ui.createContainerNode({
 			title: title,
 			parent: parent,
@@ -280,7 +281,7 @@ tmp = function() {
 		var path, foldersNode, nodes, targetFolder, imNode, i, n;
 		// Copy the file and get new filename
 		path = doCopy.call(this);
-		targetFolder = Core.io.extractPath(path); 
+		targetFolder = Core.io.extractPath(path);
 		
 		// find IM root node
 		foldersNode = BrowseFolders.getAddonNode();
@@ -315,7 +316,6 @@ tmp = function() {
 	var browsingArchive;
 	var currentNode;
 	var archiveRootConstruct = function () {
-		log.trace('archiveRootConstruct');
 		var d, f, list;
 		
 		try {
@@ -360,7 +360,6 @@ tmp = function() {
 
 	var archiveRootDestruct = function () {
 		var parent;
-		log.trace('archiveRootDestruct');
 		parent = this.parent;
 		path = parent.path + '~temp~/';
 		Core.io.deleteDirectory(path);
@@ -370,8 +369,7 @@ tmp = function() {
 	}
 	
 	var archiveFolderConstruct = function () {
-		log.trace('archiveFolderConstruct');
-		var node, nodes, d, f, path, i, ext, fileIcon;
+		var node, nodes, d, f, path, i, ext, fileIcon, bookNode;
 		nodes = this.nodes = [];
 		d = currentArchive.dirs;
 		f = currentArchive.files;
@@ -412,11 +410,13 @@ tmp = function() {
 						case 'fb2':
 						case 'txt':
 							fileIcon = 'BOOK_ALT';
+							enterAction = archiveBookNodeEnter;
 							break;
 						case 'jpg':
 						case 'jpeg':
 						case 'png':
 							fileIcon = 'PICTURE_ALT';
+							enterAction = archiveDummyEnter;
 							break;
 						default:
 							fileIcon = 'CROSSED_BOX';
@@ -426,9 +426,9 @@ tmp = function() {
 						node = Core.ui.createContainerNode({
 							title: rest,
 							icon: fileIcon,
-							parent: this,
+							parent: this
 						});
-						node.enter = archiveDummyEnter;
+						node.enter = enterAction;
 						node.insidePath = f[i];
 						node.needsMount = this.parent.needsMount;
 						nodes.push(node);
@@ -441,7 +441,6 @@ tmp = function() {
 	}
 	
 	var archiveFolderDestruct = function () {
-		log.trace('archiveFolderDestruct');
 		var nodes;
 		browsingArchive = false;
 		if (Core.text.startsWith(currentArchive.path, "/Data")) {
@@ -461,7 +460,6 @@ tmp = function() {
 	}
 	
 	var archiveDummyEnter = function () {
-		log.trace('archiveDummyEnter');
 		var path, file, node, needsMount;
 		try {
 			// mount, if needed
@@ -500,6 +498,99 @@ tmp = function() {
 			if (needsMount !== undefined) {
 				Core.shell.umount(needsMount);
 			}		
+		}
+	}
+
+	doArchiveCopy = function () {
+		var fileDestination, fileTemp, path, needsMount;
+		Core.ui.showMsg(L("MSG_COPYING_BOOK"), 1);
+		try {
+			// mount, if needed
+			needsMount = this.parent.needsMount;
+			if (needsMount !== undefined) {
+				Core.shell.mount(needsMount);
+			}
+			
+			try {
+				path = '/tmp/~temp~/';
+				fileDestination = Core.io.extractFileName(this.insidePath);
+				fileTemp = path + fileDestination;
+				FileSystem.ensureDirectory(path);
+				Core.io.emptyDirectory(path);
+				fileDestination = Core.io.getUnusedPath("/Data" + BrowseFolders.options.imRoot + "/", fileDestination);
+				Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);				
+				
+				// FIXME: ask user first, if he wants to copy the book, if target exists
+				Core.io.moveFile(fileTemp, fileDestination);
+
+				return fileDestination;
+			} finally {
+				Core.shell.umount(needsMount);
+			}
+		} catch (ignore) {
+			Core.ui.showMsg(L("MSG_ERROR_COPYING_BOOK"));	
+		}
+	}
+	
+	doArchiveCopyAndOpen = function () {
+		var success, fileDestination, fileTemp, path, needsMount, foldersNode, nodes, targetFolder, imNode, i, n;
+		Core.ui.showMsg(L("MSG_COPYING_BOOK"), 1);
+		try {
+			// mount, if needed
+			needsMount = this.parent.needsMount;
+			if (needsMount !== undefined) {
+				Core.shell.mount(needsMount);
+			}
+			success = false;
+			try {
+				path = '/tmp/~temp~/';
+				fileDestination = Core.io.extractFileName(this.insidePath);
+				fileTemp = path + fileDestination;
+				FileSystem.ensureDirectory(path);
+				Core.io.emptyDirectory(path);
+				fileDestination = Core.io.getUnusedPath("/Data" + BrowseFolders.options.imRoot + "/", fileDestination);
+				Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);
+				// FIXME: ask user first, if he wants to copy the book, if target exists
+				Core.io.moveFile(fileTemp, fileDestination);
+				success = true;
+			} finally {
+				Core.shell.umount(needsMount);
+			}
+		} catch (ignore) {
+			Core.ui.showMsg(L("MSG_ERROR_COPYING_BOOK"));	
+		}
+		
+		if (success) {
+			targetFolder = Core.io.extractPath(fileDestination);
+		
+			// find IM root node
+			foldersNode = BrowseFolders.getAddonNode();
+			nodes = foldersNode.nodes;
+			imNode = null;
+			for (i = 0, n = nodes.length; i < n; i++) {
+				if (nodes[i].path === targetFolder) {
+					imNode = nodes[i];
+					break;
+				}
+			}
+			
+			// If IM root node not found, goto folders node
+			if (imNode) {
+				// goto IM node to allow it to construct children
+				this.gotoNode(imNode, kbook.model);
+				imNode.update();
+				
+				// Find element with matching path, if found, enter
+				nodes = imNode.nodes;
+				for (i = 0, n = nodes.length; i < n; i++) {
+					if (fileDestination === nodes[i].path) {
+						imNode.gotoNode(nodes[i], kbook.model);
+						break;
+					}
+				}
+			} else {
+				this.gotoNode(foldersNode, kbook.model);
+			}
 		}
 	}
 	
@@ -664,6 +755,64 @@ tmp = function() {
 		this.nodes = [copyAndOpenNode, copyNode];		
 	};
 	
+	// Construct "copy to IM", "copy to IM and open", "preview" node
+	archiveBookNodeEnter = function() {
+		var node, nodes, bookNodes, copyNode, copyAndOpenNode, previewNode;
+		title = Core.io.extractFileName(this.insidePath);
+		nodes = this.nodes = [];
+		node = Core.ui.createContainerNode({
+				title: title,
+				parent: this.parent,
+				icon: "BOOK_ALT"
+		});
+		node.insidePath = this.insidePath;
+		node.needsMount = this.needsMount;
+		nodes.push(node);
+		
+		bookNodes = node.nodes = [];
+		
+		// Node that copies to IM and opens book
+		copyAndOpenNode = Core.ui.createContainerNode({
+				title: L("NODE_COPY_AND_OPEN"),
+				comment: L("NODE_COPY_AND_OPEN_COMMENT"),
+				parent: node,
+				icon: ACTION_ICON
+		});
+		copyAndOpenNode.enter = doArchiveCopyAndOpen;
+		copyAndOpenNode.insidePath = this.insidePath;
+		copyAndOpenNode.needsMount = this.needsMount;
+		bookNodes.push(copyAndOpenNode);
+		
+		// Node that copies to IM without opening
+		copyNode = Core.ui.createContainerNode({
+				title: L("NODE_COPY_TO_INTERNAL_MEMORY"),
+				comment: L("NODE_COPY_TO_INTERNAL_MEMORY_COMMENT"),
+				parent: node,
+				icon: ACTION_ICON
+		});
+		copyNode.enter = doArchiveCopy;
+		copyNode.insidePath = this.insidePath;
+		copyNode.needsMount = this.needsMount;
+		bookNodes.push(copyNode);
+		
+		// If archive on IM, add node that opens book to preview contents (but it will be deleted from library after leaving book)
+		if (Core.text.startsWith(currentArchive.path, "/Data")) {
+			previewNode = Core.ui.createContainerNode({
+					title: L("NODE_PREVIEW_IN_INTERNAL_MEMORY"),
+					comment: L("NODE_PREVIEW_IN_INTERNAL_MEMORY_COMMENT"),
+					parent: node,
+					icon: ACTION_ICON
+			});
+			previewNode.enter = archiveDummyEnter;
+			previewNode.insidePath = this.insidePath;
+			previewNode.needsMount = this.needsMount;
+			// FIXME: Preview file not being deleted
+			bookNodes.push(previewNode);
+		}
+		
+		this.gotoNode(node, kbook.model);
+	};
+
 	// goto .. function
 	doGotoParent = function() {
 		this.gotoNode(this.parent.parent, kbook.model);
