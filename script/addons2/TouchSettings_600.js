@@ -4,7 +4,7 @@
 // Author: quisvir
 //
 // History:
-//	2011-11-28 quisvir - Initial version ported from x50
+//	2011-12-15 quisvir - Initial version ported from x50
 
 tmp = function() {
 
