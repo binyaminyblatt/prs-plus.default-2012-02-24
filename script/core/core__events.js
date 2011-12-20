@@ -10,16 +10,20 @@
 //	2010-05-20 kartu - Adapted for 300
 //	2010-09-28 kartu - Adapted for 600
 //	2011-01-28 kartu - Adapted for x50
+//	2011-12-20 quisvir - Added KEY_EVENT and TOUCH_EVENT
 
 tmp = function() {
-	var handlers, callAll, hook, getHandler;
-	var TERMINATE = 0,
-	SLEEP = 1,
-	RESUME = 2,
-	MENU_PAGE_CHANGED = 101,
-	BOOK_PAGE_CHANGED = 201,
-	BOOK_CHANGED = 202,
+	var handlers, callAll, hook, getHandler,
+		TERMINATE, SLEEP, RESUME, MENU_PAGE_CHANGED, BOOK_PAGE_CHANGED, BOOK_CHANGED, BOOK_DELETED, KEY_EVENT, TOUCH_EVENT;
+	TERMINATE = 0;
+	SLEEP = 1;
+	RESUME = 2;
+	MENU_PAGE_CHANGED = 101;
+	BOOK_PAGE_CHANGED = 201;
+	BOOK_CHANGED = 202;
 	BOOK_DELETED = 203;
+	KEY_EVENT = 301;
+	TOUCH_EVENT = 302;
 	handlers = {};
 	
 	// Calls each element of function array
@@ -69,6 +73,16 @@ tmp = function() {
 			case BOOK_DELETED:
 				object = kbook.model;
 				funcName = "doDeleteBook";
+				break;
+			case KEY_EVENT:
+				object = Fskin.device;
+				funcName = "handleEvent";
+				break;
+			case TOUCH_EVENT:
+				// Model sniffing
+				if (Core.config.compat.hasNumericButtons) return;
+				object = BookUtil.gestureBase.tracker.gesture;
+				funcName = "onEnd";
 				break;
 			default:
 				log.error("Cannot hook unknown event: " + eventKey);
@@ -128,7 +142,11 @@ tmp = function() {
 			/** Book was opened, book node is passed as argument */
 			BOOK_CHANGED: BOOK_CHANGED,
 			/** Book was deleted, kbook.model.currentBook is the deleted book's node */
-			BOOK_DELETED: BOOK_DELETED
+			BOOK_DELETED: BOOK_DELETED,
+			/** Key was pressed */
+			KEY_EVENT: KEY_EVENT,
+			/** Successful touch action (note: only triggered AFTER action) */
+			TOUCH_EVENT: TOUCH_EVENT
 		},
 		subscribe: function (eventKey, func, before) {
 			var handler = getHandler(eventKey);
