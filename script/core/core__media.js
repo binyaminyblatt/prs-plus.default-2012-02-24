@@ -13,9 +13,10 @@
 //			createMediaNode assumes path is actually media object, if its type is not string
 //	2011-12-08 Ben Chenoweth - Archive support (using on Shura1oplot's code); scanDirectory is now recursive
 //  2011-12-14 Ben Chenoweth - Added supportedExtensions
+//	2011-12-20 Ben Chenoweth - Added supportedComics
 
 tmp = function() {
-	var supportedMIMEs, supportedExtensions, findLibrary, findMedia, loadMedia, scanDirectory, createMediaNode, isImage, startsWith;
+	var supportedMIMEs, supportedExtensions, supportedComics, findLibrary, findMedia, loadMedia, scanDirectory, createMediaNode, isImage, startsWith;
 	// Shortcut
 	startsWith = Core.text.startsWith; 
 
@@ -38,6 +39,11 @@ tmp = function() {
 		"jpeg": true,
 		"jpg": true,
 		"png": true
+	};
+	
+	supportedComics = {
+		"cbr": true,
+		"cbz": true
 	};
 	
 	/**
@@ -165,6 +171,8 @@ tmp = function() {
 		supportedMIMEs: supportedMIMEs,
 		
 		supportedExtensions: supportedExtensions,
+		
+		supportedComics: supportedComics,
 		
 		/**
 		* Finds media (book, image, audio, etc) with a given path
