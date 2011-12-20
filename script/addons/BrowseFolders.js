@@ -44,12 +44,14 @@
 //	2011-12-17 Ben Chenoweth - Archives page index now correct; remembers zoom on NEXT
 //	2011-12-18 Ben Chenoweth - Flush archive items from library on exiting; move to top left on NEXT
 //	2011-12-19 Ben Chenoweth - Options for what to do with books in archive (copy to IM, copy to IM and open, preview)
+//	2011-12-20 Ben Chenoweth - Media deletion after book preview (but HOME not updated); model sniffing for NEXT zooming
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
 		compareFields, supportedMIMEs, supportedArchives, createArchiveNode, createLazyInitNode,
 		constructLazyNode, archiveBookNodeEnter, ACTION_ICON, doCopyAndOpen, doCopy, doOpenHere,
+		supportedExtensions, supportedComics, browsingArchive, currentNode, oldCurrentBook,
 		doUnpackHere, doGotoParent, browseFoldersNode, ENABLED, DISABLED;
 	
 	ENABLED = "enabled";
@@ -61,6 +63,10 @@ tmp = function() {
 	supportedMIMEs = Core.media.supportedMIMEs;
 	supportedArchives = Core.archiver.supportedArchives;
 	supportedExtensions = Core.media.supportedExtensions;
+	supportedComics = Core.media.supportedComics;
+	browsingArchive = false;
+	currentNode = null;
+	oldCurrentBook = null;
 	ACTION_ICON = "BACK";
 
 	//-----------------------------------------------------------------------------------------------------------------------------
@@ -162,7 +168,7 @@ tmp = function() {
 	createArchiveNode = function (path, title, parent, needsMount) {
 		var node, extension, icon;
 		extension = Core.io.extractExtension(path);
-		if ((extension === 'cbr') || (extension === 'cbz')) {
+		if (supportedComics[extension]) {
 			icon = "COMIC";
 		} else {
 			icon = "ARCHIVE";
@@ -313,8 +319,6 @@ tmp = function() {
 		}
 	};
 	
-	var browsingArchive;
-	var currentNode;
 	var archiveRootConstruct = function () {
 		var d, f, list;
 		
@@ -360,12 +364,16 @@ tmp = function() {
 
 	var archiveRootDestruct = function () {
 		var parent;
-		parent = this.parent;
-		path = parent.path + '~temp~/';
-		Core.io.deleteDirectory(path);
-		currentArchive = null;
-		this.nodes = null;
-		parent.update();
+		try {
+			parent = this.parent;
+			path = parent.path + '~temp~/';
+			Core.io.deleteDirectory(path);
+			currentArchive = null;
+			this.nodes = null;
+			parent.update();
+		} catch(e) {
+			log.error("Error in archiveRootDestruct", e);
+		}
 	}
 	
 	var archiveFolderConstruct = function () {
@@ -442,21 +450,62 @@ tmp = function() {
 	
 	var archiveFolderDestruct = function () {
 		var nodes;
-		browsingArchive = false;
-		if (Core.text.startsWith(currentArchive.path, "/Data")) {
-			// remove files from library
-			path = Core.io.extractPath(currentArchive.path) + '~temp~/';
-			nodes = this.nodes;
-			for (i = 0, n = nodes.length; i < n; i++) {
-				file = path + Core.io.extractFileName(nodes[i].insidePath);
-				item=Core.media.findMedia(file);
-				if (item) {
-					FskCache.source.deleteRecord(item.id);
-					FskCache.source.flush(true);
+		try {
+			browsingArchive = false;
+			if (Core.text.startsWith(currentArchive.path, "/Data")) {
+				// remove files from library
+				path = Core.io.extractPath(currentArchive.path) + '~temp~/';
+				nodes = this.nodes;
+				for (i = 0, n = nodes.length; i < n; i++) {
+					file = path + Core.io.extractFileName(nodes[i].insidePath);
+					item=Core.media.findMedia(file);
+					if (item) {
+						FskCache.source.deleteRecord(item.id);
+						FskCache.source.flush(true);
+					}
 				}
 			}
+			this.nodes = null;
+		} catch(e) {
+			log.error("Error in archiveFolderDestruct", e);
 		}
-		this.nodes = null;
+	}
+	
+	var archiveItemDestruct = function (model) {
+		var node, current, path, item;
+		try {
+			node = this;
+			current = kbook.model.currentBook;
+			// check if preview item is the current book
+			if ((current) && (current.media)) {
+				if (current.media.path === node.media.path) {
+					// set current book to null
+					kbook.bookData.setData(null);
+					/*if (oldCurrentBook) {
+						// restore previous current book (if there was one)
+						kbook.model.onChangeBook(oldCurrentBook);  // FIXME: Size and Current Page information lost
+					}*/
+				}
+			}
+			// delete temp book
+			kbook.model.doDeleteBook(false, this);  // also deletes item from BookHistory
+			kbook.model.updateData;
+		} catch(e) {
+			log.error("Error in archiveItemDestruct trying to delete item and reset currentbook", e);
+		}
+		try {
+			// delete temporary directory
+			path = Core.io.extractPath(currentArchive.path) + '~temp~/';
+			Core.io.emptyDirectory(path);
+			Core.io.deleteDirectory(path);
+		} catch(e) {
+			log.error("Error in archiveItemDestruct trying to delete temp directory", e);
+		}
+		// standard node.exit code:
+		trace('exit ' + this.title + '\n');
+		if (this.onExit) {
+			model[this.onExit](this);
+		}
 	}
 	
 	var archiveDummyEnter = function () {
@@ -481,10 +530,14 @@ tmp = function() {
 			Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);
 			
 			if (Core.text.startsWith(path, "/Data")) {
+				// Save current book information
+				oldCurrentBook = kbook.model.currentBook;
+				
 				// Load & open media
 				browsingArchive = true;
 				Core.media.loadMedia(file);
 				node = Core.media.createMediaNode(file, this.parent);
+				node.exit = archiveItemDestruct;
 				currentNode = this;
 				this.parent.gotoNode(node, kbook.model);
 			} else {
@@ -668,7 +721,7 @@ tmp = function() {
 	// move to top on next page
 	imageZoomOverlayModel.doNext = function () {
 		var timer;
-		if (browsingArchive) {
+		if (((Core.config.model === '600') || (Core.config.model === '350') || (Core.config.model === '650') || (Core.config.model === '950')) && browsingArchive) {
 			if (this.SHOW == true) {
 				this.container.target.bubble('doNext');
 				this.container.zoomChange();
@@ -694,7 +747,7 @@ tmp = function() {
 		kbook.model.doSomething('scrollTo', -100, -100);
 		this.container.zoomChange();
 	}
-	
+
 	doUnpackHere = function () {
 		var path, parent, outputDir, nodes, i, n, needsMount;
 		path = this.path;
@@ -1137,7 +1190,6 @@ tmp = function() {
 				browseFoldersNode.update();
 			}
 		}
-		
 	};
 	Core.addAddon(BrowseFolders);
 };
