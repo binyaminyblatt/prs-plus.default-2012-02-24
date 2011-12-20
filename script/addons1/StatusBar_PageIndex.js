@@ -128,7 +128,7 @@ tmp = function() {
 				return nextChapter - i;
 			}
 		}
-		for (j = 0; j < toc.length; j++) { // TODO start from nextChapter
+		for (j = 0; j < toc.length; j++) {
 			if (toc[j] > i) {
 				prevChapter = (j > 0) ? toc[j - 1] : undefined;
 				nextChapter = toc[j];

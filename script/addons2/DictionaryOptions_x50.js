@@ -6,10 +6,11 @@
 // History:
 //	2011-12-17 quisvir - Initial version
 //	2011-12-18 quisvir - Added next/previous buttons to popup; added custom functions for reinitializing coordinates
+//	2011-12-20 quisvir - Moved code to change dictionary popup layout into single function
 
 tmp = function() {
 
-	var L, log, opt, initialized;
+	var L, log, opt;
 	L = Core.lang.getLocalizer('DictionaryOptions');
 	log = Core.log.getLogger('DictionaryOptions');
 	
@@ -41,6 +42,23 @@ tmp = function() {
 			for (i = c.length - 1; i >= 0; i--) {
 				doInitializeCoordinates(c[i], false);
 			}
+		}
+	}
+	
+	// Function to modify Dictionary Popup size & position
+	var modifyDictPopup = function (toTop, button) {
+		var h, target;
+		h = opt.popupLines * 23;
+		target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
+		doTerminateCoordinates(target, true);
+		if (toTop) {
+			target.changeLayout(0, undefined, 0, 0, h + 114, undefined);
+		} else {
+			target.changeLayout(0, undefined, 0, undefined, h + 114, 0);
+		}
+		doInitializeCoordinates(target, true);
+		if (button) {
+			target.sandbox.DIC_BTN.changeLayout(14, undefined, 14, undefined, h + 10, 0);
 		}
 	}
 	
@@ -91,19 +109,13 @@ tmp = function() {
 	
 	// Move dictionary popup to top of screen if tap in bottom (and vice versa)
 	var preventPopupOverlap = function (y) {
-		var height, target;
-		height = opt.popupLines * 23 + 114;
-		target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
-		if (y < kbook.model.container.height - height - 40) {
+		var target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
+		if (y < kbook.model.container.height - target.height - 40) {
 			if (target.y === 0) {
-				doTerminateCoordinates(target, true);
-				target.changeLayout(0, undefined, 0, undefined, height, 0);
-				doInitializeCoordinates(target, true);
+				modifyDictPopup(false, false);
 			}
 		} else if (target.y !== 0) {
-			doTerminateCoordinates(target, true);
-			target.changeLayout(0, undefined, 0, 0, height, undefined);
-			doInitializeCoordinates(target, true);
+				modifyDictPopup(true, false);
 		}
 	}
 	
@@ -124,7 +136,7 @@ tmp = function() {
 	// Set Dictionary Popup lines
 	var oldSetRenderParameter = kbook.dictionaryRecord.setRenderParameter;
 	kbook.dictionaryRecord.setRenderParameter = function (bounds, mode, bgColor, textSize, lineSpacing, columnSpacing, columnWidth, maxLines, fitHeightFlag) {
-		if (maxLines === 3 && opt.popupLines !== 3) {
+		if (maxLines === 3) {
 			arguments[7] = opt.popupLines;
 		}
 		return oldSetRenderParameter.apply(this, arguments);
@@ -132,13 +144,8 @@ tmp = function() {
 	
 	// Set dictionary popup size on first book load (onInit is too soon)
 	var initPopupSize = function () {
-		var target;
 		if (opt.popupLines !== 3) {
-			target = this.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
-			doTerminateCoordinates(target, true);
-			target.changeLayout(0, undefined, 0, undefined, opt.popupLines * 23 + 114, 0);
-			doInitializeCoordinates(target, true);
-			target.sandbox.DIC_BTN.changeLayout(14, undefined, 14, undefined, opt.popupLines * 23 + 10, 0);
+			modifyDictPopup(false, true);
 		}
 		Core.events.unsubscribe(Core.events.EVENTS.BOOK_CHANGED, initPopupSize);
 	}
@@ -198,14 +205,9 @@ tmp = function() {
 			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, initPopupSize);
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			var target;
 			if (propertyName === 'popupLines') {
 				opt.popupLines = parseInt(newValue);
-				target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
-				doTerminateCoordinates(target, true);
-				target.changeLayout(0, undefined, 0, undefined, opt.popupLines * 23 + 114, 0);
-				doInitializeCoordinates(target, true);
-				target.sandbox.DIC_BTN.changeLayout(14, undefined, 14, undefined, opt.popupLines * 23 + 10, 0);
+				modifyDictPopup(false, true);
 			}
 		},
 		pageDoubleTap: function (x, y) {
@@ -221,5 +223,5 @@ try {
 	tmp();
 } catch (e) {
 	// Core's log
-	log.error('in DictionaryOptions.js', e);
+	log.error('in DictionaryOptions_x50.js', e);
 }
