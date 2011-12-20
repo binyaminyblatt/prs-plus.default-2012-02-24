@@ -45,6 +45,7 @@
 //	2011-12-18 Ben Chenoweth - Flush archive items from library on exiting; move to top left on NEXT
 //	2011-12-19 Ben Chenoweth - Options for what to do with books in archive (copy to IM, copy to IM and open, preview)
 //	2011-12-20 Ben Chenoweth - Media deletion after book preview (but HOME not updated); model sniffing for NEXT zooming
+//	2011-12-20 Mark Nord - temp. fix for pre 600 models (see line 723)
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -717,11 +718,14 @@ tmp = function() {
 			oldSetPictureIndexCount.apply(this, arguments);
 		}
 	}
-	
-	// move to top on next page
-	imageZoomOverlayModel.doNext = function () {
+
+	// model-sniffing ( imageZoonmOverlayModel didn't exist in pre 600 models!!)
+	if ((	(Core.config.model === '600') || (Core.config.model === '350') || 
+		(Core.config.model === '650') || (Core.config.model === '950')) && browsingArchive) {	
+		// move to top on next page
+		imageZoomOverlayModel.doNext = function () {
 		var timer;
-		if (((Core.config.model === '600') || (Core.config.model === '350') || (Core.config.model === '650') || (Core.config.model === '950')) && browsingArchive) {
+		//if (((Core.config.model === '600') || (Core.config.model === '350') || (Core.config.model === '650') || (Core.config.model === '950')) && browsingArchive) {
 			if (this.SHOW == true) {
 				this.container.target.bubble('doNext');
 				this.container.zoomChange();
@@ -732,21 +736,22 @@ tmp = function() {
 				timer.schedule(100);
 			} else {
 				this.closeCurrentOverlay();
-				this.container.target.bubble('doNext');
+				this.container.target.bubble('doNext'); 
 			}
-		} else {
+	/*	} else {
 			this.closeCurrentOverlay();
 			this.container.target.bubble('doNext');
+		} */
 		}
-	}
 	
-	imageZoomOverlayModel.onCallback = function () {
-		var target;
-		target = this.target;
-		target.timer = null;
-		kbook.model.doSomething('scrollTo', -100, -100);
-		this.container.zoomChange();
-	}
+		imageZoomOverlayModel.onCallback = function () {
+			var target;
+			target = this.target;
+			target.timer = null;
+			kbook.model.doSomething('scrollTo', -100, -100);
+			this.container.zoomChange();
+		}
+	} // end sniffing
 
 	doUnpackHere = function () {
 		var path, parent, outputDir, nodes, i, n, needsMount;
