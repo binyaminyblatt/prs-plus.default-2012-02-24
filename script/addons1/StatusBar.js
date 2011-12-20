@@ -8,6 +8,7 @@
 //	2010-11-27 kartu - Fixed #17 "clock is not updated when going from standby"
 //	2011-02-05 kartu - Adapted for x50
 //	2011-02-09 kartu - Fixed # Page index is not updated when book is opened
+//	2011-12-20 quisvir - Added clock updates during apps/games
 
 // Available to sub-addons
 var StatusBar;
@@ -51,6 +52,13 @@ tmp = function() {
 	
 	updateBook = function() {
 		Core.utils.callAll(widgets, BOOK, undefined, "onBookPageChanged");
+	};
+	
+	updateAutorun = function() {
+		if (kbook.model.STATE === 'AUTORUN') {
+			widgets[0].onMenuPageChanged(); // Perhaps change to own property in widgets
+			TIME.invalidate();
+		}
 	};
 	
 	StatusBar = {
@@ -104,6 +112,9 @@ tmp = function() {
 		Core.events.subscribe(Core.events.EVENTS.MENU_PAGE_CHANGED, updateMenu);
 		// Update when going back from standby
 		Core.events.subscribe(Core.events.EVENTS.RESUME, updateMenu);
+		// Subscribe to user actions for apps/games
+		Core.events.subscribe(Core.events.EVENTS.KEY_EVENT, updateAutorun);
+		Core.events.subscribe(Core.events.EVENTS.TOUCH_EVENT, updateAutorun);
 	};
 	
 	Core.addAddon(StatusBar);
