@@ -3,24 +3,13 @@
 	<assets>
 		<!-- PRS+ stuff -->
 		<import href="../prsp/prspAssets.xml"/>
+
 		<texture href="kBookAssets.png">
 			<cutout id="whiteBox" x="630" y="0" width="70" height="70" columns="0" lines="0" />
 			<cutout id="blackBox" x="351" y="0" width="35" height="70" columns="0" lines="0" />
 			<cutout id="greyBox" x="500" y="75" width="35" height="70" columns="0" lines="0" />
-			<cutout id="greyLine" x="70" y="138" width="35" height="2" columns="0" lines="0" />
+			<cutout id="greyLine" x="280" y="138" width="35" height="2" columns="0" lines="0" />
 			<cutout id="empty" x="0" y="0" width="0" height="0" />
-			
-			<cutout id="blackBorder-tl" x="782" y="110" width="6" height="5"  columns="0" lines="0" />
-			<cutout id="blackBorder-tc" x="788" y="110" width="30" height="5"  columns="0" lines="0" />
-			<cutout id="blackBorder-tr" x="822" y="110" width="6" height="5"  columns="0" lines="0" />
-			
-			<cutout id="blackBorder-cl" x="782" y="115" width="3" height="70"  columns="0" lines="0" />
-			
-			<cutout id="blackBorder-bl" x="782" y="342" width="6" height="5"  columns="0" lines="0" />
-			<cutout id="blackBorder-bc" x="788" y="342" width="30" height="5"  columns="0" lines="0" />
-			<cutout id="blackBorder-br" x="822" y="342" width="6" height="5"  columns="0" lines="0" />
-			
-			<cutout id="markIcon" x="782" y="376" width="21" height="21" />
 		</texture>
 		
 		<style id="popupText" halign="left" valign="top" top="8" left="10" size="30" style="bold"/>
@@ -31,7 +20,7 @@
 		/>
 		<skin id="popupText"
 			styles="popupText,popupText,popupText,popupText"
-			cutouts="empty,greyLine,empty,empty,empty,empty,empty,greyLine,empty"
+			cutouts="empty,greyLine,empty,empty,whiteBox,empty,empty,greyLine,empty"
 		/>
 		<skin id="popupIndicator"
 			styles="popupText,popupText,popupText,popupText"
@@ -41,6 +30,10 @@
 			styles="popupTextWhite,popupTextWhite,popupTextWhite,popupTextWhite"
 			cutouts="empty,empty,empty,empty,blackBox,empty,empty,empty,empty"
 		/>
+		<skin id="prspButton"
+			styles="popupTextWhite,popupTextWhite,popupTextWhite,popupTextWhite"
+			cutouts="empty,empty,empty"
+		/>		
 		<!-- End of PRS+ stuff -->
 
 		<import href="kbookAssets.xml"/>
@@ -6294,51 +6287,62 @@
 	<kbookFill id="wifiEventBackground" left="0" right="0" height= "30" bottom="0" active="false" visible="false"/>
 	<kbookLabel id="wifiEventLabel" skin="label-statusBar" left="0" right="0" height="30" bottom="0" align="center" active="false" visible="false"/>
 
-	<!-- PRS+ stuff (untested) --> 
-	<group id="POPUP_MENU"  skin="popup" left="50" bottom="50" width="0" height="0"  visible="false">
+	<!-- PRS+ stuff -->
+	<panel id="POPUP_MENU"  skin="popup" left="50" bottom="50" width="0" height="0"  visible="false">
+		<exButton id="CLOSE_BOX" skin="optClose" right="0" top="-62" width="42" height="42" do="doMenu"/>
 		<group id="innerGroup" left="6" right="6" top="6" bottom = "6">
 			<group id="panel10" left="0" right="0" height="1" bottom="1" >
-				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
-				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="0" />
+				<text id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<text id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="0" />
+				<button id="0" skin="prspButton" left="0" right="0" top="0" bottom="0" visible="false" do="doPopupButton"/>
 			</group>
 			<group id="panel9" left="0" right="0" height="1" bottom="1" >
-				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
-				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="9" />
+				<text id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<text id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="9" />
+				<button id="9" skin="prspButton" left="0" right="0" top="0" bottom="0" visible="false" do="doPopupButton"/>				
 			</group>
 			<group id="panel8" left="0" right="0" height="1" bottom="1" >
-				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
-				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="8" />
+				<text id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<text id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="8" />
+				<button id="8" skin="prspButton" left="0" right="0" top="0" bottom="0" visible="false" do="doPopupButton"/>
 			</group>
 			<group id="panel7" left="0" right="0" height="1" bottom="1" >
-				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
-				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="7" />
+				<text id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<text id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="7" />
+				<button id="7" skin="prspButton" left="0" right="0" top="0" bottom="0" visible="false" do="doPopupButton"/>
 			</group>
 			<group id="panel6" left="0" right="0" height="1" bottom="1" >
-				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
-				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="6" />
+				<text id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<text id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="6" />
+				<button id="6" skin="prspButton" left="0" right="0" top="0" bottom="0" visible="false" do="doPopupButton"/>
 			</group>
 			<group id="panel5" left="0" right="0" height="1" bottom="1" >
-				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
-				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="5" />
+				<text id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<text id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="5" />
+				<button id="5" skin="prspButton" left="0" right="0" top="0" bottom="0" visible="false" do="doPopupButton"/>
 			</group>
 			<group id="panel4" left="0" right="0" height="1" bottom="1" >
-				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
-				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="4" />
+				<text id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<text id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="4" />
+				<button id="4" skin="prspButton" left="0" right="0" top="0" bottom="0" visible="false" do="doPopupButton"/>
 			</group>
 			<group id="panel3" left="0" right="0" height="1" bottom="1" >
-				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
-				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="3" />
+				<text id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<text id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="3" />
+				<button id="3" skin="prspButton" left="0" right="0" top="0" bottom="0" visible="false" do="doPopupButton"/>
 			</group>
 			<group id="panel2" left="0" right="0" height="1" bottom="1" >
-				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
-				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="2" />
+				<text id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<text id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="2" />
+				<button id="2" skin="prspButton" left="0" right="0" top="0" bottom="0" visible="true" do="doPopupButton"/>				
 			</group>
 			<group id="panel1" left="0" right="0" height="1" bottom="1" >
-				<kbookText id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
-				<kbookText id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="1" />
+				<text id="menu" skin="popupText" left="0" right="35" top="0" bottom="0" />
+				<text id="indicator" skin="popupIndicator" right="0" top="0" bottom="0" width="35" value="1" />
+				<button id="1" skin="prspButton" left="0" right="0" top="0" bottom="0" visible="true" do="doPopupButton"/>
 			</group>
 		</group>
-	</group>
+	</panel>
 	<!-- End of PRS+ stuff -->
 
 

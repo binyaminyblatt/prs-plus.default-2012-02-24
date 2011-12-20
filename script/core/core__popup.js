@@ -5,6 +5,9 @@
 //
 // History:
 //	2010-07-13 kartu - Initial version
+//	2011-12-11 Mark Nord - some adjustments for 505, added invalidate() to hideMenu()
+//	2011-12-20 Mark Nord - enabled for 600/x50
+//		ToDo: handle more then 10 menu-items
 
 /**
  Sample code:
@@ -132,7 +135,7 @@ tmp = function() {
 					Core.popup.showMenu(menu);
 				} else if (menu.action) {
 					var f = menu.action;
-					if (f() !== true) {
+					if (f(menu) !== true) { // passing menu to enable access menu.title in item's function
 						hideMenu();
 					}
 				}
@@ -151,6 +154,17 @@ tmp = function() {
 			// hide popup
 			hideMenu();
 		}
+	};
+	// touch-button-handling
+	popupMenu.sandbox.doPopupButton = function(sender) {
+		var key = sender.id;
+		key = (10 - parseInt(key, 10)) % 10;
+		if (key < currentMenu.children.length) {
+			currentMenu.selected = key;
+			doCenter();
+			return;
+		}
+		model.doBlinkl();
 	};
 	// 0-9
 	popupMenu.sandbox.doDigit = function(part) {
@@ -187,11 +201,13 @@ tmp = function() {
 	
 	// Hides popup menu, returning focus
 	hideMenu = function() {
+		var win = kbook.model.container.getWindow();
 		if (oldFocus !== undefined) {
 			oldFocus.focus(true);
 			oldFocus = undefined;
 		}
 		popupMenu.show(false);
+		win.invalidate();
 		return;
 	};
 	
@@ -199,8 +215,11 @@ tmp = function() {
 	constructMenu = function (menu) {
 		currentMenu = menu;
 		var win = kbook.model.container.getWindow();
+		var closeBox = popupMenu.sandbox.CLOSE_BOX;
 		var innerGroup = popupMenu.sandbox.innerGroup;
 		var sandbox = innerGroup.sandbox;
+		// kind of model-sniffing
+		var hasNumericButtons = Core.config.compat.hasNumericButtons;
 
 		// If not focused, save focus state
 		if (win.focus !== popupMenu) {
@@ -216,7 +235,7 @@ tmp = function() {
 			count = children.length;
 			// set current text style					
 			win.setTextFormat(sandbox.panel1.sandbox.menu.skin.styles[0]);
-			indicatorWidth = win.getTextBounds("0").width + HGAP;
+			indicatorWidth = hasNumericButtons ? win.getTextBounds("0").width + HGAP : 0;
 			for (i = 0, n = Math.min(count, 10); i < n; i++) {
 				var bounds = win.getTextBounds("" + children[i].title);
 				w = Math.max(w, bounds.width);
@@ -228,6 +247,9 @@ tmp = function() {
 		
 		// Resize containers
 		popupMenu.changeLayout(MENU_X, w + BORDER_GAP*3, undefined, undefined, count * h + BORDER_GAP * 2 , MENU_Y);
+		if (closeBox) {
+			closeBox.changeLayout(undefined, 42, -50 , 0, 42, undefined);
+		}
 		innerGroup.changeLayout(BORDER_GAP * 2, undefined, BORDER_GAP, BORDER_GAP, undefined, BORDER_GAP);
 		
 		// Resize lines
@@ -238,6 +260,7 @@ tmp = function() {
 				// resize panel
 				control.show(true);
 				control.changeLayout(0, undefined, 0, undefined, h, i * h);
+				
 				// resize indicator (number on the right side)
 				var indicator = control.sandbox.indicator;
 				indicator.changeLayout(undefined, indicatorWidth, 0, 0, undefined, 0);
@@ -246,6 +269,13 @@ tmp = function() {
 				var m = control.sandbox.menu;
 				m.setValue(children[i].title);
 				m.changeLayout(0, undefined, indicatorWidth, 0, undefined, 0);
+
+				// resize button if necessary, 300/505 don't have the buttons
+				var b = control.sandbox[""+ (10 - i)%10];
+				if (b) {
+					b.changeLayout(0, undefined, 0, 0, undefined, 0);
+				}
+
 			} else {
 				control.show(false);
 			}
@@ -272,9 +302,11 @@ tmp = function() {
 			}
 			indicator.skin = indicatorSkin;
 			indicator.te.setTextFormat(indicatorSkin.styles[0]);
-			
+		
 			// Doesn't work without this (300, untested on others)
-			indicator.setValue("");
+			//indicator.setValue("");
+			// 2011-12-11 Mark Nord - had to add +(10-i)%10); for 505
+			indicator.setValue(""+(10-i)%10);
 		}
 		// Show main contaner
 		popupMenu.show(true);
