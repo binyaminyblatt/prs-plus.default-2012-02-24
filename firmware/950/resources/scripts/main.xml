@@ -3568,8 +3568,8 @@
 				<button2icon id="BTN_DICVIEWER" skin="btn_callDic"   left="10"   width="50" height="50" variableUpdate="VAR_UPDATE" do="doShortcutDictionary" bw="4"/>
 				<button2icon id="BTN_DICEDIT"   skin="btn_callDic"   left="10"   width="50" height="50" variableUpdate="VAR_UPDATE" do="doDicOthers" bw="4"/>
 				<button2icon id="BTN_DICOTHERS" skin="btn_dicOthers" left="60"   width="50" height="50" variableUpdate="VAR_UPDATE" do="doDicOthers" bw="4"/>
-				<button2icon id="BTN_PREVDICENTRY" skin="keyLeft"    left="140" width="42"  height="42" do="doPreviousDicEntry"/> <!-- PRS+ added -->
-				<button2icon id="BTN_NEXTDICENTRY" skin="keyRight"   left="190" width="42"  height="42" do="doNextDicEntry"/> <!-- PRS+ added -->
+				<button2icon id="BTN_PREVDICENTRY" skin="keyLeft"    left="140" width="42"  height="42" do="doNextPrevDicEntry"/> <!-- PRS+ added -->
+				<button2icon id="BTN_NEXTDICENTRY" skin="keyRight"   left="190" width="42"  height="42" do="doNextPrevDicEntry"/> <!-- PRS+ added -->
 				<group id="adjustFont_SHORTCUT" left="110" right="240" top="0" bottom="0" visible="false" active="false">
 					<label skin="number-ToneCurve" left="0"  width="32"  height="42" align="center" variable="VAR_DATABASE"/>
 					<button2icon skin="keyLeft"    left="40" width="42"  height="42" can="canDatabasePrev" do="doDatabasePrev" variableUpdate="VAR_UPDATE_DATABASE"/>
