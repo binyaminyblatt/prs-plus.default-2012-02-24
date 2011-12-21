@@ -372,7 +372,12 @@ tmp = function() {
 					win.setPenColor(Color.white);
 					win.fillRectangle(48, 580, w-103, h-610);					
 				} else {
-					kbook.model.container.cutouts['transparentsquare'].fill(win, 0, 0, 48, 580, w-103, h-610); // 0 = white, transparency 128
+					try {
+						kbook.model.container.cutouts['transparentsquare'].fill(win, 0, 0, 48, 580, w-103, h-610); // 0 = white, transparency 128
+					} catch(e) {
+						win.setPenColor(Color.white);
+						win.fillRectangle(48, 580, w-103, h-610);					
+					}
 				}
 				win.setPenColor(Color.black);
 				win.setTextSize(20);
