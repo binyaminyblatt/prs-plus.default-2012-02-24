@@ -82,7 +82,7 @@ tmp = function() {
 				// Model sniffing
 				if (Core.config.compat.hasNumericButtons) return;
 				object = BookUtil.gestureBase.tracker.gesture;
-				funcName = "onEnd";
+				funcName = "onStart";
 				break;
 			default:
 				log.error("Cannot hook unknown event: " + eventKey);
@@ -145,7 +145,7 @@ tmp = function() {
 			BOOK_DELETED: BOOK_DELETED,
 			/** Key was pressed */
 			KEY_EVENT: KEY_EVENT,
-			/** Successful touch action (note: only triggered AFTER action) */
+			/** Successful touch action (note: only triggered BEFORE action) */
 			TOUCH_EVENT: TOUCH_EVENT
 		},
 		subscribe: function (eventKey, func, before) {
