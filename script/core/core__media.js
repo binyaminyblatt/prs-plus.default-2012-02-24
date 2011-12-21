@@ -13,7 +13,7 @@
 //			createMediaNode assumes path is actually media object, if its type is not string
 //	2011-12-08 Ben Chenoweth - Archive support (using on Shura1oplot's code); scanDirectory is now recursive
 //  2011-12-14 Ben Chenoweth - Added supportedExtensions
-//	2011-12-20 Ben Chenoweth - Added supportedComics
+//	2011-12-20 Ben Chenoweth - Added supportedComics (and CB7)
 
 tmp = function() {
 	var supportedMIMEs, supportedExtensions, supportedComics, findLibrary, findMedia, loadMedia, scanDirectory, createMediaNode, isImage, startsWith;
@@ -42,6 +42,7 @@ tmp = function() {
 	};
 	
 	supportedComics = {
+		"cb7": true,
 		"cbr": true,
 		"cbz": true
 	};

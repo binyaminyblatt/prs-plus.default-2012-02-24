@@ -46,13 +46,14 @@
 //	2011-12-19 Ben Chenoweth - Options for what to do with books in archive (copy to IM, copy to IM and open, preview)
 //	2011-12-20 Ben Chenoweth - Media deletion after book preview (but HOME not updated); model sniffing for NEXT zooming
 //	2011-12-20 Mark Nord - temp. fix for pre 600 models (see line 723)
+//	2011-12-21 Ben Chenoweth - Home (partially) updated; previous current book restored correctly
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
 		compareFields, supportedMIMEs, supportedArchives, createArchiveNode, createLazyInitNode,
 		constructLazyNode, archiveBookNodeEnter, ACTION_ICON, doCopyAndOpen, doCopy, doOpenHere,
-		supportedExtensions, supportedComics, browsingArchive, currentNode, oldCurrentBook,
+		supportedExtensions, supportedComics, browsingArchive, currentNode, oldCurrentBook, oldCurrentNode,
 		doUnpackHere, doGotoParent, browseFoldersNode, ENABLED, DISABLED;
 	
 	ENABLED = "enabled";
@@ -68,6 +69,7 @@ tmp = function() {
 	browsingArchive = false;
 	currentNode = null;
 	oldCurrentBook = null;
+	oldCurrentNode = null;
 	ACTION_ICON = "BACK";
 
 	//-----------------------------------------------------------------------------------------------------------------------------
@@ -481,11 +483,8 @@ tmp = function() {
 			if ((current) && (current.media)) {
 				if (current.media.path === node.media.path) {
 					// set current book to null
+					kbook.model.currentBook.media.close(kbook.bookData);
 					kbook.bookData.setData(null);
-					/*if (oldCurrentBook) {
-						// restore previous current book (if there was one)
-						kbook.model.onChangeBook(oldCurrentBook);  // FIXME: Size and Current Page information lost
-					}*/
 				}
 			}
 			// delete temp book
@@ -507,10 +506,18 @@ tmp = function() {
 		if (this.onExit) {
 			model[this.onExit](this);
 		}
+		if (oldCurrentBook) {
+			// restore previous current book (if there was one)
+			kbook.model.currentPath = null;
+			kbook.model.currentNode = oldCurrentNode;
+			kbook.model.onChangeBook(oldCurrentBook);
+		}
+		
+		kbook.model.updateDeviceRoot(kbook.root.getDeviceRootNode());
 	}
 	
 	var archiveDummyEnter = function () {
-		var path, file, node, needsMount;
+		var path, file, node, needsMount, mime, media, source;
 		try {
 			// mount, if needed
 			needsMount = this.parent.needsMount;
@@ -529,10 +536,23 @@ tmp = function() {
 			FileSystem.ensureDirectory(path);
 			Core.io.emptyDirectory(path);
 			Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);
-			
+
 			if (Core.text.startsWith(path, "/Data")) {
-				// Save current book information
-				oldCurrentBook = kbook.model.currentBook;
+				mime = FileSystem.getMIMEType(file);
+				if (supportedMIMEs[mime]) {
+					// Save current book information and close current book
+					media = kbook.model.currentBook.media;
+					source = kbook.model.cache.getSourceByID(media.sourceid);
+					source.commit();
+					
+					oldCurrentBook = kbook.model.currentBook;
+					oldCurrentNode = kbook.model.currentNode;
+					
+					media.close(kbook.bookData);
+					kbook.bookData.setData(null);
+					kbook.model.currentBook = null;
+					kbook.model.currentNode = null;
+				}
 				
 				// Load & open media
 				browsingArchive = true;
@@ -556,7 +576,7 @@ tmp = function() {
 	}
 
 	doArchiveCopy = function () {
-		var fileDestination, fileTemp, path, needsMount;
+		var fileDestination, fileTemp, path, needsMount, item;
 		Core.ui.showMsg(L("MSG_COPYING_BOOK"), 1);
 		try {
 			// mount, if needed
@@ -573,13 +593,19 @@ tmp = function() {
 				Core.io.emptyDirectory(path);
 				fileDestination = Core.io.getUnusedPath("/Data" + BrowseFolders.options.imRoot + "/", fileDestination);
 				Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);				
-				
+
 				// FIXME: ask user first, if he wants to copy the book, if target exists
 				Core.io.moveFile(fileTemp, fileDestination);
+				item = Core.media.loadMedia(fileDestination);
+				
+				// FIXME: Book node is updated but booklist node ("Last added books") on Home page is not
+				kbook.root.getBooksNode().update(kbook.model);
 
 				return fileDestination;
 			} finally {
-				Core.shell.umount(needsMount);
+				if (needsMount !== undefined) {
+					Core.shell.umount(needsMount);
+				}
 			}
 		} catch (ignore) {
 			Core.ui.showMsg(L("MSG_ERROR_COPYING_BOOK"));	
@@ -719,29 +745,29 @@ tmp = function() {
 		}
 	}
 
-	// model-sniffing ( imageZoonmOverlayModel didn't exist in pre 600 models!!)
-	if ((	(Core.config.model === '600') || (Core.config.model === '350') || 
-		(Core.config.model === '650') || (Core.config.model === '950')) && browsingArchive) {	
+	// model-sniffing (imageZoomOverlayModel doesn't exist in pre 600 models)
+	if ((Core.config.model === '600') || (Core.config.model === '350') || 
+		(Core.config.model === '650') || (Core.config.model === '950')) {	
 		// move to top on next page
 		imageZoomOverlayModel.doNext = function () {
-		var timer;
-		//if (((Core.config.model === '600') || (Core.config.model === '350') || (Core.config.model === '650') || (Core.config.model === '950')) && browsingArchive) {
-			if (this.SHOW == true) {
-				this.container.target.bubble('doNext');
-				this.container.zoomChange();
-				timer = this.timer = new HardwareTimer();
-				timer.target = this;
-				timer.onCallback = this.onCallback;
-				timer.onClockChange = this.onCallback;
-				timer.schedule(100);
+			var timer;
+			if (browsingArchive) {
+				if (this.SHOW == true) {
+					this.container.target.bubble('doNext');
+					this.container.zoomChange();
+					timer = this.timer = new HardwareTimer();
+					timer.target = this;
+					timer.onCallback = this.onCallback;
+					timer.onClockChange = this.onCallback;
+					timer.schedule(100);
+				} else {
+					this.closeCurrentOverlay();
+					this.container.target.bubble('doNext'); 
+				}
 			} else {
 				this.closeCurrentOverlay();
-				this.container.target.bubble('doNext'); 
+				this.container.target.bubble('doNext');
 			}
-	/*	} else {
-			this.closeCurrentOverlay();
-			this.container.target.bubble('doNext');
-		} */
 		}
 	
 		imageZoomOverlayModel.onCallback = function () {
