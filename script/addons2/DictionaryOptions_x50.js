@@ -7,6 +7,7 @@
 //	2011-12-17 quisvir - Initial version
 //	2011-12-18 quisvir - Added next/previous buttons to popup; added custom functions for reinitializing coordinates
 //	2011-12-20 quisvir - Moved code to change dictionary popup layout into single function
+//	2011-12-21 quisvir - Merged functions for next/previous buttons in popup
 
 tmp = function() {
 
@@ -62,22 +63,12 @@ tmp = function() {
 		}
 	}
 	
-	// Button in popup: Previous entry in dictionary
-	kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT.sandbox.doPreviousDicEntry = function () {
-		NextPrevDicEntry.call(this, true);
-	}
-	
-	// Button in popup: Next entry in dictionary
-	kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT.sandbox.doNextDicEntry = function () {
-		NextPrevDicEntry.call(this, false);
-	}
-	
-	// Find and set next/previous dictionary entry
-	var NextPrevDicEntry = function (back) {
+	// Function for next/previous dictionary entry buttons in popup
+	kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT.sandbox.doNextPrevDicEntry = function (button) {
 		var data, index, key, dicIndex, item;
 		data = kbook.dictionaryData;
 		index = data.getSimpleResultDicIndex().index;
-		index = (back) ? index - 1 : index + 1;
+		index = (button.id === 'BTN_PREVDICENTRY') ? index - 1 : index + 1;
 		key = new Chunk('AAA=');
 		dicIndex = new kbook.model.DicIndex(index, key);
 		item = data.dictionary.getItemFromDicIndex(dicIndex);
