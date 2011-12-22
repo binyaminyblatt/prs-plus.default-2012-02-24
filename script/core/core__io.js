@@ -110,7 +110,7 @@ try {
 			if (this.pathExists(path)) {
 				items = this.listFiles(path);
 				for (item in items) {
-					this.deleteFile(path + "/" + items[item]);
+					this.deleteFile(path + items[item]);
 				}
 			}
 		},

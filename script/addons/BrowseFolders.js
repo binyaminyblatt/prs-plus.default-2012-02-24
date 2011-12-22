@@ -47,6 +47,7 @@
 //	2011-12-20 Ben Chenoweth - Media deletion after book preview (but HOME not updated); model sniffing for NEXT zooming
 //	2011-12-20 Mark Nord - temp. fix for pre 600 models (see line 723)
 //	2011-12-21 Ben Chenoweth - Home (partially) updated; previous current book restored correctly
+//	2011-12-22 Ben Chenoweth - Archives work on SD and MS in mount and non-mount mode (by going into mount mode)
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -338,10 +339,21 @@ tmp = function() {
 			d = currentArchive.dirs;
 			f = currentArchive.files;
 			
+			// If browsing SD or MS but not in Mount mode - IS THIS WHAT ARE WE SUPPOSED TO DO IN THIS SITUATION?
+			if (startsWith(currentArchive.path, "a:")){
+				currentArchive.path = currentArchive.path.replace("a:", "/opt/mnt/ms");
+				currentArchive.needsMount = 1;
+			} else if (startsWith(currentArchive.path, "b:")) {
+				currentArchive.path = currentArchive.path.replace("b:", "/opt/mnt/sd");
+				currentArchive.needsMount = 0;
+			}
+
 			if (currentArchive.needsMount !== undefined) {
 				Core.shell.mount(currentArchive.needsMount);
-			}		
-			list = Core.archiver.list(this.path).split('\n');
+			}
+			
+			list = Core.archiver.list(currentArchive.path).split('\n');
+
 			for (i = 0; i < list.length; i++) {
 				switch (list[i].slice(0,1)) {
 					case 'f':
@@ -400,7 +412,11 @@ tmp = function() {
 						destruct: archiveFolderDestruct
 					});
 					node.insidePath = path + rest + '/';
-					node.needsMount = this.parent.needsMount;
+					if (!currentArchive.needsMount) {
+						node.needsMount = currentArchive.needsMount;
+					} else {
+						node.needsMount = this.parent.needsMount;
+					}
 					nodes.push(node);
 				}
 			}
@@ -441,7 +457,11 @@ tmp = function() {
 						});
 						node.enter = enterAction;
 						node.insidePath = f[i];
-						node.needsMount = this.parent.needsMount;
+						if (!currentArchive.needsMount) {
+							node.needsMount = currentArchive.needsMount;
+						} else {
+							node.needsMount = this.parent.needsMount;
+						}
 						nodes.push(node);
 					} else {
 						// hide other files
@@ -455,17 +475,15 @@ tmp = function() {
 		var nodes;
 		try {
 			browsingArchive = false;
-			if (Core.text.startsWith(currentArchive.path, "/Data")) {
-				// remove files from library
-				path = Core.io.extractPath(currentArchive.path) + '~temp~/';
-				nodes = this.nodes;
-				for (i = 0, n = nodes.length; i < n; i++) {
-					file = path + Core.io.extractFileName(nodes[i].insidePath);
-					item=Core.media.findMedia(file);
-					if (item) {
-						FskCache.source.deleteRecord(item.id);
-						FskCache.source.flush(true);
-					}
+			// remove files from library
+			path = Core.io.extractPath(currentArchive.path) + '~temp~/';
+			nodes = this.nodes;
+			for (i = 0, n = nodes.length; i < n; i++) {
+				file = path + Core.io.extractFileName(nodes[i].insidePath);
+				item=Core.media.findMedia(file);
+				if (item) {
+					FskCache.source.deleteRecord(item.id);
+					FskCache.source.flush(true);
 				}
 			}
 			this.nodes = null;
@@ -487,15 +505,21 @@ tmp = function() {
 					kbook.bookData.setData(null);
 				}
 			}
-			// delete temp book
-			kbook.model.doDeleteBook(false, this);  // also deletes item from BookHistory
-			kbook.model.updateData;
+			mime = FileSystem.getMIMEType(node.media.path);
+			if (supportedMIMEs[mime]) {
+				// delete temp file
+				kbook.model.doDeleteBook(false, this);  // also deletes item from BookHistory
+				kbook.model.updateData;
+			}
 		} catch(e) {
-			log.error("Error in archiveItemDestruct trying to delete item and reset currentbook", e);
+			log.error("Error in archiveItemDestruct trying to delete book and reset currentbook", e);
 		}
 		try {
 			// delete temporary directory
 			path = Core.io.extractPath(currentArchive.path) + '~temp~/';
+			// need to convert mounted paths to unmounted paths
+			path = path.replace("/opt/mnt/ms", "a:");
+			path = path.replace("/opt/mnt/sd", "b:");
 			Core.io.emptyDirectory(path);
 			Core.io.deleteDirectory(path);
 		} catch(e) {
@@ -508,12 +532,11 @@ tmp = function() {
 		}
 		if (oldCurrentBook) {
 			// restore previous current book (if there was one)
-			kbook.model.currentPath = null;
 			kbook.model.currentNode = oldCurrentNode;
 			kbook.model.onChangeBook(oldCurrentBook);
 		}
-		
-		kbook.model.updateDeviceRoot(kbook.root.getDeviceRootNode());
+		kbook.root.update(kbook.model);
+		//kbook.model.updateDeviceRoot(kbook.root.getDeviceRootNode());
 	}
 	
 	var archiveDummyEnter = function () {
@@ -524,11 +547,7 @@ tmp = function() {
 			if (needsMount !== undefined) {
 				Core.shell.mount(needsMount);
 			}
-			if (Core.text.startsWith(currentArchive.path, "/Data")) {
-				path = Core.io.extractPath(currentArchive.path) + '~temp~/';
-			} else {
-				path = '/tmp/~temp~/';
-			}
+			path = Core.io.extractPath(currentArchive.path) + '~temp~/';
 			file = path + Core.io.extractFileName(this.insidePath);
 
 			// Extract file from archive
@@ -537,34 +556,31 @@ tmp = function() {
 			Core.io.emptyDirectory(path);
 			Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);
 
-			if (Core.text.startsWith(path, "/Data")) {
-				mime = FileSystem.getMIMEType(file);
-				if (supportedMIMEs[mime]) {
-					// Save current book information and close current book
-					media = kbook.model.currentBook.media;
-					source = kbook.model.cache.getSourceByID(media.sourceid);
-					source.commit();
-					
-					oldCurrentBook = kbook.model.currentBook;
-					oldCurrentNode = kbook.model.currentNode;
-					
-					media.close(kbook.bookData);
-					kbook.bookData.setData(null);
-					kbook.model.currentBook = null;
-					kbook.model.currentNode = null;
-				}
+			mime = FileSystem.getMIMEType(file);
+			if (supportedMIMEs[mime]) {
+				// Save current book information and close current book
+				media = kbook.model.currentBook.media;
+				source = kbook.model.cache.getSourceByID(media.sourceid);
+				source.commit();
 				
-				// Load & open media
-				browsingArchive = true;
-				Core.media.loadMedia(file);
-				node = Core.media.createMediaNode(file, this.parent);
-				node.exit = archiveItemDestruct;
-				currentNode = this;
-				this.parent.gotoNode(node, kbook.model);
-			} else {
-				browsingArchive = false;
-				Core.ui.showMsg("Viewing files on SD or MS not possible yet!");
+				oldCurrentBook = kbook.model.currentBook;
+				oldCurrentNode = Core.ui.getCurrentNode();
+				
+				media.close(kbook.bookData);
+				kbook.bookData.setData(null);
 			}
+
+			// need to convert mounted paths to unmounted paths
+			file = file.replace("/opt/mnt/ms", "a:");
+			file = file.replace("/opt/mnt/sd", "b:");
+			
+			// Load & open media
+			browsingArchive = true;
+			Core.media.loadMedia(file);
+			node = Core.media.createMediaNode(file, this.parent);
+			node.exit = archiveItemDestruct;
+			currentNode = this;
+			this.parent.gotoNode(node, kbook.model);
 		} catch (ignore) {
 			Core.ui.showMsg(L("MSG_ERROR_UNPACK"));
 			Core.shell.umount(needsMount);
@@ -576,7 +592,7 @@ tmp = function() {
 	}
 
 	doArchiveCopy = function () {
-		var fileDestination, fileTemp, path, needsMount, item;
+		var fileDestination, fileTemp, path, needsMount, item, node;
 		Core.ui.showMsg(L("MSG_COPYING_BOOK"), 1);
 		try {
 			// mount, if needed
@@ -598,14 +614,16 @@ tmp = function() {
 				Core.io.moveFile(fileTemp, fileDestination);
 				item = Core.media.loadMedia(fileDestination);
 				
-				// FIXME: Book node is updated but booklist node ("Last added books") on Home page is not
-				kbook.root.getBooksNode().update(kbook.model);
-
+				//kbook.root.getBooksNode().update(kbook.model);
+				//kbook.root.getBookThumbnailsNode().update(kbook.model);
+				//kbook.menuHomeThumbnailBookData.setNode(kbook.root.getBookThumbnailsNode());
+				
 				return fileDestination;
 			} finally {
 				if (needsMount !== undefined) {
 					Core.shell.umount(needsMount);
 				}
+				kbook.root.update(kbook.model);
 			}
 		} catch (ignore) {
 			Core.ui.showMsg(L("MSG_ERROR_COPYING_BOOK"));	
@@ -879,20 +897,17 @@ tmp = function() {
 		copyNode.needsMount = this.needsMount;
 		bookNodes.push(copyNode);
 		
-		// If archive on IM, add node that opens book to preview contents (but it will be deleted from library after leaving book)
-		if (Core.text.startsWith(currentArchive.path, "/Data")) {
-			previewNode = Core.ui.createContainerNode({
-					title: L("NODE_PREVIEW_IN_INTERNAL_MEMORY"),
-					comment: L("NODE_PREVIEW_IN_INTERNAL_MEMORY_COMMENT"),
-					parent: node,
-					icon: ACTION_ICON
-			});
-			previewNode.enter = archiveDummyEnter;
-			previewNode.insidePath = this.insidePath;
-			previewNode.needsMount = this.needsMount;
-			// FIXME: Preview file not being deleted
-			bookNodes.push(previewNode);
-		}
+		// Node that opens book to preview contents (but it will be deleted from library after leaving book)
+		previewNode = Core.ui.createContainerNode({
+				title: L("NODE_PREVIEW_IN_INTERNAL_MEMORY"),
+				comment: L("NODE_PREVIEW_IN_INTERNAL_MEMORY_COMMENT"),
+				parent: node,
+				icon: ACTION_ICON
+		});
+		previewNode.enter = archiveDummyEnter;
+		previewNode.insidePath = this.insidePath;
+		previewNode.needsMount = this.needsMount;
+		bookNodes.push(previewNode);
 		
 		this.gotoNode(node, kbook.model);
 	};

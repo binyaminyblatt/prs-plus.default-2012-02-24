@@ -7,7 +7,7 @@
  * 600/x50: Added Author List addon
  * 600/x50: Added Auto Standby/Shutdown Time options
  * 600/x50: Added Save Notepad Data addon
- * 600/x50: Added CBR/CBZ reader
+ * 600/x50: Added CBR/CBZ/CB7 reader
  * x50: Added Touch Settings addon (Tap, Swipe & Zoom options)
  * x50: Home menu booklist: Added 'Select Collection' option & action
  * ALL: core__popup.js fixed frame, 600/x50 touch-enabled

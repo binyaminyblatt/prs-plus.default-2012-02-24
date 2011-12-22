@@ -9,6 +9,7 @@
 //  2011-12-09 Ben Chenoweth - Renamed file from core_unpacker.js to core_archiver.js
 //  2011-12-10 Ben Chenoweth - Added list function
 //	2011-12-14 quisvir - Added file function to unpack
+//	2011-12-22 Ben Chenoweth - Added CB7 to supported archives
 
 try {
 	tmp = function() {
@@ -20,6 +21,7 @@ try {
 			"7z": true,
 			"rar": true,
 			"zip": true,
+			"cb7": true,
 			"cbz": true,
 			"cbr": true
 		};
@@ -43,10 +45,10 @@ try {
 					FileSystem.deleteFile(RETURNED_LIST);
 				} catch (ignore) {
 				}
-				log.trace(cmd);
+				//log.trace(cmd);
 				Core.shell.exec(cmd);
 				result = Core.io.getFileContent(RETURNED_LIST, "222");
-				// log.trace("result="+result);
+				//log.trace("result="+result);
 				if (result !== "222") {
 					return result;
 				} else {
