@@ -9,6 +9,7 @@
 //	2011-02-05 kartu - Adapted for x50
 //	2011-02-09 kartu - Fixed # Page index is not updated when book is opened
 //	2011-12-20 quisvir - Added clock updates during apps/games
+//	2011-12-22 qusivir - Changed to TIME.setValue for autorun, removed TIME.invalidate()
 
 // Available to sub-addons
 var StatusBar;
@@ -57,7 +58,6 @@ tmp = function() {
 	updateAutorun = function() {
 		if (kbook.model.STATE === 'AUTORUN') {
 			widgets[0].onMenuPageChanged(); // Perhaps change to own property in widgets
-			TIME.invalidate();
 		}
 	};
 	
@@ -87,7 +87,11 @@ tmp = function() {
 			}
 			if (value !== TIME.getValue()) {
 				// not to cause extra screen refresh (usual way would be to call setValue)
-				TIME.text = value;
+				if (kbook.model.STATE === 'AUTORUN') {
+					TIME.setValue(value);
+				} else {
+					TIME.text = value;
+				}
 			}
 		},
 		setMenuIndex: function (value) {
