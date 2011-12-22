@@ -509,7 +509,7 @@ tmp = function() {
 			if (supportedMIMEs[mime]) {
 				// delete temp file
 				kbook.model.doDeleteBook(false, this);  // also deletes item from BookHistory
-				kbook.model.updateData;
+				kbook.model.updateData();
 			}
 		} catch(e) {
 			log.error("Error in archiveItemDestruct trying to delete book and reset currentbook", e);
