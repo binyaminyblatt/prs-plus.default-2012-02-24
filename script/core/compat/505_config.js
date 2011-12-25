@@ -10,11 +10,12 @@
 //	2011-07-04 Mark Nord - Added #39 "Hold joypad arrows events"
 //	2011-07-04 Mark Nord - Added #24 "Displaying first page of the book on standby" & #38 "Standby image"
 //	2011-07-03 Mark Nord - Added NodeKinds.STANDBY
-//  2011-07-05 Ben Chenoweth - Added STANDBY icon
-//  2011-08-03 Ben Chenoweth - ALL: Added
-//      Calendar by Ben Chenoweth
-//      Solitaire by Ben Chenoweth
-//  2011-10-19 Ben Chenoweth - Added ALT icons
+//	2011-07-05 Ben Chenoweth - Added STANDBY icon
+//	2011-08-03 Ben Chenoweth - ALL: Added
+//      	Calendar by Ben Chenoweth
+// 		Solitaire by Ben Chenoweth
+//	2011-10-19 Ben Chenoweth - Added ALT icons
+//	2011-12-25 Mark Nord - added picture & audio to "media" -> will be supported by BrowseFolders
 
 return {
 	// Menu icon indices 
@@ -189,11 +190,11 @@ return {
 	
 	media: {
 		// types to be used to determine media type using "xs.isInstanceOf"
-		types: [FskCache.text],
+		types: [FskCache.text, FskCache.image, FskCache.audio],
 		// what kind it is, supported are: "book", "picture", "note", "audio"
-		kinds: ["book"],
+		kinds: ["book", "picture", "audio"],
 		// node prototypes to use when creating media nodes
-		prototypes: [FskCache.tree.bookNode]
+		prototypes: [FskCache.tree.bookNode, kbook.root.children.pictures.prototype, kbook.root.children.music.prototype]
 	}, 
 	
 	compareStrings: function(a, b) {
