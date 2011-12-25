@@ -599,7 +599,24 @@ tmp = function() {
 			this.currentNode.gotoNode(oldNode, this);
 		}
 	}
-		
+	
+	// Link actions to home menu booklist arrows
+	kbook.model.container.sandbox.booklistArrows = function (index) {
+		switch (index) {
+			case 1: // left
+				BookManagement_x50.actions[3].action();
+				break;
+			case 2: // right
+				BookManagement_x50.actions[2].action();
+				break;
+			case 3: // up
+				BookManagement_x50.actions[1].action();
+				break;
+			case 4: // down
+				BookManagement_x50.actions[0].action();
+		}
+	};
+	
 	var BookManagement_x50 = {
 		name: 'BookManagement_x50',
 		title: L('TITLE'),
