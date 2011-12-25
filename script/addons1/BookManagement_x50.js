@@ -34,6 +34,7 @@
 //	2011-12-11 quisvir - Extended 'Next/Previous Books' to all booklist options
 //	2011-12-12 quisvir - Changed booklist construct to check numCurrentBook right away; various changes
 //	2011-12-15 quisvir - Added Notepads filter to home menu booklist; code cleaning
+//	2011-12-25 quisvir - Added option for booklist arrows in home menu
 
 tmp = function() {
 
@@ -354,7 +355,7 @@ tmp = function() {
 	// Customize book list in home menu
 	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
 		var model, proto, nodes, cache, db, db2, current, c, node,
-			i, j, hist, book, books, id, author, list, coll, colls;
+			i, j, hist, book, books, id, author, list, coll, colls, menu;
 		FskCache.tree.xdbNode.construct.call(this);
 		cache = this.cache;
 		if (!cache) {
@@ -714,7 +715,17 @@ tmp = function() {
 					'false': L('VALUE_FALSE')
 				}
 			},
-			]},
+			{
+				name: 'homeMenuArrows',
+				title: L('SHOW_HOME_MENU_ARROWS'),
+				icon: 'PLAY',
+				defaultValue: 'false',
+				values: ['true', 'false'],
+				valueTitles: {
+					'true': L('VALUE_TRUE'),
+					'false': L('VALUE_FALSE')
+				}
+			}]},
 			{
 			groupTitle: L('SHOW_READING_PROGRESS'),
 			groupIcon: 'BOOKMARK',
@@ -869,9 +880,13 @@ tmp = function() {
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			numCur = 0;
 			switch (propertyName) {
+				case 'homeMenuArrows':
+					Core.config.homeMenuArrows = newValue;
+					kbook.root.getDeviceRootNode().update(kbook.model);
+					break;
 				case 'BookList':
 					opt.BookList = parseInt(newValue);
-					if (newValue === 5) doSelectCollection();
+					if (newValue === '5') doSelectCollection();
 				case 'IgnoreCards':
 					opt.CurrentCollection = '';
 				case 'PeriodicalsAsBooks':

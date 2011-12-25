@@ -36,6 +36,7 @@
 //	2011-12-05 quisvir - Fixed node comments if node.comment is undefined
 //	2012-12-05 quisvir - Added tapAndHoldAction to available actions
 //	2011-12-11 kartu - Fixed #244 books deleted using PC do not dissapear if scanning is "disabled (load cache)"
+//	2011-12-25 quisvir - Added code to load custom home menu xml's for booklist arrows
 
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -720,6 +721,35 @@ tmp = function () {
 	BookUtil.gestureBase.initialize = function (root, container) {
 		this.actions.push(BookUtil.tapAndHoldAction);
 		oldGestureBaseInit.apply(this, arguments);
+	};
+	
+	// Load custom xml's to show home menu booklist arrows if option in Book Management is set
+	var oldGetRelationalURI = kbook.root.children.deviceRoot.getRelationalURI;
+	kbook.root.children.deviceRoot.getRelationalURI = function (orientation) {
+		var homeMenuArrows, settingsFile, optionsCode, options;
+		homeMenuArrows = PARAMS.Core.config.homeMenuArrows;
+		if (homeMenuArrows === undefined) {
+			settingsFile = PARAMS.Core.config.settingsPath + "BookManagement_x50.config";
+			if (FileSystem.getFileInfo(settingsFile)) {
+				optionsCode = PARAMS.getFileContent(settingsFile);
+				if (optionsCode !== "") {
+					optionsCode = new Function("", optionsCode);
+					options = optionsCode();
+					homeMenuArrows = options.homeMenuArrows;
+					PARAMS.Core.config.homeMenuArrows = homeMenuArrows;
+				}
+			}
+		}
+		if (homeMenuArrows === 'true') {
+			if (orientation) {
+				return 'deviceHomeLandscapeCustom.xml';
+			}
+			else {
+				return 'deviceHomePortraitCustom.xml';
+			}
+		} else {
+			return oldGetRelationalURI.apply(this, arguments);
+		}
 	};
 };
 
