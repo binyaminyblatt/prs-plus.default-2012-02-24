@@ -32,9 +32,10 @@
 //	2011-10-29 Ben Chenoweth - Added Option and Hold Option to key bindings
 //	2011-11-05 kartu - Shifted BF,BH and games to the bottom of "More" list
 //	2011-11-20 quisvir - Added Author List
-//  2011-11-23 Ben Chenoweth - Added TEXT_MEMO
-//  2011-11-24 Ben Chenoweth - Added HANDWRITING_ALT
+//	2011-11-23 Ben Chenoweth - Added TEXT_MEMO
+//	2011-11-24 Ben Chenoweth - Added HANDWRITING_ALT
 //	2011-12-06 quisvir - Removed BH & BF from customNodes to avoid duplication in More Applications (issue #237)
+//	2011-12-25 Mark Nord - added audio to "media" -> will be supported by BrowseFolders
 
 return {
 	// Menu icon indices 
@@ -237,11 +238,11 @@ return {
 	
 	media: {
 		// types to be used to determine media type using "xs.isInstanceOf"
-		types: [FskCache.text, FskCache.image, FskCache.notepad],
+		types: [FskCache.text, FskCache.image, FskCache.notepad, FskCache.audio],
 		// what kind it is, supported are: "book", "picture", "note", "audio"
-		kinds: ["book", "picture", "note"],
+		kinds: ["book", "picture", "note", "audio"],
 		// node prototypes to use when creating media nodes
-		prototypes: [FskCache.tree.bookNode, kbook.pictures.prototype, FskCache.tree.notepadFreehandNode]
+		prototypes: [FskCache.tree.bookNode, kbook.pictures.prototype, FskCache.tree.notepadFreehandNode, kbook.music.prototype]
 	}, 
 	
 	compareStrings: function(a, b) {

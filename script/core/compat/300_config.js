@@ -25,7 +25,8 @@
 //		Calendar by Ben Chenoweth
 //		Solitaire by Ben Chenoweth
 //	2011-09-14 kartu - games & utils "into games (unstable)"
-//  2011-10-19 Ben Chenoweth - Added ALT icons
+//	2011-10-19 Ben Chenoweth - Added ALT icons
+//	2011-12-25 Mark Nord - added picture to "media" -> will be supported by BrowseFolders
 
 return {
 	// Menu icon indices 
@@ -187,11 +188,11 @@ return {
 	
 	media: {
 		// types to be used to determine media type using "xs.isInstanceOf"
-		types: [FskCache.text],
+		types: [FskCache.text, FskCache.image],
 		// what kind it is, supported are: "book", "picture", "note", "audio"
-		kinds: ["book"],
+		kinds: ["book", "picture"],
 		// node prototypes to use when creating media nodes
-		prototypes: [FskCache.tree.bookNode]
+		prototypes: [FskCache.tree.bookNode, kbook.root.children.pictures.prototype]
 	}, 
 	
 	compareStrings: function(a, b) {
