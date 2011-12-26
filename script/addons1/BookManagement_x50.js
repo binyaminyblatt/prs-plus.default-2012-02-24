@@ -35,6 +35,7 @@
 //	2011-12-12 quisvir - Changed booklist construct to check numCurrentBook right away; various changes
 //	2011-12-15 quisvir - Added Notepads filter to home menu booklist; code cleaning
 //	2011-12-25 quisvir - Added option for booklist arrows in home menu
+//	2011-12-26 quisvir - Fixed booklist cycle backward action for 'next in collection'
 
 tmp = function() {
 
@@ -439,7 +440,6 @@ tmp = function() {
 					}
 					break;
 				case 3: // Next books in collection
-						// FIXME cycle backwards doesn't work
 					if (!current) {
 						break;
 					}
@@ -453,13 +453,19 @@ tmp = function() {
 						for (i = 0; i < colls && db2.getRecord(i).title !== opt.CurrentCollection; i++);
 						if (i === colls) {
 							// CC not found, so start from beginning
-							i=0;
+							i = 0;
 						} else if (trigger1) {
-							// CC found, but trigger used, so start from next
+							// CC found, but trigger1 used, so start from next
 							i++;
+						} else if (trigger2) {
+							// CC found, but trigger2 used, so start from previous
+							i--;
 						}
 					}
-					while (i < colls) {
+					if (i === 0 && trigger2) {
+						i = colls - 1;
+					}
+					while (i >= 0 && i < colls) {
 						coll = db2.getRecord(i);
 						books = coll.count();
 						j = coll.getItemIndex(id) + 1;
@@ -475,7 +481,7 @@ tmp = function() {
 							}
 							break;
 						}
-						i++;
+						i = (trigger2) ? i - 1 : i + 1;
 					}
 					opt.CurrentCollection = (nodes.length) ? coll.title : '';
 					break;
@@ -654,10 +660,10 @@ tmp = function() {
 				numCur = 0;
 				if (opt.BookList === 0) {
 					opt.BookList = 5;
-				} else {
+				} else if (opt.BookList !== 3) {
 					opt.BookList--;
+					opt.CurrentCollection = '';
 				}
-				opt.CurrentCollection = '';
 				updateBookList();
 				Core.settings.saveOptions(BookManagement_x50);
 			}
