@@ -14,14 +14,15 @@
 //	2011-12-08 Ben Chenoweth - Archive support (using on Shura1oplot's code); scanDirectory is now recursive
 //  2011-12-14 Ben Chenoweth - Added supportedExtensions
 //	2011-12-20 Ben Chenoweth - Added supportedComics (and CB7)
+//	2011-12-27 Ben Chenoweth - Added removeMedia
 
 tmp = function() {
-	var supportedMIMEs, supportedExtensions, supportedComics, findLibrary, findMedia, loadMedia, scanDirectory, createMediaNode, isImage, startsWith;
+	var supportedMIMEs, supportedExtensions, supportedComics, findLibrary, findMedia, loadMedia,
+		removeMedia, scanDirectory, createMediaNode, isImage, startsWith;
 	// Shortcut
 	startsWith = Core.text.startsWith; 
 
 	supportedMIMEs = {
-		//"audio/mpeg": true,
 		"application/rtf": true,
 		"application/pdf": true,
 		"application/epub+zip": true,
@@ -92,6 +93,22 @@ tmp = function() {
 		library.insertRecord(item);
 		return item;
 	};
+	
+	removeMedia = function(path) {
+		try {
+			var library, item, result;
+			library = findLibrary(path);
+			if (library) {
+				item = library.getRecordByPath(path.substring(library.path.length));
+				if (item) {
+					result = library.deleteRecord(item.id);
+					library.flush(true);
+				}
+			}
+		} catch (e) {
+			log.error("Removing media " + path, e);
+		}
+	}
 
 	/**
 	* Searchs unscanned media files in directory and adds it to library
@@ -141,14 +158,14 @@ tmp = function() {
 					node.type = mediaTypesStr[i];
 					/*try {
 						if (mediaTypesStr[i]==="audio") {
-							node.onEnter = kbook.model.onEnterSong(this);
-							node.onSelect = kbook.model.onSelectDefault(this);
+							node.onEnter = "onEnterSong";
+							node.onSelect = "onSelectDefault";
 							node.kind = 3;
 							node.playingKind = 14;
 							node.comment = Core.io.extractFileName(path);
 							//log.trace("node.comment="+node.comment);
 						}
-					} catch(e) { log.trace("Error trying to make media node"); } */
+					} catch(e) { log.trace("Error trying to make media node"); }*/
 					//log.trace("Looking in node:");
 					//for (var name in node) {
 					//	if (node.hasOwnProperty(name)) {
@@ -185,6 +202,11 @@ tmp = function() {
 		* Loads (unscanned) media file
 		*/
 		loadMedia: loadMedia,
+
+		/**
+		* Removes media file
+		*/
+		removeMedia: removeMedia,
 
 		/**
 		* Finds kinoma "library source" (instance of FskCache.source) corresponding to the given full path
