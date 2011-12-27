@@ -48,6 +48,8 @@
 //	2011-12-20 Mark Nord - temp. fix for pre 600 models (see line 723)
 //	2011-12-21 Ben Chenoweth - Home (partially) updated; previous current book restored correctly
 //	2011-12-22 Ben Chenoweth - Archives work on SD and MS in mount and non-mount mode (by going into mount mode)
+//	2011-12-26 Mark Nord - adapted for 505 (& probably 300)
+//	2011-12-27 Ben Chenoweth - Thumbnails on x50 now removed correctly
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -55,7 +57,8 @@ tmp = function() {
 		compareFields, supportedMIMEs, supportedArchives, createArchiveNode, createLazyInitNode,
 		constructLazyNode, archiveBookNodeEnter, ACTION_ICON, doCopyAndOpen, doCopy, doOpenHere,
 		supportedExtensions, supportedComics, browsingArchive, currentNode, oldCurrentBook, oldCurrentNode,
-		doUnpackHere, doGotoParent, browseFoldersNode, ENABLED, DISABLED;
+		doUnpackHere, doGotoParent, browseFoldersNode, setPictureIndexCount, onEnterPicture,
+		imageZoomOverlayModel_doNext, imageZoomOverlayModel_onCallback, ENABLED, DISABLED;
 	
 	ENABLED = "enabled";
 	DISABLED = "disabled";
@@ -383,6 +386,7 @@ tmp = function() {
 			parent = this.parent;
 			path = parent.path + '~temp~/';
 			Core.io.deleteDirectory(path);
+			archiveFolderDestruct(); // Mark Nord to fix remaining thumbs in media for 505
 			currentArchive = null;
 			this.nodes = null;
 			parent.update();
@@ -472,21 +476,20 @@ tmp = function() {
 	}
 	
 	var archiveFolderDestruct = function () {
-		var nodes;
+		var nodes, n, i, file, item, source;
 		try {
 			browsingArchive = false;
 			// remove files from library
 			path = Core.io.extractPath(currentArchive.path) + '~temp~/';
-			nodes = this.nodes;
-			for (i = 0, n = nodes.length; i < n; i++) {
-				file = path + Core.io.extractFileName(nodes[i].insidePath);
-				item=Core.media.findMedia(file);
-				if (item) {
-					FskCache.source.deleteRecord(item.id);
-					FskCache.source.flush(true);
-				}
+			if (this.nodes) {
+				nodes = this.nodes;
+				n = nodes.length
+				for (i = 0; i < n; i++) {
+					file = path + Core.io.extractFileName(nodes[i].insidePath);
+					Core.media.removeMedia(file);
+				}			
+				this.nodes = null;
 			}
-			this.nodes = null;
 		} catch(e) {
 			log.error("Error in archiveFolderDestruct", e);
 		}
@@ -507,12 +510,15 @@ tmp = function() {
 			}
 			mime = FileSystem.getMIMEType(node.media.path);
 			if (supportedMIMEs[mime]) {
-				// delete temp file
+				// delete temp book
 				kbook.model.doDeleteBook(false, this);  // also deletes item from BookHistory
 				kbook.model.updateData();
+			} else {
+				// delete temp image from library
+				kbook.model.removePicture(this);
 			}
 		} catch(e) {
-			log.error("Error in archiveItemDestruct trying to delete book and reset currentbook", e);
+			log.error("Error in archiveItemDestruct trying to reset currentbook and delete book or delete item from library", e);
 		}
 		try {
 			// delete temporary directory
@@ -526,7 +532,7 @@ tmp = function() {
 			log.error("Error in archiveItemDestruct trying to delete temp directory", e);
 		}
 		// standard node.exit code:
-		trace('exit ' + this.title + '\n');
+		//trace('exit ' + this.title + '\n');
 		if (this.onExit) {
 			model[this.onExit](this);
 		}
@@ -741,8 +747,36 @@ tmp = function() {
 		}
 	}
 	
+	var oldOnEnterPicture = kbook.model.onEnterPicture;
+	onEnterPicture = function (node) {
+	var parent, nodes, i, n, val, picture;
+		oldOnEnterPicture.apply(this, arguments);
+		if (browsingArchive) {
+			picture = kbook.model.container.sandbox.PICTURE_GROUP.sandbox.PICTURE;
+			// log.trace('Zoom: ' + picture + ' ' + picture.getZoom());
+			if (picture.getZoom() !== 0) {
+				picture.doMove(0,-10);
+				picture.doMove(1,-10);
+				picture.adjust();
+			}
+			parent = currentNode.parent;
+			nodes = parent.nodes;
+			for (i = 0, n = nodes.length; i < n; i++) {
+				if (nodes[i].insidePath === currentNode.insidePath) {
+					break;
+				}
+			}
+			i++;
+			val = i + ' of ' + n;
+			if (this.PICTURE_INDEX_COUNT != val) {
+				this.PICTURE_INDEX_COUNT = val;
+				this.changed();
+			}			
+		}
+	}
+	
 	var oldSetPictureIndexCount = kbook.model.setPictureIndexCount;
-	kbook.model.setPictureIndexCount = function (node) {
+	setPictureIndexCount = function (node) {
 		var parent, nodes, i, n, val;
 		if (browsingArchive) {
 			parent = currentNode.parent;
@@ -763,39 +797,35 @@ tmp = function() {
 		}
 	}
 
-	// model-sniffing (imageZoomOverlayModel doesn't exist in pre 600 models)
-	if ((Core.config.model === '600') || (Core.config.model === '350') || 
-		(Core.config.model === '650') || (Core.config.model === '950')) {	
-		// move to top on next page
-		imageZoomOverlayModel.doNext = function () {
-			var timer;
-			if (browsingArchive) {
-				if (this.SHOW == true) {
-					this.container.target.bubble('doNext');
-					this.container.zoomChange();
-					timer = this.timer = new HardwareTimer();
-					timer.target = this;
-					timer.onCallback = this.onCallback;
-					timer.onClockChange = this.onCallback;
-					timer.schedule(100);
-				} else {
-					this.closeCurrentOverlay();
-					this.container.target.bubble('doNext'); 
-				}
+	// move to top on next page for 600/x50
+	imageZoomOverlayModel_doNext = function () {
+		var timer;
+		if (browsingArchive) {
+			if (this.SHOW == true) {
+				this.container.target.bubble('doNext');
+				this.container.zoomChange();
+				timer = this.timer = new HardwareTimer();
+				timer.target = this;
+				timer.onCallback = imageZoomOverlayModel_onCallback;
+				timer.onClockChange = imageZoomOverlayModel_onCallback;
+				timer.schedule(100);
 			} else {
 				this.closeCurrentOverlay();
 				this.container.target.bubble('doNext');
 			}
+		} else {
+			this.closeCurrentOverlay();
+			this.container.target.bubble('doNext');
 		}
-	
-		imageZoomOverlayModel.onCallback = function () {
-			var target;
-			target = this.target;
-			target.timer = null;
-			kbook.model.doSomething('scrollTo', -100, -100);
-			this.container.zoomChange();
-		}
-	} // end sniffing
+	}
+
+	imageZoomOverlayModel_onCallback = function () {
+		var target;
+		target = this.target;
+		target.timer = null;
+		kbook.model.doSomething('scrollTo', -100, -100);
+		this.container.zoomChange();
+	}
 
 	doUnpackHere = function () {
 		var path, parent, outputDir, nodes, i, n, needsMount;
@@ -1204,6 +1234,16 @@ tmp = function() {
 		onInit: function() {
 			// Bootstrap code knows only Core, not this addon
 			Core.config.cardScanMode = BrowseFolders.options.cardScan;
+			//model sniffing
+			switch (Core.config.model) {
+			case '300':
+			case '505':	
+				kbook.model.onEnterPicture = onEnterPicture;
+				break;
+			default :
+				kbook.model.setPictureIndexCount = setPictureIndexCount;
+				imageZoomOverlayModel.doNext = imageZoomOverlayModel_doNext;			
+			}
 		},
 		
 		actions: [{
