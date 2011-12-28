@@ -52,6 +52,7 @@
 //	2011-12-27 Ben Chenoweth - Thumbnails on x50 now removed correctly (for archives in IM)
 //	2011-12-28 Ben Chenoweth - Thumbnails on x50 now removed correctly (for archives on SD/MS)
 //	2011-12-28 Ben Chenoweth - Initial implementation of audio for x50
+//	2011-12-28 Ben Chenoweth - Fixes for image archive browsing on the 600
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -805,13 +806,17 @@ tmp = function() {
 	var parent, nodes, i, n, val, picture;
 		oldOnEnterPicture.apply(this, arguments);
 		if (browsingArchive) {
-			picture = kbook.model.container.sandbox.PICTURE_GROUP.sandbox.PICTURE;
-			// log.trace('Zoom: ' + picture + ' ' + picture.getZoom());
-			if (picture.getZoom() !== 0) {
-				picture.doMove(0,-10);
-				picture.doMove(1,-10);
-				picture.adjust();
+			if (!imageZoomOverlayModel.doNext) {
+				// 505/300
+				picture = kbook.model.container.sandbox.PICTURE_GROUP.sandbox.PICTURE;
+				// log.trace('Zoom: ' + picture + ' ' + picture.getZoom());
+				if (picture.getZoom() !== 0) {
+					picture.doMove(0,-10);
+					picture.doMove(1,-10);
+					picture.adjust();
+				}
 			}
+			// 505/300/600
 			parent = currentNode.parent;
 			nodes = parent.nodes;
 			for (i = 0, n = nodes.length; i < n; i++) {
@@ -857,7 +862,12 @@ tmp = function() {
 			if (this.SHOW == true) {
 				this.container.target.bubble('doNext');
 				this.container.zoomChange();
-				timer = this.timer = new HardwareTimer();
+				try {
+					timer = this.timer = new Timer(); //600
+				} catch(ignore) {}
+				try {
+					timer = this.timer = new HardwareTimer(); //x50
+				} catch(ignore) {}
 				timer.target = this;
 				timer.onCallback = imageZoomOverlayModel_onCallback;
 				timer.onClockChange = imageZoomOverlayModel_onCallback;
@@ -877,7 +887,6 @@ tmp = function() {
 		target = this.target;
 		target.timer = null;
 		kbook.model.doSomething('scrollTo', -100, -100);
-		this.container.zoomChange();
 	}
 
 	doUnpackHere = function () {
@@ -1290,8 +1299,12 @@ tmp = function() {
 			//model sniffing
 			switch (Core.config.model) {
 			case '300':
-			case '505':	
+			case '505':
 				kbook.model.onEnterPicture = onEnterPicture;
+				break;
+			case '600':
+				kbook.model.onEnterPicture = onEnterPicture;
+				imageZoomOverlayModel.doNext = imageZoomOverlayModel_doNext;
 				break;
 			default :
 				kbook.model.setPictureIndexCount = setPictureIndexCount;
