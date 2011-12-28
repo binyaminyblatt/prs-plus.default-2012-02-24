@@ -15,7 +15,7 @@
 //  2011-12-14 Ben Chenoweth - Added supportedExtensions
 //	2011-12-20 Ben Chenoweth - Added supportedComics (and CB7)
 //	2011-12-27 Ben Chenoweth - Added removeMedia
-//	2011-12-28 Ben Chenoweth - Initial implementation of audio for x50
+//	2011-12-28 Ben Chenoweth - Initial implementation of audio for 600 and x50
 
 tmp = function() {
 	var supportedMIMEs, supportedExtensions, supportedComics, supportedAudio, findLibrary, findMedia,
@@ -164,16 +164,33 @@ tmp = function() {
 					node.type = mediaTypesStr[i];
 					try {
 						if (node.type === "audio") {
-							node.onEnter = "onEnterSong";
-							node.onSelect = "onSelectDefault";
-							node.kind = 3;
-							node.playingKind = 14;
-							node.comment = Core.io.extractFileName(path);
-							if ((!node.parent.shuffleList) && (kbook.root.kbookAudioContentsListNode)) {
-								node.parent.shuffleList = xs.newInstanceOf(kbook.root.kbookAudioContentsListNode.shuffleListObject);
+							switch (Core.config.model) {
+							case '300':
+							case '505':
+								// audio just works on these models!
+								break;
+							case '600':
+								node.onEnter = "onEnterSong";
+								node.onSelect = "onSelectDefault";
+								node.kind = -3;
+								node.comment = Core.io.extractFileName(path);
+								if (!node.parent.shuffleList) {
+									node.parent.shuffleList = xs.newInstanceOf(kbook.music.shuffleList);
+									log.trace("testing");
+								}
+								break;
+							default:
+								node.onEnter = "onEnterSong";
+								node.onSelect = "onSelectDefault";
+								node.kind = 3;
+								node.playingKind = 14;
+								node.comment = Core.io.extractFileName(path);
+								if (!node.parent.shuffleList) {
+									node.parent.shuffleList = xs.newInstanceOf(kbook.root.kbookAudioContentsListNode.shuffleListObject);
+								}
 							}
 						}
-					} catch(e) { log.error("Error trying to make media node"); }
+					} catch(e) { log.error("Error trying to make audio node"); }
 					return node;
 				}
 			}
