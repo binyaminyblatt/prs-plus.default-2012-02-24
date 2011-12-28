@@ -35,6 +35,7 @@
 //	2011-11-28 quisvir - Added STYLUS
 //	2011-12-13 quisvir - Added NOBOOKMARK
 //	2011-12-17 quisvir - Added DICTIONARY
+//	2011-12-28 Ben Chenoweth - Initial implementation of audio
 
 return {
 	// Menu icon indices 
@@ -256,11 +257,11 @@ return {
 
 	media: {
 		// types to be used to determine media type using "xs.isInstanceOf"
-		types: [ FskCache.text  , FskCache.image, FskCache.notepad],
+		types: [ FskCache.text  , FskCache.image, FskCache.notepad, FskCache.audio],
 		// what kind it is, supported are: "book", "picture", "note", "audio"
-		kinds: [ "book", "picture", "note"],
+		kinds: [ "book", "picture", "note", "audio"],
 		// node prototypes to use when creating media nodes
-		prototypes: [ FskCache.tree.bookNode, kbook.root.children.applicationRoot.children.pictures.prototype, FskCache.tree.notepadFreehandNode]
+		prototypes: [ FskCache.tree.bookNode, kbook.root.children.applicationRoot.children.pictures.prototype, FskCache.tree.notepadFreehandNode, FskCache.tree.mediaNode]
 	}, 
 
 	
