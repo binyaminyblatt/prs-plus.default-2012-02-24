@@ -49,7 +49,8 @@
 //	2011-12-21 Ben Chenoweth - Home (partially) updated; previous current book restored correctly
 //	2011-12-22 Ben Chenoweth - Archives work on SD and MS in mount and non-mount mode (by going into mount mode)
 //	2011-12-26 Mark Nord - adapted for 505 (& probably 300)
-//	2011-12-27 Ben Chenoweth - Thumbnails on x50 now removed correctly
+//	2011-12-27 Ben Chenoweth - Thumbnails on x50 now removed correctly (for archives in IM)
+//	2011-12-28 Ben Chenoweth - Thumbnails on x50 now removed correctly (for archives on SD/MS)
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -486,6 +487,9 @@ tmp = function() {
 				n = nodes.length
 				for (i = 0; i < n; i++) {
 					file = path + Core.io.extractFileName(nodes[i].insidePath);
+					// need to convert mounted paths to unmounted paths
+					file = file.replace("/opt/mnt/ms", "a:");
+					file = file.replace("/opt/mnt/sd", "b:");
 					Core.media.removeMedia(file);
 				}			
 				this.nodes = null;
@@ -513,10 +517,10 @@ tmp = function() {
 				// delete temp book
 				kbook.model.doDeleteBook(false, this);  // also deletes item from BookHistory
 				kbook.model.updateData();
-			} else {
-				// delete temp image from library
+			}/* else {
+				// delete temp image from library (function not available on 505)
 				kbook.model.removePicture(this);
-			}
+			}*/
 		} catch(e) {
 			log.error("Error in archiveItemDestruct trying to reset currentbook and delete book or delete item from library", e);
 		}
