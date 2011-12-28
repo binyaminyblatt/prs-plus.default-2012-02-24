@@ -163,13 +163,13 @@ tmp = function() {
 					node.depth = parent.depth + 1;
 					node.type = mediaTypesStr[i];
 					try {
-						if (mediaTypesStr[i] === "audio") {
+						if (node.type === "audio") {
 							node.onEnter = "onEnterSong";
 							node.onSelect = "onSelectDefault";
 							node.kind = 3;
 							node.playingKind = 14;
 							node.comment = Core.io.extractFileName(path);
-							if (!node.parent.shuffleList) {
+							if ((!node.parent.shuffleList) && (kbook.root.kbookAudioContentsListNode)) {
 								node.parent.shuffleList = xs.newInstanceOf(kbook.root.kbookAudioContentsListNode.shuffleListObject);
 							}
 						}

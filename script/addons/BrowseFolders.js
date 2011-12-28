@@ -72,6 +72,7 @@ tmp = function() {
 	supportedArchives = Core.archiver.supportedArchives;
 	supportedExtensions = Core.media.supportedExtensions;
 	supportedComics = Core.media.supportedComics;
+	supportedAudio = Core.media.supportedAudio;
 	browsingArchive = false;
 	currentNode = null;
 	oldCurrentBook = null;
@@ -216,6 +217,7 @@ tmp = function() {
 	createMediaNode = function (path, title, parent, dummy, needsMount) {
 		var node, mime, extension, size, sizeStr;
 		node = needsMount !== undefined ? null : Core.media.createMediaNode(path, parent);
+		extension = Core.io.extractExtension(path);
 		sizeStr = "";
 
 		// Size in comment
@@ -231,7 +233,6 @@ tmp = function() {
 		if (node === null) {
 			// Either file that is not a media, or unscanned
 			mime = FileSystem.getMIMEType(path);
-			extension = Core.io.extractExtension(path);
 			if ((supportedMIMEs[mime]) || (supportedAudio[extension])) {
 				node = createLazyInitNode(path, title, parent, needsMount);
 			} else if (supportedArchives[extension]) {
