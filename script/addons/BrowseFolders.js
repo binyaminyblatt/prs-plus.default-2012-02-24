@@ -438,10 +438,11 @@ tmp = function() {
 	var archiveRootDestruct = function () {
 		var parent;
 		try {
+			browsingArchive = false;
 			parent = this.parent;
 			path = parent.path + '~temp~/';
 			Core.io.deleteDirectory(path);
-			archiveFolderDestruct(); // Mark Nord to fix remaining thumbs in media for 505
+		//	archiveFolderDestruct(); // Mark Nord to fix remaining thumbs in media for 505
 			currentArchive = null;
 			this.nodes = null;
 			parent.update();
@@ -526,9 +527,9 @@ tmp = function() {
 						// hide other files
 					}
 				}
-            }
-        }
-	}
+			}
+		}
+	};
 	
 	var archiveFolderDestruct = function () {
 		var nodes, n, i, file, item, source;
@@ -537,7 +538,7 @@ tmp = function() {
 			// remove files from library
 			path = Core.io.extractPath(currentArchive.path) + '~temp~/';
 			if (this.nodes) {
-				nodes = this.nodes;
+			/*	nodes = this.nodes;
 				n = nodes.length
 				for (i = 0; i < n; i++) {
 					file = path + Core.io.extractFileName(nodes[i].insidePath);
@@ -545,16 +546,16 @@ tmp = function() {
 					file = file.replace("/opt/mnt/ms", "a:");
 					file = file.replace("/opt/mnt/sd", "b:");
 					Core.media.removeMedia(file);
-				}			
+				} */			
 				this.nodes = null;
 			}
 		} catch(e) {
 			log.error("Error in archiveFolderDestruct", e);
 		}
-	}
+	};
 	
 	var archiveItemDestruct = function (model) {
-		var node, current, path, item;
+		var node, current, path, item, media, source;
 		try {
 			node = this;
 			current = kbook.model.currentBook;
@@ -571,10 +572,12 @@ tmp = function() {
 				// delete temp book
 				kbook.model.doDeleteBook(false, this);  // also deletes item from BookHistory
 				kbook.model.updateData();
-			}/* else {
-				// delete temp image from library (function not available on 505)
-				kbook.model.removePicture(this);
-			}*/
+			} else {
+				//kbook.model.removePicture(this);
+				media = node.media;
+				source = media.source;
+				source.deleteRecord(media.id);
+			}
 		} catch(e) {
 			log.error("Error in archiveItemDestruct trying to reset currentbook and delete book or delete item from library", e);
 		}
@@ -596,7 +599,8 @@ tmp = function() {
 		}
 		if (oldCurrentBook) {
 			// restore previous current book (if there was one)
-			kbook.model.currentNode = oldCurrentNode;
+			var buf = Core.ui.getCurrentNode();  // is this needed??
+			buf = oldCurrentNode;
 			kbook.model.onChangeBook(oldCurrentBook);
 		}
 		kbook.root.update(kbook.model);
@@ -759,7 +763,7 @@ tmp = function() {
 	// functions for BrowseComics
 	var oldDoGotoNextPicture = kbook.model.doGotoNextPicture;
 	kbook.model.doGotoNextPicture = function () {
-		var parent, nodes, nextNode, i, n;
+		var parent, nodes, nextNode, i, n, cn;
 		if (browsingArchive) {
 			// move to next image in archive
 			parent = currentNode.parent;
@@ -772,7 +776,9 @@ tmp = function() {
 				}
 			}
 			if (nextNode) {
-				parent.gotoNode(nextNode, kbook.model);
+			//	kbook.model.removePicture(Core.ui.getCurrentNode());
+				cn = Core.ui.getCurrentNode();
+				cn.gotoNode(nextNode, kbook.model);
 			} else {
 				this.doBlink();
 			}
@@ -783,7 +789,7 @@ tmp = function() {
 	
 	var oldDoGotoPreviousPicture = kbook.model.doGotoPreviousPicture;
 	kbook.model.doGotoPreviousPicture = function () {
-		var parent, nodes, prevNode, i, n;
+		var parent, nodes, prevNode, i, n, cn;
 		if (browsingArchive) {
 			// move to previous image in archive
 			parent = currentNode.parent;
@@ -796,7 +802,9 @@ tmp = function() {
 				}
 			}
 			if (prevNode) {
-				parent.gotoNode(prevNode, kbook.model);
+			//	kbook.model.removePicture(Core.ui.getCurrentNode());
+				cn = Core.ui.getCurrentNode();
+				cn.gotoNode(prevNode, kbook.model);
 			} else {
 				this.doBlink();
 			}
@@ -810,7 +818,7 @@ tmp = function() {
 	var parent, nodes, i, n, val, picture;
 		oldOnEnterPicture.apply(this, arguments);
 		if (browsingArchive) {
-			if (!imageZoomOverlayModel.doNext) {
+			if (!imageZoomOverlayModel) {
 				// 505/300
 				picture = kbook.model.container.sandbox.PICTURE_GROUP.sandbox.PICTURE;
 				// log.trace('Zoom: ' + picture + ' ' + picture.getZoom());
@@ -1305,6 +1313,26 @@ tmp = function() {
 			case '300':
 			case '505':
 				kbook.model.onEnterPicture = onEnterPicture;
+			/*	kbook.model.removePicture = function (node) {
+					var model, media, tempPath, bookPath, source, bookFile;
+					try {
+						model = kbook.model;
+						media = node.media;
+						tempPath = media.getFilePath(node.cache);
+						bookPath = media.source.path + media.path;
+						source = media.source;
+						bookFile = bookPath.substring(bookPath.lastIndexOf('/') + 1);
+						FileSystem.deleteFile(bookPath);
+						source.deleteRecord(media.id);
+						model.addPathToDCL(media.source, media.path);
+						if ('sync' in FileSystem) {
+							FileSystem.sync();
+						}
+					}
+					catch (e){
+						throw e;
+					}
+				} */
 				break;
 			case '600':
 				kbook.model.onEnterPicture = onEnterPicture;
