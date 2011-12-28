@@ -52,7 +52,7 @@
 //	2011-12-27 Ben Chenoweth - Thumbnails on x50 now removed correctly (for archives in IM)
 //	2011-12-28 Ben Chenoweth - Thumbnails on x50 now removed correctly (for archives on SD/MS)
 //	2011-12-28 Ben Chenoweth - Initial implementation of audio for x50
-//	2011-12-28 Ben Chenoweth - Fixes for image archive browsing on the 600
+//	2011-12-28 Ben Chenoweth - Fixes for image archive browsing on the 600; audio for 600
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -308,9 +308,13 @@ tmp = function() {
 			Core.utils.replaceInArray(parent.nodes, this, mediaNode); 
 			
 			// initialise shuffleList
-			if (parent.shuffleList) {
-				parent.shuffleList.initialize(parent.nodes.length);
-			}
+			try {
+				if (parent.shuffleList) {
+					if (parent.shuffleList.initialize) {
+						parent.shuffleList.initialize(parent.nodes.length);
+					}
+				}
+			} catch(ignore) {}
 			
 			this.gotoNode(mediaNode, kbook.model);
 		}
