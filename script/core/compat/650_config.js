@@ -28,7 +28,7 @@
 //	2011-10-14 Ben Chenoweth - Added home icons for Games node and Calendar
 //	2011-10-19 Ben Chenoweth - Added ALT icons; reverted BOOK to 2 and PICTURE to 4
 //	2011-10-22 Ben Chenoweth - Fix for assigning default HOME and LARGE icons to items that don't have them.
-// 	2011-10-22 Mark Nord - Fix for node "games" in customNodes (instead of "") it's now consitstend for all x50
+// 	2011-10-22 Mark Nord - Fix for node "games" in customNodes (instead of "") it's now consistent for all x50
 //	2011-11-13 kartu - changed rootNode to a function, since node is not available at the time config file is loaded
 //	2011-11-20 quisvir - Added Author List
 //  2011-11-23 Ben Chenoweth - Added TEXT_MEMO
@@ -36,6 +36,7 @@
 //	2011-11-28 quisvir - Added STYLUS
 //	2011-12-13 quisvir - Added NOBOOKMARK
 //	2011-12-17 quisvir - Added DICTIONARY
+//	2011-12-28 Ben Chenoweth - Initial implementation of audio
  
 return {
 	// Menu icon indices 
@@ -257,11 +258,11 @@ return {
 
 	media: {
 		// types to be used to determine media type using "xs.isInstanceOf"
-		types: [ FskCache.text  , FskCache.image, FskCache.notepad],
+		types: [ FskCache.text  , FskCache.image, FskCache.notepad, FskCache.audio],
 		// what kind it is, supported are: "book", "picture", "note", "audio"
-		kinds: [ "book", "picture", "note"],
+		kinds: [ "book", "picture", "note", "audio"],
 		// node prototypes to use when creating media nodes
-		prototypes: [ FskCache.tree.bookNode, kbook.root.children.applicationRoot.children.pictures.prototype, FskCache.tree.notepadFreehandNode]
+		prototypes: [ FskCache.tree.bookNode, kbook.root.children.applicationRoot.children.pictures.prototype, FskCache.tree.notepadFreehandNode, FskCache.tree.mediaNode]
 	}, 
 
 	

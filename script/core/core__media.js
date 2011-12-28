@@ -15,10 +15,11 @@
 //  2011-12-14 Ben Chenoweth - Added supportedExtensions
 //	2011-12-20 Ben Chenoweth - Added supportedComics (and CB7)
 //	2011-12-27 Ben Chenoweth - Added removeMedia
+//	2011-12-28 Ben Chenoweth - Initial implementation of audio for x50
 
 tmp = function() {
-	var supportedMIMEs, supportedExtensions, supportedComics, findLibrary, findMedia, loadMedia,
-		removeMedia, scanDirectory, createMediaNode, isImage, startsWith;
+	var supportedMIMEs, supportedExtensions, supportedComics, supportedAudio, findLibrary, findMedia,
+		loadMedia, removeMedia, scanDirectory, createMediaNode, isImage, startsWith;
 	// Shortcut
 	startsWith = Core.text.startsWith; 
 
@@ -31,6 +32,7 @@ tmp = function() {
 	};
 	
 	supportedExtensions = {
+		"mp3": true,
 		"rtf": true,
 		"pdf": true,
 		"epub": true,
@@ -47,6 +49,10 @@ tmp = function() {
 		"cbr": true,
 		"cbz": true
 	};
+	
+	supportedAudio = {
+		"mp3": true
+	}
 	
 	/**
 	* Finds kinoma "source" (instance of FskCache.source) corresponding to the given full path
@@ -156,22 +162,18 @@ tmp = function() {
 					node.parent = parent;
 					node.depth = parent.depth + 1;
 					node.type = mediaTypesStr[i];
-					/*try {
-						if (mediaTypesStr[i]==="audio") {
+					try {
+						if (mediaTypesStr[i] === "audio") {
 							node.onEnter = "onEnterSong";
 							node.onSelect = "onSelectDefault";
 							node.kind = 3;
 							node.playingKind = 14;
 							node.comment = Core.io.extractFileName(path);
-							//log.trace("node.comment="+node.comment);
+							if (!node.parent.shuffleList) {
+								node.parent.shuffleList = xs.newInstanceOf(kbook.root.kbookAudioContentsListNode.shuffleListObject);
+							}
 						}
-					} catch(e) { log.trace("Error trying to make media node"); }*/
-					//log.trace("Looking in node:");
-					//for (var name in node) {
-					//	if (node.hasOwnProperty(name)) {
-					//		log.trace(name+"="+node[name]);
-					//	}
-					//}
+					} catch(e) { log.error("Error trying to make media node"); }
 					return node;
 				}
 			}
@@ -191,6 +193,8 @@ tmp = function() {
 		supportedExtensions: supportedExtensions,
 		
 		supportedComics: supportedComics,
+		
+		supportedAudio: supportedAudio,
 		
 		/**
 		* Finds media (book, image, audio, etc) with a given path

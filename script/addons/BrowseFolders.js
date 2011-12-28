@@ -51,6 +51,7 @@
 //	2011-12-26 Mark Nord - adapted for 505 (& probably 300)
 //	2011-12-27 Ben Chenoweth - Thumbnails on x50 now removed correctly (for archives in IM)
 //	2011-12-28 Ben Chenoweth - Thumbnails on x50 now removed correctly (for archives on SD/MS)
+//	2011-12-28 Ben Chenoweth - Initial implementation of audio for x50
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -151,24 +152,43 @@ tmp = function() {
 	};
 	
 	createLazyInitNode = function (path, title, parent, needsMount) {
-		var node;
-		if (needsMount !== undefined || BrowseFolders.options.cardScan === DISABLED && !Core.text.startsWith(path, "/Data")) {
+		var node, ext;
+		if (needsMount !== undefined || BrowseFolders.options.cardScan === DISABLED && !startsWith(path, "/Data")) {
 			// if SD/MS scan is disabled and we are not in internal memory			
-			node = Core.ui.createContainerNode({
+			ext = Core.io.extractExtension(path);
+			if (ext === "mp3") {
+				node = Core.ui.createContainerNode({
 					title: title,
-					icon: "BOOK_ALT",
+					icon: "AUDIO",
 					parent: parent,
 					construct: constructLazyNode
-			});				
+				})
+			} else {
+				node = Core.ui.createContainerNode({
+						title: title,
+						icon: "BOOK_ALT",
+						parent: parent,
+						construct: constructLazyNode
+				});
+			}
 		} else {
-			node = Core.ui.createContainerNode({
+			ext = Core.io.extractExtension(path);
+			if (ext === "mp3") {
+				node = Core.ui.createContainerNode({
 					title: title,
-					icon: "BOOK_ALT",
+					icon: "AUDIO",
 					parent: parent
-			});
-			node.enter = doOpenHere;
+				});
+				node.enter = doOpenSongHere;
+			} else {
+				node = Core.ui.createContainerNode({
+						title: title,
+						icon: "BOOK_ALT",
+						parent: parent
+				});
+				node.enter = doOpenHere;
+			}
 		}
-		
 		node.path = path;
 		return node;
 	};
@@ -196,7 +216,6 @@ tmp = function() {
 	createMediaNode = function (path, title, parent, dummy, needsMount) {
 		var node, mime, extension, size, sizeStr;
 		node = needsMount !== undefined ? null : Core.media.createMediaNode(path, parent);
-		extension = Core.io.extractExtension(path);
 		sizeStr = "";
 
 		// Size in comment
@@ -212,7 +231,8 @@ tmp = function() {
 		if (node === null) {
 			// Either file that is not a media, or unscanned
 			mime = FileSystem.getMIMEType(path);
-			if (supportedMIMEs[mime]) {
+			extension = Core.io.extractExtension(path);
+			if ((supportedMIMEs[mime]) || (supportedAudio[extension])) {
 				node = createLazyInitNode(path, title, parent, needsMount);
 			} else if (supportedArchives[extension]) {
  				node = createArchiveNode(path, title, parent, needsMount);
@@ -261,6 +281,34 @@ tmp = function() {
 	
 			// replace parent with media node
 			Core.utils.replaceInArray(parent.nodes, this, mediaNode); 
+			
+			this.gotoNode(mediaNode, kbook.model);
+		}
+	};
+	
+	doOpenSongHere = function() {
+		var path, item, parent, mediaNode;
+		
+		// create media
+		parent = this.parent;
+		path = this.path;
+		try {
+			item = Core.media.loadMedia(path);
+		} catch (ignore) {
+			Core.ui.showMsg(L("MSG_ERROR_OPENING_BOOK"));
+		}
+		
+		if (item) {
+			// create node
+			mediaNode = Core.media.createMediaNode(item, parent);
+	
+			// replace parent with media node
+			Core.utils.replaceInArray(parent.nodes, this, mediaNode); 
+			
+			// initialise shuffleList
+			if (parent.shuffleList) {
+				parent.shuffleList.initialize(parent.nodes.length);
+			}
 			
 			this.gotoNode(mediaNode, kbook.model);
 		}
