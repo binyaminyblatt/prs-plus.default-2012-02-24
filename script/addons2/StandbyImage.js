@@ -20,7 +20,7 @@
 //	2011-12-08 Mark Nord - Added Auto Standby Time option for 300/505
 //	2011-12-10 quisvir - Merged Auto Standby Time options
 //	2011-12-15 quisvir - Added set/restore portrait orientation on shutdown/startup
-//
+//	2011-12-29 quisvir - Added USB Data Transfer Mode dialog to allow reading while charging via usb
 
 
 tmp = function() {
@@ -337,6 +337,21 @@ tmp = function() {
 		win.setTextAlignment(oldTextAlignmentX, oldTextAlignmentY);
 	};
 	
+	USBDispatcher.oldOnConnected = USBDispatcher.onConnected;
+	var newOnConnected = function () {
+		var dialog;
+		if (StandbyImage.options.TransferModeDialog === 'true' && kbook.model.container.getVariable('STANDBY_STATE') !== 0) {
+			dialog = kbook.model.getConfirmationDialog();
+			if (dialog) {
+				dialog.onOk = function () {
+					USBDispatcher.oldOnConnected();
+				};
+				dialog.openDialog(L('ENTER_DATA_TRANSFER_MODE'), 0);
+				return;
+			}
+		}
+		this.oldOnConnected();
+	}
 	
 	var StandbyImage = {
 		name: "StandbyImage",
@@ -514,6 +529,7 @@ tmp = function() {
 				case "650":
 				case "950":
 				case "600":
+					USBDispatcher.onConnected = newOnConnected;
 					this.optionDefs.push(
 						{
 							name: "AutoShutdownTime",
@@ -534,6 +550,18 @@ tmp = function() {
 								"120": LX("HOURS", 120),
 								"144": LX("HOURS", 144),
 								"168": LX("HOURS", 168),
+							}
+						},
+						{
+							name: "TransferModeDialog",
+							title: L("USB_TRANSFER_MODE_DIALOG"),
+							icon: "SETTINGS",
+							helpText: L('USB_TRANSFER_MODE_HELP'),
+							defaultValue: "false",
+							values: ["true", "false"],
+							valueTitles: {
+								"true": L("VALUE_TRUE"),
+								"false": L("VALUE_FALSE")
 							}
 						}
 					);
