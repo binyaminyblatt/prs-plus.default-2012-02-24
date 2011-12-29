@@ -918,6 +918,8 @@ tmp = function() {
 			n = nodes.length;
 			if (nodes[0].title === "..") {
 				n--;
+			} else {
+				i++;
 			}
 			this.SONG_INDEX_COUNT = i + 'fskin:/l/strings/STR_UI_PARTS_OF'.idToString() + n;
 			this.changed();
