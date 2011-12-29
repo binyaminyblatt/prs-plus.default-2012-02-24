@@ -3,14 +3,14 @@
  * ALL: Calculator now saves and loads memory cells
  * ALL: Calendar and Events option on Standby/Shutdown
  * ALL: Added archive support to BrowseFolders
+ * ALL: Added CBR/CBZ/CB7 reader (using BrowseFolders)
+ * ALL: Added audio support to BrowseFolders
  * 300/505/600: Added Available Space Info to PRS+ About
  * 600/x50: Added Author List addon
  * 600/x50: Added Auto Standby/Shutdown Time options
  * 600/x50: Added Save Notepad Data addon
- * 600/x50: Added CBR/CBZ/CB7 reader
  * x50: Added Touch Settings addon (Tap, Swipe & Zoom options)
  * x50: Home menu booklist: Added 'Select Collection' option & action
- * x50: Added audio support to BrowseFolders
  * ALL: core__popup.js fixed frame, 600/x50 touch-enabled
 
 === 2.0.17 release candidate 3 ===
