@@ -53,7 +53,7 @@
 //	2011-12-28 Ben Chenoweth - Thumbnails on x50 now removed correctly (for archives on SD/MS)
 //	2011-12-28 Ben Chenoweth - Initial implementation of audio for x50
 //	2011-12-28 Ben Chenoweth - Fixes for image archive browsing on the 600; audio for 600
-//	2011-12-29 Ben Chenoweth - Minor fix for restoring current book after archived book preview
+//	2011-12-29 Ben Chenoweth - Fixes for audio: index, prev/next on 600/x50 (".." node not compatible with shuffle); removed doUnpackHere
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -760,7 +760,9 @@ tmp = function() {
 		}
 	}
 	
+	//-----------------------------------------------------------------------------------------------------------------------------
 	// functions for BrowseComics
+	//-----------------------------------------------------------------------------------------------------------------------------
 	var oldDoGotoNextPicture = kbook.model.doGotoNextPicture;
 	kbook.model.doGotoNextPicture = function () {
 		var parent, nodes, nextNode, i, n, cn;
@@ -900,36 +902,72 @@ tmp = function() {
 		target.timer = null;
 		kbook.model.doSomething('scrollTo', -100, -100);
 	}
-
-	doUnpackHere = function () {
-		var path, parent, outputDir, nodes, i, n, needsMount;
-		path = this.path;
-		parent = this.parent;
-		outputDir = Core.io.extractPath(path) + Core.io.extractFileName(path, true) + "/";
-		Core.ui.showMsg(L("MSG_UNPACKING"), 1);
+	
+	//-----------------------------------------------------------------------------------------------------------------------------
+	// Functions for BrowseMusic
+	//-----------------------------------------------------------------------------------------------------------------------------
+	var oldPlaySongCallback = kbook.model.playSongCallback;
+	kbook.model.playSongCallback = function (data) {
+		var current, parent, nodes, i, n;
+		oldPlaySongCallback.apply(this, arguments);
 		try {
-			// mount, if needed
-			needsMount = this.parent.needsMount;
-			if (needsMount !== undefined) {
-				Core.shell.mount(needsMount);
+			current = this.currentSong;
+			parent = current.parent;
+			nodes = parent.nodes;
+			i = parent.getIndex(current);
+			n = nodes.length;
+			if (nodes[0].title === "..") {
+				n--;
 			}
-			try {
-				Core.archiver.unpack(path, outputDir);
-				Core.media.scanDirectory(outputDir);
-				parent.update();
-				this.gotoNode(parent, kbook.model);
-				nodes = parent.nodes;
-				for (i = 0, n = nodes.length; i < n; i++) {
-					if (outputDir === nodes[i].path) {
-						parent.gotoNode(nodes[i], kbook.model);
-						break;
+			this.SONG_INDEX_COUNT = i + 'fskin:/l/strings/STR_UI_PARTS_OF'.idToString() + n;
+			this.changed();
+		} catch(e) {
+			log.error("Error in playSongCallback", e);
+		}
+	};
+	
+	newDoGotoFirstSong = function () {
+		var child, parent, shuffleList;
+		child = this.currentSong;
+		if (child) {
+			parent = child.parent;
+			shuffleList = parent.shuffleList;
+			if (parent.nodes[0].title === "..") {
+				this.doGotoSong(child, parent, shuffleList.getOriginalIndex(1));
+			} else {
+				this.doGotoSong(child, parent, shuffleList.getOriginalIndex(0));
+			}
+		}
+	};
+	
+	newDoGotoPreviousSong = function () {
+		var child, time, parent, shuffleList, i, c;
+		child = this.currentSong;
+		if (child) {
+			if ((Core.config.model === '350') || (Core.config.model === '650') || (Core.config.model === '950')) {
+				time = kbook.movieData.getTime();
+				if (time != undefined && this.doPrevAcceptTime < time) {
+					kbook.movieData.setTime(0);
+					if (!this.getVariable('CONTROL')) {
+						this.container.sandbox.control = 1;
+						this.container.sandbox.volumeVisibilityChanged();
+						kbook.movieData.start();
 					}
+					return;
 				}
-			} finally {
-				Core.shell.umount(needsMount);
 			}
-		} catch (ignore) {
-			Core.ui.showMsg(L("MSG_ERROR_UNPACK"));
+			parent = child.parent;
+			shuffleList = parent.shuffleList;
+			i = shuffleList.getPlayIndex(parent.getIndex(child));
+			c = parent.length;
+			i--;
+			if (i < 0) {
+				i = 0;
+			}
+			if (parent.nodes[0].title === "..") {
+				i = 1;
+			}
+			this.doGotoSong(child, parent, shuffleList.getOriginalIndex(i));
 		}
 	};
 	
@@ -1067,6 +1105,29 @@ tmp = function() {
 			log.error("in folderConstruct " + e);
 		}
 		this.nodes = nodes;
+		
+		// update shuffleList (for audio folders)
+		switch (Core.config.model) {
+		case '300':
+		case '505':
+			// audio just works on these models!
+			break;
+		case '600':
+			if (!this.shuffleList) {
+				this.shuffleList = xs.newInstanceOf(kbook.music.shuffleList);
+				this.shuffleList.initialize(this.nodes.length);
+			} else {
+				this.shuffleList.initialize(this.nodes.length);
+			}
+			break;
+		default:
+			if (!this.shuffleList) {
+				this.shuffleList = xs.newInstanceOf(kbook.root.kbookAudioContentsListNode.shuffleListObject);
+				this.shuffleList.initialize(this.nodes.length);
+			} else {
+				this.shuffleList.initialize(this.nodes.length);
+			}
+		}
 	};
 	
 	// Loads favourite folders from fav_folders.config file if file exists 
@@ -1337,10 +1398,14 @@ tmp = function() {
 			case '600':
 				kbook.model.onEnterPicture = onEnterPicture;
 				imageZoomOverlayModel.doNext = imageZoomOverlayModel_doNext;
+				kbook.model.doGotoPreviousSong = newDoGotoPreviousSong;
+				kbook.model.doGotoFirstSong = newDoGotoFirstSong;
 				break;
 			default :
 				kbook.model.setPictureIndexCount = setPictureIndexCount;
-				imageZoomOverlayModel.doNext = imageZoomOverlayModel_doNext;			
+				imageZoomOverlayModel.doNext = imageZoomOverlayModel_doNext;
+				kbook.model.doGotoPreviousSong = newDoGotoPreviousSong;
+				kbook.model.doGotoFirstSong = newDoGotoFirstSong;
 			}
 		},
 		
