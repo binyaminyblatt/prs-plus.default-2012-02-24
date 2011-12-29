@@ -97,6 +97,7 @@ return {
 		PICTURE_ALT: 70,
 		SEARCH_ALT: 71,
 		COMIC: 72,
+		ARCHIVE:73,
 		
 		DEFAULT: 47,
 		

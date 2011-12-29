@@ -88,7 +88,8 @@ return {
 		PICTURE_ALT: 64,
 		SEARCH_ALT: 65,
 		COMIC: 66,
-		
+		ARCHIVE: 67,
+
 		DEFAULT: 41,
 		
 		// At least 600 and 900 have more than one type of icons
