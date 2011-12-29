@@ -54,12 +54,13 @@
 //	2011-12-28 Ben Chenoweth - Initial implementation of audio for x50
 //	2011-12-28 Ben Chenoweth - Fixes for image archive browsing on the 600; audio for 600
 //	2011-12-29 Ben Chenoweth - Fixes for audio: index, prev/next on 600/x50 (".." node not compatible with shuffle); removed doUnpackHere
+//	2011-12-29 Mark Nord - some changes for 300/505; book-preview out of archive disabled due to unexpected results
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
 		createFolderNode, createMediaNode, favourites, loadFavFolders, folderRootConstruct,
 		compareFields, supportedMIMEs, supportedArchives, createArchiveNode, createLazyInitNode,
-		constructLazyNode, archiveBookNodeEnter, ACTION_ICON, doCopyAndOpen, doCopy, doOpenHere,
+		constructLazyNode, archiveBookNodeEnter, ACTION_ICON, doCopyAndOpen, doCopy, doOpenHere, doOpenSongHere,
 		supportedExtensions, supportedComics, browsingArchive, currentNode, oldCurrentBook, oldCurrentNode,
 		doUnpackHere, doGotoParent, browseFoldersNode, setPictureIndexCount, onEnterPicture,
 		imageZoomOverlayModel_doNext, imageZoomOverlayModel_onCallback, ENABLED, DISABLED;
@@ -443,7 +444,6 @@ tmp = function() {
 			parent = this.parent;
 			path = parent.path + '~temp~/';
 			Core.io.deleteDirectory(path);
-		//	archiveFolderDestruct(); // Mark Nord to fix remaining thumbs in media for 505
 			currentArchive = null;
 			this.nodes = null;
 			parent.update();
@@ -564,7 +564,8 @@ tmp = function() {
 			current = kbook.model.currentBook;
 			// check if preview item is the current book
 			if ((current) && (current.media)) {
-				if (current.media.path === node.media.path) {
+				// 300/505 doDeleteBook deletes only current, so don't reset it
+				if (!Core.config.compat.hasNumericButtons && (current.media.path === node.media.path)) {
 					// set current book to null
 					kbook.model.currentBook.media.close(kbook.bookData);
 					kbook.bookData.setData(null);
@@ -574,7 +575,9 @@ tmp = function() {
 			if (supportedMIMEs[mime]) {
 				// delete temp book
 				kbook.model.doDeleteBook(false, this);  // also deletes item from BookHistory
-				kbook.model.updateData();
+				try {
+					kbook.model.updateData();
+				} catch (ignore) {} // no such function for 300/505
 			} else {
 				//kbook.model.removePicture(this);
 				media = node.media;
@@ -596,7 +599,7 @@ tmp = function() {
 			log.error("Error in archiveItemDestruct trying to delete temp directory", e);
 		}
 		// standard node.exit code:
-		//trace('exit ' + this.title + '\n');
+		//log.trace('exit ' + this.title + '\n');
 		if (this.onExit) {
 			model[this.onExit](this);
 		}
@@ -625,7 +628,7 @@ tmp = function() {
 			FileSystem.ensureDirectory(path);
 			Core.io.emptyDirectory(path);
 			Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);
-
+// shouldn't here be a check for unpack success ?
 			mime = FileSystem.getMIMEType(file);
 			if (supportedMIMEs[mime]) {
 				// Save current book information and close current book
@@ -646,6 +649,7 @@ tmp = function() {
 			
 			// Load & open media
 			browsingArchive = true;
+// use here code similar to doOpenHere with try catch clause ??
 			Core.media.loadMedia(file);
 			node = Core.media.createMediaNode(file, this.parent);
 			node.exit = archiveItemDestruct;
@@ -688,7 +692,7 @@ tmp = function() {
 				//kbook.root.getBookThumbnailsNode().update(kbook.model);
 				//kbook.menuHomeThumbnailBookData.setNode(kbook.root.getBookThumbnailsNode());
 				
-				return fileDestination;
+				return fileDestination;   // is this returned value ever used???
 			} finally {
 				if (needsMount !== undefined) {
 					Core.shell.umount(needsMount);
@@ -780,7 +784,6 @@ tmp = function() {
 				}
 			}
 			if (nextNode) {
-			//	kbook.model.removePicture(Core.ui.getCurrentNode());
 				cn = Core.ui.getCurrentNode();
 				cn.gotoNode(nextNode, kbook.model);
 			} else {
@@ -806,7 +809,6 @@ tmp = function() {
 				}
 			}
 			if (prevNode) {
-			//	kbook.model.removePicture(Core.ui.getCurrentNode());
 				cn = Core.ui.getCurrentNode();
 				cn.gotoNode(prevNode, kbook.model);
 			} else {
@@ -819,13 +821,13 @@ tmp = function() {
 	
 	var oldOnEnterPicture = kbook.model.onEnterPicture;
 	onEnterPicture = function (node) {
-	var parent, nodes, i, n, val, picture;
+	var parent, nodes, i, n, val, picture, LL;
 		oldOnEnterPicture.apply(this, arguments);
 		if (browsingArchive) {
 			if (!imageZoomOverlayModel) {
+				LL = Core.lang.getLocalizer("StatusBar_PageIndex");
 				// 505/300
 				picture = kbook.model.container.sandbox.PICTURE_GROUP.sandbox.PICTURE;
-				// log.trace('Zoom: ' + picture + ' ' + picture.getZoom());
 				if (picture.getZoom() !== 0) {
 					picture.doMove(0,-10);
 					picture.doMove(1,-10);
@@ -841,7 +843,7 @@ tmp = function() {
 				}
 			}
 			i++;
-			val = i + ' of ' + n;
+			val = i + " " + LL("OF")+ " " + n;
 			if (this.PICTURE_INDEX_COUNT != val) {
 				this.PICTURE_INDEX_COUNT = val;
 				this.changed();
@@ -1044,17 +1046,18 @@ tmp = function() {
 		bookNodes.push(copyNode);
 		
 		// Node that opens book to preview contents (but it will be deleted from library after leaving book)
-		previewNode = Core.ui.createContainerNode({
+		if (!Core.config.compat.hasNumericButtons) { // preview disabled for 300/505 a) issue with doDeleteBook b) BF structure blown on exit
+			previewNode = Core.ui.createContainerNode({
 				title: L("NODE_PREVIEW_IN_INTERNAL_MEMORY"),
 				comment: L("NODE_PREVIEW_IN_INTERNAL_MEMORY_COMMENT"),
 				parent: node,
 				icon: ACTION_ICON
-		});
-		previewNode.enter = archiveDummyEnter;
-		previewNode.insidePath = this.insidePath;
-		previewNode.needsMount = this.needsMount;
-		bookNodes.push(previewNode);
-		
+			});
+			previewNode.enter = archiveDummyEnter;
+			previewNode.insidePath = this.insidePath;
+			previewNode.needsMount = this.needsMount;
+			bookNodes.push(previewNode);
+		}	
 		this.gotoNode(node, kbook.model);
 	};
 
@@ -1378,26 +1381,6 @@ tmp = function() {
 			case '300':
 			case '505':
 				kbook.model.onEnterPicture = onEnterPicture;
-			/*	kbook.model.removePicture = function (node) {
-					var model, media, tempPath, bookPath, source, bookFile;
-					try {
-						model = kbook.model;
-						media = node.media;
-						tempPath = media.getFilePath(node.cache);
-						bookPath = media.source.path + media.path;
-						source = media.source;
-						bookFile = bookPath.substring(bookPath.lastIndexOf('/') + 1);
-						FileSystem.deleteFile(bookPath);
-						source.deleteRecord(media.id);
-						model.addPathToDCL(media.source, media.path);
-						if ('sync' in FileSystem) {
-							FileSystem.sync();
-						}
-					}
-					catch (e){
-						throw e;
-					}
-				} */
 				break;
 			case '600':
 				kbook.model.onEnterPicture = onEnterPicture;
