@@ -503,6 +503,8 @@ tmp = function() {
 						case 'jpg':
 						case 'jpeg':
 						case 'png':
+						case 'bmp':
+						case 'gif':
 							fileIcon = 'PICTURE_ALT';
 							enterAction = archiveDummyEnter;
 							break;

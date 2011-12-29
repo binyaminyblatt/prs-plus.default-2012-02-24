@@ -33,6 +33,7 @@ tmp = function() {
 	};
 	
 	supportedExtensions = {
+		"aac": true,
 		"mp3": true,
 		"rtf": true,
 		"pdf": true,
@@ -42,7 +43,9 @@ tmp = function() {
 		"fb2": true,
 		"jpeg": true,
 		"jpg": true,
-		"png": true
+		"png": true,
+		"bmp": true,
+		"gif": true
 	};
 	
 	supportedComics = {
@@ -52,6 +55,7 @@ tmp = function() {
 	};
 	
 	supportedAudio = {
+		"aac": true,
 		"mp3": true
 	}
 	
