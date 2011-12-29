@@ -53,6 +53,7 @@
 //	2011-12-28 Ben Chenoweth - Thumbnails on x50 now removed correctly (for archives on SD/MS)
 //	2011-12-28 Ben Chenoweth - Initial implementation of audio for x50
 //	2011-12-28 Ben Chenoweth - Fixes for image archive browsing on the 600; audio for 600
+//	2011-12-29 Ben Chenoweth - Minor fix for restoring current book after archived book preview
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -599,8 +600,7 @@ tmp = function() {
 		}
 		if (oldCurrentBook) {
 			// restore previous current book (if there was one)
-			var buf = Core.ui.getCurrentNode();  // is this needed??
-			buf = oldCurrentNode;
+			Core.ui.setCurrentNode(oldCurrentNode);
 			kbook.model.onChangeBook(oldCurrentBook);
 		}
 		kbook.root.update(kbook.model);

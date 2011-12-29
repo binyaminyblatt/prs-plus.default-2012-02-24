@@ -23,6 +23,7 @@
 //	2011-06-18 kartu - Fixed "update() wasn't called by container mode"
 //	2011-06-26 kartu - Again fixed "update() wasn't called by container mode"
 //	2011-10-01 quisvir - Added guideArea property for containers
+//	2011-12-29 Ben Chenoweth - Added setCurrentNode(node)
 
 try {
 	var doSetNodeIcon = function (node, icon) {
@@ -222,6 +223,19 @@ try {
 		} else {
 			// 600+
 			return kbook.model.currentNode;
+		}
+	};
+
+	/**
+	* @changes the currently focused node
+	*/
+	Core.ui.setCurrentNode = function (node) {
+		if (kbook.model.current) {
+			// 300/505
+			kbook.model.current = node;
+		} else {
+			// 600+
+			kbook.model.currentNode = node;
 		}
 	};
 
