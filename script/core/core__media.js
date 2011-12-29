@@ -16,10 +16,11 @@
 //	2011-12-20 Ben Chenoweth - Added supportedComics (and CB7)
 //	2011-12-27 Ben Chenoweth - Added removeMedia
 //	2011-12-28 Ben Chenoweth - Initial implementation of audio for 600 and x50
+//	2011-12-29 Ben Chenoweth - Fixes for audio on 600/x50; removed scanDirectory
 
 tmp = function() {
 	var supportedMIMEs, supportedExtensions, supportedComics, supportedAudio, findLibrary, findMedia,
-		loadMedia, removeMedia, scanDirectory, createMediaNode, isImage, startsWith;
+		loadMedia, removeMedia, createMediaNode, isImage, startsWith;
 	// Shortcut
 	startsWith = Core.text.startsWith; 
 
@@ -117,29 +118,6 @@ tmp = function() {
 	}
 
 	/**
-	* Searchs unscanned media files in directory and adds it to library
-	*/
-	scanDirectory = function (path) {
-		var iterator, item, itemFullPath, name, mime;
-		iterator = new FileSystem.Iterator(path);
-		while (item = iterator.getNext()) {
-			itemFullPath = path + item.path;
-			if (item.type === 'directory') {
-				// item is a directory, so recursively scan the directory
-				scanDirectory(itemFullPath + "/");
-			} else {
-				mime = FileSystem.getMIMEType(itemFullPath);
-				if (supportedMIMEs[mime]) {
-					if (!findMedia(itemFullPath)) {
-						loadMedia(itemFullPath);
-						kbook.root.update();
-					}
-				}
-			}
-		}
-	};
-	
-	/**
 	* Creates media node (book, image, note etc) for media with a given path, returns null if media cannot be found.
 	*/
 	createMediaNode = function (path, parent) {
@@ -174,10 +152,6 @@ tmp = function() {
 								node.onSelect = "onSelectDefault";
 								node.kind = -3;
 								node.comment = Core.io.extractFileName(path);
-								if (!node.parent.shuffleList) {
-									node.parent.shuffleList = xs.newInstanceOf(kbook.music.shuffleList);
-									log.trace("testing");
-								}
 								break;
 							default:
 								node.onEnter = "onEnterSong";
@@ -185,9 +159,6 @@ tmp = function() {
 								node.kind = 3;
 								node.playingKind = 14;
 								node.comment = Core.io.extractFileName(path);
-								if (!node.parent.shuffleList) {
-									node.parent.shuffleList = xs.newInstanceOf(kbook.root.kbookAudioContentsListNode.shuffleListObject);
-								}
 							}
 						}
 					} catch(e) { log.error("Error trying to make audio node"); }
@@ -233,11 +204,6 @@ tmp = function() {
 		* Finds kinoma "library source" (instance of FskCache.source) corresponding to the given full path
 		*/
 		findLibrary: findLibrary,
-		
-		/**
-		* Searchs unscanned media files in directory and adds it to library
-		*/
-		scanDirectory: scanDirectory,
 		
 		/**
 		* Creates node corresponding to the given path with a given title
