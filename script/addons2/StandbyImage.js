@@ -348,8 +348,10 @@ tmp = function() {
 			actions = [];
 			titles = [L('ENTER_DATA_TRANSFER_MODE'), L('KEEP_READING')];
 			actions.push( function () {
-				if (usbConnected) USBDispatcher.onConnected();
-				return true;
+				if (usbConnected) {
+					USBDispatcher.onConnected();
+					return true;
+				}
 			});
 			actions.push( function () {
 				if (usbConnected) ebook.setUsbCharge(true);
