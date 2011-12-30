@@ -21,19 +21,19 @@
 //	2011-12-10 quisvir - Merged Auto Standby Time options
 //	2011-12-15 quisvir - Added set/restore portrait orientation on shutdown/startup
 //	2011-12-29 quisvir - Added USB Data Transfer Mode dialog to allow reading while charging via usb
-//	2011-12-30 Mark Nord - Added UI for function above for 300/505: 
-//			TODO reset ebook.setUsbCharge(false) somewhere appropreate
+//	2011-12-30 Mark Nord - Added UI for function above for 300/505
+//	2011-12-30 quisvir - Use popup menu on all models, stop usb charging on disconnect
 
 tmp = function() {
-	var L, LX, log, orgOrientation, shutdown, oldStandbyImageDraw, getBookCover, standbyState;
+	var L, LX, log, orgOrientation, shutdown, oldStandbyImageDraw, getBookCover, usbConnected, standbyState;
 	
 	// Localize
 	L = Core.lang.getLocalizer("StandbyImage");
 	LX = Core.lang.LX;
 	log = Core.log.getLogger("StandbyImage");
+	
+	// Initial values
 	standbyState = 1;
-
-	// Constants
 	orgOrientation = 0;
 
 	// Suspend: set orientation to portrait, call standbyimage if necessary
@@ -341,35 +341,30 @@ tmp = function() {
 		win.setTextAlignment(oldTextAlignmentX, oldTextAlignmentY);
 	};
 	
-	USBDispatcher.oldOnConnected = USBDispatcher.onConnected;
-	var newOnConnected_pre600 = function () {
+	var onUSBConnect = function () {
 		var menu, actions, titles;
+		usbConnected = true;
 		if (StandbyImage.options.TransferModeDialog === 'true' && standbyState !== 0) {
 			actions = [];
-			titles = [L('ENTER_DATA_TRANSFER_MODE'),L('KEEP_ON_READING')];
-			actions.push( function() {USBDispatcher.oldOnConnected();} );
-			actions.push( function() {ebook.setUsbCharge(true);} );
+			titles = [L('ENTER_DATA_TRANSFER_MODE'), L('KEEP_READING')];
+			actions.push( function () {
+				if (usbConnected) USBDispatcher.onConnected();
+				return true;
+			});
+			actions.push( function () {
+				if (usbConnected) ebook.setUsbCharge(true);
+			});
 			menu = Core.popup.createSimpleMenu(titles, actions);
 			Core.popup.showMenu(menu);
 			return;
 		}
-		this.oldOnConnected();
+		USBDispatcher.onConnected();
 	};
 
-	var newOnConnected = function () {
-		var dialog;
-		if (StandbyImage.options.TransferModeDialog === 'true' && kbook.model.container.getVariable('STANDBY_STATE') !== 0) {
-			dialog = kbook.model.getConfirmationDialog();
-			if (dialog) {
-				dialog.onOk = function () {
-					USBDispatcher.oldOnConnected();
-				};
-				dialog.openDialog(L('ENTER_DATA_TRANSFER_MODE'), 0);
-				return;
-			}
-		}
-		this.oldOnConnected();
-	};
+	var onUSBDisconnect = function () {
+		usbConnected = false;
+		ebook.setUsbCharge(false);
+	}
 	
 	var StandbyImage = {
 		name: "StandbyImage",
@@ -506,6 +501,18 @@ tmp = function() {
 				}
 			},
 			{
+				name: "TransferModeDialog",
+				title: L("USB_TRANSFER_MODE_DIALOG"),
+				icon: "SETTINGS",
+				helpText: L('USB_TRANSFER_MODE_HELP'),
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+					}
+			},
+			{
 				name: "AutoStandbyTime",
 				title: L("AUTO_STANDBY_TIME"),
 				icon: "CLOCK",
@@ -525,18 +532,6 @@ tmp = function() {
 				}
 			},
 			{
-				name: "TransferModeDialog",
-				title: L("USB_TRANSFER_MODE_DIALOG"),
-				icon: "SETTINGS",
-				helpText: L('USB_TRANSFER_MODE_HELP'),
-				defaultValue: "false",
-				values: ["true", "false"],
-				valueTitles: {
-					"true": L("VALUE_TRUE"),
-					"false": L("VALUE_FALSE")
-					}
-				},
-			{
 				name: 'orgOrientation',
 				defaultValue: '',
 				hidden: 'true',
@@ -551,19 +546,18 @@ tmp = function() {
 					this.optionDefs[0].optionDefs[0].values = ["random", "white", "black", "cover", "act_page", "calendar"];
 					this.optionDefs[0].optionDefs[0].defaultValue = "white";
 					this.optionDefs[1].optionDefs[0].values = ["random", "white", "black", "cover", "calendar"];
+					USBDispatcher.connected.execute = onUSBConnect;
+					USBDispatcher.disconnected.execute = onUSBDisconnect;
 			}
 			
 			// Add auto-shutdown time for 600+
 			switch (Core.config.model) {
-				case "300":
-				case "505":
-					USBDispatcher.onConnected = newOnConnected_pre600;
-					break;
 				case "350":
 				case "650":
 				case "950":
+					messages.connected.execute = onUSBConnect;
+					messages.disconnected.execute = onUSBDisconnect;
 				case "600":
-					USBDispatcher.onConnected = newOnConnected;
 					this.optionDefs.push(
 						{
 							name: "AutoShutdownTime",
