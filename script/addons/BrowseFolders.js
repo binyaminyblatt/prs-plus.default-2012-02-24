@@ -55,6 +55,7 @@
 //	2011-12-28 Ben Chenoweth - Fixes for image archive browsing on the 600; audio for 600
 //	2011-12-29 Ben Chenoweth - Fixes for audio: index, prev/next on 600/x50 (".." node not compatible with shuffle); removed doUnpackHere
 //	2011-12-29 Mark Nord - some changes for 300/505; book-preview out of archive disabled due to unexpected results
+//	2011-12-20 Ben Chenoweth - Added more checks; localised song-index
 
 tmp = function() {
 	var log, L, startsWith, trim, BrowseFolders, TYPE_SORT_WEIGHTS, compare, sorter, folderConstruct, 
@@ -540,16 +541,7 @@ tmp = function() {
 			browsingArchive = false;
 			// remove files from library
 			path = Core.io.extractPath(currentArchive.path) + '~temp~/';
-			if (this.nodes) {
-			/*	nodes = this.nodes;
-				n = nodes.length
-				for (i = 0; i < n; i++) {
-					file = path + Core.io.extractFileName(nodes[i].insidePath);
-					// need to convert mounted paths to unmounted paths
-					file = file.replace("/opt/mnt/ms", "a:");
-					file = file.replace("/opt/mnt/sd", "b:");
-					Core.media.removeMedia(file);
-				} */			
+			if (this.nodes) {			
 				this.nodes = null;
 			}
 		} catch(e) {
@@ -579,7 +571,6 @@ tmp = function() {
 					kbook.model.updateData();
 				} catch (ignore) {} // no such function for 300/505
 			} else {
-				//kbook.model.removePicture(this);
 				media = node.media;
 				source = media.source;
 				source.deleteRecord(media.id);
@@ -599,7 +590,6 @@ tmp = function() {
 			log.error("Error in archiveItemDestruct trying to delete temp directory", e);
 		}
 		// standard node.exit code:
-		//log.trace('exit ' + this.title + '\n');
 		if (this.onExit) {
 			model[this.onExit](this);
 		}
@@ -609,7 +599,6 @@ tmp = function() {
 			kbook.model.onChangeBook(oldCurrentBook);
 		}
 		kbook.root.update(kbook.model);
-		//kbook.model.updateDeviceRoot(kbook.root.getDeviceRootNode());
 	}
 	
 	var archiveDummyEnter = function () {
@@ -628,33 +617,39 @@ tmp = function() {
 			FileSystem.ensureDirectory(path);
 			Core.io.emptyDirectory(path);
 			Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);
-// shouldn't here be a check for unpack success ?
-			mime = FileSystem.getMIMEType(file);
-			if (supportedMIMEs[mime]) {
-				// Save current book information and close current book
-				media = kbook.model.currentBook.media;
-				source = kbook.model.cache.getSourceByID(media.sourceid);
-				source.commit();
-				
-				oldCurrentBook = kbook.model.currentBook;
-				oldCurrentNode = Core.ui.getCurrentNode();
-				
-				media.close(kbook.bookData);
-				kbook.bookData.setData(null);
-			}
+			if (Core.io.pathExists(file)) {
+				mime = FileSystem.getMIMEType(file);
+				if (supportedMIMEs[mime]) {
+					// Save current book information and close current book
+					media = kbook.model.currentBook.media;
+					source = kbook.model.cache.getSourceByID(media.sourceid);
+					source.commit();
+					
+					oldCurrentBook = kbook.model.currentBook;
+					oldCurrentNode = Core.ui.getCurrentNode();
+					
+					media.close(kbook.bookData);
+					kbook.bookData.setData(null);
+				}
 
-			// need to convert mounted paths to unmounted paths
-			file = file.replace("/opt/mnt/ms", "a:");
-			file = file.replace("/opt/mnt/sd", "b:");
-			
-			// Load & open media
-			browsingArchive = true;
-// use here code similar to doOpenHere with try catch clause ??
-			Core.media.loadMedia(file);
-			node = Core.media.createMediaNode(file, this.parent);
-			node.exit = archiveItemDestruct;
-			currentNode = this;
-			this.parent.gotoNode(node, kbook.model);
+				// need to convert mounted paths to unmounted paths
+				file = file.replace("/opt/mnt/ms", "a:");
+				file = file.replace("/opt/mnt/sd", "b:");
+				
+				// Load & open media
+				browsingArchive = true;
+				try {
+					Core.media.loadMedia(file);
+					node = Core.media.createMediaNode(file, this.parent);
+					node.exit = archiveItemDestruct;
+					currentNode = this;
+					this.parent.gotoNode(node, kbook.model);
+				} catch (ignore) {
+					Core.ui.showMsg(L("MSG_ERROR_OPENING_BOOK"));
+				}
+			} else {
+				Core.ui.showMsg(L("MSG_ERROR_UNPACK"));
+			}
 		} catch (ignore) {
 			Core.ui.showMsg(L("MSG_ERROR_UNPACK"));
 			Core.shell.umount(needsMount);
@@ -666,7 +661,7 @@ tmp = function() {
 	}
 
 	doArchiveCopy = function () {
-		var fileDestination, fileTemp, path, needsMount, item, node;
+		var fileDestination, fileTemp, path, needsMount, node;
 		Core.ui.showMsg(L("MSG_COPYING_BOOK"), 1);
 		try {
 			// mount, if needed
@@ -683,16 +678,14 @@ tmp = function() {
 				Core.io.emptyDirectory(path);
 				fileDestination = Core.io.getUnusedPath("/Data" + BrowseFolders.options.imRoot + "/", fileDestination);
 				Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);				
-
-				// FIXME: ask user first, if he wants to copy the book, if target exists
-				Core.io.moveFile(fileTemp, fileDestination);
-				item = Core.media.loadMedia(fileDestination);
-				
-				//kbook.root.getBooksNode().update(kbook.model);
-				//kbook.root.getBookThumbnailsNode().update(kbook.model);
-				//kbook.menuHomeThumbnailBookData.setNode(kbook.root.getBookThumbnailsNode());
-				
-				return fileDestination;   // is this returned value ever used???
+				if (Core.io.pathExists(fileTemp)) {
+					// FIXME: ask user first, if he wants to copy the book, if target exists
+					Core.io.moveFile(fileTemp, fileDestination);
+					Core.media.loadMedia(fileDestination);			
+					return fileDestination;   // returns filename like doCopy function
+				} else {
+					Core.ui.showMsg(L("MSG_ERROR_UNPACK"));
+				}
 			} finally {
 				if (needsMount !== undefined) {
 					Core.shell.umount(needsMount);
@@ -722,9 +715,13 @@ tmp = function() {
 				Core.io.emptyDirectory(path);
 				fileDestination = Core.io.getUnusedPath("/Data" + BrowseFolders.options.imRoot + "/", fileDestination);
 				Core.archiver.unpack(currentArchive.path, path, undefined, this.insidePath);
-				// FIXME: ask user first, if he wants to copy the book, if target exists
-				Core.io.moveFile(fileTemp, fileDestination);
-				success = true;
+				if (Core.io.pathExists(fileTemp)) {
+					// FIXME: ask user first, if he wants to copy the book, if target exists
+					Core.io.moveFile(fileTemp, fileDestination);
+					success = true;
+				} else {
+					Core.ui.showMsg(L("MSG_ERROR_UNPACK"));
+				}
 			} finally {
 				Core.shell.umount(needsMount);
 			}
@@ -912,9 +909,10 @@ tmp = function() {
 	//-----------------------------------------------------------------------------------------------------------------------------
 	var oldPlaySongCallback = kbook.model.playSongCallback;
 	kbook.model.playSongCallback = function (data) {
-		var current, parent, nodes, i, n;
+		var current, parent, nodes, i, n, LL;
 		oldPlaySongCallback.apply(this, arguments);
 		try {
+			LL = Core.lang.getLocalizer("StatusBar_PageIndex");
 			current = this.currentSong;
 			parent = current.parent;
 			nodes = parent.nodes;
@@ -925,7 +923,7 @@ tmp = function() {
 			} else {
 				i++;
 			}
-			this.SONG_INDEX_COUNT = i + 'fskin:/l/strings/STR_UI_PARTS_OF'.idToString() + n;
+			this.SONG_INDEX_COUNT = i + " " + LL("OF")+ " " + n;
 			this.changed();
 		} catch(e) {
 			log.error("Error in playSongCallback", e);
@@ -1046,7 +1044,8 @@ tmp = function() {
 		bookNodes.push(copyNode);
 		
 		// Node that opens book to preview contents (but it will be deleted from library after leaving book)
-		if (!Core.config.compat.hasNumericButtons) { // preview disabled for 300/505 a) issue with doDeleteBook b) BF structure blown on exit
+		if (!Core.config.compat.hasNumericButtons) {
+			// preview disabled for 300/505 a) issue with doDeleteBook b) BF structure blown on exit
 			previewNode = Core.ui.createContainerNode({
 				title: L("NODE_PREVIEW_IN_INTERNAL_MEMORY"),
 				comment: L("NODE_PREVIEW_IN_INTERNAL_MEMORY_COMMENT"),
@@ -1113,7 +1112,7 @@ tmp = function() {
 		}
 		this.nodes = nodes;
 		
-		// update shuffleList (for audio folders)
+		// update shuffleList (used with audio folders)
 		switch (Core.config.model) {
 		case '300':
 		case '505':
