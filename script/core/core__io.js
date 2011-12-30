@@ -12,7 +12,8 @@
 //	2011-03-03 kartu - Added moveFile, deleteFile, getFileSize
 //	2011-04-24 kartu - Added extractFileName, extractExtension, pathExists, getUnusedPath
 //	2011-11-22 Mark Nord - Modified extractExtension to return only portion after the last "." except for fb2.zip
-//  2011-12-14 Ben Chenoweth - Added emptyDirectory, deleteDirectory
+//	2011-12-14 Ben Chenoweth - Added emptyDirectory, deleteDirectory
+//	2011-12-30 Mark Nord - extractExtension return is now always in  lowercase
 
 try {
 	Core.io = {
@@ -228,7 +229,8 @@ try {
 			idx = path.lastIndexOf(".");
 			if (idx > -1) {
 				result = path.substring(idx + 1);
-				if (result.toLowerCase() === "zip") {
+				result = result.toLowerCase();
+				if (result === "zip") {
 					// check for fb2.zip
 					 result = Core.text.endsWith(path.toLowerCase(),"fb2.zip") ? "fb2.zip" : "zip";
 				}			
