@@ -8,6 +8,7 @@
 //	2011-12-11 Mark Nord - some adjustments for 505, added invalidate() to hideMenu()
 //	2011-12-20 Mark Nord - enabled for 600/x50
 //		ToDo: handle more then 10 menu-items
+//	2011-12-30 Mark Nord - added menu.titel to error.trace in doCenter() 
 
 /**
  Sample code:
@@ -141,7 +142,7 @@ tmp = function() {
 				}
 			}
 		} catch (e) {
-			log.error("executing menu action", e);
+			log.error("executing menu action ", menu.title + ' ' + e );
 		}
 	};
 	popupMenu.sandbox.doCenter = doCenter;

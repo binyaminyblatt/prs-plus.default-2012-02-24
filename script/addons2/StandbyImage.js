@@ -21,15 +21,17 @@
 //	2011-12-10 quisvir - Merged Auto Standby Time options
 //	2011-12-15 quisvir - Added set/restore portrait orientation on shutdown/startup
 //	2011-12-29 quisvir - Added USB Data Transfer Mode dialog to allow reading while charging via usb
-
+//	2011-12-30 Mark Nord - Added UI for function above for 300/505: 
+//			TODO reset ebook.setUsbCharge(false) somewhere appropreate
 
 tmp = function() {
-	var L, LX, log, orgOrientation, shutdown, oldStandbyImageDraw, getBookCover;
+	var L, LX, log, orgOrientation, shutdown, oldStandbyImageDraw, getBookCover, standbyState;
 	
 	// Localize
 	L = Core.lang.getLocalizer("StandbyImage");
 	LX = Core.lang.LX;
 	log = Core.log.getLogger("StandbyImage");
+	standbyState = 1;
 
 	// Constants
 	orgOrientation = 0;
@@ -39,6 +41,7 @@ tmp = function() {
 	kbook.model.suspend = function () {
 		oldSuspend.apply(this);
 		try {
+			standbyState = 0;
 			if (StandbyImage.options.StandbyMode !== 'act_page') {
 				orgOrientation = ebook.getOrientation();
 				if (orgOrientation) {
@@ -65,6 +68,7 @@ tmp = function() {
 			ebook.rotate(orgOrientation);
 			orgOrientation = 0;
 		}
+		standbyState = 1;
 		oldResume.apply(this);
 	};
 	
@@ -338,6 +342,20 @@ tmp = function() {
 	};
 	
 	USBDispatcher.oldOnConnected = USBDispatcher.onConnected;
+	var newOnConnected_pre600 = function () {
+		var menu, actions, titles;
+		if (StandbyImage.options.TransferModeDialog === 'true' && standbyState !== 0) {
+			actions = [];
+			titles = [L('ENTER_DATA_TRANSFER_MODE'),L('KEEP_ON_READING')];
+			actions.push( function() {USBDispatcher.oldOnConnected();} );
+			actions.push( function() {ebook.setUsbCharge(true);} );
+			menu = Core.popup.createSimpleMenu(titles, actions);
+			Core.popup.showMenu(menu);
+			return;
+		}
+		this.oldOnConnected();
+	};
+
 	var newOnConnected = function () {
 		var dialog;
 		if (StandbyImage.options.TransferModeDialog === 'true' && kbook.model.container.getVariable('STANDBY_STATE') !== 0) {
@@ -351,7 +369,7 @@ tmp = function() {
 			}
 		}
 		this.oldOnConnected();
-	}
+	};
 	
 	var StandbyImage = {
 		name: "StandbyImage",
@@ -507,10 +525,22 @@ tmp = function() {
 				}
 			},
 			{
+				name: "TransferModeDialog",
+				title: L("USB_TRANSFER_MODE_DIALOG"),
+				icon: "SETTINGS",
+				helpText: L('USB_TRANSFER_MODE_HELP'),
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+					}
+				},
+			{
 				name: 'orgOrientation',
 				defaultValue: '',
 				hidden: 'true',
-			},
+			}
 		],
 		onPreInit: function () {
 			// For pre-x50 models, change system standby option to random wallpaper
@@ -525,6 +555,10 @@ tmp = function() {
 			
 			// Add auto-shutdown time for 600+
 			switch (Core.config.model) {
+				case "300":
+				case "505":
+					USBDispatcher.onConnected = newOnConnected_pre600;
+					break;
 				case "350":
 				case "650":
 				case "950":
@@ -550,18 +584,6 @@ tmp = function() {
 								"120": LX("HOURS", 120),
 								"144": LX("HOURS", 144),
 								"168": LX("HOURS", 168),
-							}
-						},
-						{
-							name: "TransferModeDialog",
-							title: L("USB_TRANSFER_MODE_DIALOG"),
-							icon: "SETTINGS",
-							helpText: L('USB_TRANSFER_MODE_HELP'),
-							defaultValue: "false",
-							values: ["true", "false"],
-							valueTitles: {
-								"true": L("VALUE_TRUE"),
-								"false": L("VALUE_FALSE")
 							}
 						}
 					);
