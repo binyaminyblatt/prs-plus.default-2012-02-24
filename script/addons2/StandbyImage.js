@@ -131,6 +131,7 @@ tmp = function() {
 						if (!scaled && rect.height < h && rect.width < w) {
 							ratio = (rect.height/rect.width > h/w) ? (h/rect.height) : (w/rect.width);
 							bounds.set(0, 0, Math.round(w*ratio), Math.round(h*ratio));
+							bitmap.close();
 							scaled = true;
 							continue;
 						}
