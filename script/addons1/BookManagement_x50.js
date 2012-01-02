@@ -147,8 +147,7 @@ tmp = function() {
 			this.presetItemsCount--;
 		}
 		if (opt.addReadBooks === 'true') {
-			nodes.unshift(xs.newInstanceOf(kbook.root.kbookUnreadBooksListNode));
-			node = nodes[0];
+			node = xs.newInstanceOf(kbook.root.kbookUnreadBooksListNode);
 			node.cache = this.cache;
 			node.parent = this;
 			node.depth = this.depth + 1;
@@ -167,6 +166,7 @@ tmp = function() {
 			};
 			node.construct();
 			node.locked++;
+			nodes.unshift(node);
 			this.constNodesCount++;
 			this.presetItemsCount++;
 		}
@@ -382,15 +382,13 @@ tmp = function() {
 	
 	// Customize book list in home menu
 	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
-		var model, proto, nodes, cache, db, db2, current, c, node,
+		var model, prototype, nodes, cache, db, db2, current, c, node,
 			i, j, hist, book, books, id, author, list, coll, colls, menu;
 		FskCache.tree.xdbNode.construct.call(this);
 		cache = this.cache;
-		if (!cache) {
-			return;
-		}
+		if (!cache) return;
 		model = kbook.model;
-		proto = this.prototype;
+		prototype = this.prototype;
 		nodes = this.nodes = [];
 		if (opt.IgnoreCards === 'true') {
 			db = cache.getSourceByName('mediaPath').textMasters;
@@ -399,9 +397,7 @@ tmp = function() {
 		}
 		db = filterBooklist(db);
 		c = db.count();
-		if (!c) {
-			return;
-		}
+		if (!c) return;
 		if (model.currentBook) {
 			current = model.currentBook.media;
 		} else if (model.currentPath) {
@@ -421,7 +417,7 @@ tmp = function() {
 						numCur -= 3;
 					}
 					for (i = numCur; nodes.length < 3 && i < c; i++) {
-						node = nodes[nodes.length] = xs.newInstanceOf(proto);
+						node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 						node.cache = cache;
 						node.media = db.getRecord(i);
 					}
@@ -436,40 +432,38 @@ tmp = function() {
 						book = Core.media.findMedia(hist[i]);
 						if (book) {
 							if (book.periodicalName && opt.PeriodicalsAsBooks === 'false') {
-								continue; // FIXME numCur -=3 goes wrong here
+								continue; // FIXME numCur -= 3 goes wrong here
 							}
-							node = nodes[nodes.length] = xs.newInstanceOf(proto);
+							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 							node.cache = cache;
 							node.media = book;
 						}
 					}
 					break;
 				case 2: // Books by same author
-					if (!current) {
-						break;
-					}
+					if (!current) break;
 					id = current.id;
 					author = current.author;
-					if (!author) {
-						break;
-					}
+					if (!author) break;
 					list = [];
 					// Find other books by same author, excluding current book
 					for (i = 0; i < c; i++) {
 						book = db.getRecord(i);
-						if (book.author === author && book.id !== id) list.push(i);
+						if (book.author === author && book.id !== id) {
+							list.push(i);
+						}
 					}
-					if (numCur && numCur >= list.length) numCur -= 3;
+					if (numCur && numCur >= list.length) {
+						numCur -= 3;
+					}
 					for (i = numCur; nodes.length < 3 && i < list.length; i++) {
-						node = nodes[nodes.length] = xs.newInstanceOf(proto);
+						node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 						node.cache = cache;
 						node.media = db.getRecord(list[i]);
 					}
 					break;
 				case 3: // Next books in collection
-					if (!current) {
-						break;
-					}
+					if (!current) break;
 					id = current.id;
 					i = 0;
 					// Switch to collections cache
@@ -502,7 +496,7 @@ tmp = function() {
 								numCur -= 3;
 							}
 							for (j += numCur; nodes.length < 3 && j < books; j++) {
-								node = nodes[nodes.length] = xs.newInstanceOf(proto);
+								node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 								node.cache = cache;
 								node.media = cache.getRecord(coll.items[j].id);
 							}
@@ -522,7 +516,7 @@ tmp = function() {
 						book = db.getRecord(i);
 						if (books.indexOf('/' + book.id + '/') === -1) {
 							// Random book is not current book and not already placed, so add to list
-							node = nodes[nodes.length] = xs.newInstanceOf(proto);
+							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 							node.cache = cache;
 							node.media = book;
 							books += book.id + '/';
@@ -530,9 +524,7 @@ tmp = function() {
 					}
 					break;
 				case 5: // Select collection
-					if (!opt.SelectedCollection) {
-						break;
-					}
+					if (!opt.SelectedCollection) break;
 					books = [];
 					if (current) {
 						id = current.id;
@@ -555,7 +547,7 @@ tmp = function() {
 						numCur -= 3;
 					}
 					for (i = numCur; nodes.length < 3 && i < books.length; i++) {
-						node = nodes[nodes.length] = xs.newInstanceOf(proto);
+						node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 						node.cache = cache;
 						node.media = cache.getRecord(books[i]);
 					}
