@@ -36,6 +36,7 @@
 //	2011-12-15 quisvir - Added Notepads filter to home menu booklist; code cleaning
 //	2011-12-25 quisvir - Added option for booklist arrows in home menu
 //	2011-12-26 quisvir - Fixed booklist cycle backward action for 'next in collection'
+//	2012-01-02 quisvir - Added 'Read Books' collection
 
 tmp = function() {
 
@@ -124,26 +125,52 @@ tmp = function() {
 	var oldKbookPlaylistNode = kbook.root.kbookPlaylistNode.construct;
 	kbook.root.kbookPlaylistNode.construct = function () {
 		oldKbookPlaylistNode.apply(this, arguments);
+		var node, nodes;
+		nodes = this.nodes;
 		if (opt.HideAddNewCollection === 'true') {
-			this.nodes.splice(this.purchasedNodeIndex + 1, 1);
+			nodes.splice(this.purchasedNodeIndex + 1, 1);
 			this.constNodesCount--;
 		}
 		if (opt.HidePurchasedBooks === 'true') {
-			this.nodes.splice(this.purchasedNodeIndex, 1);
+			nodes.splice(this.purchasedNodeIndex, 1);
 			this.constNodesCount--;
 			this.presetItemsCount--;
 		}
 		if (opt.HideUnreadPeriodicals === 'true') {
-			this.nodes.splice(this.purchasedNodeIndex - 1, 1);
+			nodes.splice(this.purchasedNodeIndex - 1, 1);
 			this.constNodesCount--;
 			this.presetItemsCount--;
 		}
 		if (opt.HideUnreadBooks === 'true') {
-			this.nodes.splice(this.purchasedNodeIndex - 2, 1);
+			nodes.splice(this.purchasedNodeIndex - 2, 1);
 			this.constNodesCount--;
 			this.presetItemsCount--;
 		}
-		createSubCollections(this.nodes, this, this.constNodesCount);
+		if (opt.addReadBooks === 'true') {
+			nodes.unshift(xs.newInstanceOf(kbook.root.kbookUnreadBooksListNode));
+			node = nodes[0];
+			node.cache = this.cache;
+			node.parent = this;
+			node.depth = this.depth + 1;
+			node.name = node.title = L('READ_BOOKS');
+			node.filter = function (result) {
+				var c, i, record;
+				c = result.count();
+				for (i = 0; i < c; i++) {
+					record = result.getRecord(i);
+					if (!record.opened || record.periodicalName) {
+						result.removeID(result.getID(i));
+						c--; i--;
+					}
+				}
+				return result;
+			};
+			node.construct();
+			node.locked++;
+			this.constNodesCount++;
+			this.presetItemsCount++;
+		}
+		createSubCollections(nodes, this, this.constNodesCount);
 	}
 
 	createSubCollections = function (nodes, parent, next) {
@@ -819,9 +846,20 @@ tmp = function() {
 				},
 			]},
 			{
-			groupTitle: L('HIDE_DEFAULT_COLLECTIONS'),
+			groupTitle: L('COLLECTIONS'),
 			groupIcon: 'BOOKS',
 			optionDefs: [
+				{
+					name: 'addReadBooks',
+					title: L('ADD_READ_BOOKS_COLLECTION'),
+					icon: 'BOOKS',
+					defaultValue: 'false',
+					values: ['true','false'],
+					valueTitles: {
+						'true': L('VALUE_TRUE'),
+						'false': L('VALUE_FALSE')
+					}
+				},
 				{
 					name: 'HideUnreadBooks',
 					title: L('HIDE_UNREAD_BOOKS'),
