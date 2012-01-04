@@ -33,6 +33,7 @@ tmp = function() {
 			name: "ReformatCurrentBook",
 			title: L("REFORMAT_CURRENT_BOOK"),
 			group: "Book",
+			icon: "BOOK_ALT",
 			action: function () {
 				if (!kbook.model.currentBook) return;
 				var data = kbook.bookData;
