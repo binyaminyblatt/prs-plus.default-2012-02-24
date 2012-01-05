@@ -22,11 +22,12 @@
 //	2010-11-29 kartu - ALL: implemented #16 "88.1% (add decimal) in statusbar"
 //	2011-10-13 quisvir - Fixed "Remaining Time: 2:60" (thanks flobauke)
 //	2011-12-19 quisvir - Added option "pages to next chapter"
+//	2012-01-06 quisvir - Added next/previous chapter actions
 
 tmp = function() {
-	var log, L, lastTime, lastPage, ppmHistory, ppmIdx, MAX_PPM_HISTORY,
-		MAX_DELAY, NA, resetCounter, getPpm, getTimeLeft, updateIndexBook,
-		updateIndexMenu, toc, nextChapter, prevChapter, getChapterPages, getToc, resetToC;
+	var log, L, lastTime, lastPage, ppmHistory, ppmIdx, MAX_PPM_HISTORY, MAX_DELAY, NA,
+		resetCounter, getPpm, getTimeLeft, updateIndexBook, updateIndexMenu, toc, nextChapter,
+		prevChapter, getChapterPages, getToc, resetToC, jumpToNextChapter, jumpToPrevChapter;
 	log = Core.log.getLogger("StatusBar_PageIndex");
 	L = Core.lang.getLocalizer("StatusBar_PageIndex");
 
@@ -125,14 +126,14 @@ tmp = function() {
 		}
 		if (nextChapter && nextChapter > i) {
 			if (!prevChapter || prevChapter <= i) {
-				return nextChapter - i;
+				return nextChapter - i - 1;
 			}
 		}
 		for (j = 0; j < toc.length; j++) {
 			if (toc[j] > i) {
 				prevChapter = (j > 0) ? toc[j - 1] : undefined;
 				nextChapter = toc[j];
-				return nextChapter - i;
+				return nextChapter - i - 1;
 			}
 		}
 		return null;
@@ -148,6 +149,58 @@ tmp = function() {
 			if (bm[j].bookmarks) {
 				getToc(bm[j].bookmarks);
 			}
+		}
+	}
+	
+	jumpToNextChapter = function (book) {
+		var i, j, page;
+		i = book.getPage();
+		if (nextChapter) {
+			page = nextChapter;
+		} else {
+			if (toc === undefined) {
+				toc = [];
+				getToc(kbook.model.currentBook.media.content.bookmarks);
+				toc.sort(function (a,b) { return a-b });
+			}
+			for (j = 0; j < toc.length; j++) {
+				if (toc[j] > i) {
+					page = toc[j];
+					break;
+				}
+			}
+		}
+		if (page) {
+			nextChapter = prevChapter = null;
+			book.doGoto(page + 1);
+		} else {
+			kbook.model.doBlink();
+		}
+	}
+	
+	jumpToPrevChapter = function (book) {
+		var i, j, page;
+		i = book.getPage();
+		if (prevChapter && prevChapter < i) {
+			page = prevChapter;
+		} else {
+			if (toc === undefined) {
+				toc = [];
+				getToc(kbook.model.currentBook.media.content.bookmarks);
+				toc.sort(function (a,b) { return a-b });
+			}
+			for (j = 0; j < toc.length; j++) {
+				if (toc[j] >= i) {
+					if (j > 0) page = toc[j-1];
+					break;
+				}
+			}
+		}
+		if (page) {
+			nextChapter = prevChapter = null;
+			book.doGoto(page + 1);
+		} else {
+			kbook.model.doBlink();
 		}
 	}
 	
@@ -209,7 +262,7 @@ tmp = function() {
 					break;
 				case "XdivYchapt":
 					pages = getChapterPages(i - 1);
-					if (pages) {
+					if (pages !== null) {
 						show = ii + " / " + c +  " (" + pages + ")";
 					} else {
 						show = ii + " / " + c;
@@ -272,67 +325,69 @@ tmp = function() {
 	};
 	
 	StatusBar.addWidget({
-			name: "PageIndex",
-			onMenuPageChanged: updateIndexMenu,
-			onBookPageChanged: updateIndexBook,
+		name: "PageIndex",
+		onMenuPageChanged: updateIndexMenu,
+		onBookPageChanged: updateIndexBook,
+		jumpToNextChapter: jumpToNextChapter,
+		jumpToPrevChapter: jumpToPrevChapter,
+		optionDefs: [{
+			groupTitle: L("TITLE"),
+			groupIcon: "LIST",
 			optionDefs: [{
-				groupTitle: L("TITLE"),
-				groupIcon: "LIST",
-				optionDefs: [{
-						name: "indexBookStyle",
-						title: L("INDEX_STYLE_BOOK"),
-						icon: "LIST",
-						defaultValue: "XdivY",
-						values: ["XofY", "XofYper", "XdivY", "XdivYper", "XremYper", "XremYperRem", "XdivYstats0", "XdivYstats1", "XdivYstats2", "XdivYchapt"],
-						valueTitles: {
-							XofY: "5 " + L("OF") + " 100",
-							XofYper: "5 " + L("OF") + " 100 (5%)",
-							XdivY: "5 / 100",
-							XdivYper: "5 / 100 (5%)",
-							XremYper: "5 + 95 (5%)",
-							XremYperRem: "5 + 95 (95%)",
-							XdivYstats0: L("VALUE_STATS0"),
-							XdivYstats1: L("VALUE_STATS1"),
-							XdivYstats2: L("VALUE_STATS2"),
-							XdivYchapt: L("VALUE_CHAPTER")
-						}
-					},
-					{
-						name: "indexBookMode",
-						title:	 L("INDEX_MODE_BOOK"),
-						icon:	"LIST",
-						defaultValue: "always",
-						values: ["always", "never"],
-						valueTitles: {
-							always: L("ALWAYS_SHOWN"),
-							never: L("NEVER_SHOWN")
-						}
-					},
-					{
-						name: "indexMenuStyle",
-						title: L("INDEX_STYLE_MENU"),
-						icon: "LIST",
-						defaultValue: "MenuXdivY",
-						values: ["MenuXofY", "MenuXdivY"],
-						valueTitles: {
-							MenuXofY: "5 " + L("OF") + " 100",
-							MenuXdivY: "5 / 100"
-						}
-					},
-					{
-						name: "indexMenuMode",
-						title: L("INDEX_MODE_MENU"),
-						icon:	"LIST",
-						defaultValue: "always",
-						values: ["always", "not_if_only_one_page", "never"],
-						valueTitles: {
-							always: L("ALWAYS_SHOWN"),
-							not_if_only_one_page: L("NOT_SHOWN_IF_SINGLE_PAGE"),
-							never: L("NEVER_SHOWN")
-						}
+					name: "indexBookStyle",
+					title: L("INDEX_STYLE_BOOK"),
+					icon: "LIST",
+					defaultValue: "XdivY",
+					values: ["XofY", "XofYper", "XdivY", "XdivYper", "XremYper", "XremYperRem", "XdivYstats0", "XdivYstats1", "XdivYstats2", "XdivYchapt"],
+					valueTitles: {
+						XofY: "5 " + L("OF") + " 100",
+						XofYper: "5 " + L("OF") + " 100 (5%)",
+						XdivY: "5 / 100",
+						XdivYper: "5 / 100 (5%)",
+						XremYper: "5 + 95 (5%)",
+						XremYperRem: "5 + 95 (95%)",
+						XdivYstats0: L("VALUE_STATS0"),
+						XdivYstats1: L("VALUE_STATS1"),
+						XdivYstats2: L("VALUE_STATS2"),
+						XdivYchapt: L("VALUE_CHAPTER")
 					}
-				]
-			}]
+				},
+				{
+					name: "indexBookMode",
+					title:	 L("INDEX_MODE_BOOK"),
+					icon:	"LIST",
+					defaultValue: "always",
+					values: ["always", "never"],
+					valueTitles: {
+						always: L("ALWAYS_SHOWN"),
+						never: L("NEVER_SHOWN")
+					}
+				},
+				{
+					name: "indexMenuStyle",
+					title: L("INDEX_STYLE_MENU"),
+					icon: "LIST",
+					defaultValue: "MenuXdivY",
+					values: ["MenuXofY", "MenuXdivY"],
+					valueTitles: {
+						MenuXofY: "5 " + L("OF") + " 100",
+						MenuXdivY: "5 / 100"
+					}
+				},
+				{
+					name: "indexMenuMode",
+					title: L("INDEX_MODE_MENU"),
+					icon:	"LIST",
+					defaultValue: "always",
+					values: ["always", "not_if_only_one_page", "never"],
+					valueTitles: {
+						always: L("ALWAYS_SHOWN"),
+						not_if_only_one_page: L("NOT_SHOWN_IF_SINGLE_PAGE"),
+						never: L("NEVER_SHOWN")
+					}
+				}
+			]
+		}]
 	});
 	
 	// Reset index on book change
