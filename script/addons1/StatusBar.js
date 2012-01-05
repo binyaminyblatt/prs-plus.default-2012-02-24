@@ -10,6 +10,7 @@
 //	2011-02-09 kartu - Fixed # Page index is not updated when book is opened
 //	2011-12-20 quisvir - Added clock updates during apps/games
 //	2011-12-22 qusivir - Changed to TIME.setValue for autorun, removed TIME.invalidate()
+//	2012-01-06 quisvir - Added next/previous chapter actions
 
 // Available to sub-addons
 var StatusBar;
@@ -66,7 +67,24 @@ tmp = function() {
 		title: L("TITLE"),
 		icon: "ABOUT",
 		optionDefs: [],
-		actions: [],
+		actions: [{
+			name: "NextChapter",
+			title: L("NEXT_CHAPTER"),
+			icon: "NEXT_SONG",
+			group: "Book",
+			action: function () {
+				widgets[1].jumpToNextChapter(BOOK);
+			}
+		},
+		{
+			name: "PreviousChapter",
+			title: L("PREVIOUS_CHAPTER"),
+			icon: "PREVIOUS_SONG",
+			group: "Book",
+			action: function () {
+				widgets[1].jumpToPrevChapter(BOOK);
+			}
+		}],
 		onPreInit: function() {
 			var i, n, od, j, m;
 			Core.utils.callAll(widgets, this, undefined, "onPreInit");
