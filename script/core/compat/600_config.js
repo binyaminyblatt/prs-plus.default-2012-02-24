@@ -161,6 +161,10 @@ return {
 	
 	// PRS+ abstract key code to actual key code, model specific
 	keyCodes: {
+		previous: "kPreviousCustom",
+		previous_h: "kPreviousCustom-hold",
+		next: "kNextCustom",
+		next_h: "kNextCustom-hold",
 		volume_down: "kVolumeMinus",
 		volume_down_h: "kHold0",
 		volume_up: "kVolumePlus",
@@ -177,7 +181,8 @@ return {
 	// are there volume keys
 	hasVolumeButtons: true,
 	// are there paging buttons
-	hasPagingButtons: false,
+	hasPagingButtonsOld: false,
+	hasPagingButtonsNew: true,
 	// are there joypad buttons
 	hasJoypadButtons: false,
 	// are there "other" buttons
