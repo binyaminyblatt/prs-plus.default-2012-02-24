@@ -9,14 +9,15 @@
 //	2010-11-28 kartu - Added option for actions to pass control to the default key handler
 //  2011-11-01 Ben Chenoweth - Added 'option' key for 600 & x50
 //	2011-11-28 quisvir - Added getActionDefs() to expose actions to other addons
+//	2011-12-06 quisvir - Added Paging Buttons for 600+
 
 tmp = function() {
 	var KeyBindings, STATE_GLOBAL, contexts, contextsLen, defVal, contextLabels,
 		values, valueTitles, valueIcons, valueGroups, actionName2action, L, compat, keyCodes,
 		oldHandleEvent, options, getBoundAction, handleEvent,
 		handleEvent2, createOptionDef, createValueList, createButtonOptions,
-		createNumericButtonOptions, createJoypadButtonOptions, createVolumeButtonOptions,
-		createOtherButtonOptions;
+		createPagingButtonOptions, createNumericButtonOptions, createJoypadButtonOptions,
+		createVolumeButtonOptions, createOtherButtonOptions;
 	STATE_GLOBAL = "ALL";
 	contexts = [STATE_GLOBAL, "MENU", "PAGE"];
 	contextsLen = contexts.length;
@@ -76,19 +77,34 @@ tmp = function() {
 		oldHandleEvent.apply(this, arguments);
 	};	
 
-	// Handles key events, calling corresponding handler, if set (version that supports 600 and, hopefully, the newer versions)
+	// Handles key events, calling corresponding handler, if set (600+)
 	handleEvent2 = function (target, event, a, b) {
 		try {
-			// Only next / previous keys of 600 (and probably later versions) respond to this, not worth the hussle
-			// -1 press, 2 hold, 1 release
-			//var type = Fskin.customHoldTimePart.getEventValue(event);
-			var key, state, action;	
+			var key, state, value, action;	
 			key = this.getEventKey(event);
 			state = kbook.model.STATE;
 			if (state == "MENU_HOME") {
 				state = "MENU";
 			}
-			action = getBoundAction(key, state);
+			if (key === 'kPreviousCustom' || key === 'kNextCustom') {
+				value = Fskin.customHoldTimePart.getEventValue(event);
+				if (value === 1) {
+					if (this.keys[key]._value === 2) {
+						// end of long press
+						// return if custom hold action set (already executed)
+						if (getBoundAction(key + '-hold', state)) return;
+					} else {
+						// normal press
+						action = getBoundAction(key, state);
+					}
+				} else if (value === 2) {
+					// holding
+					action = getBoundAction(key + '-hold', state);
+					if (action) this.keys[key]._value = 2;
+				}
+			} else {
+				action = getBoundAction(key, state);
+			}
 			
 			if (action !== undefined) {
 				try {
@@ -182,6 +198,21 @@ tmp = function() {
 		}
 	};
 	
+	createPagingButtonOptions = function() {
+		// Previous/Next Page buttons
+		if (compat.hasPagingButtonsNew) {
+			var PageGroup = {
+				groupTitle: L("PAGE_BUTTONS"),
+				groupIcon: "FOLDER",
+				optionDefs: []
+			};
+			KeyBindings.optionDefs.push(PageGroup);
+			createButtonOptions(["previous", "next"], PageGroup.optionDefs);
+		} else if (compat.hasPagingButtonsOld) {
+			createButtonOptions(["bl_next", "bl_previous", "sb_next", "sb_previous"],PageGroup.optionDefs);
+		}
+	};
+	
 	createNumericButtonOptions = function() {
 		// Numeric buttons
 		if (compat.hasNumericButtons) {
@@ -230,9 +261,6 @@ tmp = function() {
 			};
 			KeyBindings.optionDefs.push(otherGroup);
 			createButtonOptions(["home", "menu", "bookmark", "option", "size"],otherGroup.optionDefs);
-			if (compat.hasPagingButtons) {
-				createButtonOptions(["bl_next", "bl_previous", "sb_next", "sb_previous"],otherGroup.optionDefs);
-			}
 		}
 	};
 	
@@ -250,6 +278,7 @@ tmp = function() {
 			contextLabels = [L("GLOBAL"), L("IN_MENU"), L("IN_BOOK")];
 
 			createValueList();
+			createPagingButtonOptions();
 			createNumericButtonOptions();
 			createJoypadButtonOptions();
 			createVolumeButtonOptions();

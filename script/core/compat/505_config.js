@@ -123,7 +123,8 @@ return {
 	// are there volume keys
 	hasVolumeButtons: true,
 	// are there paging buttons
-	hasPagingButtons: true,
+	hasPagingButtonsOld: true,
+	hasPagingButtonsNew: false,
 	// are there joypad buttons
 	hasJoypadButtons: true,
 	// are there "other" buttons
