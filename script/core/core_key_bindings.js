@@ -10,6 +10,7 @@
 //  2011-11-01 Ben Chenoweth - Added 'option' key for 600 & x50
 //	2011-11-28 quisvir - Added getActionDefs() to expose actions to other addons
 //	2011-12-06 quisvir - Added Paging Buttons for 600+
+//	2012-01-08 Mark Nord - PageGroup wasn't created for 505 -> keybindings faild to start
 
 tmp = function() {
 	var KeyBindings, STATE_GLOBAL, contexts, contextsLen, defVal, contextLabels,
@@ -200,13 +201,15 @@ tmp = function() {
 	
 	createPagingButtonOptions = function() {
 		// Previous/Next Page buttons
-		if (compat.hasPagingButtonsNew) {
+		if (compat.hasPagingButtonsNew || compat.hasPagingButtonsOld) {
 			var PageGroup = {
 				groupTitle: L("PAGE_BUTTONS"),
 				groupIcon: "FOLDER",
 				optionDefs: []
-			};
+				};
 			KeyBindings.optionDefs.push(PageGroup);
+		}
+		if (compat.hasPagingButtonsNew) {
 			createButtonOptions(["previous", "next"], PageGroup.optionDefs);
 		} else if (compat.hasPagingButtonsOld) {
 			createButtonOptions(["bl_next", "bl_previous", "sb_next", "sb_previous"],PageGroup.optionDefs);
