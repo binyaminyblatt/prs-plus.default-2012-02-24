@@ -11,11 +11,12 @@
 //	2011-11-28 quisvir - Added getActionDefs() to expose actions to other addons
 //	2011-12-06 quisvir - Added Paging Buttons for 600+
 //	2012-01-08 Mark Nord - PageGroup wasn't created for 505 -> keybindings faild to start
+//	2012-01-10 quisvir - Fixed bug with hold prev/next icw state change; removed State event swallowing
 
 tmp = function() {
 	var KeyBindings, STATE_GLOBAL, contexts, contextsLen, defVal, contextLabels,
 		values, valueTitles, valueIcons, valueGroups, actionName2action, L, compat, keyCodes,
-		oldHandleEvent, options, getBoundAction, handleEvent,
+		oldHandleEvent, options, getBoundAction, handleEvent, holdKey,
 		handleEvent2, createOptionDef, createValueList, createButtonOptions,
 		createPagingButtonOptions, createNumericButtonOptions, createJoypadButtonOptions,
 		createVolumeButtonOptions, createOtherButtonOptions;
@@ -93,7 +94,10 @@ tmp = function() {
 					if (this.keys[key]._value === 2) {
 						// end of long press
 						// return if custom hold action set (already executed)
-						if (getBoundAction(key + '-hold', state)) return;
+						if (holdKey) {
+							holdKey = false;
+							return;
+						}
 					} else {
 						// normal press
 						action = getBoundAction(key, state);
@@ -101,7 +105,10 @@ tmp = function() {
 				} else if (value === 2) {
 					// holding
 					action = getBoundAction(key + '-hold', state);
-					if (action) this.keys[key]._value = 2;
+					if (action) {
+						this.keys[key]._value = 2;
+						holdKey = true;
+					}
 				}
 			} else {
 				action = getBoundAction(key, state);
@@ -115,9 +122,6 @@ tmp = function() {
 				} catch (e0) {
 					log.error("executing action: " + key + "." + state);
 				}
-			} else if (getBoundAction(key + "State", state)) {
-				// Ignore "state" messages since there is a bound key
-				return;
 			}
 		} catch (e) {
 			try {
