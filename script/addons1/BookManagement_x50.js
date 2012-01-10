@@ -37,17 +37,19 @@
 //	2011-12-25 quisvir - Added option for booklist arrows in home menu
 //	2011-12-26 quisvir - Fixed booklist cycle backward action for 'next in collection'
 //	2012-01-02 quisvir - Added 'Read Books' collection
+//	2012-01-10 Ben Chenoweth - Added default keybindings for HOME MENU context
 
 tmp = function() {
 
 	var L, LX, log, opt, bookChanged, trigger1, trigger2, trigger3, trigger4, doSelectCollection, selectCollectionConstruct,
-		selectCollectionDestruct, tempNode, numCur, updateBookList, filterBooklist;
+		selectCollectionDestruct, tempNode, numCur, updateBookList, filterBooklist, holdKey;
 	
 	L = Core.lang.getLocalizer('BookManagement');
 	LX = Core.lang.LX;
 	log = Core.log.getLogger('BookManagement');
 	
 	numCur = 0;
+	holdKey = false;
 	
 	// Treat Periodicals as Books
 	var oldBooksFilter = kbook.root.children.deviceRoot.children.books.filter;
@@ -575,6 +577,36 @@ tmp = function() {
 		}
 	};
 	
+
+	// PREV/NEXT on HOME MENU activate BooklistPrev/NextBooks
+	kbook.model.container.sandbox.MENU_HOME_GROUP.sandbox.doPrevious = function (part) {
+		if (!holdKey) {
+			BookManagement_x50.actions[3].action();
+		} else {
+			holdKey = false;
+		}
+	}
+	
+	kbook.model.container.sandbox.MENU_HOME_GROUP.sandbox.doNext = function (part) {
+		if (!holdKey) {
+			BookManagement_x50.actions[2].action();
+		} else {
+			holdKey = false;
+		}
+	}
+
+	// HOLD PREV/HOLD NEXT on HOME MENU activate BooklistCycleBackward/Forward
+	kbook.model.container.sandbox.MENU_HOME_GROUP.sandbox.doPreviousHold = function (part) {
+		BookManagement_x50.actions[1].action();
+		holdKey = true;
+	}
+	
+	kbook.model.container.sandbox.MENU_HOME_GROUP.sandbox.doNextHold = function (part) {
+		BookManagement_x50.actions[0].action();
+		holdKey = true;
+	}
+	
+
 	// Functions for booklist option 'Select Collection'
 	doSelectCollection = function () {
 		oldNode = kbook.model.currentNode;
