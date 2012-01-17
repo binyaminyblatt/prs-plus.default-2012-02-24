@@ -37,6 +37,7 @@
 //	2011-12-13 quisvir - Added NOBOOKMARK
 //	2011-12-17 quisvir - Added DICTIONARY
 //	2011-12-28 Ben Chenoweth - Initial implementation of audio
+//	2012-01-17 quisvir - Changed homelargekind to homekind, added standardMenuIcons for moved default nodes
  
 return {
 	// Menu icon indices 
@@ -133,12 +134,12 @@ return {
 		DEFAULT: 87,
 		
 		// big icons shonw in home menu
-		LARGE_BOOK_HISTORY: 2,
-		LARGE_AUTHOR: 2,
-		LARGE_FOLDER: 4,
-		LARGE_MORE: 5,
-		LARGE_GAME: 6,
-		LARGE_DATE: 7,
+		HOME_BOOK_HISTORY: 2,
+		HOME_AUTHOR: 2,
+		HOME_FOLDER: 4,
+		HOME_MORE: 5,
+		HOME_GAME: 6,
+		HOME_DATE: 7,
 		
 		// At least 600 and 900 have more than one type of icons
 		getIcon: function (strKind, type) {
@@ -150,10 +151,7 @@ return {
 						kind = this.HOME_FOLDER;
 					}
 				} else if (type === "homeLarge") {
-					kind = this["LARGE_" + strKind];
-					if (typeof kind === "undefined") {
-						kind = this.LARGE_FOLDER;
-					}				
+					return undefined;
 				} else {
 					i = strKind.lastIndexOf("#");
 					if (i > -1) {
@@ -218,6 +216,14 @@ return {
 		//pictures: [2, 1],
 		apps: [1],
 		settings: [2]
+	},
+	
+	// Home menu icons for default nodes
+	standardMenuIcons: {
+		"continue": 5,
+		books: 5,
+		collections: 2,
+		notes: 3
 	},
 	
 	// Root node for menu customizer

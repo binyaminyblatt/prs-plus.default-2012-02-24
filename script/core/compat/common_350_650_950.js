@@ -34,9 +34,10 @@
 //	2011-11-17 kartu - Removed debug statement
 //	2011-11-21 quisvir - Moved Standby Image code to addon
 //	2011-12-05 quisvir - Fixed node comments if node.comment is undefined
-//	2012-12-05 quisvir - Added tapAndHoldAction to available actions
+//	2011-12-05 quisvir - Added tapAndHoldAction to available actions
 //	2011-12-11 kartu - Fixed #244 books deleted using PC do not dissapear if scanning is "disabled (load cache)"
 //	2011-12-25 quisvir - Added code to load custom home menu xml's for booklist arrows
+//	2012-01-17 quisvir - Changed homelargekind to homekind
 
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -493,8 +494,8 @@ tmp = function () {
 			return kbook.commentField.format(node);
 		};
 		getKind = function (node, defVal) {
-			if (node.homelargekind) {
-				return node.homelargekind;
+			if (node.hasOwnProperty('homekind')) {
+				return node.homekind;
 			}
 			return defVal;
 		};
@@ -569,7 +570,7 @@ tmp = function () {
 
 				// Periodicals shown in unusual place
 				// has no kind by default
-				periodicalsNode.kind = 67 + doGetPeriodicalsKind(); 
+				periodicalsNode.kind = periodicalsNode.homekind = 67 + doGetPeriodicalsKind(); 
 				periodicalsNode.separator = 0; // remove separator line
 
 			}

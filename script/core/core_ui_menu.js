@@ -13,6 +13,7 @@
 //	2011-08-28 Ben Chenoweth - Custom containers can now have a short name and a comment
 //	2011-11-13 kartu - added support for rootNode being a funciton that returns root node
 //	2011-11-27 Mark Nord - ItemCount in comment for more, multimedia & games-nodes 
+//	2012-01-17 quisvir - Added homekind for moved default nodes
 
 var MenuCustomizer;
 tmp = function() {
@@ -232,7 +233,7 @@ tmp = function() {
 		
 		onInit: function() {
 			try {
-				var i, n, options, root, prspMenu, customContainers, customNodes, movableNodes, defaultLayout, placedNodes, detachedNodes,
+				var i, n, options, root, prspMenu, customContainers, customNodes, movableNodes, defaultLayout, standardMenuIcons, placedNodes, detachedNodes,
 					nodeName, node, container, isSeparator, isShortName, customNode, parentNode, stillEmpty, isDefault, defaultNode, defaultNodeName;
 				
 				options = this.options;
@@ -246,6 +247,8 @@ tmp = function() {
 				movableNodes = prspMenu.movableNodes;
 				// Default prsp menu layout
 				defaultLayout = prspMenu.defaultLayout;
+				// Icons for default nodes
+				standardMenuIcons = Core.config.compat.standardMenuIcons;
 				
 				// Create prs+ containers ("Multimedia", "Games & Utils" etc)
 				for (i = 0, n = customContainers.length; i < n; i++) {
@@ -314,6 +317,11 @@ tmp = function() {
 					// whether to use short name (small buttons where full name doesn't fit)
 					if (isShortName) {
 						node.name = node.shortName;
+					}
+					
+					// add homekind (necessary for moved default nodes)
+					if (!node.hasOwnProperty('homekind') && standardMenuIcons) {
+						node.homekind = standardMenuIcons[nodeName];
 					}
 					
 					// attach to root
