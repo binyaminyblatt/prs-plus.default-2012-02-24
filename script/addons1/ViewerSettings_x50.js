@@ -29,15 +29,19 @@
 //	2011-11-28 quisvir - Moved touch-related code to Touch Settings addon
 //	2011-12-07 quisvir - Cosmetic changes
 //	2011-12-14 quisvir - Added action to toggle True Landscape mode in book
+//	2012-01-19 quisvir - Added automatic page turner
 
 tmp = function() {
 
-	// Localize	 	
-	var L = Core.lang.getLocalizer("ViewerSettings_x50");
-	var log = Core.log.getLogger('ViewerSettings_x50');
+	// Localize
+	var L, LX, log;
+	L = Core.lang.getLocalizer("ViewerSettings_x50");
+	LX = Core.lang.LX;
+	log = Core.log.getLogger('ViewerSettings_x50');
 
-	// Functions and vars for toggleTrueLandscape action
-	var orgOrientation, docWidth, docHeight, oldIsScrollView, falseFunc, toggleTrueLandscape, restoreLandscape, oldOnEnterOrientation1, oldOnEnterOrientation2;
+	var orgOrientation, docWidth, docHeight, oldIsScrollView, falseFunc, toggleTrueLandscape, restoreLandscape,
+		oldOnEnterOrientation1, oldOnEnterOrientation2, autoPageTimer, autoPageToggle, autoPageCallBack;
+	
 	oldIsScrollView = kbook.kbookPage.isScrollView;
 	falseFunc = function () { return false };
 	docWidth = Number(System.applyEnvironment('[kFskDocumentViewerWidth]'));
@@ -407,6 +411,29 @@ tmp = function() {
 		};
 	};
 	
+	autoPageToggle = function () {
+		if (!autoPageTimer) {
+			Core.ui.showMsg(L("AUTO_PAGE_TURNER") + ": " + L("VALUE_TRUE"), 2);
+			autoPageTimer = new HardwareTimer();
+			autoPageTimer.onCallback = autoPageCallback;
+			autoPageTimer.target = null;
+			autoPageTimer.scheduleRepeating(parseInt(ViewerSettings_x50.options.AutoPageTurnerTime) * 1000);
+		} else {
+			autoPageTimer.cancel();
+			autoPageTimer.close();
+			autoPageTimer = null;
+			Core.ui.showMsg(L("AUTO_PAGE_TURNER") + ": " + L("VALUE_FALSE"), 2);
+		}
+	}
+	
+	autoPageCallback = function () {
+		if (kbook.model.STATE === 'PAGE') {
+			kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE_SUBGROUP.sandbox.PAGE.doNext();
+		} else {
+			autoPageToggle();
+		}
+	}
+
 	var ViewerSettings_x50 = {
 		name: "ViewerSettings_x50",
 		settingsGroup: "viewer", // "advanced",
@@ -432,6 +459,31 @@ tmp = function() {
 					"grey": L("VALUE_GREY"),
 					"white": L("VALUE_WHITE")
 				}									
+			},
+			{
+				name: "AutoPageTurnerTime",
+				title: L("AUTO_PAGE_TURNER"),
+				icon: "CLOCK",
+				defaultValue: "60",
+				values: ["10", "20", "30", "40", "50", "60", "75", "90", "105", "120", "150", "180", "210", "240", "270", "300"],
+				valueTitles: {
+					"10": LX("SECONDS", 10),
+					"20": LX("SECONDS", 20),
+					"30": LX("SECONDS", 30),
+					"40": LX("SECONDS", 40),
+					"50": LX("SECONDS", 50),
+					"60": LX("SECONDS", 60),
+					"75": LX("SECONDS", 75),
+					"90": LX("SECONDS", 90),
+					"105": LX("SECONDS", 105),
+					"120": LX("SECONDS", 120),
+					"150": LX("SECONDS", 150),
+					"180": LX("SECONDS", 180),
+					"210": LX("SECONDS", 210),
+					"240": LX("SECONDS", 240),
+					"270": LX("SECONDS", 270),
+					"300": LX("SECONDS", 300)
+				}
 			},
 			{
 			groupTitle: L("CUSTOM_VIEW_SETTINGS"),
@@ -482,6 +534,15 @@ tmp = function() {
 			icon: "LANDSCAPE",
 			action: function () {
 				toggleTrueLandscape();
+			}
+		},
+		{
+			name: "autoPageToggle",
+			title: L("TOGGLE_AUTO_PAGETURNER"),
+			group: "Book",
+			icon: "CLOCK",
+			action: function () {
+				autoPageToggle();
 			}
 		}]
 	};
