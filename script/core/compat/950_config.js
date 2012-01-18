@@ -218,8 +218,8 @@ return {
 	
 	// Home menu icons for default nodes
 	standardMenuIcons: {
-		"continue": 5,
-		books: 5,
+		"continue": 2,
+		books: 2,
 		collections: 2,
 		notes: 3
 	},

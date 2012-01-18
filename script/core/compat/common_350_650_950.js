@@ -38,6 +38,7 @@
 //	2011-12-11 kartu - Fixed #244 books deleted using PC do not dissapear if scanning is "disabled (load cache)"
 //	2011-12-25 quisvir - Added code to load custom home menu xml's for booklist arrows
 //	2012-01-17 quisvir - Changed homelargekind to homekind
+//	2012-01-18 quisvir - Fixed periodicals homekind, continue comment
 
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -479,9 +480,10 @@ tmp = function () {
 	// Allow menu customization
 	// Kinoma's code is hardcoded with references to periodicals / collections / all notes	
 	makeRootNodesMovable = function() {
-		var getComment, getKind, periodicalsNode, collectionsNode, notesNode;
+		var getComment, getKind, continueNode, periodicalsNode, collectionsNode, notesNode;
 
 		// Save references to periodicals / collections / allNotes
+		continueNode = kbook.root.getDeviceRootNode().getNode(0);
 		periodicalsNode = kbook.root.getDeviceRootNode().getNode(2);
 		collectionsNode = kbook.root.getDeviceRootNode().getNode(3);
 		notesNode = kbook.root.getDeviceRootNode().getNode(4);
@@ -490,6 +492,8 @@ tmp = function () {
 		getComment = function (node) {
 			if (typeof node.shortComment === "function") {
 				return node.shortComment();
+			} else if (node === continueNode) {
+				return "";
 			}
 			return kbook.commentField.format(node);
 		};
@@ -538,7 +542,8 @@ tmp = function () {
 
 		// Fixing hardcoded periodicals / collections / notes
 		kbook.model.updateDeviceRoot = function (node) {
-			var n, dummy, continueTitle, continueAuthor, continueDate, middleItemKind, middleItemTitle, middleItemComment, leftItemKind, leftItemTitle, leftItemComment, centerItemKind, centerItemTitle, centerItemComment, rightItemKind, rightItemTitle, rightItemComment, homeView;
+			var n, dummy, continueTitle, continueAuthor, continueDate, middleItemKind, middleItemTitle, middleItemComment, leftItemKind, leftItemTitle, leftItemComment,
+				periodicalKind, centerItemKind, centerItemTitle, centerItemComment, rightItemKind, rightItemTitle, rightItemComment, homeView;
 
 			// If periodicals node was moved, we need to construct it manually, prior to setHomeCover
 			if (node.nodes[2] !== periodicalsNode) {
@@ -570,7 +575,9 @@ tmp = function () {
 
 				// Periodicals shown in unusual place
 				// has no kind by default
-				periodicalsNode.kind = periodicalsNode.homekind = 67 + doGetPeriodicalsKind(); 
+				periodicalKind = doGetPeriodicalsKind();
+				periodicalsNode.kind = 67 + periodicalKind;
+				periodicalsNode.homekind = periodicalKind;
 				periodicalsNode.separator = 0; // remove separator line
 
 			}
