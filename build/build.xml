@@ -58,6 +58,7 @@ History:
 		<exclude name="StandardActions.js" />
 		<exclude name="TextEncoding.js" />
 		<exclude name="TextScale.js" />
+		<exclude name="ViewerSettings.js" />
 	</patternset>
 	<patternset id="addons_300">
 		<patternset refid="addons_300_505" />
