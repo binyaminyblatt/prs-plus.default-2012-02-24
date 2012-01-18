@@ -14,6 +14,7 @@
 //	2011-11-13 kartu - added support for rootNode being a funciton that returns root node
 //	2011-11-27 Mark Nord - ItemCount in comment for more, multimedia & games-nodes 
 //	2012-01-17 quisvir - Added homekind for moved default nodes
+//	2012-01-18 quisvir - onSettingsChanged, rerun onInit & update root to remove need for reboot
 
 var MenuCustomizer;
 tmp = function() {
@@ -353,7 +354,7 @@ tmp = function() {
 					if (customNode.position !== undefined) {
 						if (customNode.replace) {
 							parentNode.nodes[customNode.position] = node;
-						} else {
+						} else if (parentNode.nodes[customNode.position] !== node) {
 							parentNode.nodes.splice(customNode.position, 0, node);
 						}
 						
@@ -386,11 +387,10 @@ tmp = function() {
 		},
 		
 		onSettingsChanged: function (propertyName, oldValue, newValue) {
-			if (oldValue === newValue) {
-				return;
+			if (oldValue !== newValue) {
+				this.onInit();
+				nodeMap.root.update(kbook.model);
 			}
-			// FIXME: remove coreL reference
-			Core.ui.showMsg([coreL("MSG_RESTART")]);
 		}
 		
 	};	
