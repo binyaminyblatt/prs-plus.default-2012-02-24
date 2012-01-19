@@ -1,7 +1,7 @@
 // Name: ViewerSettings
 //
 // History:
-//	2012-01-19 quisvir - Initial version
+//	2012-01-19 quisvir - Initial version, reset autoPage timer on page change
 
 tmp = function() {
 
@@ -11,15 +11,16 @@ tmp = function() {
 	LX = Core.lang.LX;
 	log = Core.log.getLogger('ViewerSettings');
 
-	var autoPageTimer, autoPageToggle, autoPageCallBack;
-	
+	var autoPageTimer, autoPageToggle, autoPageCallBack, autoPageRestart;
+
 	autoPageToggle = function () {
 		if (!autoPageTimer) {
 			Core.ui.showMsg(L("AUTO_PAGE_TURNER") + ": " + L("VALUE_TRUE"), 2);
 			autoPageTimer = new Timer();
 			autoPageTimer.onCallback = autoPageCallback;
 			autoPageTimer.target = null;
-			autoPageTimer.scheduleRepeating(parseInt(ViewerSettings.options.AutoPageTurnerTime) * 1000);
+			autoPageTimer.delay = parseInt(ViewerSettings.options.AutoPageTurnerTime) * 1000;
+			autoPageTimer.schedule(autoPageTimer.delay);
 		} else {
 			autoPageTimer.cancel();
 			autoPageTimer.close();
@@ -33,6 +34,13 @@ tmp = function() {
 			kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE.doNext();
 		} else {
 			autoPageToggle();
+		}
+	}
+
+	autoPageRestart = function () {
+		if (autoPageTimer) {
+			autoPageTimer.cancel();
+			autoPageTimer.schedule(autoPageTimer.delay);
 		}
 	}
 
@@ -68,13 +76,16 @@ tmp = function() {
 		actions: [
 		{
 			name: "autoPageToggle",
-			title: L("TOGGLE_AUTO_PAGETURNER"),
+			title: L("TOGGLE_AUTO_PAGE_TURNER"),
 			group: "Book",
 			icon: "CLOCK",
 			action: function () {
 				autoPageToggle();
 			}
-		}]
+		}],
+		onInit: function () {
+			Core.events.subscribe(Core.events.EVENTS.BOOK_PAGE_CHANGED, autoPageRestart);
+		}
 	};
 
 	Core.addAddon(ViewerSettings);
