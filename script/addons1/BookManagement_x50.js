@@ -38,6 +38,10 @@
 //	2011-12-26 quisvir - Fixed booklist cycle backward action for 'next in collection'
 //	2012-01-02 quisvir - Added 'Read Books' collection
 //	2012-01-10 Ben Chenoweth - Added default keybindings for HOME MENU context
+//	2012-01-19 quisvir - Added 'Add to Collection' option in Book Option Menu
+//
+//	TODO:
+//	Move 'Set/Remove New Flag' and 'Add to Collection' options to PRS+ popup menu
 
 tmp = function() {
 
@@ -112,13 +116,23 @@ tmp = function() {
 		book.opened = (book.opened) ? false : true;
 	}
 	
+	// Book menu option to add book to collection, called from main.xml
+	kbook.model.container.sandbox.OPTION_OVERLAY_PAGE.sandbox.AddToCollection = function () {
+		this.doOption();
+		doSelectCollection('book');
+	}
+	
 	// Show book menu option if preference is set
 	kbook.optMenu.isDisable = function (part) {
-		if (this.hasString(part, 'manualnewflag')) {
+		if (part.playing.indexOf('manualnewflag') !== -1) {
 			if (opt.ManualNewFlag === 'false') {
 				return true;
 			}
 			part.text = (kbook.model.currentBook.opened) ? L('SETNEWFLAG') : L('REMOVENEWFLAG');
+		} else if (part.playing.indexOf('addtocollection') !== -1) {
+			if (opt.showAddToCollection === 'false') {
+				return true;
+			};
 		}
 		return Fskin.overlayTool.isDisable(part);
 	}
@@ -608,7 +622,8 @@ tmp = function() {
 	
 
 	// Functions for booklist option 'Select Collection'
-	doSelectCollection = function () {
+	doSelectCollection = function (target) {
+		if (target === 'book' && !kbook.model.currentBook) return;
 		oldNode = kbook.model.currentNode;
 		oldNode.redirect = true;
 		tempNode = Core.ui.createContainerNode({
@@ -617,43 +632,61 @@ tmp = function() {
 			construct: selectCollectionConstruct,
 			destruct: selectCollectionDestruct
 		});
+		tempNode.target = target;
 		oldNode.gotoNode(tempNode, kbook.model);
 	}
 	
 	selectCollectionConstruct = function () {
-		var i, nodes, db, c;
+		var i, node, nodes, db, c;
 		nodes = this.nodes = [];
 		db = kbook.model.cache.playlistMasters;
 		db.sort('indexPlaylist');
 		c = db.count();
 		for (i = 0; i < c; i++) {
-			nodes[i] = Core.ui.createContainerNode({
-				title: db.getRecord(i).title,
+			coll = db.getRecord(i);
+			node = nodes[i] = Core.ui.createContainerNode({
+				title: coll.title,
 				comment: LX('BOOKS', db.getRecord(i).count()),
 				icon: 'BOOKS'
 			});
-			nodes[i].onEnter = 'collectionSelected';
-			nodes[i].collName = db.getRecord(i).title;
+			node.onEnter = 'collectionSelected';
+			node.coll = coll;
+			node.oldNode = oldNode;
+			node.target = this.target;
 		}
-		if (nodes.length) {
-			createSubCollections(nodes, this, 0);
-		}
+		createSubCollections(nodes, this, 0);
 	}
 	
 	selectCollectionDestruct = function () {
 		tempNode = null;
-		oldNode.redirect = null;
+		delete oldNode.redirect;
+		oldNode = null;
 	}
 	
 	kbook.model.collectionSelected = function (node) {
-		opt.BookList = 5;
-		opt.SelectedCollection = node.collName;
-		Core.settings.saveOptions(BookManagement_x50);
-		updateBookList();
-		if (oldNode.title === L('BOOK_SELECTION')) {
-			this.currentNode.gotoNode(oldNode.parent, this);
-		} else {
-			this.currentNode.gotoNode(oldNode, this);
+		var c, i, db, coll, items, id, old;
+		old = node.oldNode;
+		if (node.target === 'booklist') {
+			opt.BookList = 5;
+			opt.SelectedCollection = node.coll.title;
+			Core.settings.saveOptions(BookManagement_x50);
+			updateBookList();
+			if (old.title === L('BOOK_SELECTION')) {
+				this.currentNode.gotoNode(old.parent, this);
+			} else {
+				this.currentNode.gotoNode(old, this);
+			}
+		} else if (node.target === 'book') {
+			coll = node.coll;
+			items = coll.items;
+			c = items.length;
+			id = this.currentBook.media.id;
+			for (i = 0; i < c && items[i].id !== id; i++);
+			if (i === c) {
+				coll.append(id);
+				this.cache.updateRecord(coll.id, coll);
+			}
+			this.currentNode.gotoNode(old, this);
 		}
 	}
 	
@@ -755,7 +788,7 @@ tmp = function() {
 			group: 'Other',
 			icon: 'BOOKS',
 			action: function () {
-				doSelectCollection();
+				doSelectCollection('booklist');
 			}
 		}],
 		optionDefs: [
@@ -952,6 +985,17 @@ tmp = function() {
 				}	
 			},
 			{
+				name: 'showAddToCollection',
+				title: L('SHOW_ADD_TO_COLLECTION'),
+				icon: 'BOOKS',
+				defaultValue: 'false',
+				values: ['true', 'false'],
+				valueTitles: {
+					'true': L('VALUE_TRUE'),
+					'false': L('VALUE_FALSE')
+				}	
+			},
+			{
 				name: 'CurrentCollection',
 				defaultValue: '',
 				hidden: 'true',
@@ -971,7 +1015,7 @@ tmp = function() {
 					break;
 				case 'BookList':
 					opt.BookList = parseInt(newValue);
-					if (newValue === '5') doSelectCollection();
+					if (newValue === '5') doSelectCollection('booklist');
 				case 'IgnoreCards':
 					opt.CurrentCollection = '';
 				case 'PeriodicalsAsBooks':
