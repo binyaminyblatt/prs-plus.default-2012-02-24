@@ -7,7 +7,8 @@
 //	2011-02-27 kartu - Refactored parameters into PARAMS object
 //	2011-08-27 kartu - Added "addons1" folder, to fix "script too big" problem
 //	2011-08-27 Mark Nord - Fixed "addonpath1" in case of folder (as addonsPath ends with "/" simply adding +"1" will fail)
-//  2011-11-26 Ben Chenoweth - Added "addons2" folder
+//	2011-11-26 Ben Chenoweth - Added "addons2" folder
+//	2011-01-19 Ben Chenoweth - Added "addons3" folder
 
 if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 	var bootLog;
@@ -135,7 +136,7 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 		
 		// Load addons, called by model specific bootstrap
 		loadAddons = function() {
-			var addonCode, log, addons, addonsPath, addonsPath1, addonsPath2, jsPostfix;
+			var addonCode, log, addons, addonsPath, addonsPath1, addonsPath2, addonsPath3, jsPostfix;
 			jsPostfix = ".js";
 			addonsPath = config.addonsFile;
 			// Call addons
@@ -174,6 +175,20 @@ if (!FileSystem.getFileInfo(System.applyEnvironment("[prspSafeModeFile]"))) {
 				addons(Core, log, undefined);
 			} catch (e) {
 				bootLog("Failed to load addons2 " + e);
+			}
+			// Call addons3
+			try {
+				var lenDiff = addonsPath.length - jsPostfix.length;
+				if (addonsPath.indexOf(jsPostfix) === lenDiff) {
+					addonsPath3 = addonsPath.substring(0, lenDiff) + "3" + jsPostfix;
+				} else {
+					addonsPath3 = addonsPath.substring(0, addonsPath.lastIndexOf("/")) + "3/";
+				}
+				addonCode = getFileContentEx(addonsPath3, ".js");
+				addons = new Function("Core,log,tmp", addonCode);
+				addons(Core, log, undefined);
+			} catch (e) {
+				bootLog("Failed to load addons3 " + e);
 			}
 		};
 
