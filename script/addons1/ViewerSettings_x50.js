@@ -29,7 +29,7 @@
 //	2011-11-28 quisvir - Moved touch-related code to Touch Settings addon
 //	2011-12-07 quisvir - Cosmetic changes
 //	2011-12-14 quisvir - Added action to toggle True Landscape mode in book
-//	2012-01-19 quisvir - Added automatic page turner
+//	2012-01-19 quisvir - Added automatic page turner, reset autoPage timer on page change
 
 tmp = function() {
 
@@ -40,7 +40,7 @@ tmp = function() {
 	log = Core.log.getLogger('ViewerSettings_x50');
 
 	var orgOrientation, docWidth, docHeight, oldIsScrollView, falseFunc, toggleTrueLandscape, restoreLandscape,
-		oldOnEnterOrientation1, oldOnEnterOrientation2, autoPageTimer, autoPageToggle, autoPageCallBack;
+		oldOnEnterOrientation1, oldOnEnterOrientation2, autoPageTimer, autoPageToggle, autoPageCallBack, autoPageRestart;
 	
 	oldIsScrollView = kbook.kbookPage.isScrollView;
 	falseFunc = function () { return false };
@@ -417,7 +417,8 @@ tmp = function() {
 			autoPageTimer = new HardwareTimer();
 			autoPageTimer.onCallback = autoPageCallback;
 			autoPageTimer.target = null;
-			autoPageTimer.scheduleRepeating(parseInt(ViewerSettings_x50.options.AutoPageTurnerTime) * 1000);
+			autoPageTimer.delay = parseInt(ViewerSettings_x50.options.AutoPageTurnerTime) * 1000;
+			autoPageTimer.schedule(autoPageTimer.delay);
 		} else {
 			autoPageTimer.cancel();
 			autoPageTimer.close();
@@ -434,6 +435,13 @@ tmp = function() {
 		}
 	}
 
+	autoPageRestart = function () {
+		if (autoPageTimer) {
+			autoPageTimer.cancel();
+			autoPageTimer.schedule(autoPageTimer.delay);
+		}
+	}
+	
 	var ViewerSettings_x50 = {
 		name: "ViewerSettings_x50",
 		settingsGroup: "viewer", // "advanced",
@@ -521,6 +529,7 @@ tmp = function() {
 		onInit: function () {
 			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, restoreLandscape, true);
 			if (ViewerSettings_x50.options.BorderColor === 'white') kbook.kbookPage.borderColor = Color.rgb.parse('white');
+			Core.events.subscribe(Core.events.EVENTS.BOOK_PAGE_CHANGED, autoPageRestart);
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			kbook.kbookPage.borderColor = (ViewerSettings_x50.options.BorderColor === 'grey') ? Color.rgb.parse('#6D6D6D') : Color.rgb.parse('white');
@@ -538,7 +547,7 @@ tmp = function() {
 		},
 		{
 			name: "autoPageToggle",
-			title: L("TOGGLE_AUTO_PAGETURNER"),
+			title: L("TOGGLE_AUTO_PAGE_TURNER"),
 			group: "Book",
 			icon: "CLOCK",
 			action: function () {
