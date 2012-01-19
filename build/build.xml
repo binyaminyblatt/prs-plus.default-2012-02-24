@@ -242,6 +242,7 @@ History:
 		<mkdir dir="${beta}/addons"/>
 		<mkdir dir="${beta}/addons1"/>
 		<mkdir dir="${beta}/addons2"/>
+		<mkdir dir="${beta}/addons3"/>
 		<mkdir dir="${beta}/core"/>
 		
 		<echo>Copying model specific addon resources</echo>
@@ -257,6 +258,11 @@ History:
 		</copy>
 		<copy todir="${beta}/addons2">
 			<fileset dir="${src}/addons2" >
+			 	<patternset refid="addons_${model}" />
+			</fileset>
+		</copy>
+		<copy todir="${beta}/addons3">
+			<fileset dir="${src}/addons3" >
 			 	<patternset refid="addons_${model}" />
 			</fileset>
 		</copy>
@@ -337,6 +343,17 @@ History:
 					<patternset refid="addons_${model}" />
 				</fileset>
 				<fileset dir="${SRC.ADDONS}2">
+					<include name="*.js"/>
+				</fileset>
+			</intersect>
+		</concat>
+		<!-- addons 3 folder -->
+		<concat destfile="${prsp.dir}/addons3.js" encoding="UTF-8">
+			<intersect>
+				<fileset dir="${SRC.ADDONS}3">
+					<patternset refid="addons_${model}" />
+				</fileset>
+				<fileset dir="${SRC.ADDONS}3">
 					<include name="*.js"/>
 				</fileset>
 			</intersect>
