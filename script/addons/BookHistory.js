@@ -44,6 +44,7 @@
 //	2011-05-14 kartu - Fixed bug related to "Skip book menu" option 
 //	2011-09-20 quisvir - Added getBookList to make booklist available to other addons (thanks kartu)
 //	2011-09-24 quisvir - Fixed #178: Deleting books present in Book History deletes current book from Book History as well
+//	2012-01-19 quisvir - Added "Go to Previous Book" action
 
 
 tmp = function() {
@@ -347,6 +348,21 @@ tmp = function() {
 					current.gotoNode(bookHistoryNode, model);
 				} else {
 					log.trace("can't find current node");
+				}
+			}
+		},
+		{
+			name: "Go to Previous Book",
+			title: L("GO_TO_PREVIOUS_BOOK"),
+			group: "Book",
+			icon: "BACK",
+			action: function () {
+				var i, book, current;
+				i = kbook.model.currentBook ? 1 : 0;
+				if (i < bookList.length) {
+					book = createBookNode(bookList[i]);
+					current = Core.ui.getCurrentNode();
+					current.gotoNode(book, kbook.model);
 				}
 			}
 		}]
