@@ -2,6 +2,8 @@
 //
 // History:
 //	2012-01-19 quisvir - Initial version, reset autoPage timer on page change
+//	2012-01-20 Mark Nord - kbook.model.processing() kbook.model.processed();
+//		but this prevents SubCPUThread from sleeping, might lead to high battery consumption
 
 tmp = function() {
 
@@ -16,6 +18,7 @@ tmp = function() {
 	autoPageToggle = function () {
 		if (!autoPageTimer) {
 			Core.ui.showMsg(L("AUTO_PAGE_TURNER") + ": " + L("VALUE_TRUE"), 2);
+			kbook.model.processing(100);
 			autoPageTimer = new Timer();
 			autoPageTimer.onCallback = autoPageCallback;
 			autoPageTimer.target = null;
@@ -25,6 +28,7 @@ tmp = function() {
 			autoPageTimer.cancel();
 			autoPageTimer.close();
 			autoPageTimer = null;
+			kbook.model.processed(100);
 			Core.ui.showMsg(L("AUTO_PAGE_TURNER") + ": " + L("VALUE_FALSE"), 2);
 		}
 	}
