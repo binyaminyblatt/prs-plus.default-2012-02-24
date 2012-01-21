@@ -4,6 +4,9 @@
 //	2012-01-19 quisvir - Initial version, reset autoPage timer on page change
 //	2012-01-20 Mark Nord - kbook.model.processing() kbook.model.processed();
 //		but this prevents SubCPUThread from sleeping, might lead to high battery consumption
+//	2012-01-21 Mark Nord - first preview of MarginCut for 505/300
+//	ToDo: reset marginCut at appropriate places;  show helptext; check for zoom-setting, check for landscape, a.s.o
+//	possible enhancements: 4-quadrants view, ...
 
 tmp = function() {
 
@@ -14,6 +17,147 @@ tmp = function() {
 	log = Core.log.getLogger('ViewerSettings');
 
 	var autoPageTimer, autoPageToggle, autoPageCallBack, autoPageRestart;
+
+	var oldRender, myRender, setMarginCut, myBounds, dx, dy, myWidth, myHeight, marginCut;
+	marginCut = false;
+
+	setMarginCut = function () {
+		var oldDoDigit, oldDoMenu, oldDoCenter, window, factor, drawRect,
+			clipTop, clipBottom, delta, oldRec, rec, doDigit, doMenu, doCenter, page, freeKeys;
+		
+		page = kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
+		clipTop = clipBottom = 0;
+		delta = 5;
+
+		oldRec = new Rectangle;
+		rec = new Rectangle;
+
+		doDigit = function (sender) {
+			switch (sender.key * 1) {
+			case 1: clipTop -= delta;
+				break;
+			case 2: clipTop += delta * 2;
+				break;
+			case 9: clipBottom += delta * 2;
+				break;
+			case 0: clipBottom -= delta;
+				break;
+			}
+			if (clipTop < 0) {
+				clipTop = 0;
+			}
+			if (clipBottom < 0) {
+				clipBottom = 0;
+			}
+			drawRect(clipTop, clipBottom);
+			return true;
+		};
+
+		doMenu = function () {
+			freeKeys();
+			page.dataChanged();
+		};
+
+		doCenter = function () {
+			var f;
+			f = 754/rec.height;
+			myHeight = Math.floor(754*f);
+			myWidth = Math.floor(myHeight * 0.7754);
+			dx = Math.floor((584-myWidth)/2);
+			dy = Math.floor(clipTop * f) * -1;
+			myBounds = new Rectangle(0, 0, myWidth, myHeight);
+			marginCut = true;
+			page.dataChanged();
+			freeKeys();
+		};
+
+		drawRect = function (deltaTop, deltaBottom) {
+			var x, y, width, height, color;
+			window.beginDrawing;
+			color = window.getPenColor();
+			// clear old frame
+			window.setPenColor(Color.white);
+			window.frameRectangle(oldRec.x, oldRec.y, oldRec.width, oldRec.height );
+	
+			rec.height = 754 - deltaTop - deltaBottom;
+			rec.y = 8 + deltaTop;
+
+			rec.width = Math.floor(rec.height*factor);
+			rec.x = 8 + Math.floor((584-rec.width)/2);
+	
+			oldRec = rec;
+
+			window.setPenColor(Color.black);
+			window.frameRectangle(rec.x, rec.y, rec.width, rec.height );
+			window.setPenColor(color);
+			window.endDrawing;
+			// needed to trigger a partial screen refresh - FixMe: find a better solution
+			kbook.model.container.sandbox.STATUS_GROUP.sandbox.prspTime.setValue('');
+		};
+
+		freeKeys = function () {
+			kbook.model.container.sandbox.PAGE_GROUP.sandbox.doDigit = oldDoDigit;
+			kbook.model.doMenu = oldDoMenu;
+			kbook.model.doCenter = oldDoCenter;		
+		};
+
+		// toggle from marginCut to normal 100% view
+		if (marginCut) {
+			marginCut = false;
+			page.dataChanged();
+			return;
+		}
+		if (kbook.model.STATE === 'PAGE') {
+			try{
+				oldDoDigit = kbook.model.container.sandbox.PAGE_GROUP.sandbox.doDigit;
+				oldDoMenu = kbook.model.doMenu;
+				oldDoCenter = kbook.model.doCenter; 
+
+				kbook.model.container.sandbox.PAGE_GROUP.sandbox.doDigit = doDigit;
+				kbook.model.doMenu = doMenu;
+				kbook.model.doCenter = doCenter;
+
+				factor = 584/754;
+				window = kbook.model.container.getWindow();
+				drawRect(0,0);
+				clipTop = clipBottom = 0;
+			}
+			catch (e) {
+				log.error('Fehler in setMarginCut',e);
+				freeKeys();
+			}
+		}
+	};
+
+
+	oldRender = Document.Viewer.viewer.render;
+
+	myRender = function () {
+		var oldBounds, myBitmap, bitmap2, port;
+		if (marginCut) {
+		try {	
+			oldBounds = this.get(Document.Property.dimensions);
+			this.set(Document.Property.dimensions, myBounds);
+			myBitmap = oldRender.call(this);
+			this.set(Document.Property.dimensions, oldBounds);
+			bitmap2 = new Bitmap(oldBounds.width, oldBounds.height);
+			port = new Port(bitmap2);
+			port.drawBitmap(myBitmap, dx, dy, myBounds.width, myBounds.height);
+			myBitmap.close();
+			port.close();
+			return bitmap2;
+			}
+		catch (e) {
+			log.error('error in myRender:',e);
+			return oldRender.apply(this, agruments);
+			}
+		}
+		else {
+			return oldRender.apply(this, agruments);
+		}
+	};
+	
+
 
 	autoPageToggle = function () {
 		if (!autoPageTimer) {
@@ -85,10 +229,18 @@ tmp = function() {
 			icon: "CLOCK",
 			action: function () {
 				autoPageToggle();
+			},
+			name: "marginCut",
+			title: L("MARGINCUT"),
+			group: "Book",
+			icon: "SEARCH_ALT",
+			action: function () {
+				setMarginCut();
 			}
 		}],
 		onInit: function () {
 			Core.events.subscribe(Core.events.EVENTS.BOOK_PAGE_CHANGED, autoPageRestart);
+			Document.Viewer.viewer.render = myRender;
 		}
 	};
 
