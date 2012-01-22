@@ -8,6 +8,7 @@
 //	2011-12-18 quisvir - Added next/previous buttons to popup; added custom functions for reinitializing coordinates
 //	2011-12-20 quisvir - Moved code to change dictionary popup layout into single function
 //	2011-12-21 quisvir - Merged functions for next/previous buttons in popup
+//	2012-01-22 quisvir - Changed 'Prevent overlap' option to general 'Popup Position'
 
 tmp = function() {
 
@@ -53,13 +54,13 @@ tmp = function() {
 		target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
 		doTerminateCoordinates(target, true);
 		if (toTop) {
-			target.changeLayout(0, undefined, 0, 0, h + 114, undefined);
+			target.changeLayout(0, undefined, 0, 0, h + 116, undefined);
 		} else {
-			target.changeLayout(0, undefined, 0, undefined, h + 114, 0);
+			target.changeLayout(0, undefined, 0, undefined, h + 116, 0);
 		}
 		doInitializeCoordinates(target, true);
 		if (button) {
-			target.sandbox.DIC_BTN.changeLayout(14, undefined, 14, undefined, h + 10, 0);
+			target.sandbox.DIC_BTN.changeLayout(14, undefined, 14, undefined, h + 10, 2);
 		}
 	}
 	
@@ -101,7 +102,7 @@ tmp = function() {
 	// Move dictionary popup to top of screen if tap in bottom (and vice versa)
 	var preventPopupOverlap = function (y) {
 		var target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
-		if (y < kbook.model.container.height - target.height - 40) {
+		if (y < kbook.model.container.height - target.height - 50) {
 			if (target.y === 0) {
 				modifyDictPopup(false, false);
 			}
@@ -135,7 +136,9 @@ tmp = function() {
 	
 	// Set dictionary popup size on first book load (onInit is too soon)
 	var initPopupSize = function () {
-		if (opt.popupLines !== 3) {
+		if (opt.popupPosition === 'top') {
+			modifyDictPopup(true, true);
+		} else if (opt.popupLines !== 3) {
 			modifyDictPopup(false, true);
 		}
 		Core.events.unsubscribe(Core.events.EVENTS.BOOK_CHANGED, initPopupSize);
@@ -158,14 +161,15 @@ tmp = function() {
 				}
 			},
 			{
-				name: 'preventPopupOverlap',
-				title: L('PREVENT_POPUP_OVERLAP'),
+				name: 'popupPosition',
+				title: L('POPUP_POSITION'),
 				icon: 'ABOUT',
-				defaultValue: 'false',
-				values: ['true', 'false'],
+				defaultValue: 'bottom',
+				values: ['bottom', 'top', 'avoid'],
 				valueTitles: {
-					'true': L('VALUE_TRUE'),
-					'false': L('VALUE_FALSE')
+					'bottom': L('BOTTOM'),
+					'top': L('TOP'),
+					'avoid': L('AVOID_SELECTION_OVERLAP')
 				}
 			},
 			{
@@ -196,13 +200,17 @@ tmp = function() {
 			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, initPopupSize);
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+			var toTop;
 			if (propertyName === 'popupLines') {
 				opt.popupLines = parseInt(newValue);
 				modifyDictPopup(false, true);
+			} else if (propertyName === 'popupPosition') {
+				toTop = (newValue === 'top') ? true : false;
+				modifyDictPopup(toTop, false);
 			}
 		},
 		pageDoubleTap: function (x, y) {
-			if (opt.preventPopupOverlap === 'true') {
+			if (opt.popupPosition === 'avoid') {
 				preventPopupOverlap(y);
 			}
 		}
