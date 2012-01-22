@@ -3498,7 +3498,7 @@
 			</function>
 		</code>
 
-		<group id="VIEW_SHORTCUT"  left="0" right="0" bottom="0" height="183" visible="true" active="true">
+		<group id="VIEW_SHORTCUT"  left="0" right="0" bottom="0" height="185" visible="true" active="true"> <!-- PRS+ change, was: height="183" -->
 			<model>
 				<variable id="VIEW" value="CONTENT"/>
 			</model>
@@ -3544,7 +3544,8 @@
 
 
 			<!-- line space is 3 dot.  lineSpaceing= 3*72/kFskDocumentViewerDefaultDPI = 3*72/167 = 1.2934 -->
-			<kbookDictionaryButton id="DIC_BTN" skin="shortcutDictionary" message="STR_UI_MESSAGE_NO_DEFINITION,STR_UI_MESSAGE_DICTIONARY_NOT_SUPPORTED" replaceIdentifier="XXBUTTON1XX:0,XXBUTTON2XX:1" bgColor="#FFFFFFFF" textSize="8" lineSpacing="1.2934" left="14" right="14" bottom="0" height="79" variableUpdate="VAR_UPDATE" can="canShortcutDictionary" do="doShortcutDictionary" href="x-id://dictionaryData"/>
+			<kbookDictionaryButton id="DIC_BTN" skin="shortcutDictionary" message="STR_UI_MESSAGE_NO_DEFINITION,STR_UI_MESSAGE_DICTIONARY_NOT_SUPPORTED" replaceIdentifier="XXBUTTON1XX:0,XXBUTTON2XX:1" bgColor="#FFFFFFFF" textSize="8" lineSpacing="1.2934" left="14" right="14" bottom="2" height="79" variableUpdate="VAR_UPDATE" can="canShortcutDictionary" do="doShortcutDictionary" href="x-id://dictionaryData"/> <!-- PRS+ change, was: bottom="0" -->
+			<fillBackground color="black" left="0" right="0" bottom="0" height="2"/> <!-- PRS+ added -->
 		</group>
 	</kbookOverlay>
 
