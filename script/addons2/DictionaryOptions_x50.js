@@ -9,6 +9,7 @@
 //	2011-12-20 quisvir - Moved code to change dictionary popup layout into single function
 //	2011-12-21 quisvir - Merged functions for next/previous buttons in popup
 //	2012-01-22 quisvir - Changed 'Prevent overlap' option to general 'Popup Position'
+//	2012-01-24 quisvir - Added 'Maximum Word Log Items' option
 
 tmp = function() {
 
@@ -144,6 +145,42 @@ tmp = function() {
 		Core.events.unsubscribe(Core.events.EVENTS.BOOK_CHANGED, initPopupSize);
 	}
 	
+	var trimDicHistories = function (max) {
+		var cb, hist, db, c, i, r, dict;
+		// Current book
+		cb = kbook.model.currentBook;
+		if (cb) {
+			hist = cb.media.preferences.dicHistories;
+			if (hist.length > max) {
+				kbook.model.deleteDicHistories(hist);
+				hist.splice(max, hist.length - max);
+			}
+		}
+		// Book cache
+		db = kbook.model.cache.textMasters;
+		c = db.count();
+		for (i = 0; i < c; i++) {
+			r = db.getRecord(i);
+			if (r.preferences) {
+				hist = r.preferences.dicHistories;
+				if (hist.length > max) {
+					hist.splice(max, hist.length - max);
+					r.mapToCacheExt();
+				}
+			}
+		}
+		// Dictionaries
+		dict = kbook.model.dicHistoriesForDevice;
+		c = dict.length;
+		for (i = 0; i < c; i++) {
+			hist = dict[i];
+			if (hist.length > max) {
+				kbook.model.deleteDicHistories(hist);
+				hist.splice(max, hist.length - max);
+			}
+		}
+	}
+	
 	var DictionaryOptions = {
 		name: 'DictionaryOptions',
         title: L('TITLE'),
@@ -190,7 +227,17 @@ tmp = function() {
 				defaultValue: '3',
 				values: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
 				valueTitles: {
-					'3': '3 (' + L('VALUE_DEFAULT') + ')',
+					'3': '3 (' + L('VALUE_DEFAULT') + ')'
+				}
+			},
+			{
+				name: 'dicHistMax',
+				title: L('WORD_LOG_MAX'),
+				icon: 'DICTIONARY',
+				defaultValue: '100',
+				values: ['0', '10', '25', '50', '100', '150', '200', '250', '500', '1000'],
+				valueTitles: {
+					'100': '100 (' + L('VALUE_DEFAULT') + ')'
 				}
 			}
 		],
@@ -198,15 +245,28 @@ tmp = function() {
 			opt = this.options;
 			opt.popupLines = parseInt(opt.popupLines);
 			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, initPopupSize);
+			kbook.model.dicHistoriesMax = parseInt(opt.dicHistMax);
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			var toTop;
-			if (propertyName === 'popupLines') {
-				opt.popupLines = parseInt(newValue);
-				modifyDictPopup(false, true);
-			} else if (propertyName === 'popupPosition') {
-				toTop = (newValue === 'top') ? true : false;
-				modifyDictPopup(toTop, false);
+			var toTop, dialog, max;
+			switch (propertyName) {
+				case 'popupLines':
+					opt.popupLines = parseInt(newValue);
+					modifyDictPopup(false, true);
+					break;
+				case 'popupPosition':
+					toTop = (newValue === 'top') ? true : false;
+					modifyDictPopup(toTop, false);
+					break;
+				case 'dicHistMax':
+					kbook.model.dicHistoriesMax = parseInt(newValue);
+					dialog = kbook.model.getConfirmationDialog();
+					if (dialog) {
+						dialog.onOk = function () {
+							trimDicHistories(parseInt(newValue));
+						};
+						dialog.openDialog(L('TRIM_EXISTING_WORD_LOGS'), 0);
+					}
 			}
 		},
 		pageDoubleTap: function (x, y) {
