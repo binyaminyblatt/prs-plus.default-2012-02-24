@@ -71,6 +71,7 @@ return {
 		DATETIME: 28,
 		DB: 29,
 		SHUTDOWN: 31,
+		INTERACT_FICT: 34,
 		TEXT_SCALE: 74, // 39
 		SEARCH: 39,
 		TEXT_MEMO: 50,

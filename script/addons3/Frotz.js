@@ -4,7 +4,7 @@
 */
 
 tmp = function() {
-	var appIcon = "BOOK_ALT";
+	var appIcon = "INTERACT_FICT";
 	var Frotz = {
 		name: "Frotz",
 		title: "Frotz",
@@ -22,8 +22,8 @@ tmp = function() {
 			kbook.autoRunRoot.sandbox.deleteFile = Core.io.deleteFile;
 			kbook.autoRunRoot.sandbox.startsWith = Core.text.startsWith;
 			kbook.autoRunRoot.sandbox.gamesSavePath = Core.config.userGamesSavePath;
-			kbook.autoRunRoot.sandbox.createSimpleMenu = Core.popup.createSimpleMenu;
-			kbook.autoRunRoot.sandbox.showMenu = Core.popup.showMenu;
+			//kbook.autoRunRoot.sandbox.createSimpleMenu = Core.popup.createSimpleMenu;
+			//kbook.autoRunRoot.sandbox.showMenu = Core.popup.showMenu;
 			kbook.autoRunRoot.sandbox.shellExec = Core.shell.exec;
 			kbook.autoRunRoot.path = Core.config.addonsPath + "Frotz/frotz.xml";
 			kbook.autoRunRoot.sandbox.model = Core.config.model;

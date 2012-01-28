@@ -4,6 +4,7 @@
 //
 // Initial version: 2012-01-25
 // Changelog:
+// 2012-01-28 Ben Chenoweth - Output scrolls automatically
 
 var tmp = function () {
 	
@@ -24,8 +25,8 @@ var tmp = function () {
 	var tempPath = "/tmp/frotz/";
 	FileSystem.ensureDirectory(tempPath);
 
-	var mouseLeave = getSoValue( target.btn_Ok,'mouseLeave');
-	var mouseEnter = getSoValue( target.btn_Ok,'mouseEnter');
+	var mouseLeave = getSoValue(target.btn_Ok, 'mouseLeave');
+	var mouseEnter = getSoValue(target.btn_Ok, 'mouseEnter');
 	var shifted = false;
 	var shiftOffset = 26;
 	var symbols = false;
@@ -43,6 +44,7 @@ var tmp = function () {
 	var tempOutput = "";
 	var chooseGame = false;
 	var titles = [];
+	var pageScroll;
 	
 	var twoDigits = function (i) {
 		if (i<10) {return "0"+i}
@@ -177,6 +179,9 @@ var tmp = function () {
 		//target.bubble("tracelog","initialising...");
 		this.appTitle.setValue(kbook.autoRunRoot._title);
 		this.appIcon.u = kbook.autoRunRoot._icon;
+		try {
+			pageScroll = getSoValue(this.frotzText, 'scrollPage');
+		} catch (ignore) { }
 		this.loadKeyboard();
 		symbols = true;
 		this.refreshKeys();
@@ -184,14 +189,22 @@ var tmp = function () {
 		this.enable(true); // needed for the SIM only
 	}
 
+	target.setOutput = function (output) {
+		this.frotzText.setValue(output);
+		try {
+			pageScroll.call(this.frotzText, true, 1);
+		}
+		catch (ignore) { }
+	}
+	
 	target.loadGameList = function () {
 		var items, filesMissingError, itemNum, noZeroItemNum; //, titles, actions, menu;
 		items = listFiles(datPath);
 		if (items.length == 0) {
 			filesMissingError = "Error:\nThere are no files in the game directory.\nPlease connect your reader to a PC and copy the game files into the Frotz folder located in the PRS+ GamesSave folder."
-			target.frotzText.setValue(filesMissingError);
+			this.setOutput(filesMissingError);
 		} else {
-			/*titles = []; //TODO: Fix popup menu?
+			/*titles = []; //TODO?: Fix popup menu
 			actions = [];
 			for (itemNum = 0; itemNum < items.length; itemNum++) {
 				titles.push(items[items.length - itemNum - 1]); // load popup in reverse order
@@ -209,7 +222,7 @@ var tmp = function () {
 				noZeroItemNum = itemNum + 1;
 				tempOutput = tempOutput + "\n" + noZeroItemNum + ": " + items[itemNum];
 			}
-			target.frotzText.setValue(tempOutput);
+			this.setOutput(tempOutput);
 			chooseGame = true;
 		}
 		
@@ -219,7 +232,7 @@ var tmp = function () {
 		var i, gameTitle, cmd, result;
 		if (gameTitle) {
 			tempOutput = tempOutput + "\nInitialising " + gameTitle + "...";
-			target.frotzText.setValue(tempOutput);
+			this.setOutput(tempOutput);
 			try {
 				// delete old output file if it exists
 				deleteFile(FROTZOUTPUT);
@@ -230,7 +243,7 @@ var tmp = function () {
 				// start FROTZ as a background process
 				cmd = "tail -f " + FROTZINPUT + " | " + FROTZ + " " + datPath + gameTitle + " > " + FROTZOUTPUT + " 2>/Data/frotz.error &";
 				tempOutput = tempOutput + "\ncmd:\n"+cmd;
-				target.frotzText.setValue(tempOutput);
+				this.setOutput(tempOutput);
 				shellExec(cmd);
 				
 				// get output
@@ -238,19 +251,19 @@ var tmp = function () {
 				if (result !== "222") {
 					// output
 					tempOutput = tempOutput + "\nResult:\n"+result;
-					target.frotzText.setValue(tempOutput);
+					this.setOutput(tempOutput);
 				} else {
 					// no output file!
 					tempOutput = tempOutput + "\nError starting FROTZ!\n\nCommand used: "+cmd;
-					target.frotzText.setValue(tempOutput);
+					this.setOutput(tempOutput);
 				}
 			} catch(e) {
 				tempOutput = tempOutput + "\nError " + e + " initialising game "+gameTitle;
-				target.frotzText.setValue(tempOutput);
+				this.setOutput(tempOutput);
 			}
 		} else {
 			tempOutput = tempOutput + "\nError:\nNo valid game title found.";
-			target.frotzText.setValue(tempOutput);
+			this.setOutput(tempOutput);
 		}
 	}
 	
@@ -259,6 +272,7 @@ var tmp = function () {
 		// get currentLine
 		currentLine = target.getVariable("current_line");
 		if (chooseGame) {
+			// convert input to number and look for respective gameTitle
 			itemNum = parseInt(currentLine);
 			if ((itemNum <= titles.length) && (itemNum > 0)) {
 				itemNum--;
@@ -270,23 +284,29 @@ var tmp = function () {
 				this.initialiseGame(gameTitle);
 			}
 		} else {
-			// append currentLine to end of FROTZINPUT
+			// append currentLine to end of FROTZINPUT which is piped into FROTZ, eventually generating output
 			if (FileSystem.getFileInfo(FROTZINPUT)) {
 				stream = new Stream.File(FROTZINPUT, 1);
 				stream.seek(stream.bytesAvailable);
-				stream.writeString("\n" + currentLine); // TODO: is the \n necessary?
+				stream.writeString("\n" + currentLine);
 			}
+			
+			// add currentLine to output
+			tempOutput = tempOutput + "\n> " + currentLine;
+			this.setOutput(tempOutput);
 			
 			// start timer for callback
 			try {
-				timer = this.timer = new Timer(); //600
-			} catch(ignore) {}
-			try {
 				timer = this.timer = new HardwareTimer(); //x50
-			} catch(ignore) {}
+			} catch(ignore) { }
+			if (!timer) {
+				try {
+					timer = this.timer = new Timer(); //600
+				} catch(ignore) { }
+			}
 			timer.target = this;
-			timer.onCallback = target.getResponse;
-			timer.onClockChange = target.getResponse;
+			timer.onCallback = target_getResponse;
+			timer.onClockChange = target_getResponse;
 			timer.schedule(500); // TODO: Is this long enough? Too long?
 		}
 		// clear currentLine
@@ -296,7 +316,7 @@ var tmp = function () {
 		return;
 	}
 	
-	target.getResponse = function () {
+	target_getResponse = function () {
 		var target, result;
 		target = this.target;
 		target.timer = null;
@@ -305,15 +325,11 @@ var tmp = function () {
 		if (result !== "222") {
 			// output
 			tempOutput = tempOutput + "\nResult:\n"+result;
-			target.frotzText.setValue(tempOutput);
 		} else {
 			// no output file!
 			tempOutput = tempOutput + "\nNo output found!";
-			target.frotzText.setValue(tempOutput);
 		}
-		
-		// TODO: Scroll textbox to bottom of text
-		// TODO: Add UP and DOWN buttons to UI
+		target.setOutput(tempOutput);
 	}
 		
 	target.doQuit = function () {
@@ -324,7 +340,7 @@ var tmp = function () {
 		
 		result = getFileContent(PSLOG, "2X2");
 		//tempOutput = tempOutput + "\nPSLOG:\n"+result;
-		//target.frotzText.setValue(tempOutput);
+		//this.setOutput(tempOutput);
 		if (result !== "2X2") {
 			psStrings = result.split("\n");
 			if (psStrings[0]) {
@@ -377,14 +393,22 @@ var tmp = function () {
 		if (shifted) {
 			n = n + shiftOffset;
 			setSoValue(target.SHIFT, 'text', strUnShift);
+			mouseEnter.call(target.SHIFT);
+			mouseLeave.call(target.SHIFT);
 		} else {
 			setSoValue(target.SHIFT, 'text', strShift);
+			mouseEnter.call(target.SHIFT);
+			mouseLeave.call(target.SHIFT);
 		}
 		if (symbols) {
 			n = n + symbolsOffset;
 			setSoValue(target.SYMBOL, 'text', "Abc");
+			mouseEnter.call(target.SYMBOL);
+			mouseLeave.call(target.SYMBOL);
 		} else {
 			setSoValue(target.SYMBOL, 'text', "Symbols");
+			mouseEnter.call(target.SYMBOL);
+			mouseLeave.call(target.SYMBOL);
 		}
 		for (i=1; i<=26; i++) {
 			key = 'key'+twoDigits(i);

@@ -75,6 +75,7 @@ return {
 		DB: 29,
 		SHUTDOWN: 31,
 		COLOR: 32,
+		INTERACT_FICT: 34,
 		TEXT_SCALE: 99, //39
 		GESTURE: 38,
 		SEARCH: 39,
