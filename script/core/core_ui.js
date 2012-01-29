@@ -24,6 +24,7 @@
 //	2011-06-26 kartu - Again fixed "update() wasn't called by container mode"
 //	2011-10-01 quisvir - Added guideArea property for containers
 //	2011-12-29 Ben Chenoweth - Added setCurrentNode(node)
+//	2012-01-29 Mark Nord - added "infinite" duration to Core.ui.showMsg
 
 try {
 	var doSetNodeIcon = function (node, icon) {
@@ -191,7 +192,7 @@ try {
 		if (duration === undefined) {
 			duration = 2;
 		}
-		
+		if (duration === "infinite") { return }
 		if (duration > 0) {
 			try {
 				Core.shell.exec("sleep " + duration);
