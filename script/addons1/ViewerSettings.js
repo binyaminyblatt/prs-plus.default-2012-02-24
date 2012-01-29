@@ -5,8 +5,8 @@
 //	2012-01-20 Mark Nord - kbook.model.processing() kbook.model.processed();
 //		but this prevents SubCPUThread from sleeping, might lead to high battery consumption
 //	2012-01-21 Mark Nord - first preview of MarginCut for 505/300
-//	ToDo: reset marginCut at appropriate places;  show helptext; check for zoom-setting, check for landscape, a.s.o
-//	possible enhancements: 4-quadrants view, ...
+//	2012-01-29 Mark Nord - reset marginCut at appropriate places;  show helptext; 
+//	ToDo: check for landscape; add to Book-Menu; possible enhancements: 4-quadrants view, ...
 
 tmp = function() {
 
@@ -18,15 +18,16 @@ tmp = function() {
 
 	var autoPageTimer, autoPageToggle, autoPageCallBack, autoPageRestart;
 
-	var oldRender, myRender, setMarginCut, myBounds, dx, dy, myWidth, myHeight, marginCut;
+	var oldRender, myRender, setMarginCut, resetMarginCut, myBounds, dx, dy, myWidth, myHeight, marginCut;
 	marginCut = false;
 
 	setMarginCut = function () {
-		var oldDoDigit, oldDoMenu, oldDoCenter, window, factor, drawRect,
-			clipTop, clipBottom, delta, oldRec, rec, doDigit, doMenu, doCenter, page, freeKeys;
-		
-		page = kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
-		clipTop = clipBottom = 0;
+		var oldDoDigit, oldDoMenu, oldDoCenter, window, factor, drawRect, page,
+			clipTop, clipBottom, offsetX, delta, oldRec, rec, doDigit, doMenu, doCenter, freeKeys;
+
+
+		page = kbook.model.container.sandbox.PAGE_GROUP.sandbox.PAGE;		
+		clipTop = clipBottom = offsetX = 0;
 		delta = 5;
 
 		oldRec = new Rectangle;
@@ -37,6 +38,10 @@ tmp = function() {
 			case 1: clipTop -= delta;
 				break;
 			case 2: clipTop += delta * 2;
+				break;
+			case 5: offsetX -= delta;
+				break;
+			case 6: offsetX += delta;
 				break;
 			case 9: clipBottom += delta * 2;
 				break;
@@ -63,8 +68,8 @@ tmp = function() {
 			f = 754/rec.height;
 			myHeight = Math.floor(754*f);
 			myWidth = Math.floor(myHeight * 0.7754);
-			dx = Math.floor((584-myWidth)/2);
-			dy = Math.floor(clipTop * f) * -1;
+			dx = Math.floor((584-myWidth)/2) - offsetX;
+			dy = Math.floor(clipTop * -f) 
 			myBounds = new Rectangle(0, 0, myWidth, myHeight);
 			marginCut = true;
 			page.dataChanged();
@@ -83,7 +88,7 @@ tmp = function() {
 			rec.y = 8 + deltaTop;
 
 			rec.width = Math.floor(rec.height*factor);
-			rec.x = 8 + Math.floor((584-rec.width)/2);
+			rec.x = 8 + offsetX + Math.floor((584-rec.width)/2);
 	
 			oldRec = rec;
 
@@ -119,16 +124,20 @@ tmp = function() {
 
 				factor = 584/754;
 				window = kbook.model.container.getWindow();
+				Core.ui.showMsg(L('MARGINCUT_HELP') ,'infinite');
 				drawRect(0,0);
 				clipTop = clipBottom = 0;
 			}
 			catch (e) {
-				log.error('Fehler in setMarginCut',e);
+				log.error('Error in setMarginCut: ',e);
 				freeKeys();
 			}
 		}
 	};
 
+	resetMarginCut = function () {
+			marginCut = false;
+	};
 
 	oldRender = Document.Viewer.viewer.render;
 
@@ -175,7 +184,7 @@ tmp = function() {
 			kbook.model.processed(100);
 			Core.ui.showMsg(L("AUTO_PAGE_TURNER") + ": " + L("VALUE_FALSE"), 2);
 		}
-	}
+	};
 	
 	autoPageCallback = function () {
 		if (kbook.model.STATE === 'PAGE') {
@@ -183,14 +192,14 @@ tmp = function() {
 		} else {
 			autoPageToggle();
 		}
-	}
+	};
 
 	autoPageRestart = function () {
 		if (autoPageTimer) {
 			autoPageTimer.cancel();
 			autoPageTimer.schedule(autoPageTimer.delay);
 		}
-	}
+	};
 
 	var ViewerSettings = {
 		name: "ViewerSettings",
@@ -240,7 +249,18 @@ tmp = function() {
 		}],
 		onInit: function () {
 			Core.events.subscribe(Core.events.EVENTS.BOOK_PAGE_CHANGED, autoPageRestart);
+			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, resetMarginCut);
+			Core.hook.hookBefore(ebook, "rotate", resetMarginCut); //function(where, what, newFunction, tag) 
+			Core.hook.hookBefore(Fskin.kbookPage, "doSize", resetMarginCut);
 			Document.Viewer.viewer.render = myRender;
+/*			var node;
+			node = Core.ui.createContainerNode({
+				title: L("MARGINCUT"),
+				icon: 'SEARCH_ALT' 
+			});
+			node.onEnter = 'onEnterPage';
+			kbook.children.marginCut = node; 
+			Core.hook.hookAfter(kbook.children.marginCut, "enter", setMarginCut);	*/
 		}
 	};
 
