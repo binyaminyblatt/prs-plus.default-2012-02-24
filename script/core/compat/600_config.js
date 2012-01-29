@@ -94,6 +94,7 @@ return {
 		FOLDER: 62,
 		GAME: 63,
 		CALC: 64,
+		KEYBOARD_ALT: 66,
 		CHESS: 67,
 		CARDS: 68,
 		SUDOKU: 69,
