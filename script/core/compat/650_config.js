@@ -104,7 +104,7 @@ return {
 		GAME: 88,
 		CALC: 89,
 		//WORLD: 90,
-		//KEYBOARD: 91,
+		KEYBOARD_ALT: 91,
 		CHESS: 92,
 		CARDS: 93,
 		SUDOKU: 94,

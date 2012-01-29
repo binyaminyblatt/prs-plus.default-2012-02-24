@@ -66,6 +66,7 @@ return {
 		CALC: 43,
 		LANGUAGE: 44,
 		KEYBOARD: 45,
+		KEYBOARD_ALT: 45,
 		CHESS: 46,
 		CARDS: 47,
 		SUDOKU: 48,
