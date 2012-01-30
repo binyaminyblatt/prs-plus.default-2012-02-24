@@ -39,6 +39,7 @@
 //	2011-12-25 quisvir - Added code to load custom home menu xml's for booklist arrows
 //	2012-01-17 quisvir - Changed homelargekind to homekind
 //	2012-01-18 quisvir - Fixed periodicals homekind, continue comment
+//	2012-01-30 quisvir - Fixed #222 Missing font size indicator
 
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -758,6 +759,13 @@ tmp = function () {
 		} else {
 			return oldGetRelationalURI.apply(this, arguments);
 		}
+	};
+	
+	// Fix for missing font size indicator after changing dict
+	var oldCloseDictionary = pageDictionaryOverlayModel.closeDictionary;
+	pageDictionaryOverlayModel.closeDictionary = function () {
+		oldCloseDictionary.apply(this, arguments);
+		if (kbook.model.STATE === 'PAGE') kbook.model.container.sandbox.STATUS_GROUP.sandbox.STATUS_GROUP_SUB.sandbox.STATUS_GROUP.sandbox.showBookSizeIndicator(true);
 	};
 };
 
