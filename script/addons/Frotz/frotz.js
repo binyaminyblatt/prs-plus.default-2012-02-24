@@ -5,6 +5,7 @@
 // Initial version: 2012-01-25
 // Changelog:
 // 2012-01-28 Ben Chenoweth - Output scrolls automatically
+// 2012-01-30 Ben Chenoweth - Changed working directory so that gamesave/load works
 
 var tmp = function () {
 	
@@ -186,7 +187,6 @@ var tmp = function () {
 		symbols = true;
 		this.refreshKeys();
 		this.loadGameList();
-		this.enable(true); // needed for the SIM only
 	}
 
 	target.setOutput = function (output) {
@@ -229,10 +229,10 @@ var tmp = function () {
 	}
 	
 	target.initialiseGame = function (gameTitle) {
-		var i, gameTitle, cmd, result;
+		var i, gameTitle, workingDir, cmd, result;
 		if (gameTitle) {
-			tempOutput = tempOutput + "\nInitialising " + gameTitle + "...";
-			this.setOutput(tempOutput);
+			//tempOutput = tempOutput + "\nInitialising " + gameTitle + "...";
+			//this.setOutput(tempOutput);
 			try {
 				// delete old output file if it exists
 				deleteFile(FROTZOUTPUT);
@@ -240,17 +240,21 @@ var tmp = function () {
 				// create empty input file (deletes file if it already exists)
 				setFileContent(FROTZINPUT, "");
 				
-				// start FROTZ as a background process
-				cmd = "tail -f " + FROTZINPUT + " | " + FROTZ + " " + datPath + gameTitle + " > " + FROTZOUTPUT + " 2>/Data/frotz.error &";
-				tempOutput = tempOutput + "\ncmd:\n"+cmd;
-				this.setOutput(tempOutput);
+				// create working directory (where savegames go) if it doesn't already exist
+				workingDir = datPath + gameTitle.substring(0, gameTitle.indexOf(".")) + "/";
+				FileSystem.ensureDirectory(workingDir);
+				
+				// move to working directory and start FROTZ as a background process
+				cmd = "cd " + workingDir + ";tail -f " + FROTZINPUT + " | " + FROTZ + " " + datPath + gameTitle + " > " + FROTZOUTPUT + " 2>/Data/frotz.error &";
+				//tempOutput = tempOutput + "\ncmd:\n"+cmd;
+				//this.setOutput(tempOutput);
 				shellExec(cmd);
 				
-				// get output
+				// get initial output
 				result = getFileContent(FROTZOUTPUT, "222");
 				if (result !== "222") {
 					// output
-					tempOutput = tempOutput + "\nResult:\n"+result;
+					tempOutput = tempOutput + "\n"+result;
 					this.setOutput(tempOutput);
 				} else {
 					// no output file!
@@ -324,7 +328,7 @@ var tmp = function () {
 		result = getFileContent(FROTZOUTPUT, "222");
 		if (result !== "222") {
 			// output
-			tempOutput = tempOutput + "\nResult:\n"+result;
+			tempOutput = tempOutput + "\n"+result;
 		} else {
 			// no output file!
 			tempOutput = tempOutput + "\nNo output found!";
