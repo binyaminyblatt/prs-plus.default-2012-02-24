@@ -6,6 +6,7 @@
 // Changelog:
 // 2012-01-28 Ben Chenoweth - Output scrolls automatically
 // 2012-01-30 Ben Chenoweth - Changed working directory so that gamesave/load works
+// 2012-02-04 Ben Chenoweth - Changed input method
 
 var tmp = function () {
 	
@@ -42,11 +43,12 @@ var tmp = function () {
 	var FROTZ = System.applyEnvironment("[prspPath]") + "dfrotz";
 	var FROTZINPUT = tempPath + "frotz.in";
 	var FROTZOUTPUT = tempPath + "frotz.out";
+	var workingDir;
 	var tempOutput = "";
 	var chooseGame = false;
 	var titles = [];
 	var pageScroll;
-	
+		
 	var twoDigits = function (i) {
 		if (i<10) {return "0"+i}
 		return i;	
@@ -229,38 +231,50 @@ var tmp = function () {
 	}
 	
 	target.initialiseGame = function (gameTitle) {
-		var i, gameTitle, workingDir, cmd, result;
+		var gameTitle, cmd, result;
 		if (gameTitle) {
 			//tempOutput = tempOutput + "\nInitialising " + gameTitle + "...";
 			//this.setOutput(tempOutput);
+			GAMETITLE = gameTitle;
 			try {
 				// delete old output file if it exists
 				deleteFile(FROTZOUTPUT);
 				
-				// create empty input file (deletes file if it already exists)
+				// create input file (deletes file if it already exists)
+				//setFileContent(FROTZINPUT, "save\ntemp.sav\nquit\nY\n"); // TOFIX: input not handled correctly by frotz
 				setFileContent(FROTZINPUT, "");
 				
 				// create working directory (where savegames go) if it doesn't already exist
 				workingDir = datPath + gameTitle.substring(0, gameTitle.indexOf(".")) + "/";
 				FileSystem.ensureDirectory(workingDir);
 				
+				// delete old temp save if it exists
+				deleteFile(workingDir + "temp.sav");
+				
 				// move to working directory and start FROTZ as a background process
-				cmd = "cd " + workingDir + ";tail -f " + FROTZINPUT + " | " + FROTZ + " " + datPath + gameTitle + " > " + FROTZOUTPUT + " 2>/Data/frotz.error &";
+				// FROTZ options: -w: character width, -h: number of lines, -R: execute runtime code (cm = compression max,
+				// mp0 = MORE prompts disabled)
+				cmd = "cd " + workingDir + ";" + FROTZ + " -w 60 -h 30 -R cm -R mp0 " + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT + " 2>/Data/frotz.error &";
 				//tempOutput = tempOutput + "\ncmd:\n"+cmd;
 				//this.setOutput(tempOutput);
 				shellExec(cmd);
 				
-				// get initial output
-				result = getFileContent(FROTZOUTPUT, "222");
-				if (result !== "222") {
-					// output
-					tempOutput = tempOutput + "\n"+result;
-					this.setOutput(tempOutput);
-				} else {
-					// no output file!
-					tempOutput = tempOutput + "\nError starting FROTZ!\n\nCommand used: "+cmd;
-					this.setOutput(tempOutput);
+				// clear textbox
+				tempOutput = "";
+				
+				// start timer for callback
+				try {
+					timer = this.timer = new HardwareTimer(); //x50
+				} catch(ignore) { }
+				if (!timer) {
+					try {
+						timer = this.timer = new Timer(); //600
+					} catch(ignore) { }
 				}
+				timer.target = this;
+				timer.onCallback = target_getResponse;
+				timer.onClockChange = target_getResponse;
+				timer.schedule(1000); // TODO: Is this long enough? Too long?
 			} catch(e) {
 				tempOutput = tempOutput + "\nError " + e + " initialising game "+gameTitle;
 				this.setOutput(tempOutput);
@@ -288,17 +302,22 @@ var tmp = function () {
 				this.initialiseGame(gameTitle);
 			}
 		} else {
-			// append currentLine to end of FROTZINPUT which is piped into FROTZ, eventually generating output
-			if (FileSystem.getFileInfo(FROTZINPUT)) {
-				stream = new Stream.File(FROTZINPUT, 1);
-				stream.seek(stream.bytesAvailable);
-				stream.writeString("\n" + currentLine);
-			}
+			// delete old output file if it exists
+			deleteFile(FROTZOUTPUT);
+			
+			// set up new input file
+			setFileContent(FROTZINPUT, "load\ntemp.sav\n" + currentLine + "\nsave\ntemp.sav\nY\nquit\nY\n");
 			
 			// add currentLine to output
 			tempOutput = tempOutput + "\n> " + currentLine;
 			this.setOutput(tempOutput);
 			
+			// move to working directory and start FROTZ as a background process
+			cmd = "cd " + workingDir + ";" + FROTZ + " -w 60 -h 30 -R cm -R mp0 " + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT + " &";
+			//tempOutput = tempOutput + "\ncmd:\n"+cmd;
+			//this.setOutput(tempOutput);
+			shellExec(cmd);
+				
 			// start timer for callback
 			try {
 				timer = this.timer = new HardwareTimer(); //x50
@@ -311,7 +330,7 @@ var tmp = function () {
 			timer.target = this;
 			timer.onCallback = target_getResponse;
 			timer.onClockChange = target_getResponse;
-			timer.schedule(500); // TODO: Is this long enough? Too long?
+			timer.schedule(1000); // TODO: Is this long enough? Too long?
 		}
 		// clear currentLine
 		currentLine = "";
@@ -328,7 +347,11 @@ var tmp = function () {
 		result = getFileContent(FROTZOUTPUT, "222");
 		if (result !== "222") {
 			// output
-			tempOutput = tempOutput + "\n"+result;
+			if (tempOutput === "") {
+				tempOutput = result;
+			} else {
+				tempOutput = tempOutput + "\n"+result;
+			}
 		} else {
 			// no output file!
 			tempOutput = tempOutput + "\nNo output found!";
