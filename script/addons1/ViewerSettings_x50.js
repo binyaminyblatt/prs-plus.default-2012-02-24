@@ -30,6 +30,7 @@
 //	2011-12-07 quisvir - Cosmetic changes
 //	2011-12-14 quisvir - Added action to toggle True Landscape mode in book
 //	2012-01-19 quisvir - Added automatic page turner, reset autoPage timer on page change
+//	2012-02-05 quisvir - Allow custom view settings to overrule existing presets
 
 tmp = function() {
 
@@ -39,8 +40,8 @@ tmp = function() {
 	LX = Core.lang.LX;
 	log = Core.log.getLogger('ViewerSettings_x50');
 
-	var orgOrientation, docWidth, docHeight, oldIsScrollView, falseFunc, toggleTrueLandscape, restoreLandscape,
-		oldOnEnterOrientation1, oldOnEnterOrientation2, autoPageTimer, autoPageToggle, autoPageCallBack, autoPageRestart;
+	var opt, orgOrientation, docWidth, docHeight, oldIsScrollView, falseFunc, toggleTrueLandscape, restoreLandscape,
+		oldOnEnterOrientation1, oldOnEnterOrientation2, autoPageTimer, autoPageToggle, autoPageCallBack, autoPageRestart, activateCustomViewSettings;
 	
 	oldIsScrollView = kbook.kbookPage.isScrollView;
 	falseFunc = function () { return false };
@@ -95,14 +96,13 @@ tmp = function() {
 		} else if (value < -127 || value > 127) {
 			msg = L("ERROR_NOT_WITHIN_RANGE") + ' [-127 / 127]';
 		} else {
-			ViewerSettings_x50.options.CustomContrast = value.toString(); // without toString(), option comment displays an error for negative values
+			opt.CustomContrast = value.toString(); // without toString(), option comment displays an error for negative values
+			activateCustomViewSettings();
 		}
 		if (msg) {
-			ViewerSettings_x50.options.CustomContrast = 0;
-		} else {
-			msg = L("CUSTOM_VIEW_MSG");
+			opt.CustomContrast = 0;
+			Core.ui.showMsg(msg);
 		}
-		Core.ui.showMsg(msg);
 		Core.settings.saveOptions(ViewerSettings_x50);
 	}
 	
@@ -114,24 +114,31 @@ tmp = function() {
 		} else if (value < -225 || value > 225) {
 			msg = L("ERROR_NOT_WITHIN_RANGE") + ' [-225 / 225]';
 		} else {
-			ViewerSettings_x50.options.CustomBrightness = value.toString();
+			opt.CustomBrightness = value.toString();
+			activateCustomViewSettings();
 		}
 		if (msg) {
-			ViewerSettings_x50.options.CustomBrightness = 0;
-		} else {
-			msg = L("CUSTOM_VIEW_MSG");
+			opt.CustomBrightness = 0;
+			Core.ui.showMsg(msg);
 		}
-		Core.ui.showMsg(msg);
 		Core.settings.saveOptions(ViewerSettings_x50);
+	}
+	
+	// Activate custom values using selected method
+	activateCustomViewSettings = function () {
+		if (!isNaN(opt.customActivate)) {
+			kbook.model.toneCurveTable[opt.customActivate] = opt.CustomContrast + ',' + opt.CustomBrightness;
+		}
 	}
 
 	// Bind custom contrast & brightness values to Restore button
 	pageOptionToneCurveEditorOverlayModel.initToneCurveEditor = function () {
-		var contrast = parseInt(this.targetModel.doSomething('getContrast'));
-		var brightness = parseInt(this.targetModel.doSomething('getBrightness'));
-		if (ViewerSettings_x50.options.BindToRestoreButton === "true") {
-			this.org_slider_1 = ViewerSettings_x50.options.CustomContrast;
-			this.org_slider_2 = ViewerSettings_x50.options.CustomBrightness;
+		var contrast, brightness;
+		contrast = parseInt(this.targetModel.doSomething('getContrast'));
+		brightness = parseInt(this.targetModel.doSomething('getBrightness'));
+		if (opt.customActivate === "restore") {
+			this.org_slider_1 = opt.CustomContrast;
+			this.org_slider_2 = opt.CustomBrightness;
 		} else {
 			this.org_slider_1 = contrast;
 			this.org_slider_2 = brightness;
@@ -217,7 +224,7 @@ tmp = function() {
 			cache.bitmap.close();
 			cache.bitmap = backup;
 		}
-		if (ViewerSettings_x50.options.NotMarkOverlapArea === "false") {
+		if (opt.NotMarkOverlapArea === "false") {
 			bitmap = cache.bitmap;
 			if (bitmap && !cache.error) {
 				if (!this.isZooming && (this.isScrollView() && !this.monochrome.isRunning()) ) {
@@ -417,7 +424,7 @@ tmp = function() {
 			autoPageTimer = new HardwareTimer();
 			autoPageTimer.onCallback = autoPageCallback;
 			autoPageTimer.target = null;
-			autoPageTimer.delay = parseInt(ViewerSettings_x50.options.AutoPageTurnerTime) * 1000;
+			autoPageTimer.delay = parseInt(opt.AutoPageTurnerTime) * 1000;
 			autoPageTimer.schedule(autoPageTimer.delay);
 		} else {
 			autoPageTimer.cancel();
@@ -514,27 +521,45 @@ tmp = function() {
 					valueTitles: { "Custom": L("VALUE_CUSTOM") }
 				},
 				{
-					name: "BindToRestoreButton",
-					title: L("BIND_TO_RESTORE_BUTTON"),
-					icon: "BACK",
+					name: "customActivate",
+					title: L("ACTIVATE_CUSTOM_SETTINGS"),
+					icon: "SETTINGS",
 					defaultValue: "false",
-					values: ["true","false"],
+					values: ["false", "0", "1", "2", "3", "4", "restore"],
 					valueTitles: {
-						"true": L("VALUE_TRUE"),
-						"false": L("VALUE_FALSE")
+						"false": L("VALUE_FALSE"),
+						"0": L("OVERRULE_ORIGINAL"),
+						"1": L("OVERRULE_SATURATED"),
+						"2": L("OVERRULE_DETAILS"),
+						"3": L("OVERRULE_BRIGHTER"),
+						"4": L("OVERRULE_DARKER"),
+						"restore": L("BIND_TO_RESTORE_BUTTON")
 					}
 				}
 			]}
 		],
 		onInit: function () {
+			opt = this.options;
+			activateCustomViewSettings();
+			if (opt.BorderColor === 'white') kbook.kbookPage.borderColor = Color.rgb.parse('white');
 			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, restoreLandscape, true);
-			if (ViewerSettings_x50.options.BorderColor === 'white') kbook.kbookPage.borderColor = Color.rgb.parse('white');
 			Core.events.subscribe(Core.events.EVENTS.BOOK_PAGE_CHANGED, autoPageRestart);
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
-			kbook.kbookPage.borderColor = (ViewerSettings_x50.options.BorderColor === 'grey') ? Color.rgb.parse('#6D6D6D') : Color.rgb.parse('white');
-			if (propertyName === "CustomContrast" && newValue === "Custom") kbook.model.openLineInput(L("CUSTOM_CONTRAST") + ':', '', 'doContrastChange', '', true, 'number');
-			if (propertyName === "CustomBrightness" && newValue === "Custom") kbook.model.openLineInput(L("CUSTOM_BRIGHTNESS") + ':', '', 'doBrightnessChange', '', true, 'number');
+			switch (propertyName) {
+				case 'BorderColor':
+					kbook.kbookPage.borderColor = (newValue === 'grey') ? Color.rgb.parse('#6D6D6D') : Color.rgb.parse('white');
+					break;
+				case 'CustomContrast':
+					if (newValue === "Custom") kbook.model.openLineInput(L("CUSTOM_CONTRAST") + ' [-127 / 127]:', '', 'doContrastChange', '', true, 'number');
+					break;
+				case 'CustomBrightness':
+					if (newValue === "Custom") kbook.model.openLineInput(L("CUSTOM_BRIGHTNESS") +  ' [-225 / 225]:', '', 'doBrightnessChange', '', true, 'number');
+					break;
+				case 'customActivate':
+					kbook.model.initToneCurveChange();
+					activateCustomViewSettings();
+			}
 		},
 		actions: [{
 			name: "toggleTrueLandscape",
