@@ -9,6 +9,7 @@
 //	2011-10-27 Mark Nord - ported bubbleActions from x50
 //	2011-10-28 Mark Nord - fixed issue #206
 //	2011-11-26 Mark Nord - Added issue #218 TOC Action for 300/505
+//	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled,
@@ -219,6 +220,57 @@ tmp = function() {
 				icon: 23,
 				action: function () {
 					ebook.rotate();
+				}
+			},
+			{
+				name: "NoAction",
+				title: L("ACTION_NO_ACTION"),
+				group: "Other",
+				icon: "CROSSED_BOX",
+				action:  function () {
+					kbook.model.doBlink();
+				}
+			},
+			{
+				name: "GotoGameNode",
+				title: L("ACTION_GAME_NODE"),
+				group: "Other",
+				icon: "GAME",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(Core.ui.nodes["gamesAndUtils"], kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
+				}
+			},
+			{
+				name: "GotoAudioNode",
+				title: L("ACTION_MUSIC_NODE"),
+				group: "Other",
+				icon: "AUDIO",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(kbook.root.getMusicNode(), kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
+				}
+			},
+			{
+				name: "GotoPicturesNode",
+				title: L("ACTION_PICTURES_NODE"),
+				group: "Other",
+				icon: "PICTURE_ALT",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(kbook.root.getPicturesNode(), kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
 				}
 			}
 		]
