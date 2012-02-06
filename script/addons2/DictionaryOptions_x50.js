@@ -10,6 +10,7 @@
 //	2011-12-21 quisvir - Merged functions for next/previous buttons in popup
 //	2012-01-22 quisvir - Changed 'Prevent overlap' option to general 'Popup Position'
 //	2012-01-24 quisvir - Added 'Maximum Word Log Items' option
+//	2012-01-06 quisvir - Added 'Keep Selection after Dictionary'
 
 tmp = function() {
 
@@ -181,6 +182,17 @@ tmp = function() {
 		}
 	}
 	
+	// Keep text selection on entering dictionary from popup
+	pageShortcutOverlayModel.doShortcutDictionary = function () {
+		if (kbook.dictionaryData.countSimpleRecords()) {
+			kbook.dictionaryData.simple2detail();
+			this.dictionaryRegistHistory();
+			this.eDictionary.openDictionary(this.searchStr, this.dx, this.dy);
+			if (opt.keepSelectionAfterDict === 'false') this.targetModel.doSomething('selectNone');
+			this.doCloseShortcut();
+		}
+	};
+	
 	var DictionaryOptions = {
 		name: 'DictionaryOptions',
         title: L('TITLE'),
@@ -228,6 +240,17 @@ tmp = function() {
 				values: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
 				valueTitles: {
 					'3': '3 (' + L('VALUE_DEFAULT') + ')'
+				}
+			},
+			{
+				name: 'keepSelectionAfterDict',
+				title: L('KEEP_SELECTION_AFTER_DICT'),
+				icon: 'HIGHLIGHT',
+				defaultValue: 'false',
+				values: ['true', 'false'],
+				valueTitles: {
+					'true': L('VALUE_TRUE'),
+					'false': L('VALUE_FALSE')
 				}
 			},
 			{
