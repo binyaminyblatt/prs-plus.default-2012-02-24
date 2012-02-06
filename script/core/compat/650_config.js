@@ -38,6 +38,7 @@
 //	2011-12-17 quisvir - Added DICTIONARY
 //	2011-12-28 Ben Chenoweth - Initial implementation of audio
 //	2012-01-17 quisvir - Changed homelargekind to homekind, added standardMenuIcons for moved default nodes
+//	2012-02-06 quisvir - Added HIGHLIGHT
  
 return {
 	// Menu icon indices 
@@ -76,6 +77,7 @@ return {
 		SHUTDOWN: 31,
 		COLOR: 32,
 		INTERACT_FICT: 34,
+		HIGHLIGHT: 35,
 		TEXT_SCALE: 99, //39
 		GESTURE: 38,
 		SEARCH: 39,
