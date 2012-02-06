@@ -31,6 +31,7 @@
 //	2011-12-14 quisvir - Added action to toggle True Landscape mode in book
 //	2012-01-19 quisvir - Added automatic page turner, reset autoPage timer on page change
 //	2012-02-05 quisvir - Allow custom view settings to overrule existing presets
+//	2012-02-06 quisvir - Added option to prevent screen flashing when closing overlays
 
 tmp = function() {
 
@@ -449,6 +450,12 @@ tmp = function() {
 		}
 	}
 	
+	// No full screen refresh on closing overlays
+	kbook.model.fullScreenUpdate = function () {
+		if (opt.noFlashOnOverlayClose === 'true' && this.STATE !== 'MENU_HOME') return;
+		this.container.invalidate();
+	};
+	
 	var ViewerSettings_x50 = {
 		name: "ViewerSettings_x50",
 		settingsGroup: "viewer", // "advanced",
@@ -536,7 +543,18 @@ tmp = function() {
 						"restore": L("BIND_TO_RESTORE_BUTTON")
 					}
 				}
-			]}
+			]},
+			{
+				name: "noFlashOnOverlayClose",
+				title: L("NO_FLASH_ON_OVERLAY_CLOSE"),
+				icon: "ABOUT",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}
+			}
 		],
 		onInit: function () {
 			opt = this.options;
