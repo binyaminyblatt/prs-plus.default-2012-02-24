@@ -12,6 +12,7 @@
 //	2011-02-27 kartu - 600: Added rotate by 90 action
 //	2011-10-27 Mark Nord - Added doPowerSwitch = Sleepmode
 //  2011-10-30 Ben Chenoweth - Added goZoomPage
+//	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, 
@@ -339,6 +340,127 @@ tmp = function() {
 				icon: "STANDBY",
 				bubble: "doPowerSwitch",
 				action: doBubbleFunc
+			},
+			{
+				name: "NoAction",
+				title: L("ACTION_NO_ACTION"),
+				group: "Other",
+				icon: "CROSSED_BOX",
+				action:  function () {
+					kbook.model.doBlink();
+				}
+			},
+			{
+				name: "GotoMoreNode",
+				title: L("ACTION_MORE_NODE"),
+				group: "Other",
+				icon: "ROOT_MENU",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(Core.ui.nodes["more"], kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
+				}
+			},
+			{
+				name: "GotoGameNode",
+				title: L("ACTION_GAME_NODE"),
+				group: "Other",
+				icon: "GAME",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(Core.ui.nodes["games"], kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
+				}
+			},
+			{
+				name: "GotoAudioNode",
+				title: L("ACTION_MUSIC_NODE"),
+				group: "Other",
+				icon: "AUDIO",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(kbook.root.getMusicNode(), kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
+				}
+			},
+			{
+				name: "GotoPicturesNode",
+				title: L("ACTION_PICTURES_NODE"),
+				group: "Other",
+				icon: "PICTURE_ALT",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(kbook.root.getPicturesNode(), kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
+				}
+			},
+			{
+				name: "GotoPeriodicalsNode",
+				title: L("ACTION_PERIODICALS_NODE"),
+				group: "Other",
+				icon: "PERIODICALS",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(kbook.root.getPeriodicalListNode(), kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
+				}
+			},
+			{
+				name: "GotoCollectionsNode",
+				title: L("ACTION_COLLECTIONS_NODE"),
+				group: "Other",
+				icon: "COLLECTION",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(kbook.root.getCollectionsNode(), kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
+				}
+			},
+			{
+				name: "GotoNotesNode",
+				title: L("ACTION_NOTES_NODE"),
+				group: "Other",
+				icon: "TEXT_MEMO",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(kbook.root.getNotepadsTextNode(), kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
+				}
+			},
+			{
+				name: "GotoFreehandNode",
+				title: L("ACTION_FREEHAND_NODE"),
+				group: "Other",
+				icon: "HANDWRITING_ALT",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(kbook.root.getNotepadsFreehandNode(), kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
+				}
 			}
 		]
 	};
