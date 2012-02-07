@@ -12,7 +12,7 @@
 //	2011-02-27 kartu - 600: Added rotate by 90 action
 //	2011-10-27 Mark Nord - Added doPowerSwitch = Sleepmode
 //  2011-10-30 Ben Chenoweth - Added goZoomPage
-//	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes
+//	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes, Delete current item
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, 
@@ -178,7 +178,20 @@ tmp = function() {
 					model.doGotoPreviousSong();
 				}
 			});
-			
+			actions.push({
+				name: "GotoAudioNode",
+				title: L("ACTION_MUSIC_NODE"),
+				group: "Other",
+				icon: "AUDIO",
+				action: function () {
+					var current = Core.ui.getCurrentNode();
+					if (current) {
+						current.gotoNode(kbook.root.getMusicNode(), kbook.model);
+					} else {
+						Core.ui.doBlink();
+					}
+				}
+			});
 		}
 		
 		// FIXME: implicit "is touchscreen device"
@@ -345,7 +358,7 @@ tmp = function() {
 				name: "NoAction",
 				title: L("ACTION_NO_ACTION"),
 				group: "Other",
-				icon: "CROSSED_BOX",
+				icon: "EMPTY",
 				action:  function () {
 					kbook.model.doBlink();
 				}
@@ -373,20 +386,6 @@ tmp = function() {
 					var current = Core.ui.getCurrentNode();
 					if (current) {
 						current.gotoNode(Core.ui.nodes["games"], kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
-				}
-			},
-			{
-				name: "GotoAudioNode",
-				title: L("ACTION_MUSIC_NODE"),
-				group: "Other",
-				icon: "AUDIO",
-				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(kbook.root.getMusicNode(), kbook.model);
 					} else {
 						Core.ui.doBlink();
 					}
@@ -459,6 +458,73 @@ tmp = function() {
 						current.gotoNode(kbook.root.getNotepadsFreehandNode(), kbook.model);
 					} else {
 						Core.ui.doBlink();
+					}
+				}
+			},
+			{
+				name: "DeleteCurrentItem",
+				title: L("ACTION_DELETE_CURRENT_ITEM"),
+				group: "Utils",
+				icon: "CROSSED_BOX",
+				action: function () {
+					var model, node, dialog, message, current;
+					try {
+						model = kbook.model;
+						node = model.currentNode;
+						current = false;
+						if (node) {
+							dialog = model.getConfirmationDialog();
+							dialog.target = model;
+							message = 'fskin:/l/strings/STR_UI_MESSAGE_DELETE_MANUALLY_NORMAL'.idToString();
+							dialog.onNo = function () { } // is this necessary?
+							if (model.STATE === 'PAGE') {
+								current = true;
+								dialog.onOk = function () {
+									var model, node;
+									model = kbook.model;
+									node = model.currentNode;
+									model.doDeleteBook(true, node);
+									kbook.root.update(model);
+									model.closeContentsList(true);
+								}
+							} else if (model.STATE === 'SONG') {
+								current = true;
+								dialog.onOk = function () {
+									var model, node;
+									model = kbook.model;
+									node = model.currentNode;
+									model.removeSong(node);
+									kbook.root.update(model);
+									if (node.equal(model.currentNode)) {
+										model.closeContentsList(true);
+									} else {
+										model.currentNode.gotoNode(albumList, model);
+									}
+								}
+							} else if (model.STATE === 'PICTURE') {
+								current = true;
+								if (kbook.standbyPicture.isExist(node)) {
+									message = 'fskin:/l/strings/STR_UI_MESSAGE_DELETE_MANUALLY_SELECTED_AS_STANDBY'.idToString();
+								}
+								dialog.onOk = function () {
+									var model, node;
+									model = kbook.model;
+									node = model.currentNode;
+									model.removePicture(node);
+									kbook.root.update(model);
+									model.closeContentsList(true);
+								}
+							} else {
+								dialog.onOk = null;
+							}
+							if (current) {
+								dialog.openDialog(message, 0);
+							} else {
+								Core.ui.doBlink();
+							}
+						}
+					} catch(e) {
+						log.error("Error in StandardActions_x50 trying to delete current item", e);
 					}
 				}
 			}
