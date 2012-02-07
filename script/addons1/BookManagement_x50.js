@@ -39,6 +39,7 @@
 //	2012-01-02 quisvir - Added 'Read Books' collection
 //	2012-01-10 Ben Chenoweth - Added default keybindings for HOME MENU context
 //	2012-01-19 quisvir - Added 'Add to Collection' option in Book Option Menu
+//	2012-02-07 quisvir - Performance tweaks: made filtering notepads optional, added modulus code by drMerry
 //
 //	TODO:
 //	Move 'Set/Remove New Flag' and 'Add to Collection' options to PRS+ popup menu
@@ -46,7 +47,7 @@
 tmp = function() {
 
 	var L, LX, log, opt, bookChanged, trigger1, trigger2, trigger3, trigger4, doSelectCollection, selectCollectionConstruct,
-		selectCollectionDestruct, tempNode, numCur, updateBookList, filterBooklist, holdKey;
+		selectCollectionDestruct, tempNode, numCur, updateBookList, holdKey;
 	
 	L = Core.lang.getLocalizer('BookManagement');
 	LX = Core.lang.LX;
@@ -244,9 +245,8 @@ tmp = function() {
 	// Draw reading progress below thumbnails
 	var oldDrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
-		var win, home, record, page, pages, msg, nodes, comX, comY, comWidth, comHeight;
+		var win, home, record, page, pages, msg, nodes, comX, comY, comWidth;
 		win = this.getWindow();
-		comHeight = this.textCommentHeight;
 		
 		oldDrawRecord.apply(this, arguments);
 		
@@ -270,7 +270,7 @@ tmp = function() {
 				} else if (nodes.length === 1) {
 					msg += ' (' + (numCur + 1) + ')';
 				}
-				this.skin.styles[6].draw(win, msg, 0, y-25, this.width, comHeight);
+				this.skin.styles[6].draw(win, msg, 0, y-25, this.width, this.textCommentHeight);
 			}
 		}
 		
@@ -295,7 +295,7 @@ tmp = function() {
 				comX = x + this.marginWidth;
 				comY = this.getNy(this.getTy(y), Math.min(this.getTh(height), this.thumbnailHeight)) + this.textNameHeight + this.marginNameAndComment + 23;
 				comWidth = this.getCw(width, Fskin.scratchRectangle.width);
-				parts.commentStyle.draw(win, msg, comX, comY, comWidth, comHeight);
+				parts.commentStyle.draw(win, msg, comX, comY, comWidth, this.textCommentHeight);
 		}
 	};
 	
@@ -324,7 +324,6 @@ tmp = function() {
 	// Update deviceroot on enter
 	var oldOnEnterDeviceRoot = kbook.model.onEnterDeviceRoot;
 	kbook.model.onEnterDeviceRoot = function () {
-		oldOnEnterDeviceRoot.apply(this, arguments);
 		if (bookChanged) {
 			// Don't update if opt = 0 and no trigger has been used
 			if (opt.BookList || trigger1 || trigger2 || trigger3 || trigger4) {
@@ -332,6 +331,7 @@ tmp = function() {
 			}
 			bookChanged = false;
 		}
+		oldOnEnterDeviceRoot.apply(this, arguments);
 	}
 	
 	// Update booklist after collection edit
@@ -371,22 +371,36 @@ tmp = function() {
 	}
 	
 	// Filter notepads & periodicals for home menu booklist
-	filterBooklist = function (result) {
+	kbook.root.children.deviceRoot.children.bookThumbnails.filter = kbook.root.children.deviceRoot.children.books.filter = function (result) {
 		var c, i, book;
 		c = result.count();
-		if (opt.PeriodicalsAsBooks === 'true') {
+		if (opt.PeriodicalsAsBooks === 'false') {
+			if (opt.hideNotepads === 'true') {
+				// Filter periodicals AND notepads
+				for (i = 0; i < c; i++) {
+					book = result.getRecord(i);
+					if (book.periodicalName || book.path.slice(0,9) === 'Notepads/') {
+						result.removeID(book.id);
+						c--;
+						i--;
+					}
+				}
+			} else {
+				// Filter only periodicals (Sony default behaviour)
+				for (i = 0; i < c; i++) {
+					book = result.getRecord(i);
+					if (book.periodicalName) {
+						result.removeID(book.id);
+						c--;
+						i--;
+					}
+				}
+			}
+		} else if (opt.hideNotepads === 'true') {
+			// Filter only notepads
 			for (i = 0; i < c; i++) {
 				book = result.getRecord(i);
 				if (book.path.slice(0,9) === 'Notepads/') {
-					result.removeID(book.id);
-					c--;
-					i--;
-				}
-			}
-		} else {
-			for (i = 0; i < c; i++) {
-				book = result.getRecord(i);
-				if (book.periodicalName || book.path.slice(0,9) === 'Notepads/') {
 					result.removeID(book.id);
 					c--;
 					i--;
@@ -399,7 +413,7 @@ tmp = function() {
 	// Customize book list in home menu
 	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
 		var model, prototype, nodes, cache, db, db2, current, c, node,
-			i, j, hist, book, books, id, author, list, coll, colls, menu;
+			i, j, hist, book, books, id, author, list, coll, colls;
 		FskCache.tree.xdbNode.construct.call(this);
 		cache = this.cache;
 		if (!cache) return;
@@ -411,13 +425,13 @@ tmp = function() {
 		} else {
 			db = cache.textMasters;
 		}
-		db = filterBooklist(db);
+		db = this.filter(db);
 		c = db.count();
 		if (!c) return;
 		if (model.currentBook) {
 			current = model.currentBook.media;
 		} else if (model.currentPath) {
-			db2 = db.db.search('indexPath',model.currentPath);
+			db2 = db.db.search('indexPath',model.currentPath); // FIXME only do this lookup if actually needed
 			if (db2.count()) {
 				current = db2.getRecord(0);
 			}
@@ -523,7 +537,7 @@ tmp = function() {
 					opt.CurrentCollection = (nodes.length) ? coll.title : '';
 					break;
 				case 4: // Random books
-					books = '/';
+					books = '/'; // FIXME there has to be a faster way than messing with strings...
 					if (current) {
 						books += current.id + '/';
 					}
@@ -554,7 +568,7 @@ tmp = function() {
 					}
 					// Selected Collection found
 					coll = db2.getRecord(i);
-					for (i = 0; i < coll.items.length; i++) {
+					for (i = 0; i < coll.items.length; i++) { // FIXME no need to list all books in advance
 						if (coll.items[i].id !== id) {
 							books.push(coll.items[i].id);
 						}
@@ -571,18 +585,10 @@ tmp = function() {
 			}
 			if (!nodes.length) {
 				if (trigger1) {
-					if (opt.BookList === 5) {
-						opt.BookList = 0;
-					} else {
-						opt.BookList++;
-					}
+					opt.BookList = (opt.BookList + 1) % 6;
 					continue;
 				} else if (trigger2) {
-					if (opt.BookList === 0) {
-						opt.BookList = 5;
-					} else {
-						opt.BookList--;
-					}
+					opt.BookList = (opt.BookList + 5) % 6;
 					continue;
 				}
 			}
@@ -974,6 +980,17 @@ tmp = function() {
 				}	
 			},
 			{
+				name: 'hideNotepads',
+				title: L('HIDE_SAVED_NOTEPADS'),
+				icon: 'TEXT_MEMO',
+				defaultValue: 'false',
+				values: ['true','false'],
+				valueTitles: {
+					'true': L('VALUE_TRUE'),
+					'false': L('VALUE_FALSE')
+				}
+			},
+			{
 				name: 'ManualNewFlag',
 				title: L('SET_NEW_FLAG_MANUALLY'),
 				icon: 'NEW',
@@ -1017,6 +1034,7 @@ tmp = function() {
 					opt.BookList = parseInt(newValue);
 					if (newValue === '5') doSelectCollection('booklist');
 				case 'IgnoreCards':
+				case 'hideNotepads':
 					opt.CurrentCollection = '';
 				case 'PeriodicalsAsBooks':
 					updateBookList();
