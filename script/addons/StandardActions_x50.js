@@ -194,7 +194,7 @@ tmp = function() {
 			});
 			actions.push({
 				name: "PausePlayAudio",
-				title: L("PAUSE_PLAY_AUDIO"),
+				title: L("ACTION_PAUSE_PLAY_AUDIO"),
 				group: "Other",
 				icon: "PAUSE",
 				action: function () {
