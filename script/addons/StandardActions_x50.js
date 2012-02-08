@@ -12,7 +12,7 @@
 //	2011-02-27 kartu - 600: Added rotate by 90 action
 //	2011-10-27 Mark Nord - Added doPowerSwitch = Sleepmode
 //  2011-10-30 Ben Chenoweth - Added goZoomPage
-//	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes, Delete current item
+//	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes, Delete Current Item, Play/Pause Audio
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, 
@@ -189,6 +189,59 @@ tmp = function() {
 						current.gotoNode(kbook.root.getMusicNode(), kbook.model);
 					} else {
 						Core.ui.doBlink();
+					}
+				}
+			});
+			actions.push({
+				name: "PausePlayAudio",
+				title: L("PAUSE_PLAY_AUDIO"),
+				group: "Other",
+				icon: "PAUSE",
+				action: function () {
+					// code adapted from x50's songGroup.xml (function "doControl")
+					var model, container, sandbox, SONG;
+					try {
+						model = kbook.model;
+						container = model.container;
+						sandbox = container.sandbox;
+						SONG = kbook.movieData.mp;
+						if (SONG.isPlaying()) {
+								SONG.stop();
+								if (container.getVariable('STANDBY_STATE')) {
+									sandbox.control = 0;
+								}
+						} else {
+							if (!container.getVariable('STANDBY_STATE')) {
+								// if no current song paused
+								model.setVariable('CONTROL', 0);
+								return;
+							}
+							// current song paused
+							if (SONG.getDuration() <= SONG.getTime()) {
+								// current song at end, so try to go to next song
+								if (!model.doGotoNextSong(kbook.movieData, true)) {
+									// return to first song and stop
+									model.doGotoFirstSong();
+									SONG.stop();
+									sandbox.control = 0;
+									model.setVariable('CONTROL', 0);
+									return;
+								}
+							}
+							if (!container.getVariable('FIRST_SONG_STOP_FLAG')) {
+								// continue current song
+								SONG.start();
+								sandbox.control = 1;
+							} else {
+								// no idea!
+								container.setVariable('FIRST_SONG_STOP_FLAG', false);
+								sandbox.control = 0;
+							}
+						}
+						// update Audio overlay
+						sandbox.volumeVisibilityChanged();
+					} catch(e) {
+						log.error("Error in StandardActions_x50 trying to pause/play audio", e);
 					}
 				}
 			});
@@ -475,17 +528,31 @@ tmp = function() {
 						if (node) {
 							dialog = model.getConfirmationDialog();
 							dialog.target = model;
-							message = 'fskin:/l/strings/STR_UI_MESSAGE_DELETE_MANUALLY_NORMAL'.idToString();
-							dialog.onNo = function () { } // is this necessary?
+							if (model.closeContentsList) {
+								message = 'fskin:/l/strings/STR_UI_MESSAGE_DELETE_MANUALLY_NORMAL'.idToString();
+							} else {
+								// 600
+								message = 'fskin:/l/strings/DIALOGMSG_CONFIRM_OPT_DELETE_ALLMYNOTES2'.idToString();
+							}
+							dialog.onNo = function () { };
 							if (model.STATE === 'PAGE') {
 								current = true;
+								if (!model.closeContentsList) {
+									// 600
+									message = 'fskin:/l/strings/STR_UI_MESSAGE_DELETEBOOK'.idToString();
+								}
 								dialog.onOk = function () {
 									var model, node;
 									model = kbook.model;
-									node = model.currentNode;
-									model.doDeleteBook(true, node);
-									kbook.root.update(model);
-									model.closeContentsList(true);
+									if (model.closeContentsList) {
+										node = model.currentNode;
+										model.doDeleteBook(true, node);
+										kbook.root.update(model);
+										model.closeContentsList(true);
+									} else {
+										// 600
+										model.doDeleteBook();
+									}
 								}
 							} else if (model.STATE === 'SONG') {
 								current = true;
@@ -493,12 +560,17 @@ tmp = function() {
 									var model, node;
 									model = kbook.model;
 									node = model.currentNode;
-									model.removeSong(node);
-									kbook.root.update(model);
-									if (node.equal(model.currentNode)) {
-										model.closeContentsList(true);
+									if (model.removeSong) {
+										model.removeSong(node);
+										kbook.root.update(model);
+										if (node.equal(model.currentNode)) {
+											model.closeContentsList(true);
+										} else {
+											model.currentNode.gotoNode(albumList, model);
+										}
 									} else {
-										model.currentNode.gotoNode(albumList, model);
+										// 600
+										model.onRemove(node);
 									}
 								}
 							} else if (model.STATE === 'PICTURE') {
@@ -507,15 +579,21 @@ tmp = function() {
 									message = 'fskin:/l/strings/STR_UI_MESSAGE_DELETE_MANUALLY_SELECTED_AS_STANDBY'.idToString();
 								}
 								dialog.onOk = function () {
-									var model, node;
+									var model, node, media, source;
 									model = kbook.model;
 									node = model.currentNode;
-									model.removePicture(node);
-									kbook.root.update(model);
-									model.closeContentsList(true);
+									if (model.removePicture) {
+										model.removePicture(node);
+										kbook.root.update(model);
+										model.closeContentsList(true);
+									} else {
+										// 600
+										media = node.media;
+										source = media.source;
+										source.deleteRecord(media.id);
+										kbook.root.update(kbook.model);
+									}
 								}
-							} else {
-								dialog.onOk = null;
 							}
 							if (current) {
 								dialog.openDialog(message, 0);
