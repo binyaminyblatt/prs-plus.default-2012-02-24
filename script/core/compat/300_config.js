@@ -99,6 +99,7 @@ return {
 		SEARCH_ALT: 71,
 		COMIC: 72,
 		ARCHIVE:73,
+		AUDIO_ALT: 74,
 		
 		DEFAULT: 47,
 		
