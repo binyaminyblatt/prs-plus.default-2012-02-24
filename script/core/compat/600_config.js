@@ -117,6 +117,7 @@ return {
 		SEARCH_ALT: 86,
 		HANDWRITING_ALT: 87,
 		COMIC: 88,
+		AUDIO_ALT: 89,
 		
 		DEFAULT: 62,
 		

@@ -131,6 +131,7 @@ return {
 		SEARCH_ALT: 139,
 		HANDWRITING_ALT: 140,
 		COMIC: 141,
+		AUDIO_ALT: 142,
 		
 		DEFAULT: 112,
 		
