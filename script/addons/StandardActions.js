@@ -9,7 +9,7 @@
 //	2011-10-27 Mark Nord - ported bubbleActions from x50
 //	2011-10-28 Mark Nord - fixed issue #206
 //	2011-11-26 Mark Nord - Added issue #218 TOC Action for 300/505
-//	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes
+//	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes, Delete Current Item, Play/Pause Audio
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled,
@@ -103,7 +103,43 @@ tmp = function() {
 					model.doGotoPreviousSong();
 				}
 			});
-			
+			actions.push({
+				name: "PausePlayAudio",
+				title: L("ACTION_PAUSE_PLAY_AUDIO"),
+				group: "Other",
+				icon: "PAUSE",
+				action: function () {
+					var model, container, sandbox, SONG;
+					try {
+						model = kbook.model;
+						container = model.container;
+						sandbox = container.sandbox;
+						SONG = kbook.movieData.mp;
+						if (SONG.isPlaying()) {
+							SONG.stop();
+							sandbox.control = 0;
+						} else {
+							if (!SONG) {
+								// if no current song paused
+								return;
+							}
+							// current song paused
+							if (SONG.getDuration() <= SONG.getTime()) {
+								// current song at end, so go to next song
+								model.doGotoNextSong();
+								return;
+							}
+							// continue current song
+							SONG.start();
+							sandbox.control = 1;
+						}
+						// update interface
+						sandbox.volumeVisibilityChanged();
+					} catch(e) {
+						log.error("Error in StandardActions trying to pause/play audio", e);
+					}
+				}
+			});
 		}
 		// FIXME: implicit "is touchscreen device"
 		if (Core.config.compat.hasJoypadButtons) {
@@ -271,6 +307,42 @@ tmp = function() {
 					} else {
 						Core.ui.doBlink();
 					}
+				}
+			},
+			{
+				name: "DeleteCurrentItem",
+				title: L("ACTION_DELETE_CURRENT_ITEM"),
+				group: "Utils",
+				icon: "CROSSED_BOX",
+				action: function () {
+					var menu, actions, titles;
+					actions = [];
+					titles = [L('ACTION_DELETE_CURRENT_ITEM'), L('CANCEL')];
+					actions.push( function () {
+						var model, node, media, source;
+						try {
+							model = kbook.model;
+							node = model.current;
+							if (model.STATE === 'PAGE') {
+								model.doDeleteBook();
+							} else if ((model.STATE === 'SONG') || (model.STATE === 'PICTURE')) {
+								media = node.media;
+								source = media.source;
+								source.deleteRecord(media.id);
+								FileSystem.deleteFile(media.source.path + media.path);
+								kbook.root.update(kbook.model);
+							} else {
+								Core.ui.doBlink();
+							}
+						} catch(e) {
+							log.error("Error in StandardActions trying to delete current item", e);
+						}
+					});
+					actions.push( function () {
+						return true; // TOCHECK: Or does this need to be "return false"?
+					});
+					menu = Core.popup.createSimpleMenu(titles, actions);
+					Core.popup.showMenu(menu);
 				}
 			}
 		]
