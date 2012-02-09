@@ -11,6 +11,7 @@
 //	2012-01-22 quisvir - Changed 'Prevent overlap' option to general 'Popup Position'
 //	2012-01-24 quisvir - Added 'Maximum Word Log Items' option
 //	2012-01-06 quisvir - Added 'Keep Selection after Dictionary'
+//	2012-02-09 quisvir - Optimised Word Log trimming code
 
 tmp = function() {
 
@@ -109,7 +110,7 @@ tmp = function() {
 				modifyDictPopup(false, false);
 			}
 		} else if (target.y !== 0) {
-				modifyDictPopup(true, false);
+			modifyDictPopup(true, false);
 		}
 	}
 	
@@ -147,37 +148,26 @@ tmp = function() {
 	}
 	
 	var trimDicHistories = function (max) {
-		var cb, hist, db, c, i, r, dict;
-		// Current book
-		cb = kbook.model.currentBook;
-		if (cb) {
-			hist = cb.media.preferences.dicHistories;
-			if (hist.length > max) {
-				kbook.model.deleteDicHistories(hist);
-				hist.splice(max, hist.length - max);
-			}
-		}
+		var cb, hist, db, i, r, dict;
 		// Book cache
 		db = kbook.model.cache.textMasters;
-		c = db.count();
-		for (i = 0; i < c; i++) {
+		for (i = db.count() - 1; i >= 0; i--) {
 			r = db.getRecord(i);
 			if (r.preferences) {
 				hist = r.preferences.dicHistories;
 				if (hist.length > max) {
-					hist.splice(max, hist.length - max);
+					hist.length = max;
 					r.mapToCacheExt();
 				}
 			}
 		}
 		// Dictionaries
 		dict = kbook.model.dicHistoriesForDevice;
-		c = dict.length;
-		for (i = 0; i < c; i++) {
+		for (i = dict.length - 1; i >= 0; i--) {
 			hist = dict[i];
 			if (hist.length > max) {
 				kbook.model.deleteDicHistories(hist);
-				hist.splice(max, hist.length - max);
+				hist.length = max;
 			}
 		}
 	}
@@ -278,7 +268,7 @@ tmp = function() {
 					modifyDictPopup(false, true);
 					break;
 				case 'popupPosition':
-					toTop = (newValue === 'top') ? true : false;
+					toTop = newValue === 'top';
 					modifyDictPopup(toTop, false);
 					break;
 				case 'dicHistMax':
