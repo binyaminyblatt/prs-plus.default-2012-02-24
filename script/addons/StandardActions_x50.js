@@ -591,6 +591,7 @@ tmp = function() {
 										media = node.media;
 										source = media.source;
 										source.deleteRecord(media.id);
+										FileSystem.deleteFile(media.source.path + media.path);
 										kbook.root.update(kbook.model);
 									}
 								}
