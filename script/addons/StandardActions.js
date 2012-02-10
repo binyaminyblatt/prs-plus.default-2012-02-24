@@ -322,13 +322,24 @@ tmp = function() {
 						var model, node, media, source;
 						try {
 							model = kbook.model;
-							node = model.current;
 							if (model.STATE === 'PAGE') {
 								model.doDeleteBook();
-							} else if ((model.STATE === 'SONG') || (model.STATE === 'PICTURE')) {
+							} else if (model.STATE === 'SONG') {
+								node = model.currentSong;
 								media = node.media;
-								source = media.source;
+								source = model.cache.getSourceByID(media.sourceid);
 								source.deleteRecord(media.id);
+								model.addPathToDCL(media.source, media.path);
+								node.unlockPath();
+								FileSystem.deleteFile(media.source.path + media.path);
+								kbook.root.update(kbook.model);
+							} else if (model.STATE === 'PICTURE') {
+								node = model.current;
+								media = node.media;
+								source = model.cache.getSourceByID(media.sourceid);
+								source.deleteRecord(media.id);
+								model.addPathToDCL(media.source, media.path);
+								node.unlockPath();
 								FileSystem.deleteFile(media.source.path + media.path);
 								kbook.root.update(kbook.model);
 							} else {
