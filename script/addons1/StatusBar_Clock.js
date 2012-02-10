@@ -10,6 +10,7 @@
 //	2010-04-24 kartu - Prepared for single JS merge
 //	2010-04-25 kartu - Marked updateDate as constructor
 //	2010-07-21 kartu - Refactored as Statusbar "plugin"
+//	2012-02-10 Ben Chenoweth - Remove leading '0' in 12 hour mode
 
 tmp = function () {
 	var L = Core.lang.getLocalizer("StatusBar_Clock");
@@ -34,10 +35,12 @@ tmp = function () {
 					return;
 			}
 			var time = new Date();
+			var prefix = "0";
 			var postfix = "";
 			var hours = time.getHours();
 			var minutes = time.getMinutes();
 			if (StatusBar.options.clockStyle === "h12") {
+				prefix = " ";
 				postfix = L("AM");
 				if (hours === 0) {
 					hours = 12;
@@ -48,7 +51,7 @@ tmp = function () {
 					}
 				}
 			}
-			if (hours < 10) {hours = "0" + hours;}
+			if (hours < 10) {hours = prefix + hours;}
 			if (minutes < 10) {minutes = "0" + minutes;}
 			StatusBar.setTime(hours + ":" + minutes + postfix);
 		} catch (e) {
