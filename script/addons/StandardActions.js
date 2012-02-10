@@ -339,7 +339,7 @@ tmp = function() {
 						}
 					});
 					actions.push( function () {
-						return true; // TOCHECK: Or does this need to be "return false"?
+						return false;
 					});
 					menu = Core.popup.createSimpleMenu(titles, actions);
 					Core.popup.showMenu(menu);
