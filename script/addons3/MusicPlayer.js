@@ -17,7 +17,10 @@ tmp = function() {
 		kbook.model.doQuiet = function () {
 			var delta;
 			delta = Number(MusicPlayer.options.VolumeIncrement)*-1;
-			this.clearTestModeKeyCount();
+			try {
+				// only on x50
+				this.clearTestModeKeyCount();
+			} catch(ignore) {}
 			this.setVolumeBy(delta);
 			this.doBlinkVolume();
 		};
@@ -26,7 +29,10 @@ tmp = function() {
 		kbook.model.doLoud = function () {
 			var delta;
 			delta = Number(MusicPlayer.options.VolumeIncrement);
-			this.clearTestModeKeyCount();
+			try {
+				// only on x50
+				this.clearTestModeKeyCount();
+			} catch(ignore) {}
 			this.setVolumeBy(delta);
 			this.doBlinkVolume();
 		};
