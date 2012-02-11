@@ -12,6 +12,7 @@
 //	2012-01-24 quisvir - Added 'Maximum Word Log Items' option
 //	2012-01-06 quisvir - Added 'Keep Selection after Dictionary'
 //	2012-02-09 quisvir - Optimised Word Log trimming code
+//	2012-02-11 quisvir - Added option to clear word logs on shutdown
 
 tmp = function() {
 
@@ -149,6 +150,15 @@ tmp = function() {
 	
 	var trimDicHistories = function (max) {
 		var cb, hist, db, i, r, dict;
+		// Current book
+		cb = kbook.model.currentBook;
+		if (cb) {
+			hist = cb.media.preferences.dicHistories;
+			if (hist.length > max) {
+				kbook.model.deleteDicHistories(hist);
+				hist.length = max;
+			}
+		}
 		// Book cache
 		db = kbook.model.cache.textMasters;
 		for (i = db.count() - 1; i >= 0; i--) {
@@ -157,7 +167,6 @@ tmp = function() {
 				hist = r.preferences.dicHistories;
 				if (hist.length > max) {
 					hist.length = max;
-					r.mapToCacheExt();
 				}
 			}
 		}
@@ -170,6 +179,10 @@ tmp = function() {
 				hist.length = max;
 			}
 		}
+	}
+	
+	var clearDicHists = function () {
+		if (opt.clearDicHistsOnShutdown === 'true') trimDicHistories(0);
 	}
 	
 	// Keep text selection on entering dictionary from popup
@@ -252,6 +265,17 @@ tmp = function() {
 				valueTitles: {
 					'100': '100 (' + L('VALUE_DEFAULT') + ')'
 				}
+			},
+			{
+				name: 'clearDicHistsOnShutdown',
+				title: L('CLEAR_WORD_LOGS_ON_SHUTDOWN'),
+				icon: 'DICTIONARY',
+				defaultValue: 'false',
+				values: ['true', 'false'],
+				valueTitles: {
+					'true': L('VALUE_TRUE'),
+					'false': L('VALUE_FALSE')
+				}
 			}
 		],
 		onInit: function () {
@@ -259,6 +283,7 @@ tmp = function() {
 			opt.popupLines = parseInt(opt.popupLines);
 			Core.events.subscribe(Core.events.EVENTS.BOOK_CHANGED, initPopupSize);
 			kbook.model.dicHistoriesMax = parseInt(opt.dicHistMax);
+			Core.events.subscribe(Core.events.EVENTS.SHUTDOWN, clearDicHists, true);
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			var toTop, dialog, max;
