@@ -20,7 +20,6 @@ tmp = function() {
 			kbook.autoRunRoot.sandbox.setFileContent = Core.io.setFileContent;
 			kbook.autoRunRoot.sandbox.listFiles = Core.io.listFiles;
 			kbook.autoRunRoot.sandbox.deleteFile = Core.io.deleteFile;
-			kbook.autoRunRoot.sandbox.startsWith = Core.text.startsWith;
 			kbook.autoRunRoot.sandbox.gamesSavePath = Core.config.userGamesSavePath;
 			//kbook.autoRunRoot.sandbox.createSimpleMenu = Core.popup.createSimpleMenu;
 			//kbook.autoRunRoot.sandbox.showMenu = Core.popup.showMenu;
