@@ -21,6 +21,7 @@
 //	2011-11-28 qusivir - Sort PRS+ Settings nodes by title
 //	2011-12-07 quisvir - Exposed doCreateSingleSetting
 //	2011-12-17 quisvir - Minor change to show numerical settings correctly
+//	2012-02-11 quisvir - Let options keep showing unchecked using 'noCheck' property
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -82,7 +83,7 @@ tmp = function() {
 					arg.addon.onSettingsChanged(propertyName, oldValue, arg.value, arg.object);
 				}
 
-				if (!optionDef.useIcons) {
+				if (!optionDef.useIcons && !optionDef.noCheck) {
 					var i, n, node, nodes, icon;
 					nodes = this.parent.nodes;
 					for (i = 0, n = nodes.length; i < n; i++) {

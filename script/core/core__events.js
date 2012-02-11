@@ -11,13 +11,15 @@
 //	2010-09-28 kartu - Adapted for 600
 //	2011-01-28 kartu - Adapted for x50
 //	2011-12-20 quisvir - Added KEY_EVENT and TOUCH_EVENT
+//	2012-02-11 quisvir - Added SHUTDOWN
 
 tmp = function() {
 	var handlers, callAll, hook, getHandler,
-		TERMINATE, SLEEP, RESUME, MENU_PAGE_CHANGED, BOOK_PAGE_CHANGED, BOOK_CHANGED, BOOK_DELETED, KEY_EVENT, TOUCH_EVENT;
-	TERMINATE = 0;
-	SLEEP = 1;
-	RESUME = 2;
+		SHUTDOWN, TERMINATE, SLEEP, RESUME, MENU_PAGE_CHANGED, BOOK_PAGE_CHANGED, BOOK_CHANGED, BOOK_DELETED, KEY_EVENT, TOUCH_EVENT;
+	SHUTDOWN = 0;
+	TERMINATE = 1;
+	SLEEP = 2;
+	RESUME = 3;
 	MENU_PAGE_CHANGED = 101;
 	BOOK_PAGE_CHANGED = 201;
 	BOOK_CHANGED = 202;
@@ -36,6 +38,10 @@ tmp = function() {
 			case TERMINATE:
 				object = kbook.model;
 				funcName = "terminating";
+				break;
+			case SHUTDOWN:
+				object = kbook.model;
+				funcName = "doDeviceShutdown";
 				break;
 			case SLEEP:
 				object = kbook.model;
@@ -129,7 +135,9 @@ tmp = function() {
 	
 	Core.events = {
 		EVENTS: {
-			/** App going down (because of connected USB or shutting down) */		
+			/** Device shutting down */		
+			SHUTDOWN: SHUTDOWN,
+			/** App going down (because of connected USB or shutting down) */
 			TERMINATE: TERMINATE,
 			/** Sleeping (user pulled off switch) */
 			SLEEP: SLEEP,
