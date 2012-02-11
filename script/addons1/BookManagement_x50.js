@@ -40,32 +40,30 @@
 //	2012-01-10 Ben Chenoweth - Added default keybindings for HOME MENU context
 //	2012-01-19 quisvir - Added 'Add to Collection' option in Book Option Menu
 //	2012-02-07 quisvir - Performance tweaks: made filtering notepads optional, added modulus code by drMerry
+//	2012-02-10 quisvir - Optimised most of the code, with help from drMerry
+//	2012-02-11 quisvir - Added options: page buttons in home menu, use sub-collections, mark all books read/unread, clear history on shutdown
 //
 //	TODO:
 //	Move 'Set/Remove New Flag' and 'Add to Collection' options to PRS+ popup menu
 
 tmp = function() {
 
-	var L, LX, log, opt, bookChanged, trigger1, trigger2, trigger3, trigger4, doSelectCollection, selectCollectionConstruct,
-		selectCollectionDestruct, tempNode, numCur, updateBookList, holdKey;
+	var L, LX, log, opt, bookChanged, trigger1, trigger2, trigger3, trigger4, tempNode, oldNode, numCur, holdKey, model, devRoot, thumbnailsNode, homeSandbox, constructRun;
 	
 	L = Core.lang.getLocalizer('BookManagement');
 	LX = Core.lang.LX;
 	log = Core.log.getLogger('BookManagement');
 	
+	// Some useful references
+	model = kbook.model;
+	devRoot = kbook.root.children.deviceRoot;
+	thumbnailsNode = kbook.root.nodes[0].nodes[6];
+	homeSandbox = model.container.sandbox.MENU_HOME_GROUP.sandbox;
+	
 	numCur = 0;
 	holdKey = false;
 	
-	// Treat Periodicals as Books
-	var oldBooksFilter = kbook.root.children.deviceRoot.children.books.filter;
-	kbook.root.children.deviceRoot.children.books.filter = function (result) {
-		if (opt.PeriodicalsAsBooks === 'true') {
-			return result;
-		} else {
-			return oldBooksFilter.apply(this, arguments);
-		}
-	}
-	
+	// Treat Periodicals as Books	
 	var oldIsPeriodical = FskCache.text.isPeriodical;
 	FskCache.text.isPeriodical = function () {
 		if (opt.PeriodicalsAsBooks === 'true') {
@@ -84,8 +82,8 @@ tmp = function() {
 		}
 	}
 	
-	var oldOnEnterShortCutBook = kbook.model.onEnterShortCutBook;
-	kbook.model.onEnterShortCutBook = function (node) {
+	var oldOnEnterShortCutBook = model.onEnterShortCutBook;
+	model.onEnterShortCutBook = function (node) {
 		if (opt.PeriodicalsAsBooks === 'true' && node.periodicalName) {
 			this.currentNode.gotoNode(node, this);
 		} else {
@@ -94,8 +92,8 @@ tmp = function() {
 	};
 	
 	// Keep new flag as is on opening book
-	var oldOnChangeBook = kbook.model.onChangeBook;
-	kbook.model.onChangeBook = function (node) {
+	var oldOnChangeBook = model.onChangeBook;
+	model.onChangeBook = function (node) {
 		var newflag = node.opened;
 		if (this.currentBook) {
 			opt.CurrentCollection = '';
@@ -104,36 +102,35 @@ tmp = function() {
 		if (opt.ManualNewFlag === 'true') {
 			node.opened = newflag;
 		}
-		if (kbook.model.STATE !== 'MENU_HOME') {
+		if (this.STATE !== 'MENU_HOME') {
 			bookChanged = true; // exception for current book on startup
 		}
 		numCur = 0;
 	}
 	
 	// Book menu option to switch new flag, called from main.xml
-	kbook.model.container.sandbox.OPTION_OVERLAY_PAGE.sandbox.NewFlagToggle = function () {
-		var book = kbook.model.currentBook;
+	model.container.sandbox.OPTION_OVERLAY_PAGE.sandbox.NewFlagToggle = function () {
+		var book = model.currentBook;
 		this.doOption();
-		book.opened = (book.opened) ? false : true;
+		book.opened = !book.opened;
 	}
 	
 	// Book menu option to add book to collection, called from main.xml
-	kbook.model.container.sandbox.OPTION_OVERLAY_PAGE.sandbox.AddToCollection = function () {
+	model.container.sandbox.OPTION_OVERLAY_PAGE.sandbox.AddToCollection = function () {
 		this.doOption();
 		doSelectCollection('book');
 	}
 	
 	// Show book menu option if preference is set
 	kbook.optMenu.isDisable = function (part) {
-		if (part.playing.indexOf('manualnewflag') !== -1) {
+		var p = part.playing;
+		if (p.indexOf('manualnewflag') !== -1) {
 			if (opt.ManualNewFlag === 'false') {
 				return true;
 			}
-			part.text = (kbook.model.currentBook.opened) ? L('SETNEWFLAG') : L('REMOVENEWFLAG');
-		} else if (part.playing.indexOf('addtocollection') !== -1) {
-			if (opt.showAddToCollection === 'false') {
-				return true;
-			};
+			part.text = (model.currentBook.opened) ? L('SETNEWFLAG') : L('REMOVENEWFLAG');
+		} else if (p.indexOf('addtocollection') !== -1 && opt.showAddToCollection === 'false') {
+			return true;
 		}
 		return Fskin.overlayTool.isDisable(part);
 	}
@@ -142,26 +139,24 @@ tmp = function() {
 	var oldKbookPlaylistNode = kbook.root.kbookPlaylistNode.construct;
 	kbook.root.kbookPlaylistNode.construct = function () {
 		oldKbookPlaylistNode.apply(this, arguments);
-		var node, nodes;
+		var node, nodes, c, p;
 		nodes = this.nodes;
+		c = p = 0;
 		if (opt.HideAddNewCollection === 'true') {
-			nodes.splice(this.purchasedNodeIndex + 1, 1);
-			this.constNodesCount--;
+			nodes.splice(3, 1);
+			c++;
 		}
 		if (opt.HidePurchasedBooks === 'true') {
-			nodes.splice(this.purchasedNodeIndex, 1);
-			this.constNodesCount--;
-			this.presetItemsCount--;
+			nodes.splice(2, 1);
+			c++; p++;
 		}
 		if (opt.HideUnreadPeriodicals === 'true') {
-			nodes.splice(this.purchasedNodeIndex - 1, 1);
-			this.constNodesCount--;
-			this.presetItemsCount--;
+			nodes.splice(1, 1);
+			c++; p++;
 		}
 		if (opt.HideUnreadBooks === 'true') {
-			nodes.splice(this.purchasedNodeIndex - 2, 1);
-			this.constNodesCount--;
-			this.presetItemsCount--;
+			nodes.splice(0, 1);
+			c++; p++;
 		}
 		if (opt.addReadBooks === 'true') {
 			node = xs.newInstanceOf(kbook.root.kbookUnreadBooksListNode);
@@ -170,42 +165,43 @@ tmp = function() {
 			node.depth = this.depth + 1;
 			node.name = node.title = L('READ_BOOKS');
 			node.filter = function (result) {
-				var c, i, record;
-				c = result.count();
-				for (i = 0; i < c; i++) {
+				var i, record;
+				for (i = result.count() - 1; i >= 0; i--) {
 					record = result.getRecord(i);
 					if (!record.opened || record.periodicalName) {
 						result.removeID(result.getID(i));
-						c--; i--;
 					}
 				}
 				return result;
 			};
-			node.construct();
 			node.locked++;
 			nodes.unshift(node);
-			this.constNodesCount++;
-			this.presetItemsCount++;
+			node.construct();
+			c--; p--;
 		}
+		this.constNodesCount -= c;
+		this.presetItemsCount -= p;
 		createSubCollections(nodes, this, this.constNodesCount);
 	}
 
-	createSubCollections = function (nodes, parent, next) {
-		var i, node, last, idx, coll, title;
+	var createSubCollections = function (nodes, parent, next) {
+		if (opt.subCollections === 'false') return;
+		var i, node, newNode, last, idx, coll, title;
 		i = next;
 		c = nodes.length;
 		while (i < c) {
-			title = nodes[i].title;
+			node = nodes[i];
+			title = node.title;
 			idx = title.indexOf('|');
 			if (idx !== -1) {
-				nodes[i].name = nodes[i].title = title.slice(idx + 1);
+				node.name = node.title = title.slice(idx + 1);
 				coll = title.slice(0, idx);
 				if (last === coll) {
-					nodes[i].parent = nodes[next-1];
+					node.parent = nodes[next-1];
 					nodes[next-1].nodes.push(nodes.splice(i,1)[0]);
 					i--; c--;
 				} else {
-					node = Core.ui.createContainerNode({
+					newNode = Core.ui.createContainerNode({
 						title: coll,
 						comment: function () {
 							return Core.lang.LX('COLLECTIONS', this.nodes.length);
@@ -213,10 +209,10 @@ tmp = function() {
 						parent: parent,
 						icon: 'BOOKS'
 					});
-					nodes[i].parent = node;
-					node.sublistMark = true;
-					node.nodes.push(nodes.splice(i,1)[0]);
-					nodes.splice(next, 0, node);
+					node.parent = newNode;
+					newNode.sublistMark = true;
+					newNode.nodes.push(nodes.splice(i,1)[0]);
+					nodes.splice(next, 0, newNode);
 					last = coll;
 					next++;
 				}
@@ -227,107 +223,100 @@ tmp = function() {
 	}
 	
 	// Draw reading progress instead of 'last read' date/time
-	kbook.model.getContinueDate = function (node) {
-		var current, page, pages;
-		current = this.currentBook;
-		if (current && opt.ShowReadingProgressCurrent === 'true') {
-			page = current.media.ext.currentPosition.page + 1;
-			if (page < Number(opt.OnlyShowFromPage)) {
-				return node.nodes[0].lastReadDate;
+	model.getContinueDate = function (node) {
+		var cb, media, page, pages;
+		cb = this.currentBook;
+		if (cb && opt.readingProgressCurrent === 'true') {
+			media = cb.media;
+			page = media.currentPosition.page + 1;
+			if (page >= parseInt(opt.OnlyShowFromPage)) {
+				pages = media.history[0].pages;
+				return readingProgressComment(page, pages, opt.progressFormatCurrent);
 			}
-			pages = current.media.ext.history[0].pages;
-			return readingProgressComment(page, pages, opt.ProgressFormatCurrent);
-		} else {
-			return node.nodes[0].lastReadDate;
 		}
+		return node.nodes[0].lastReadDate;
 	}
 	
 	// Draw reading progress below thumbnails
 	var oldDrawRecord = Fskin.kbookViewStyleThumbnail.drawRecord;
 	Fskin.kbookViewStyleThumbnail.drawRecord = function (offset, x, y, width, height, tabIndex, parts) {
-		var win, home, record, page, pages, msg, nodes, comX, comY, comWidth;
-		win = this.getWindow();
-		
 		oldDrawRecord.apply(this, arguments);
+		if (!constructRun) return;
 		
-		if (xs.isInstanceOf(kbook.model.currentNode, kbook.root.children.deviceRoot)) {
+		var win, menu, home, list, record, media, page, pages, msg, n, comX, comY, comWidth, comHeight;
+		win = this.getWindow();
+		menu = this.menu;
+		comHeight = this.textCommentHeight;
+		
+		if (xs.isInstanceOf(model.currentNode, devRoot)) {
 			// Display current booklist option text
 			home = true;
 			if (offset === 2) {
-				if (opt.BookList === 5) {
+				list = opt.BookList;
+				if (list === 4) {
 					msg = opt.SelectedCollection;
-				} else if (opt.BookList === 3 && opt.CurrentCollection) {
+				} else if (list === 3 && opt.CurrentCollection) {
 					msg = L('NEXT_IN') + ' ' + opt.CurrentCollection;
 				} else {
-					msg = BookManagement_x50.optionDefs[0].optionDefs[0].valueTitles[opt.BookList];
+					msg = BookManagement_x50.optionDefs[0].optionDefs[0].valueTitles[list];
 				}
 				// Replace | with : for sub-collections
-				msg = msg.replace('|',': ');
+				if (opt.subCollections === 'true') msg = msg.replace('|',': ');
 				// Add position in current booklist
-				nodes = kbook.root.getBookThumbnailsNode().nodes;
-				if (nodes.length > 1) {
-					msg += ' (' + (numCur + 1) + '-' + (numCur + nodes.length) + ')';
-				} else if (nodes.length === 1) {
+				n = thumbnailsNode.nodes.length;
+				if (n > 1) {
+					msg += ' (' + (numCur + 1) + '-' + (numCur + n) + ')';
+				} else if (n === 1) {
 					msg += ' (' + (numCur + 1) + ')';
 				}
-				this.skin.styles[6].draw(win, msg, 0, y-25, this.width, this.textCommentHeight);
+				this.skin.styles[6].draw(win, msg, 0, y-25, this.width, comHeight);
 			}
 		}
 		
-		switch (opt.ShowReadingProgressThumbs) {
+		switch (opt.readingProgressThumbs) {
 			case 'false':
 				return;
 			case 'home':
 				if (!home) return;
 			case 'all':
-				record = this.menu.getRecord(offset);
-				if (!record || record.kind !== 2 || !record.media.ext || !record.media.ext.history.length) { // check if book with history
-					return;
-				} else if (this.statusVisible && (record.media.sourceid > 1 || this.menu.getFixSelectPosition() || record.expiration)) { // check for something else showing
-					return;
-				}
-				page = record.media.ext.currentPosition.page + 1;
-				if (page < Number(opt.OnlyShowFromPage)) {
+				record = menu.getRecord(offset);
+				if (!record || record.kind !== 2) return;
+				media = record.media;
+				if (!media.history.length || (this.statusVisible && (media.sourceid > 1 || menu.getFixSelectPosition() || record.expiration))) {
 					return;
 				}
-				pages = record.media.ext.history[0].pages;
-				msg = readingProgressComment(page, pages, opt.ProgressFormatThumbs);
+				page = media.currentPosition.page + 1;
+				if (page < parseInt(opt.OnlyShowFromPage)) return;
+				pages = media.history[0].pages;
+				msg = readingProgressComment(page, pages, opt.progressFormatThumbs);
 				comX = x + this.marginWidth;
 				comY = this.getNy(this.getTy(y), Math.min(this.getTh(height), this.thumbnailHeight)) + this.textNameHeight + this.marginNameAndComment + 23;
 				comWidth = this.getCw(width, Fskin.scratchRectangle.width);
-				parts.commentStyle.draw(win, msg, comX, comY, comWidth, this.textCommentHeight);
+				parts.commentStyle.draw(win, msg, comX, comY, comWidth, comHeight);
 		}
 	};
 	
 	// Format reading progress comment
 	readingProgressComment = function (page, pages, format) {
 		switch (format) {
-			case '1':
-				return L('PAGE') + ' ' + page + ' ' + L('OF') + ' ' + pages;
-			case '2':
-				return L('PAGE') + ' ' + page + ' ' + L('OF') + ' ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
-			case '3':
-				return page + ' ' + L('OF') + ' ' + pages;
-			case '4':
-				return page + ' ' + L('OF') + ' ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
-			case '5':
-				return Math.floor((page/pages)*100) + '%';
-			case '6':
-				return page + ' / ' + pages;
-			case '7':
-				return page + ' / ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
-			case '8':
-				return L('PAGE') + ' ' + page + ' / ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
+			case '1': return L('PAGE') + ' ' + page + ' ' + L('OF') + ' ' + pages;
+			case '2': return L('PAGE') + ' ' + page + ' ' + L('OF') + ' ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
+			case '3': return page + ' ' + L('OF') + ' ' + pages;
+			case '4': return page + ' ' + L('OF') + ' ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
+			case '5': return Math.floor((page/pages)*100) + '%';
+			case '6': return page + ' / ' + pages;
+			case '7': return page + ' / ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
+			case '8': return L('PAGE') + ' ' + page + ' / ' + pages + ' (' + Math.floor((page/pages)*100) + '%)';
 		}
 	}
 
 	// Update deviceroot on enter
-	var oldOnEnterDeviceRoot = kbook.model.onEnterDeviceRoot;
-	kbook.model.onEnterDeviceRoot = function () {
+	var oldOnEnterDeviceRoot = model.onEnterDeviceRoot;
+	model.onEnterDeviceRoot = function () {
 		if (bookChanged) {
 			// Don't update if opt = 0 and no trigger has been used
 			if (opt.BookList || trigger1 || trigger2 || trigger3 || trigger4) {
-				kbook.root.getBookThumbnailsNode().update(kbook.model);
+				thumbnailsNode.update(this);
 			}
 			bookChanged = false;
 		}
@@ -335,21 +324,22 @@ tmp = function() {
 	}
 	
 	// Update booklist after collection edit
-	var oldFinishCollectionEdit = kbook.model.finishCollectionEdit;
-	kbook.model.finishCollectionEdit = function () {
-		var i, change, current;
-		if (this.colManTgtNode && (opt.BookList === 3 || opt.BookList === 5)) {
-			if (opt.CurrentCollection) {
-				current = opt.CurrentCollection;
-			} else {
-				current = opt.SelectedCollection;
-			}
-			if (this.colManTgtNode.kind === 42 && this.colManTgtNode.title === current) {
+	var oldFinishCollectionEdit = model.finishCollectionEdit;
+	model.finishCollectionEdit = function () {
+		var i, node, change, current, kind, items;
+		node = this.colManTgtNode;
+		if (node && opt.BookList > 2) {
+			current = opt.CurrentCollection ? opt.CurrentCollection : opt.SelectedCollection;
+			kind = node.kind;
+			if (kind === 42 && node.title === current) {
 				change = true;
-			} else if (this.colManTgtNode.kind === 17) {
-				for (i = 0; i < this.colManItems.length && this.colManItems[i].title !== current; i++);
-				if (i !== this.colManItems.length) {
-					change = true;
+			} else if (kind === 17) {
+				items = this.colManItems;
+				for (i = items.length - 1; i >= 0; i--) {
+					if (items[i].title === current) {
+						change = true;
+						break;
+					}
 				}
 			}
 			if (change) {
@@ -361,49 +351,42 @@ tmp = function() {
 		oldFinishCollectionEdit.apply(this, arguments);
 	}
 	
-	updateBookList = function () {
-		if (xs.isInstanceOf(kbook.model.currentNode, kbook.root.children.deviceRoot)) {
-			kbook.root.getBookThumbnailsNode().update(kbook.model);
-			kbook.menuHomeThumbnailBookData.setNode(kbook.root.getBookThumbnailsNode());
+	var updateBookList = function () {
+		if (xs.isInstanceOf(model.currentNode, devRoot)) {
+			thumbnailsNode.update(model);
+			kbook.menuHomeThumbnailBookData.setNode(thumbnailsNode);
 		} else {
 			bookChanged = true;
 		}
 	}
 	
 	// Filter notepads & periodicals for home menu booklist
-	kbook.root.children.deviceRoot.children.bookThumbnails.filter = kbook.root.children.deviceRoot.children.books.filter = function (result) {
-		var c, i, book;
-		c = result.count();
+	devRoot.children.bookThumbnails.filter = devRoot.children.books.filter = function (result) {
+		var i, book;
 		if (opt.PeriodicalsAsBooks === 'false') {
-			if (opt.hideNotepads === 'true') {
-				// Filter periodicals AND notepads
-				for (i = 0; i < c; i++) {
-					book = result.getRecord(i);
-					if (book.periodicalName || book.path.slice(0,9) === 'Notepads/') {
-						result.removeID(book.id);
-						c--;
-						i--;
-					}
-				}
-			} else {
-				// Filter only periodicals (Sony default behaviour)
-				for (i = 0; i < c; i++) {
+			if (opt.hideNotepads === 'false') {
+				// Filter periodicals only (default behaviour)
+				for (i = result.count() - 1; i >= 0; i--) {
 					book = result.getRecord(i);
 					if (book.periodicalName) {
 						result.removeID(book.id);
-						c--;
-						i--;
+					}
+				}
+			} else {
+				// Filter periodicals and notepads
+				for (i = result.count() - 1; i >= 0; i--) {
+					book = result.getRecord(i);
+					if (book.periodicalName || book.path.slice(0,9) === 'Notepads/') {
+						result.removeID(book.id);
 					}
 				}
 			}
 		} else if (opt.hideNotepads === 'true') {
-			// Filter only notepads
-			for (i = 0; i < c; i++) {
+			// Filter notepads only
+			for (i = result.count() - 1; i >= 0; i--) {
 				book = result.getRecord(i);
 				if (book.path.slice(0,9) === 'Notepads/') {
 					result.removeID(book.id);
-					c--;
-					i--;
 				}
 			}
 		}
@@ -411,13 +394,12 @@ tmp = function() {
 	}
 	
 	// Customize book list in home menu
-	kbook.root.children.deviceRoot.children.bookThumbnails.construct = function () {
-		var model, prototype, nodes, cache, db, db2, current, c, node,
-			i, j, hist, book, books, id, author, list, coll, colls;
+	devRoot.children.bookThumbnails.construct = function () {
+		var prototype, nodes, cache, db, db2, current, c, node,
+			i, j, hist, book, books, id, id2, items, author, list, coll, colls;
 		FskCache.tree.xdbNode.construct.call(this);
+		constructRun = true;
 		cache = this.cache;
-		if (!cache) return;
-		model = kbook.model;
 		prototype = this.prototype;
 		nodes = this.nodes = [];
 		if (opt.IgnoreCards === 'true') {
@@ -436,7 +418,7 @@ tmp = function() {
 				current = db2.getRecord(0);
 			}
 		}
-		while (1) {
+		while (true) {
 			switch (opt.BookList) {
 				case 0: // Last added books
 					db.sort_c({
@@ -454,11 +436,12 @@ tmp = function() {
 					break;
 				case 1: // Last opened books
 					hist = Core.addonByName.BookHistory.getBookList();
-					j = (current) ? 1 : 0;
+					j = (current) ? 1 : 0; // FIXME incorrect if periodical?
 					if (numCur && numCur + j >= hist.length) {
 						numCur -= 3;
 					}
-					for (i = numCur + j; nodes.length < 3 && i < hist.length; i++) {
+					books = hist.length;
+					for (i = numCur + j; nodes.length < 3 && i < books; i++) {
 						book = Core.media.findMedia(hist[i]);
 						if (book) {
 							if (book.periodicalName && opt.PeriodicalsAsBooks === 'false') {
@@ -483,10 +466,11 @@ tmp = function() {
 							list.push(i);
 						}
 					}
-					if (numCur && numCur >= list.length) {
+					books = list.length;
+					if (numCur && numCur >= books) {
 						numCur -= 3;
 					}
-					for (i = numCur; nodes.length < 3 && i < list.length; i++) {
+					for (i = numCur; nodes.length < 3 && i < books; i++) {
 						node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 						node.cache = cache;
 						node.media = db.getRecord(list[i]);
@@ -508,13 +492,10 @@ tmp = function() {
 						} else if (trigger1) {
 							// CC found, but trigger1 used, so start from next
 							i++;
-						} else if (trigger2) {
-							// CC found, but trigger2 used, so start from previous
-							i--;
 						}
 					}
-					if (i === 0 && trigger2) {
-						i = colls - 1;
+					if (trigger2) {
+						i = (i === 0) ? colls - 1 : i - 1;
 					}
 					while (i >= 0 && i < colls) {
 						coll = db2.getRecord(i);
@@ -536,59 +517,39 @@ tmp = function() {
 					}
 					opt.CurrentCollection = (nodes.length) ? coll.title : '';
 					break;
-				case 4: // Random books
-					books = '/'; // FIXME there has to be a faster way than messing with strings...
-					if (current) {
-						books += current.id + '/';
-					}
-					while (nodes.length < 3 && books.length < c) {
-						i = Math.floor(Math.random() * c);
-						book = db.getRecord(i);
-						if (books.indexOf('/' + book.id + '/') === -1) {
-							// Random book is not current book and not already placed, so add to list
-							node = nodes[nodes.length] = xs.newInstanceOf(prototype);
-							node.cache = cache;
-							node.media = book;
-							books += book.id + '/';
-						}
-					}
-					break;
-				case 5: // Select collection
+				case 4: // Select collection
 					if (!opt.SelectedCollection) break;
 					books = [];
 					if (current) {
 						id = current.id;
 					}
-					db2 = cache.playlistMasters;
-					db2.sort('indexPlaylist');
-					colls = db2.count();
-					for (i = 0; i < colls && db2.getRecord(i).title !== opt.SelectedCollection; i++);
-					if (i === colls) {
-						break;
-					}
+					db2 = cache.playlistMasters.db.search('indexPlaylist', opt.SelectedCollection);
+					if (!db2.count()) break;
 					// Selected Collection found
-					coll = db2.getRecord(i);
-					for (i = 0; i < coll.items.length; i++) { // FIXME no need to list all books in advance
-						if (coll.items[i].id !== id) {
-							books.push(coll.items[i].id);
+					items = db2.getRecord(0).items;
+					j = items.length;
+					for (i = 0; i < j; i++) { // FIXME no need to list all books in advance
+						id2 = items[i].id;
+						if (id2 !== id) {
+							books.push(id2);
 						}
 					}
-					if (numCur && numCur >= books.length) {
+					j = books.length;
+					if (numCur && numCur >= j) {
 						numCur -= 3;
 					}
-					for (i = numCur; nodes.length < 3 && i < books.length; i++) {
+					for (i = numCur; nodes.length < 3 && i < j; i++) {
 						node = nodes[nodes.length] = xs.newInstanceOf(prototype);
 						node.cache = cache;
 						node.media = cache.getRecord(books[i]);
 					}
-					break;
 			}
 			if (!nodes.length) {
 				if (trigger1) {
-					opt.BookList = (opt.BookList + 1) % 6;
+					opt.BookList = (opt.BookList + 1) % 5;
 					continue;
 				} else if (trigger2) {
-					opt.BookList = (opt.BookList + 5) % 6;
+					opt.BookList = (opt.BookList + 4) % 5;
 					continue;
 				}
 			}
@@ -597,40 +558,39 @@ tmp = function() {
 		}
 	};
 	
-
 	// PREV/NEXT on HOME MENU activate BooklistPrev/NextBooks
-	kbook.model.container.sandbox.MENU_HOME_GROUP.sandbox.doPrevious = function (part) {
+	homeSandbox.doPrevious = function () {
 		if (!holdKey) {
-			BookManagement_x50.actions[3].action();
+			BookManagement_x50.actions[3 - opt.homeMenuPageButtons].action();
 		} else {
 			holdKey = false;
 		}
 	}
 	
-	kbook.model.container.sandbox.MENU_HOME_GROUP.sandbox.doNext = function (part) {
+	homeSandbox.doNext = function () {
 		if (!holdKey) {
-			BookManagement_x50.actions[2].action();
+			BookManagement_x50.actions[2 - opt.homeMenuPageButtons].action();
 		} else {
 			holdKey = false;
 		}
 	}
 
 	// HOLD PREV/HOLD NEXT on HOME MENU activate BooklistCycleBackward/Forward
-	kbook.model.container.sandbox.MENU_HOME_GROUP.sandbox.doPreviousHold = function (part) {
-		BookManagement_x50.actions[1].action();
+	homeSandbox.doPreviousHold = function () {
 		holdKey = true;
+		BookManagement_x50.actions[1 + opt.homeMenuPageButtons].action();
 	}
 	
-	kbook.model.container.sandbox.MENU_HOME_GROUP.sandbox.doNextHold = function (part) {
-		BookManagement_x50.actions[0].action();
+	homeSandbox.doNextHold = function () {
 		holdKey = true;
+		BookManagement_x50.actions[opt.homeMenuPageButtons].action();
 	}
 	
 
 	// Functions for booklist option 'Select Collection'
-	doSelectCollection = function (target) {
-		if (target === 'book' && !kbook.model.currentBook) return;
-		oldNode = kbook.model.currentNode;
+	var doSelectCollection = function (target) {
+		if (target === 'book' && !model.currentBook) return;
+		oldNode = model.currentNode;
 		oldNode.redirect = true;
 		tempNode = Core.ui.createContainerNode({
 			title: L('SELECT_COLLECTION'),
@@ -639,13 +599,13 @@ tmp = function() {
 			destruct: selectCollectionDestruct
 		});
 		tempNode.target = target;
-		oldNode.gotoNode(tempNode, kbook.model);
+		oldNode.gotoNode(tempNode, model);
 	}
 	
-	selectCollectionConstruct = function () {
+	var selectCollectionConstruct = function () {
 		var i, node, nodes, db, c;
 		nodes = this.nodes = [];
-		db = kbook.model.cache.playlistMasters;
+		db = model.cache.playlistMasters;
 		db.sort('indexPlaylist');
 		c = db.count();
 		for (i = 0; i < c; i++) {
@@ -663,55 +623,62 @@ tmp = function() {
 		createSubCollections(nodes, this, 0);
 	}
 	
-	selectCollectionDestruct = function () {
+	var selectCollectionDestruct = function () {
 		tempNode = null;
 		delete oldNode.redirect;
 		oldNode = null;
 	}
 	
-	kbook.model.collectionSelected = function (node) {
-		var c, i, db, coll, items, id, old;
+	model.collectionSelected = function (node) {
+		var old, coll, id;
 		old = node.oldNode;
-		if (node.target === 'booklist') {
-			opt.BookList = 5;
-			opt.SelectedCollection = node.coll.title;
-			Core.settings.saveOptions(BookManagement_x50);
-			updateBookList();
-			if (old.title === L('BOOK_SELECTION')) {
-				this.currentNode.gotoNode(old.parent, this);
-			} else {
-				this.currentNode.gotoNode(old, this);
-			}
-		} else if (node.target === 'book') {
-			coll = node.coll;
-			items = coll.items;
-			c = items.length;
-			id = this.currentBook.media.id;
-			for (i = 0; i < c && items[i].id !== id; i++);
-			if (i === c) {
-				coll.append(id);
-				this.cache.updateRecord(coll.id, coll);
-			}
-			this.currentNode.gotoNode(old, this);
+		coll = node.coll;
+		switch (node.target) {
+			case 'book':
+				id = this.currentBook.media.id;
+				if (coll.getItemIndex(id) !== -1) {
+					coll.append(id);
+					this.cache.updateRecord(coll.id, coll);
+				}
+				break;
+			case 'booklist':
+				opt.BookList = 4;
+				opt.SelectedCollection = coll.title;
+				Core.settings.saveOptions(BookManagement_x50);
+				updateBookList();
+				if (old.title === L('BOOK_SELECTION')) {
+					old = old.parent;
+				}
 		}
+		this.currentNode.gotoNode(old, this);
 	}
 	
 	// Link actions to home menu booklist arrows
-	kbook.model.container.sandbox.booklistArrows = function (index) {
-		switch (index) {
-			case 1: // left
-				BookManagement_x50.actions[3].action();
-				break;
-			case 2: // right
-				BookManagement_x50.actions[2].action();
-				break;
-			case 3: // up
-				BookManagement_x50.actions[1].action();
-				break;
-			case 4: // down
-				BookManagement_x50.actions[0].action();
-		}
+	model.container.sandbox.booklistArrows = function (index) {
+		BookManagement_x50.actions[4 - index].action();
 	};
+	
+	// Mark all books as read/unread (uses books node to avoid periodicals)
+	var markAllBooks = function (read) {
+		var n, i;
+		n = kbook.root.getBooksNode().nodes;
+		for (i = n.length - 1; i >= 0; i--) {
+			n[i].media.opened = read;
+		}
+		kbook.root.update(model);
+	}
+	
+	// Clear page histories, keeping current position (length = 0 crashes home menu)
+	var clearPageHists = function () {
+		var db, i, r;
+		if (opt.clearHistsOnShutdown === 'true') {
+			db = model.cache.textMasters;
+			for (i = db.count() - 1; i >= 0; i--) {
+				r = db.getRecord(i);
+				if (r.history.length) r.history.length = 1;
+			}
+		}
+	}
 	
 	var BookManagement_x50 = {
 		name: 'BookManagement_x50',
@@ -721,6 +688,8 @@ tmp = function() {
 			opt = this.options;
 			// Workaround for numerical settings being saved as strings
 			opt.BookList = parseInt(opt.BookList);
+			opt.homeMenuPageButtons = parseInt(opt.homeMenuPageButtons);
+			Core.events.subscribe(Core.events.EVENTS.SHUTDOWN, clearPageHists, true);
 		},
 		actions: [{
 			name: 'BookListCycleForward',
@@ -728,11 +697,12 @@ tmp = function() {
 			group: 'Other',
 			icon: 'BOOKS',
 			action: function () {
+				var list = opt.BookList;
 				trigger1 = true;
 				numCur = 0;
-				if (opt.BookList === 5) {
+				if (list === 4) {
 					opt.BookList = 0;
-				} else if (opt.BookList !== 3) {
+				} else if (list !== 3) {
 					opt.BookList++;
 					opt.CurrentCollection = '';
 				}
@@ -746,11 +716,12 @@ tmp = function() {
 			group: 'Other',
 			icon: 'BOOKS',
 			action: function () {
+				var list = opt.BookList;
 				trigger2 = true;
 				numCur = 0;
-				if (opt.BookList === 0) {
-					opt.BookList = 5;
-				} else if (opt.BookList !== 3) {
+				if (!list) {
+					opt.BookList = 4;
+				} else if (list !== 3) {
 					opt.BookList--;
 					opt.CurrentCollection = '';
 				}
@@ -765,7 +736,7 @@ tmp = function() {
 			icon: 'NEXT',
 			action: function () {
 				if (bookChanged) {
-					kbook.model.doBlink();
+					model.doBlink();
 				} else {
 					numCur += 3;
 					trigger3 = true;
@@ -780,7 +751,7 @@ tmp = function() {
 			icon: 'NEXT',
 			action: function () {
 				if (numCur < 3 || bookChanged) {
-					kbook.model.doBlink();
+					model.doBlink();
 				} else {
 					numCur -= 3;
 					trigger4 = true;
@@ -807,14 +778,13 @@ tmp = function() {
 				title: L('BOOK_SELECTION'),
 				icon: 'BOOKS',
 				defaultValue: '0',
-				values: ['0', '1', '2', '3', '4', '5'],
+				values: ['0', '1', '2', '3', '4'],
 				valueTitles: {
 					'0': L('LAST_ADDED_BOOKS'),
 					'1': L('LAST_OPENED_BOOKS'),
 					'2': L('BOOKS_BY_SAME_AUTHOR'),
 					'3': L('NEXT_BOOKS_IN_COLLECTION'),
-					'4': L('RANDOM_BOOKS'),
-					'5': L('SELECT_COLLECTION') + '...'
+					'4': L('SELECT_COLLECTION') + '...'
 				}
 			},
 			{
@@ -838,13 +808,24 @@ tmp = function() {
 					'true': L('VALUE_TRUE'),
 					'false': L('VALUE_FALSE')
 				}
+			},
+			{
+				name: 'homeMenuPageButtons',
+				title: L('HOME_MENU_PAGE_BUTTONS'),
+				icon: 'SETTINGS',
+				defaultValue: '0',
+				values: ['0', '2'],
+				valueTitles: {
+					'0': L('PRESS_SCROLL_HOLD_SWITCH'),
+					'2': L('PRESS_SWITCH_HOLD_SCROLL'),
+				}
 			}]},
 			{
 			groupTitle: L('SHOW_READING_PROGRESS'),
 			groupIcon: 'BOOKMARK',
 			optionDefs: [
 				{
-				name: 'ShowReadingProgressCurrent',
+				name: 'readingProgressCurrent',
 				title: L('SHOW_READING_PROGRESS_CURRENT'),
 				icon: 'BOOKMARK',
 				defaultValue: 'false',
@@ -855,7 +836,7 @@ tmp = function() {
 				}
 				},
 				{
-				name: 'ProgressFormatCurrent',
+				name: 'progressFormatCurrent',
 				title: L('PROGRESS_FORMAT_CURRENT'),
 				icon: 'SETTINGS',
 				defaultValue: '2',
@@ -872,7 +853,7 @@ tmp = function() {
 				}
 				},
 				{
-				name: 'ShowReadingProgressThumbs',
+				name: 'readingProgressThumbs',
 				title: L('SHOW_READING_PROGRESS_THUMBS'),
 				icon: 'BOOKMARK',
 				defaultValue: 'false',
@@ -884,7 +865,7 @@ tmp = function() {
 				}
 				},
 				{
-				name: 'ProgressFormatThumbs',
+				name: 'progressFormatThumbs',
 				title: L('PROGRESS_FORMAT_THUMBS'),
 				icon: 'SETTINGS',
 				defaultValue: '3',
@@ -967,6 +948,17 @@ tmp = function() {
 						'false': L('VALUE_FALSE')
 					}
 				},
+				{
+					name: 'subCollections',
+					title: L('USE_SUB_COLLECTIONS'),
+					icon: 'BOOKS',
+					defaultValue: 'false',
+					values: ['true','false'],
+					valueTitles: {
+						'true': L('VALUE_TRUE'),
+						'false': L('VALUE_FALSE')
+					}
+				}
 			]},
 			{
 				name: 'PeriodicalsAsBooks',
@@ -1002,9 +994,32 @@ tmp = function() {
 				}	
 			},
 			{
+				name: 'markAllBooks',
+				title: L('MARK_ALL_BOOKS_READ_UNREAD'),
+				icon: 'NEW',
+				defaultValue: '',
+				noCheck: true,
+				values: ['read', 'unread'],
+				valueTitles: {
+					'read': L('MARK_ALL_BOOKS_READ'),
+					'unread': L('MARK_ALL_BOOKS_UNREAD')
+				}
+			},
+			{
 				name: 'showAddToCollection',
 				title: L('SHOW_ADD_TO_COLLECTION'),
 				icon: 'BOOKS',
+				defaultValue: 'false',
+				values: ['true', 'false'],
+				valueTitles: {
+					'true': L('VALUE_TRUE'),
+					'false': L('VALUE_FALSE')
+				}	
+			},
+			{
+				name: 'clearHistsOnShutdown',
+				title: L('CLEAR_PAGE_HISTORY_ON_SHUTDOWN'),
+				icon: 'CLOCK',
 				defaultValue: 'false',
 				values: ['true', 'false'],
 				valueTitles: {
@@ -1028,16 +1043,23 @@ tmp = function() {
 			switch (propertyName) {
 				case 'homeMenuArrows':
 					Core.config.homeMenuArrows = newValue;
-					kbook.root.getDeviceRootNode().update(kbook.model);
+					kbook.root.getDeviceRootNode().update(model);
+					break;
+				case 'homeMenuPageButtons':
+					opt.homeMenuPageButtons = parseInt(newValue);
 					break;
 				case 'BookList':
 					opt.BookList = parseInt(newValue);
-					if (newValue === '5') doSelectCollection('booklist');
+					if (newValue === '4') doSelectCollection('booklist');
 				case 'IgnoreCards':
 				case 'hideNotepads':
 					opt.CurrentCollection = '';
 				case 'PeriodicalsAsBooks':
-					updateBookList();
+					updateBookList(); // FIXME last 2 options don't work if it means the filter gets turned off, if IgnoreCards is enabled
+					break;
+				case 'markAllBooks':
+					markAllBooks(newValue === 'read');
+					opt.markAllBooks = '';
 			}
 		}
 	};
