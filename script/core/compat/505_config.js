@@ -86,6 +86,7 @@ return {
 		NEXT: 61,
 		
 		BOOK_ALT: 63,
+		INTERACT_FICT: 63,
 		PICTURE_ALT: 64,
 		SEARCH_ALT: 65,
 		COMIC: 66,
@@ -166,7 +167,8 @@ return {
 			{ name: "Draughts", parent: "gamesAndUtils" },
 			{ name: "FiveBalls", parent: "gamesAndUtils" },				
 			{ name: "FiveRow", parent: "gamesAndUtils" },				
-			{ name: "FreeCell", parent: "gamesAndUtils" },				
+			{ name: "FreeCell", parent: "gamesAndUtils" },
+			{ name: "Frotz", parent: "gamesAndUtils" },
 			{ name: "Mahjong", parent: "gamesAndUtils" },
 			{ name: "MineSweeper", parent: "gamesAndUtils" },
 			{ name: "Solitaire", parent: "gamesAndUtils" },
