@@ -141,6 +141,7 @@
 				<function id="doSize">		this.doSize();	</function>
                 <function id="doOption">	this.doOption();	</function>
                 <function id="doQuit">      this.doQuit(); </function>
+				<function id="doRoot">		this.doRoot();	</function>
 				<function id="doMenu">		this.doOption();	</function>
 				<function id="doDigit" params="part"> this.digitF(part.key);	</function>
 				<function id="doOK">		this.doOK();	</function>
@@ -152,7 +153,9 @@
             </code>
 			
 		  <button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doQuit"/>	  
-		  <text id='frotzText' skin='eventText' left='10' right='10' top='8' bottom='260' active='false' visible='true' /> 
+		  <text id='frotzText' skin='eventText' left='10' right='10' top='8' bottom='260' active='false' visible='true' />
+		  <label id='touchLabel1'   skin='touchText'    left='285' right='0' bottom='3' height='15' align='left' text='Quit'/>
+		  <label id='nonTouch1'   skin='touchText'    left='490' right='0' bottom='3' height='15' align='left' text='[Hold 0] Quit'/>
 		  <text id='currentText' skin='eventText' left='10' right='108' height='42' bottom='215' active='false' visible='true' />
 		  <button id="btn_Ok" text="OK" right='10' bottom="215" width="90" height="40" do="doOK"/>
 		
