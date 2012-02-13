@@ -9,6 +9,7 @@
 //	2012-02-04 Ben Chenoweth - Changed input method
 //	2012-02-11 Ben Chenoweth - Changed binary files and fixed output; save/restore games
 //	2012-02-12 Ben Chenoweth - Removed timers; added "quit", "restart" and "score" commands
+//	2012-02-13 Ben Chenoweth - Added 'quit' labels and functions; fix for nonTouch keyboard
 
 var tmp = function () {
 	
@@ -38,7 +39,7 @@ var tmp = function () {
 	var strShift = "\u2191"; //up arrow
 	var strUnShift = "\u2193"; //down arrow
 	var strBack = "\u2190"; //left arrow
-	var custSel;
+	var custSel = 1; // OK key
 	var prevSel;
 	
 	var FROTZ = System.applyEnvironment("[prspPath]") + "dfrotz";
@@ -194,9 +195,15 @@ var tmp = function () {
 		try {
 			pageScroll = getSoValue(this.frotzText, 'scrollPage');
 		} catch (ignore) { }
+		
 		this.loadKeyboard();
-		symbols = true;
-		this.refreshKeys();
+		
+		if (hasNumericButtons) {
+			this.touchLabel1.show(false);
+		} else {
+			this.nonTouch1.show(false);
+		}
+		
 		this.loadGameList();
 	}
 
@@ -214,6 +221,9 @@ var tmp = function () {
 		if (items.length == 0) {
 			filesMissingError = "Error:\nThere are no files in the game directory.\nPlease connect your reader to a PC and copy the game files into the Frotz folder located in the PRS+ GamesSave folder."
 			this.setOutput(filesMissingError);
+			currentLine = "quit";
+			target.currentText.setValue(currentLine);
+			target.setVariable("current_line",currentLine);
 		} else {
 			/*titles = []; //TODO?: Fix popup menu
 			actions = [];
@@ -235,6 +245,11 @@ var tmp = function () {
 			}
 			this.setOutput(tempOutput);
 			chooseGame = true;
+			
+			// change keyboard to show numbers (and move selection to "1")
+			custSel = 7; // "1" when symbols showing
+			symbols = true;
+			this.refreshKeys();
 		}
 		
 	}
@@ -527,6 +542,16 @@ var tmp = function () {
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
 	}
+
+	target.doRoot = function () {
+		this.doQuit();
+		return;
+	}
+	
+	target.doHold0 = function () {
+		this.doQuit();
+		return;
+	}
 	
 	target.doMark = function () {
 		return;
@@ -572,7 +597,11 @@ var tmp = function () {
 			setSoValue(target[key], 'text', keys[n+i]);
 			mouseEnter.call(target[key]);
 			mouseLeave.call(target[key]);
-		}	
+		}
+		if (hasNumericButtons) {
+			// highlight active key
+			this.ntHandleEventsDlg
+		}
 	}
 
 	target.doSpace = function () {
