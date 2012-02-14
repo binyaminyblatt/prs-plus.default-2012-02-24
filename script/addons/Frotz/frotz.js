@@ -196,6 +196,7 @@ var tmp = function () {
 			pageScroll = getSoValue(this.frotzText, 'scrollPage');
 		} catch (ignore) { }
 		
+		this.enable(true);
 		this.loadKeyboard();
 		
 		if (hasNumericButtons) {

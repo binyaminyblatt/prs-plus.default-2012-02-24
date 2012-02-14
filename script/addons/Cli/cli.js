@@ -171,9 +171,18 @@ var tmp = function () {
 		try {
 			pageScroll = getSoValue(this.cliText, 'scrollPage');
 		} catch (ignore) { }
+		
+		this.enable(true);
 		this.loadKeyboard();
+		
 		tempOutput = "> ";
 		this.setOutput(tempOutput);
+		
+		if (hasNumericButtons) {
+			this.touchLabel1.show(false);
+		} else {
+			this.nonTouch1.show(false);
+		}
 	}
 
 	target.setOutput = function (output) {
@@ -221,6 +230,16 @@ var tmp = function () {
 		return;
 	}
 	
+	target.doRoot = function () {
+		this.doQuit();
+		return;
+	}
+	
+	target.doHold0 = function () {
+		this.doQuit();
+		return;
+	}
+	
 	target.doMark = function () {
 		return;
 	}
@@ -265,7 +284,11 @@ var tmp = function () {
 			setSoValue(target[key], 'text', keys[n+i]);
 			mouseEnter.call(target[key]);
 			mouseLeave.call(target[key]);
-		}	
+		}
+		if (hasNumericButtons) {
+			// highlight active key
+			this.ntHandleEventsDlg
+		}
 	}
 
 	target.doSpace = function () {
