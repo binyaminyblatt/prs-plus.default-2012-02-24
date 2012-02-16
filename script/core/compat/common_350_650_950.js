@@ -40,6 +40,7 @@
 //	2012-01-17 quisvir - Changed homelargekind to homekind
 //	2012-01-18 quisvir - Fixed periodicals homekind, continue comment
 //	2012-01-30 quisvir - Fixed #222 Missing font size indicator
+//	2012-02-16 quisvir - Fixed 'latest read' sorting being lost on reboot (Sony bug)
 
 tmp = function () {
 	var localizeKeyboardPopups, updateSiblings, localize, localizeKeyboard, oldSetLocale, 
@@ -766,6 +767,11 @@ tmp = function () {
 	pageDictionaryOverlayModel.closeDictionary = function () {
 		oldCloseDictionary.apply(this, arguments);
 		if (kbook.model.STATE === 'PAGE') kbook.model.container.sandbox.STATUS_GROUP.sandbox.STATUS_GROUP_SUB.sandbox.STATUS_GROUP.sandbox.showBookSizeIndicator(true);
+	};
+	
+	FskCache.text.indexLastestRead = function (id, index) {
+		var date = (this.currentPosition) ? this.currentPosition.date : 0;
+		index.handle(date, id);
 	};
 };
 

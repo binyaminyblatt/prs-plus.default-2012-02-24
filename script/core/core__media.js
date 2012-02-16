@@ -17,6 +17,7 @@
 //	2011-12-27 Ben Chenoweth - Added removeMedia
 //	2011-12-28 Ben Chenoweth - Initial implementation of audio for 600 and x50
 //	2011-12-29 Ben Chenoweth - Fixes for audio on 600/x50; removed scanDirectory
+//	2012-02-16 quisvir - Call construct of created media nodes
 
 tmp = function() {
 	var supportedMIMEs, supportedExtensions, supportedComics, supportedAudio, findLibrary, findMedia,
@@ -166,6 +167,11 @@ tmp = function() {
 							}
 						}
 					} catch(e) { log.error("Error trying to make audio node"); }
+					if (node.construct) {
+						try {
+							node.construct();
+						} catch(e) { log.error('Error in media node construct', e) }
+					}
 					return node;
 				}
 			}
