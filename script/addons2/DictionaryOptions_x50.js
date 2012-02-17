@@ -13,6 +13,7 @@
 //	2012-01-06 quisvir - Added 'Keep Selection after Dictionary'
 //	2012-02-09 quisvir - Optimised Word Log trimming code
 //	2012-02-11 quisvir - Added option to clear word logs on shutdown
+//	2012-02-17 quisvir - Fixed #284 'Dictionary list doesn't work after previous / next word buttons'
 
 tmp = function() {
 
@@ -72,7 +73,7 @@ tmp = function() {
 	kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT.sandbox.doNextPrevDicEntry = function (button) {
 		var data, index, key, dicIndex, item;
 		data = kbook.dictionaryData;
-		index = data.getSimpleResultDicIndex().index;
+		index = data.simpleRecord.getDicIndex().index;
 		index = (button.id === 'BTN_PREVDICENTRY') ? index - 1 : index + 1;
 		key = new Chunk('AAA=');
 		dicIndex = new kbook.model.DicIndex(index, key);
@@ -80,7 +81,6 @@ tmp = function() {
 		data.record_0 = item;
 		data.simpleRecord = new kbook.DictionaryRecord(item);
 		data.simpleRecord.setMode('simple');
-		data.simple_records = [data.simpleRecord];
 		this.setVariable('VAR_UPDATE', false);
 		this.setVariable('VAR_UPDATE', true);
 	}
