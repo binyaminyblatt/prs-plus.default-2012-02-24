@@ -13,7 +13,7 @@
 //	2012-01-06 quisvir - Added 'Keep Selection after Dictionary'
 //	2012-02-09 quisvir - Optimised Word Log trimming code
 //	2012-02-11 quisvir - Added option to clear word logs on shutdown
-//	2012-02-17 quisvir - Fixed #284 'Dictionary list doesn't work after previous / next word buttons'
+//	2012-02-17 quisvir - Fixed #284, #288
 
 tmp = function() {
 
@@ -103,16 +103,23 @@ tmp = function() {
 		}
 	}
 	
-	// Move dictionary popup to top of screen if tap in bottom (and vice versa)
+	// Move dictionary popup to top if selected text is in bottom of the screen (and vice versa)
 	var preventPopupOverlap = function (y) {
+		if (opt.popupPosition !== 'avoid') return;
 		var target = kbook.model.container.sandbox.SHORTCUT_OVERLAY.sandbox.VIEW_SHORTCUT;
-		if (y < kbook.model.container.height - target.height - 50) {
+		if (y < kbook.model.container.height - target.height - 100) {
 			if (target.y === 0) {
 				modifyDictPopup(false, false);
 			}
 		} else if (target.y !== 0) {
 			modifyDictPopup(true, false);
 		}
+	}
+	
+	var oldMouseUp = kbook.kbookPage.readingTracker.mouseUp;
+	kbook.kbookPage.readingTracker.mouseUp = function (target, event) {
+		if (event.clickCount === 2) preventPopupOverlap(event.y);
+		oldMouseUp.apply(this, arguments);
 	}
 	
 	// Close dictionary popup and cancel selection by tapping page
@@ -308,9 +315,7 @@ tmp = function() {
 			}
 		},
 		pageDoubleTap: function (x, y) {
-			if (opt.popupPosition === 'avoid') {
-				preventPopupOverlap(y);
-			}
+			preventPopupOverlap(y);
 		}
 	};
 
