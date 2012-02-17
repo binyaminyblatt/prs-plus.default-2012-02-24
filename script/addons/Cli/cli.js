@@ -4,6 +4,7 @@
 //
 // Initial version: 2012-01-29
 // Changelog:
+//	2012-02-17 Ben Chenoweth - Added UP/DOWN (scroll window) and PREVIOUS (commands) buttons
 
 var tmp = function () {
 	
@@ -34,6 +35,10 @@ var tmp = function () {
 	
 	var tempOutput = "";
 	var pageScroll;
+	var strUp = "\u2191";
+	var strDown = "\u2193";
+	var previousCommands = [];
+	var previousCommandNum = 0;
 	
 	var twoDigits = function (i) {
 		if (i<10) {return "0"+i}
@@ -155,10 +160,12 @@ var tmp = function () {
 		setSoValue(target.BACK, 'text', strBack);
 		setSoValue(target.SHIFT, 'text', strShift);
 		setSoValue(target.SPACE, 'text', "");
+		setSoValue(target.BUTTON_UPP, 'text', strUp);
+		setSoValue(target.BUTTON_DWN, 'text', strDown);
 		
 		// highlight OK button for nonTouch
 		if (hasNumericButtons) {
-			custSel = 1;
+			custSel = 5;
 			target.ntHandleEventsDlg();
 		}
 		return;
@@ -171,18 +178,17 @@ var tmp = function () {
 		try {
 			pageScroll = getSoValue(this.cliText, 'scrollPage');
 		} catch (ignore) { }
-		
 		this.enable(true);
 		this.loadKeyboard();
-		
 		tempOutput = "> ";
 		this.setOutput(tempOutput);
-		
 		if (hasNumericButtons) {
 			this.touchLabel1.show(false);
+			//this.cliScroll.show(false);
 		} else {
 			this.nonTouch1.show(false);
 		}
+		previousCommands.push(""); // start previous commands list with a blank entry
 	}
 
 	target.setOutput = function (output) {
@@ -199,6 +205,12 @@ var tmp = function () {
 		cmd = target.getVariable("current_line");
 		if (cmd === "exit") target.doQuit();
 		
+		// add command to previousCommands array
+		if (cmd !== "") {
+			previousCommands.push(cmd);
+		}
+		previousCommandNum = 0;
+
 		// add cmd to output
 		tempOutput = tempOutput + cmd;
 		this.setOutput(tempOutput);
@@ -226,6 +238,7 @@ var tmp = function () {
 	}
 		
 	target.doQuit = function () {
+		deleteFile(CLIOUTPUT);
 		kbook.autoRunRoot.exitIf(kbook.model);
 		return;
 	}
@@ -240,6 +253,62 @@ var tmp = function () {
 		return;
 	}
 	
+	target.doButtonClick = function (sender) {
+		var id, n, numCommands;
+		id = getSoValue(sender, "id");
+		n = id.substring(7, 10);
+		if (n == "UPP") {
+			// scroll cliText textbox up
+			try {
+				pageScroll.call(this.cliText, true, -1);
+			}
+			catch (ignore) { }
+			return;
+		}
+		if (n == "DWN") {
+			// scroll cliText textbox down
+			try {
+				pageScroll.call(this.cliText, true, 1);
+			}
+			catch (ignore) { }
+			return;
+		}		
+		if (n == "PRE") {
+			// copy previous command into command box
+			numCommands = previousCommands.length;
+			if (numCommands !== 0) {
+				if (previousCommandNum <= 1) {
+					previousCommandNum = numCommands;
+				} else {
+					previousCommandNum--;
+				}
+				// replace currentLine with previous command
+				currentLine = previousCommands[previousCommandNum-1];
+				target.currentText.setValue(currentLine);
+				target.setVariable("current_line",currentLine);
+			}
+			return;
+		}		
+	}
+
+	target.doPrevious = function () {
+		// scroll cliText textbox up
+		try {
+			pageScroll.call(this.cliText, true, -1);
+		}
+		catch (ignore) { }
+		return;
+	}
+
+	target.doNext = function () {
+		// scroll cliText textbox down
+		try {
+			pageScroll.call(this.cliText, true, 1);
+		}
+		catch (ignore) { }
+		return;
+	}
+
 	target.doMark = function () {
 		return;
 	}
@@ -335,8 +404,19 @@ var tmp = function () {
 	}
 
 	target.ntHandleEventsDlg = function () {
-		if (custSel == 1) {
+		if (custSel === 1) {
+			mouseEnter.call(target.BUTTON_UPP);
+			mouseLeave.call(target.BUTTON_DWN);
+		}
+		if (custSel === 2) {
+			mouseLeave.call(target.btn_Ok);
+			mouseEnter.call(target.BUTTON_DWN);
+			mouseLeave.call(target.BUTTON_UPP);
+		}
+		if (custSel === 5) {
 			mouseEnter.call(target.btn_Ok);
+			mouseLeave.call(target.BUTTON_DWN);
+			mouseLeave.call(target.BUTTON_PRE);
 			mouseLeave.call(target.key01);
 			mouseLeave.call(target.key02);
 			mouseLeave.call(target.key03);
@@ -346,6 +426,11 @@ var tmp = function () {
 			mouseLeave.call(target.key07);
 			mouseLeave.call(target.key08);
 			mouseLeave.call(target.key09);
+			mouseLeave.call(target.key10);
+		}
+		if (custSel === 6) {
+			mouseLeave.call(target.btn_Ok);
+			mouseEnter.call(target.BUTTON_PRE);
 			mouseLeave.call(target.key10);
 		}
 		if (custSel == 7) {
@@ -405,6 +490,7 @@ var tmp = function () {
 			mouseLeave.call(target.key09);
 			mouseEnter.call(target.key10);
 			mouseLeave.call(target.btn_Ok);
+			mouseLeave.call(target.BUTTON_PRE);
 		}
 		if (custSel == 17) {
 			mouseLeave.call(target.key01);
@@ -550,9 +636,21 @@ var tmp = function () {
 	target.moveCursor = function (direction) {
 	switch (direction) {
 		case "up" : {
-			if ((custSel>6) && (custSel<17)) {
+			if (custSel===2) {
 				prevSel=custSel;
 				custSel=1;
+				target.ntHandleEventsDlg();
+			} else if (custSel===5) {
+				prevSel=custSel;
+				custSel=2;
+				target.ntHandleEventsDlg();
+			} else if (custSel===6) {
+				prevSel=custSel;
+				custSel=5;
+				target.ntHandleEventsDlg();
+			} else if ((custSel>6) && (custSel<17)) {
+				prevSel=custSel;
+				custSel=5;
 				target.ntHandleEventsDlg();
 			} else if ((custSel>16) && (custSel<26)) {
 				prevSel=custSel;
@@ -582,15 +680,23 @@ var tmp = function () {
 			break
 		}
 		case "down" : {
-			if (custSel==1) {
+			if (custSel===1) {
 				prevSel=custSel;
-				custSel=16;
+				custSel=2;
+				target.ntHandleEventsDlg();
+			} else if (custSel===2) {
+				prevSel=custSel;
+				custSel=5;
+				target.ntHandleEventsDlg();
+			} else if (custSel===5) {
+				prevSel=custSel;
+				custSel=6;
 				target.ntHandleEventsDlg();
 			} else if ((custSel>6) && (custSel<16)) {
 				prevSel=custSel;
 				custSel=custSel+10;
 				target.ntHandleEventsDlg();
-			} else if (custSel==16) {
+			} else if (custSel===16) {
 				prevSel=custSel;
 				custSel=25;
 				target.ntHandleEventsDlg();
@@ -598,11 +704,11 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel=custSel+9;
 				target.ntHandleEventsDlg();			
-			} else if ((custSel==24) || (custSel==25)) {
+			} else if ((custSel===24) || (custSel===25)) {
 				prevSel=custSel;
 				custSel=33;
 				target.ntHandleEventsDlg();			
-			} else if ((custSel==26) || (custSel==27)) {
+			} else if ((custSel===26) || (custSel===27)) {
 				prevSel=custSel;
 				custSel=34;
 				target.ntHandleEventsDlg();			
@@ -610,7 +716,7 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel=35;
 				target.ntHandleEventsDlg();			
-			} else if (custSel==33) {
+			} else if (custSel===33) {
 				prevSel=custSel;
 				custSel=36;
 				target.ntHandleEventsDlg();			
@@ -618,7 +724,11 @@ var tmp = function () {
 			break
 		}
 		case "left" : {
-			if ((custSel>7) && (custSel<17)) {
+			if (custSel===6) {
+				prevSel=custSel;
+				custSel=16;
+				target.ntHandleEventsDlg();	
+			} else if ((custSel>7) && (custSel<17)) {
 				prevSel=custSel;
 				custSel--;
 				target.ntHandleEventsDlg();	
@@ -630,7 +740,7 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel--;
 				target.ntHandleEventsDlg();	
-			} else if ((custSel==35) || (custSel==36)) {
+			} else if ((custSel===35) || (custSel===36)) {
 				prevSel=custSel;
 				custSel--;
 				target.ntHandleEventsDlg();	
@@ -638,7 +748,11 @@ var tmp = function () {
 			break
 		}		
 		case "right" : {
-			if ((custSel>6) && (custSel<16)) {
+			if (custSel===16) {
+				prevSel=custSel;
+				custSel=6;
+				target.ntHandleEventsDlg();	
+			} else if ((custSel>6) && (custSel<16)) {
 				prevSel=custSel;
 				custSel++;
 				target.ntHandleEventsDlg();	
@@ -650,7 +764,7 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel++;
 				target.ntHandleEventsDlg();	
-			} else if ((custSel==34) || (custSel==35)) {
+			} else if ((custSel===34) || (custSel===35)) {
 				prevSel=custSel;
 				custSel++;
 				target.ntHandleEventsDlg();	
@@ -662,7 +776,10 @@ var tmp = function () {
 	}
 	
 	target.doCenterF = function () {
-		if (custSel === 1) target.btn_Ok.click();
+		if (custSel === 1) target.BUTTON_UPP.click();
+		if (custSel === 2) target.BUTTON_DWN.click();
+		if (custSel === 5) target.btn_Ok.click();
+		if (custSel === 6) target.BUTTON_PRE.click();
 		if (custSel === 7) target.key01.click();
 		if (custSel === 8) target.key02.click();
 		if (custSel === 9) target.key03.click();

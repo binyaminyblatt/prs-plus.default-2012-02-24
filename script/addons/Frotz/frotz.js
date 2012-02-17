@@ -11,6 +11,7 @@
 //	2012-02-12 Ben Chenoweth - Removed timers; added "quit", "restart" and "score" commands
 //	2012-02-13 Ben Chenoweth - Added 'quit' labels and functions; fix for nonTouch keyboard
 //	2012-02-16 Ben Chenoweth - Added UP/DOWN (scroll window) and PREVIOUS (commands) buttons
+//	2012-02-17 Ben Chenoweth - Use PREV/NEXT for UP/DOWN; handle game initialisation failure
 
 var tmp = function () {
 	
@@ -194,7 +195,7 @@ var tmp = function () {
 		
 		// highlight OK button for nonTouch
 		if (hasNumericButtons) {
-			custSel = 1;
+			custSel = 5;
 			target.ntHandleEventsDlg();
 		}
 		return;
@@ -211,6 +212,7 @@ var tmp = function () {
 		this.loadKeyboard();		
 		if (hasNumericButtons) {
 			this.touchLabel1.show(false);
+			//this.frotzScroll.show(false);
 		} else {
 			this.nonTouch1.show(false);
 		}
@@ -254,6 +256,7 @@ var tmp = function () {
 				noZeroItemNum = itemNum + 1;
 				tempOutput = tempOutput + "\n" + noZeroItemNum + ": " + items[itemNum];
 			}
+			tempOutput = tempOutput + "\n";
 			this.setOutput(tempOutput);
 			chooseGame = true;
 			
@@ -312,8 +315,16 @@ var tmp = function () {
 				
 				this.getResponse();
 			} catch(e) {
-				tempOutput = tempOutput + "\nError " + e + " initialising game "+GAMETITLE;
+				//tempOutput = tempOutput + "\nError " + e + " initialising game "+GAMETITLE;
+				
+				tempOutput = tempOutput + "Unfortunately, that game failed to initialise.\nPlease choose another game from the list...\n";
 				this.setOutput(tempOutput);
+				chooseGame = true;
+			
+				// change keyboard to show numbers (and move selection to "1")
+				custSel = 7; // "1" when symbols showing
+				symbols = true;
+				this.refreshKeys();
 			}
 		} else {
 			tempOutput = tempOutput + "\nError:\nNo valid game title found.";
@@ -627,6 +638,24 @@ var tmp = function () {
 			return;
 		}		
 	}
+	
+	target.doPrevious = function () {
+		// scroll frotzText textbox up
+		try {
+			pageScroll.call(this.frotzText, true, -1);
+		}
+		catch (ignore) { }
+		return;
+	}
+
+	target.doNext = function () {
+		// scroll frotzText textbox down
+		try {
+			pageScroll.call(this.frotzText, true, 1);
+		}
+		catch (ignore) { }
+		return;
+	}
 
 	target.doMark = function () {
 		return;
@@ -809,6 +838,7 @@ var tmp = function () {
 			mouseLeave.call(target.key09);
 			mouseEnter.call(target.key10);
 			mouseLeave.call(target.btn_Ok);
+			mouseLeave.call(target.BUTTON_PRE);
 		}
 		if (custSel === 17) {
 			mouseLeave.call(target.key01);
@@ -1026,7 +1056,7 @@ var tmp = function () {
 				prevSel=custSel;
 				custSel=33;
 				target.ntHandleEventsDlg();			
-			} else if ((custSel===6) || (custSel===27)) {
+			} else if ((custSel===26) || (custSel===27)) {
 				prevSel=custSel;
 				custSel=34;
 				target.ntHandleEventsDlg();			

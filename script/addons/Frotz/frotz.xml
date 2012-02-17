@@ -131,11 +131,11 @@
 			
             <code>
 				<function id="doLeft">		this.moveCursor("left");	</function>
-				<function id="doPrevious">	this.moveCursor("left");	</function>
 				<function id="doRight">		this.moveCursor("right");	</function>
-				<function id="doNext">		this.moveCursor("right");	</function> 
 				<function id="doUp">      	this.moveCursor("up");	</function>
 				<function id="doDown">		this.moveCursor("down");	</function>
+				<function id="doPrevious">	this.doPrevious();	</function>
+				<function id="doNext">		this.doNext();	</function> 
 				<function id="doCenter">	this.doCenterF();	</function>
 				<function id="doMark">		this.doMark();	</function>
 				<function id="doSize">		this.doSize();	</function>
@@ -154,6 +154,7 @@
 			
 		  <button id="btn_Exit" left="0" top="-70" height="70" width="70" active="true" visible="false" do="doQuit"/>	  
 		  <text id='frotzText' skin='eventText' left='10' right='54' top='8' bottom='260' active='false' visible='true' />
+		  <!--scrollbar scroller="frotzText" id="frotzScroll" visible="true" right="54" top="10" bottom="260" /-->
 		  <button id="BUTTON_UPP" active="true" text="U"  right="10" width="40" top="10" height="40" do="doButtonClick"/>
 		  <button id="BUTTON_DWN" active="true" text="D"  right="10" width="40" bottom="262" height="40" do="doButtonClick"/>
 		  <label id='touchLabel1'   skin='touchText'    left='285' right='0' bottom='3' height='15' align='left' text='Quit'/>
