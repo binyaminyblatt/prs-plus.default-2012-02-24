@@ -43,10 +43,11 @@
 //	2012-02-10 quisvir - Optimised most of the code, with help from drMerry
 //	2012-02-11 quisvir - Added options: page buttons in home menu, use sub-collections, mark all books read/unread, clear history on shutdown
 //	2012-02-16 quisvir - Added checkmarks for finished books, enable/disable page option items; fixed ignoreCards
+//	2012-02-17 quisvir - Fixed #286 'Page buttons stop working for cycling books in main screen'
 
 tmp = function() {
 
-	var L, LX, log, opt, bookChanged, trigger1, trigger2, trigger3, trigger4, tempNode, oldNode, numCur, holdKey, model, devRoot, thumbnailsNode, homeSandbox, constructRun;
+	var L, LX, log, opt, bookChanged, trigger1, trigger2, trigger3, trigger4, tempNode, oldNode, numCur, holdKey, model, devRoot, thumbnailsNode, homeGroup, constructRun;
 	
 	L = Core.lang.getLocalizer('BookManagement');
 	LX = Core.lang.LX;
@@ -56,7 +57,7 @@ tmp = function() {
 	model = kbook.model;
 	devRoot = kbook.root.children.deviceRoot;
 	thumbnailsNode = kbook.root.nodes[0].nodes[6];
-	homeSandbox = model.container.sandbox.MENU_HOME_GROUP.sandbox;
+	homeGroup = model.container.sandbox.MENU_HOME_GROUP;
 	
 	numCur = 0;
 	holdKey = false;
@@ -329,6 +330,7 @@ tmp = function() {
 			bookChanged = false;
 		}
 		oldOnEnterDeviceRoot.apply(this, arguments);
+		homeGroup.sandbox.MENU_HOME_GROUP_SUB.sandbox.MENU_HOME_GROUP.sandbox.MENU_HOME.focus(true);
 	}
 	
 	// Update booklist after collection edit
@@ -576,7 +578,7 @@ tmp = function() {
 	};
 	
 	// PREV/NEXT on HOME MENU activate BooklistPrev/NextBooks
-	homeSandbox.doPrevious = function () {
+	homeGroup.sandbox.doPrevious = function () {
 		if (!holdKey) {
 			BookManagement_x50.actions[3 - opt.homeMenuPageButtons].action();
 		} else {
@@ -584,7 +586,7 @@ tmp = function() {
 		}
 	}
 	
-	homeSandbox.doNext = function () {
+	homeGroup.sandbox.doNext = function () {
 		if (!holdKey) {
 			BookManagement_x50.actions[2 - opt.homeMenuPageButtons].action();
 		} else {
@@ -593,12 +595,12 @@ tmp = function() {
 	}
 
 	// HOLD PREV/HOLD NEXT on HOME MENU activate BooklistCycleBackward/Forward
-	homeSandbox.doPreviousHold = function () {
+	homeGroup.sandbox.doPreviousHold = function () {
 		holdKey = true;
 		BookManagement_x50.actions[1 + opt.homeMenuPageButtons].action();
 	}
 	
-	homeSandbox.doNextHold = function () {
+	homeGroup.sandbox.doNextHold = function () {
 		holdKey = true;
 		BookManagement_x50.actions[opt.homeMenuPageButtons].action();
 	}
