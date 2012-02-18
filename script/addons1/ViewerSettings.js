@@ -5,7 +5,8 @@
 //	2012-01-20 Mark Nord - kbook.model.processing() kbook.model.processed();
 //		but this prevents SubCPUThread from sleeping, might lead to high battery consumption
 //	2012-01-21 Mark Nord - first preview of MarginCut for 505/300
-//	2012-01-29 Mark Nord - reset marginCut at appropriate places;  show helptext; 
+//	2012-01-29 Mark Nord - reset marginCut at appropriate places;  show helptext;
+//	2012-02-18 quisvir - Add parent items as separate bookmarks in multi-level ToC (FR)
 //	ToDo: check for landscape; add to Book-Menu; possible enhancements: 4-quadrants view, ...
 
 tmp = function() {
@@ -201,6 +202,39 @@ tmp = function() {
 		}
 	};
 
+	// Add parent items as separate bookmarks in multi-level ToC
+	var tocNode, prop, oldTocFunc;
+	tocNode = FskCache.tree.markReferenceNode;
+	prop = (tocNode.construct) ? 'construct' : 'enter'; // model sniffing
+	oldTocFunc = tocNode[prop];
+	tocNode[prop] = function () {
+		oldTocFunc.apply(this);
+		doCreateBookmarkNode.call(this);
+	}
+	
+	var doCreateBookmarkNode = function () {
+		var item, node;
+		item = this.bookmark;
+		if (item && ViewerSettings.options.parentItemsInToc === 'true') {
+			if (this.construct) { // model sniffing
+				node = FskCache.tree.bookmarkNode.nodeFromBookmark(item);
+				node.title = node.title.replace(new RegExp('([\\1-\\31]+)', 'g'), ' ');
+				node.name = node.title = Fskin.trimString(node.title);
+				node.onEnter = 'onEnterPageOption';
+			} else {
+				node = xs.newInstanceOf(this.prototype);
+				node.bookmark = item;
+				node.name = node.title = item.name;
+				node.bookmarks = [];
+			}
+			node.cache = this.cache;
+			node.parent = this;
+			node.depth = this.depth + 1;
+			node.selected = item.selected;
+			this.nodes.unshift(node);
+		}
+	}
+	
 	var ViewerSettings = {
 		name: "ViewerSettings",
 		settingsGroup: "viewer",
@@ -228,6 +262,17 @@ tmp = function() {
 				"240": LX("SECONDS", 240),
 				"270": LX("SECONDS", 270),
 				"300": LX("SECONDS", 300)
+			}
+		},
+		{
+			name: "parentItemsInToc",
+			title: L("SHOW_PARENT_ITEMS_IN_TOC"),
+			icon: "LIST",
+			defaultValue: "false",
+			values: ["true", "false"],
+			valueTitles: {
+				"true": L("VALUE_TRUE"),
+				"false": L("VALUE_FALSE")
 			}
 		}],
 		actions: [
