@@ -294,7 +294,7 @@ tmp = function() {
 				if (!media.history.length || (this.statusVisible && (media.sourceid > 1 || menu.getFixSelectPosition() || record.expiration))) {
 					return;
 				}
-				page = media.currentPosition.page + 1;
+				page = (media.currentPosition) ? media.currentPosition.page + 1 : media.ext.currentPosition.page + 1;
 				if (page < parseInt(opt.OnlyShowFromPage)) return;
 				pages = media.history[0].pages;
 				msg = readingProgressComment(page, pages, opt.progressFormatThumbs);
