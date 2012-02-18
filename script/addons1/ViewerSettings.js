@@ -159,11 +159,11 @@ tmp = function() {
 			}
 		catch (e) {
 			log.error('error in myRender:',e);
-			return oldRender.apply(this, agruments);
+			return oldRender.apply(this, arguments);
 			}
 		}
 		else {
-			return oldRender.apply(this, agruments);
+			return oldRender.apply(this, arguments);
 		}
 	};
 	
@@ -208,7 +208,7 @@ tmp = function() {
 	prop = (tocNode.construct) ? 'construct' : 'enter'; // model sniffing
 	oldTocFunc = tocNode[prop];
 	tocNode[prop] = function () {
-		oldTocFunc.apply(this);
+		oldTocFunc.apply(this, arguments);
 		doCreateBookmarkNode.call(this);
 	}
 	
