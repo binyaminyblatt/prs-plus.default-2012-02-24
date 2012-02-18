@@ -32,6 +32,7 @@
 //	2012-01-19 quisvir - Added automatic page turner, reset autoPage timer on page change
 //	2012-02-05 quisvir - Allow custom view settings to overrule existing presets
 //	2012-02-06 quisvir - Added option to prevent screen flashing when closing overlays
+//	2012-02-18 quisvir - Add parent items as separate bookmarks in multi-level ToC (FR)
 
 tmp = function() {
 
@@ -456,6 +457,37 @@ tmp = function() {
 		this.container.invalidate();
 	};
 	
+	// Add parent items as separate bookmarks in multi-level ToC
+	var oldTocConstruct = FskCache.tree.markReferenceNode.construct;
+	FskCache.tree.markReferenceNode.construct = function () {
+		oldTocConstruct.apply(this);
+		doCreateBookmarkNode.call(this, false);
+	}
+	
+	var oldTocConstruct2 = FskCache.tree.markReferenceNode2.construct;
+	FskCache.tree.markReferenceNode2.construct = function () {
+		oldTocConstruct2.apply(this);
+		doCreateBookmarkNode.call(this, true);
+	}
+	
+	var doCreateBookmarkNode = function (periodical) {
+		var item, prototype, node;
+		item = this.bookmark;
+		if (item && opt.parentItemsInToc === 'true') {
+			prototype = (periodical) ? FskCache.tree.bookmarkNode2 : FskCache.tree.bookmarkNode;
+			node = prototype.nodeFromBookmark(item);
+			node.cache = this.cache;
+			node.parent = this;
+			node.depth = this.depth + 1;
+			node.selected = item.selected;
+			node.title = node.title.replace(new RegExp('([\\1-\\31]+)', 'g'), ' ');
+			node.name = node.title = Fskin.trimString(node.title);
+			// node.comment = 'Page ' + this.bookmark._page; // Protected
+			node.onEnter = 'onEnterPageOption';
+			this.nodes.unshift(node);
+		}
+	}
+	
 	var ViewerSettings_x50 = {
 		name: "ViewerSettings_x50",
 		settingsGroup: "viewer", // "advanced",
@@ -548,6 +580,17 @@ tmp = function() {
 				name: "noFlashOnOverlayClose",
 				title: L("NO_FLASH_ON_OVERLAY_CLOSE"),
 				icon: "ABOUT",
+				defaultValue: "false",
+				values: ["true", "false"],
+				valueTitles: {
+					"true": L("VALUE_TRUE"),
+					"false": L("VALUE_FALSE")
+				}
+			},
+			{
+				name: "parentItemsInToc",
+				title: L("SHOW_PARENT_ITEMS_IN_TOC"),
+				icon: "LIST",
 				defaultValue: "false",
 				values: ["true", "false"],
 				valueTitles: {
