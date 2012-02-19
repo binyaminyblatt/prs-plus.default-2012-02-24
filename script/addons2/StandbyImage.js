@@ -373,6 +373,7 @@ tmp = function() {
 		name: "StandbyImage",
 		title: L("TITLE"),
 		icon: "STANDBY",
+		hiddenOptions: 1,
 		optionDefs: [
 			{
 			groupTitle: L('STANDBY_IMAGE'),
