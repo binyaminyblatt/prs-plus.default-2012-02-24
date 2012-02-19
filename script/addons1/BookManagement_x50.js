@@ -843,6 +843,7 @@ tmp = function() {
 		name: 'BookManagement_x50',
 		title: L('TITLE'),
 		icon: 'BOOKS',
+		hiddenOptions: 2,
 		onPreInit: function () {
 			createPageOptionSettings();
 		},

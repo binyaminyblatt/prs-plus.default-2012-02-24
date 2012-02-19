@@ -22,6 +22,7 @@
 //	2011-12-07 quisvir - Exposed doCreateSingleSetting
 //	2011-12-17 quisvir - Minor change to show numerical settings correctly
 //	2012-02-11 quisvir - Let options keep showing unchecked using 'noCheck' property
+//	2012-02-20 quisvir - Fixed incorrect settings count in case of hidden settings; minor changes
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -101,7 +102,11 @@ tmp = function() {
 				Core.settings.saveOptions(arg.addon);
 
 				// Goto parent node
-				if (!this.parent.redirect) this.parent.parent.enter(kbook.model);
+				if (this.parent.redirect) {
+					delete this.parent.redirect;
+				} else {
+					this.parent.parent.enter(kbook.model);
+				}
 			} catch (e) {
 				log.error("in valuenode.enter for option " + arg.optionDef.name + ": " + e);
 			}
@@ -162,7 +167,7 @@ tmp = function() {
 						icon: core_setting_translateIcon(optionDef, v),
 						comment: ""
 					});
-					if (v === options[optionDef.name].toString()) {
+					if (options[optionDef.name] !== undefined && v === options[optionDef.name].toString()) {
 						node.selected = true;
 					}
 					group.nodes.push(node);
@@ -299,7 +304,10 @@ tmp = function() {
 							if (thisSettingsNode._settingsCount) {
 								// Group comment is undefined
 								thisSettingsNode._settingsCount += optionDefs.length;
-								 thisSettingsNode._mycomment = Core.lang.LX("SETTINGS", thisSettingsNode._settingsCount);
+								if (addon.hiddenOptions) {
+									thisSettingsNode._settingsCount -= addon.hiddenOptions;
+								}
+								thisSettingsNode._mycomment = Core.lang.LX("SETTINGS", thisSettingsNode._settingsCount);
 							}
 							break;
 						}
@@ -329,6 +337,9 @@ tmp = function() {
 						thisSettingsNode._mycomment = comment;
 					} else {
 						thisSettingsNode._settingsCount = optionDefs.length;
+						if (addon.hiddenOptions) {
+							thisSettingsNode._settingsCount -= addon.hiddenOptions;
+						}
 						thisSettingsNode._mycomment = Core.lang.LX("SETTINGS", thisSettingsNode._settingsCount);
 					}
 					prspSettingsNode.nodes.push(thisSettingsNode);
