@@ -12,6 +12,7 @@
 //	2012-02-13 Ben Chenoweth - Added 'quit' labels and functions; fix for nonTouch keyboard
 //	2012-02-16 Ben Chenoweth - Added UP/DOWN (scroll window) and PREVIOUS (commands) buttons
 //	2012-02-17 Ben Chenoweth - Use PREV/NEXT for UP/DOWN; handle game initialisation failure
+//	2012-02-19 Ben Chenoweth - 'Trinity' now runs
 
 var tmp = function () {
 	
@@ -47,6 +48,9 @@ var tmp = function () {
 	var FROTZ = System.applyEnvironment("[prspPath]") + "dfrotz";
 	var FROTZINPUT = tempPath + "frotz.in";
 	var FROTZOUTPUT = tempPath + "frotz.out";
+	// FROTZ options: -w: screen width, -h: number of lines,
+	// 				  -R: execute runtime code (cm = compression max, lt0 = line-type display off)
+	var FROTZOPTIONS = " -w 58 -h 40 -R lt0 "; // note there needs to be spaces at start and end of this string
 	var GAMETITLE = "";
 	var workingDir;
 	var tempOutput = "";
@@ -64,6 +68,7 @@ var tmp = function () {
 	var strDown = "\u2193";
 	var previousCommands = [];
 	var previousCommandNum = 0;
+	var startGame;
 	var restoreTemp;
 	var restoreUser;
 	var saveTemp;
@@ -276,6 +281,7 @@ var tmp = function () {
 			lowerGameTitle = lowerGameTitle.substring(0, lowerGameTitle.lastIndexOf(".")); //strip extension
 			
 			// default strings
+			startGame = "";
 			saveTemp = "save\ntemp.sav\n";
 			restoreTemp = "restore\ntemp.sav\n";
 			saveUser = "save\n";
@@ -288,6 +294,10 @@ var tmp = function () {
 				case "hitchhik":
 					quitGame = "quit\nY\nY\n";
 					break;
+				case "trinity":
+					FROTZOPTIONS = " -w 62 -h 40 -R lt0 "; // game won't play if screen width less than 62!
+					startGame = "\n";
+					break;
 				default:
 			}
 			
@@ -296,7 +306,7 @@ var tmp = function () {
 				deleteFile(FROTZOUTPUT);
 				
 				// create input file (deletes file if it already exists)
-				setFileContent(FROTZINPUT, saveTemp+quitGame);
+				setFileContent(FROTZINPUT, startGame+saveTemp+quitGame);
 				
 				// create working directory (where savegames go) if it doesn't already exist
 				workingDir = datPath + GAMETITLE.substring(0, GAMETITLE.indexOf(".")) + "/";
@@ -306,8 +316,7 @@ var tmp = function () {
 				deleteFile(workingDir + "temp.sav");
 				
 				// move to working directory and start FROTZ
-				// FROTZ options: -w: character width, -h: number of lines, -R: execute runtime code (cm = compression max)
-				cmd = "cd " + workingDir + ";" + FROTZ + " -w 58 -h 30 " + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
+				cmd = "cd " + workingDir + ";" + FROTZ + FROTZOPTIONS + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
 				shellExec(cmd);
 				
 				// clear textbox
@@ -368,8 +377,8 @@ var tmp = function () {
 				} else {
 					// restore temp.sav and then save to user saveName
 					deleteFile(FROTZOUTPUT);
-					setFileContent(FROTZINPUT, restoreTemp+saveUser+saveName+"\n"+quitGame);
-					cmd = "cd " + workingDir + ";" + FROTZ + " -w 58 -h 30 " + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
+					setFileContent(FROTZINPUT, startGame+restoreTemp+saveUser+saveName+"\n"+quitGame);
+					cmd = "cd " + workingDir + ";" + FROTZ + FROTZOPTIONS + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
 					shellExec(cmd);
 					savingGame = false;
 					tempOutput = tempOutput + currentLine + "\nOK.\n\n>";
@@ -380,8 +389,8 @@ var tmp = function () {
 				if ((currentLine === "Y") || (currentLine === "y")) {
 					// restore temp.sav and then save to user saveName (overwriting existing file)
 					deleteFile(FROTZOUTPUT);
-					setFileContent(FROTZINPUT, restoreTemp+saveUser+saveName+"\nY\n"+quitGame);
-					cmd = "cd " + workingDir + ";" + FROTZ + " -w 58 -h 30 " + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
+					setFileContent(FROTZINPUT, startGame+restoreTemp+saveUser+saveName+"\nY\n"+quitGame);
+					cmd = "cd " + workingDir + ";" + FROTZ + FROTZOPTIONS + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
 					shellExec(cmd);
 					savingGame = false;
 					confirmedName = false;
@@ -401,8 +410,8 @@ var tmp = function () {
 				if (FileSystem.getFileInfo(workingDir + saveName)) {
 					// restore user saveName and then save to temp.sav
 					deleteFile(FROTZOUTPUT);
-					setFileContent(FROTZINPUT, restoreUser+saveName+"\n"+saveTemp+"Y\n"+quitGame);
-					cmd = "cd " + workingDir + ";" + FROTZ + " -w 58 -h 30 " + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT + " &";
+					setFileContent(FROTZINPUT, startGame+restoreUser+saveName+"\n"+saveTemp+"Y\n"+quitGame);
+					cmd = "cd " + workingDir + ";" + FROTZ + FROTZOPTIONS + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT + " &";
 					shellExec(cmd);
 					restoringGame = false;
 					tempOutput = tempOutput + currentLine + "\nOK.\n\n>";
@@ -430,14 +439,14 @@ var tmp = function () {
 					deleteFile(FROTZOUTPUT);
 					
 					// create input file (deletes file if it already exists)
-					setFileContent(FROTZINPUT, saveTemp+quitGame);
+					setFileContent(FROTZINPUT, startGame+saveTemp+quitGame);
 					
 					// delete old temp save
 					deleteFile(workingDir + "temp.sav");
 					
 					// move to working directory and start FROTZ
 					// FROTZ options: -w: character width, -h: number of lines, -R: execute runtime code (cm = compression max)
-					cmd = "cd " + workingDir + ";" + FROTZ + " -w 58 -h 30 " + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
+					cmd = "cd " + workingDir + ";" + FROTZ + FROTZOPTIONS + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
 					shellExec(cmd);
 					
 					// clear textbox
@@ -474,14 +483,14 @@ var tmp = function () {
 					deleteFile(FROTZOUTPUT);
 					
 					// set up new input file (requires additional RETURN after currentLine for some games, eg. hhgg)
-					setFileContent(FROTZINPUT, restoreTemp+currentLine+"\n"+saveTemp+"Y\n"+quitGame);
+					setFileContent(FROTZINPUT, startGame+restoreTemp+currentLine+"\n"+saveTemp+"Y\n"+quitGame);
 					
 					// add currentLine to output
 					tempOutput = tempOutput + currentLine;
 					this.setOutput(tempOutput);
 					
 					// move to working directory and start FROTZ
-					cmd = "cd " + workingDir + ";" + FROTZ + " -w 58 -h 30 " + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
+					cmd = "cd " + workingDir + ";" + FROTZ + FROTZOPTIONS + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
 					shellExec(cmd);
 					
 					scoreCheck = true;
@@ -492,14 +501,14 @@ var tmp = function () {
 					deleteFile(FROTZOUTPUT);
 					
 					// set up new input file
-					setFileContent(FROTZINPUT, restoreTemp+currentLine+"\n"+saveTemp+"Y\n"+quitGame);
+					setFileContent(FROTZINPUT, startGame+restoreTemp+currentLine+"\n"+saveTemp+"Y\n"+quitGame);
 					
 					// add currentLine to output
 					tempOutput = tempOutput + currentLine;
 					this.setOutput(tempOutput);
 					
 					// move to working directory and start FROTZ
-					cmd = "cd " + workingDir + ";" + FROTZ + " -w 58 -h 30 " + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
+					cmd = "cd " + workingDir + ";" + FROTZ + FROTZOPTIONS + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
 					shellExec(cmd);
 					
 					this.getResponse();
@@ -520,6 +529,15 @@ var tmp = function () {
 		
 		result = getFileContent(FROTZOUTPUT, "222");
 		if (result !== "222") {
+			/*/ output files for debugging
+			if (FileSystem.getFileInfo("/Data/frotz0.out")) {
+				cmd = "cp "+FROTZOUTPUT+" /Data/frotz1.out";
+				shellExec(cmd);
+			} else {
+				cmd = "cp "+FROTZOUTPUT+" /Data/frotz0.out";
+				shellExec(cmd);
+			}*/
+			
 			// output
 			if (tempOutput === "") {
 				// trim save/quit lines at end of output
