@@ -13,10 +13,11 @@
 //	2011-10-27 Mark Nord - Added doPowerSwitch = Sleepmode
 //  2011-10-30 Ben Chenoweth - Added goZoomPage
 //	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes, Delete Current Item, Play/Pause Audio
+//	2012-02-20 quisvir - Added custom action; code cleaning
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, 
-		addBubbleActions, addOptionalActions, doBubble, doBubbleFunc;
+		addBubbleActions, addOptionalActions, doBubble, doBubbleFunc, kbActions;
 	NAME = "StandardActions";
 	L = Core.lang.getLocalizer(NAME);
 	log = Core.log.getLogger(NAME);
@@ -40,7 +41,7 @@ tmp = function() {
 		var currentNode, focus;
 		currentNode = model.currentNode;
 		if (currentNode) {
-			focus = kbook.model.container.getWindow().focus;
+			focus = model.container.getWindow().focus;
 			if (focus) {
 				try {
 					focus.bubble(cmd, param);
@@ -78,9 +79,9 @@ tmp = function() {
 		bubbles = undefined;
 		
 		// doRotate for x50
-		if (kbook.model.onEnterOrientation) {
+		if (model.onEnterOrientation) {
 			var rotateFuncX50 = function() {
-				var orientation = kbook.model.container.getVariable("ORIENTATION");
+				var orientation = model.container.getVariable("ORIENTATION");
 				if (this.closeCurrentOverlay) {
 					this.closeCurrentOverlay();
 				}
@@ -158,7 +159,6 @@ tmp = function() {
 	};
 	
 	addOptionalActions = function(actions) {
-		var gotoTOCFunc, gotoMyNotes;
 		if (Core.config.compat.hasVolumeButtons) {
 			actions.push({
 				name: "NextSong",
@@ -168,8 +168,8 @@ tmp = function() {
 				action: function () {
 					model.doGotoNextSong();
 				}
-			});
-			actions.push({
+			},
+			{
 				name: "PreviousSong",
 				title: L("ACTION_PREVIOUS_SONG"),
 				group: "Other",
@@ -177,31 +177,26 @@ tmp = function() {
 				action: function () {
 					model.doGotoPreviousSong();
 				}
-			});
-			actions.push({
+			},
+			{
 				name: "GotoAudioNode",
 				title: L("ACTION_MUSIC_NODE"),
 				group: "Other",
 				icon: "AUDIO",
 				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(kbook.root.getMusicNode(), kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
+					var node = kbook.music ? kbook.music : kbook.root.getMusicNode();
+					model.currentNode.gotoNode(node, model);
 				}
-			});
-			actions.push({
+			},
+			{
 				name: "PausePlayAudio",
 				title: L("ACTION_PAUSE_PLAY_AUDIO"),
 				group: "Other",
 				icon: "PAUSE",
 				action: function () {
 					// code adapted from x50's songGroup.xml (function "doControl")
-					var model, container, sandbox, SONG;
+					var container, sandbox, SONG;
 					try {
-						model = kbook.model;
 						container = model.container;
 						sandbox = container.sandbox;
 						SONG = kbook.movieData.mp;
@@ -246,98 +241,63 @@ tmp = function() {
 				}
 			});
 		}
-		
-		// FIXME: implicit "is touchscreen device"
-		if (Core.config.compat.hasJoypadButtons) {
+		if (Core.config.model !== "600") {
 			actions.push({
-				name: "GotoLink",
-				title: L("ACTION_GOTO_LINK"),
-				group: "Book",
-				icon: "NEXT_PAGE",
+				name: "GotoPeriodicalsNode",
+				title: L("ACTION_PERIODICALS_NODE"),
+				group: "Other",
+				icon: "PERIODICALS",
 				action: function () {
-					if (isBookEnabled()) {
-						book.bubble("doCenter");
-					} else {
-						return true;
-					}
+					model.currentNode.gotoNode(kbook.root.getPeriodicalListNode(), model);
 				}
 			});
 		}
-
-		// Goto TOC function
-		if (kbook.bookOptionRoot) {
-			// models with touch screen
-			gotoTOCFunc = function() {
-				var toc;
-				toc = kbook.bookOptionRoot.contents;
-				if  (toc) {
-					kbook.model.gotoBookOptionList (toc);
-				} else {
-					model.doBlink();
-				}
-			};
-		} else {
-			// older models
-			gotoTOCFunc = function() {
-				// FIXME implement
-				model.doBlink();
-			};
-		}
-		actions.push({
-			name: "OpenTOC",
-			title: L("ACTION_OPEN_TOC"),
-			group: "Book",
-			icon: "LIST",
-			action: gotoTOCFunc
-		});
-		
-		if (kbook.bookOptionRoot) {
-			gotoMyNotes = function() {
-				var notes;
-				notes = kbook.bookOptionRoot.notes;
-				if (notes) {
-					kbook.model.gotoBookOptionList(notes);
-				} else {
-					model.doBlink();
-				}
-			};
-		} else {
-			gotoMyNotes = function() {
-				model.doBlink();
-			};
-		}
-		actions.push({
-			name: "OpenNotes",
-			title: L("ACTION_OPEN_NOTES_LIST"),
-			group: "Book",
-			icon: "NOTES",
-			action: gotoMyNotes
-		});
-		
-		// Zoom page function
-		goZoomPage = function() {
-			if (kbook.model.doSize) {
-			   pageSizeOverlayModel.openCurrentOverlay();
-			   pageSizeOverlayModel.goZoomMode();
-			} else {
-				model.doBlink;
-			}
-		};
-		actions.push({
-			name: "ZoomPage",
-			title: L("ACTION_ZOOM_PAGE"),
-			group: "Book",
-			icon: "SEARCH_ALT",
-			action: goZoomPage
-		});
 	};
-
+	
 	StandardActions = {
 		name: NAME,
 		title: L("TITLE"),
 		icon: "SETTINGS",
+		optionDefs: [],
+		onInit: function () {
+			kbActions = Core.addonByName.KeyBindings.getActionDefs();
+		},
+		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+			if (propertyName === 'tempOption') {
+				var actionName2action, parent;
+				actionName2action = kbActions[4];
+				parent = model.currentNode.parent;
+				parent.redirect = true;
+				parent.parent.enter(model);
+				try {
+					actionName2action[newValue].action();
+				} catch(ignore) {}
+			}
+		},
 		// FIXME: check if more actions could be "bublized" 
 		actions: [
+			{
+				name: 'CustomAction',
+				title: L('CUSTOM_ACTION'),
+				group: 'Utils',
+				icon: 'SETTINGS',
+				action: function () {
+					var current, optionDef;
+					current = model.currentNode;
+					optionDef = {
+						name: 'tempOption',
+						title: L('CUSTOM_ACTION'),
+						defaultValue: 'default',
+						values: kbActions[0], 
+						valueTitles: kbActions[1],
+						valueIcons: kbActions[2],
+						valueGroups: kbActions[3],
+						useIcons: true
+					};
+					Core.addonByName.PRSPSettings.createSingleSetting(current, optionDef, this.addon);
+					current.gotoNode(current.nodes.pop(), model);
+				}
+			},
 			{
 				name: "Shutdown",
 				title: L("ACTION_SHUTDOWN"),
@@ -371,8 +331,6 @@ tmp = function() {
 				action: function () {
 					if (isBookEnabled()) {
 						doHistory(-1);
-					} else {
-						return true;
 					}
 				}
 			},
@@ -384,8 +342,6 @@ tmp = function() {
 				action: function () {
 					if (isBookEnabled()) {
 						doHistory(1);
-					} else {
-						return true;
 					}
 				}
 			},
@@ -396,7 +352,7 @@ tmp = function() {
 				icon: "CONTINUE",
 				action: function () {
 					// Show current book
-					kbook.model.onEnterContinue();
+					model.onEnterContinue();
 				}
 			},
 			{
@@ -413,7 +369,7 @@ tmp = function() {
 				group: "Other",
 				icon: "EMPTY",
 				action:  function () {
-					kbook.model.doBlink();
+					model.doBlink();
 				}
 			},
 			{
@@ -422,12 +378,7 @@ tmp = function() {
 				group: "Other",
 				icon: "ROOT_MENU",
 				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(Core.ui.nodes["more"], kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
+					model.currentNode.gotoNode(Core.ui.nodes["more"], model);
 				}
 			},
 			{
@@ -436,12 +387,7 @@ tmp = function() {
 				group: "Other",
 				icon: "GAME",
 				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(Core.ui.nodes["games"], kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
+					model.currentNode.gotoNode(Core.ui.nodes["games"], model);
 				}
 			},
 			{
@@ -450,26 +396,8 @@ tmp = function() {
 				group: "Other",
 				icon: "PICTURE_ALT",
 				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(kbook.root.getPicturesNode(), kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
-				}
-			},
-			{
-				name: "GotoPeriodicalsNode",
-				title: L("ACTION_PERIODICALS_NODE"),
-				group: "Other",
-				icon: "PERIODICALS",
-				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(kbook.root.getPeriodicalListNode(), kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
+					var node = kbook.pictures ? kbook.pictures : kbook.root.getPicturesNode();
+					model.currentNode.gotoNode(node, model);
 				}
 			},
 			{
@@ -478,12 +406,7 @@ tmp = function() {
 				group: "Other",
 				icon: "COLLECTION",
 				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(kbook.root.getCollectionsNode(), kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
+					model.currentNode.gotoNode(kbook.root.getCollectionsNode(), model);
 				}
 			},
 			{
@@ -492,12 +415,8 @@ tmp = function() {
 				group: "Other",
 				icon: "TEXT_MEMO",
 				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(kbook.root.getNotepadsTextNode(), kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
+					var node = kbook.notepadsText ? kbook.notepadsText : kbook.root.getNotepadsTextNode();
+					model.currentNode.gotoNode(node, model);
 				}
 			},
 			{
@@ -506,12 +425,8 @@ tmp = function() {
 				group: "Other",
 				icon: "HANDWRITING_ALT",
 				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(kbook.root.getNotepadsFreehandNode(), kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
+					var node = kbook.notepadsFreehand ? kbook.notepadsFreehand : kbook.root.getNotepadsFreehandNode();
+					model.currentNode.gotoNode(node, model);
 				}
 			},
 			{
@@ -520,9 +435,8 @@ tmp = function() {
 				group: "Utils",
 				icon: "CROSSED_BOX",
 				action: function () {
-					var model, node, dialog, message, current;
+					var node, dialog, message, current;
 					try {
-						model = kbook.model;
 						node = model.currentNode;
 						current = false;
 						if (node) {
@@ -542,8 +456,7 @@ tmp = function() {
 									message = 'fskin:/l/strings/STR_UI_MESSAGE_DELETEBOOK'.idToString();
 								}
 								dialog.onOk = function () {
-									var model, node;
-									model = kbook.model;
+									var node;
 									if (model.closeContentsList) {
 										node = model.currentNode;
 										model.doDeleteBook(true, node);
@@ -557,9 +470,7 @@ tmp = function() {
 							} else if (model.STATE === 'SONG') {
 								current = true;
 								dialog.onOk = function () {
-									var model, node;
-									model = kbook.model;
-									node = model.currentNode;
+									var node = model.currentNode;
 									if (model.removeSong) {
 										model.removeSong(node);
 										kbook.root.update(model);
@@ -579,8 +490,7 @@ tmp = function() {
 									message = 'fskin:/l/strings/STR_UI_MESSAGE_DELETE_MANUALLY_SELECTED_AS_STANDBY'.idToString();
 								}
 								dialog.onOk = function () {
-									var model, node, media, source;
-									model = kbook.model;
+									var node, media, source;
 									node = model.currentNode;
 									if (model.removePicture) {
 										model.removePicture(node);
@@ -592,7 +502,7 @@ tmp = function() {
 										source = media.source;
 										source.deleteRecord(media.id);
 										FileSystem.deleteFile(media.source.path + media.path);
-										kbook.root.update(kbook.model);
+										kbook.root.update(model);
 									}
 								}
 							}
@@ -605,6 +515,44 @@ tmp = function() {
 					} catch(e) {
 						log.error("Error in StandardActions_x50 trying to delete current item", e);
 					}
+				}
+			},
+			{
+				name: "OpenTOC",
+				title: L("ACTION_OPEN_TOC"),
+				group: "Book",
+				icon: "LIST",
+				action: function() {
+					var toc = kbook.bookOptionRoot.contents;
+					if (toc) {
+						model.gotoBookOptionList(toc);
+					} else {
+						model.doBlink();
+					}
+				}
+			},
+			{
+				name: "OpenNotes",
+				title: L("ACTION_OPEN_NOTES_LIST"),
+				group: "Book",
+				icon: "NOTES",
+				action: function() {
+					var notes = kbook.bookOptionRoot.notes;
+					if (notes) {
+						model.gotoBookOptionList(notes);
+					} else {
+						model.doBlink();
+					}
+				}
+			},
+			{
+				name: "ZoomPage",
+				title: L("ACTION_ZOOM_PAGE"),
+				group: "Book",
+				icon: "SEARCH_ALT",
+				action: function() {
+				   pageSizeOverlayModel.openCurrentOverlay();
+				   pageSizeOverlayModel.goZoomMode();
 				}
 			}
 		]
