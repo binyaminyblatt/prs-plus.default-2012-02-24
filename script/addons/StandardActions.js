@@ -10,10 +10,11 @@
 //	2011-10-28 Mark Nord - fixed issue #206
 //	2011-11-26 Mark Nord - Added issue #218 TOC Action for 300/505
 //	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes, Delete Current Item, Play/Pause Audio
+//	2012-02-20 quisvir - Added custom action; code cleaning
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled,
-		addBubbleActions, addOptionalActions, doBubble, doBubbleFunc;
+		addBubbleActions, addOptionalActions, doBubble, doBubbleFunc, kbActions;
 	NAME = "StandardActions";
 	L = Core.lang.getLocalizer(NAME);
 	log = Core.log.getLogger(NAME);
@@ -45,7 +46,7 @@ tmp = function() {
 		var currentNode, focus;
 		currentNode = model.current;
 		if (currentNode) {
-			focus = kbook.model.container.getWindow().focus;
+			focus = model.container.getWindow().focus;
 			if (focus) {
 				try {
 					focus.bubble(cmd, param);
@@ -93,8 +94,8 @@ tmp = function() {
 				action: function () {
 					model.doGotoNextSong();
 				}
-			});
-			actions.push({
+			},
+			{
 				name: "PreviousSong",
 				title: L("ACTION_PREVIOUS_SONG"),
 				group: "Other",
@@ -102,16 +103,24 @@ tmp = function() {
 				action: function () {
 					model.doGotoPreviousSong();
 				}
-			});
-			actions.push({
+			},
+			{
+				name: "GotoAudioNode",
+				title: L("ACTION_MUSIC_NODE"),
+				group: "Other",
+				icon: "AUDIO",
+				action: function () {
+					model.current.gotoNode(kbook.root.getMusicNode(), model); // FIXME how to find audio node on 505?
+				}
+			},
+			{
 				name: "PausePlayAudio",
 				title: L("ACTION_PAUSE_PLAY_AUDIO"),
 				group: "Other",
 				icon: "PAUSE",
 				action: function () {
-					var model, container, sandbox, SONG;
+					var container, sandbox, SONG;
 					try {
-						model = kbook.model;
 						container = model.container;
 						sandbox = container.sandbox;
 						SONG = kbook.movieData.mp;
@@ -163,7 +172,45 @@ tmp = function() {
 		name: NAME,
 		title: L("TITLE"),
 		icon: "SETTINGS",
+		optionDefs: [],
+		onInit: function () {
+			kbActions = Core.addonByName.KeyBindings.getActionDefs();
+		},
+		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+			if (propertyName === 'tempOption') {
+				var actionName2action, parent;
+				actionName2action = kbActions[4];
+				parent = model.current.parent;
+				parent.redirect = true;
+				parent.parent.enter(model);
+				try {
+					actionName2action[newValue].action();
+				} catch(ignore) {}
+			}
+		},
 		actions: [
+			{
+				name: 'CustomAction',
+				title: L('CUSTOM_ACTION'),
+				group: 'Utils',
+				icon: 'SETTINGS',
+				action: function () {
+					var current, optionDef;
+					current = model.current;
+					optionDef = {
+						name: 'tempOption',
+						title: L('CUSTOM_ACTION'),
+						defaultValue: 'default',
+						values: kbActions[0], 
+						valueTitles: kbActions[1],
+						valueIcons: kbActions[2],
+						valueGroups: kbActions[3],
+						useIcons: true
+					};
+					Core.addonByName.PRSPSettings.createSingleSetting(current, optionDef, this.addon);
+					current.gotoNode(current.nodes.pop(), model);
+				}
+			},
 			{
 				name: "Shutdown",
 				title: L("ACTION_SHUTDOWN"),
@@ -231,9 +278,9 @@ tmp = function() {
 				group: "Book",
 				icon: "LIST",
 				action: function () {
-					var parent = kbook.model.current.parent;
+					var parent = model.current.parent;
 					if (isBookEnabled()) {
-						parent.gotoNode(parent.nodes[4],kbook.model);
+						parent.gotoNode(parent.nodes[4],model);
 					} else {
 						model.doBlink();
 					}
@@ -246,7 +293,7 @@ tmp = function() {
 				icon: "CONTINUE",
 				action: function () {
 					// Show current book
-					kbook.model.onEnterContinue();
+					model.onEnterContinue();
 				}
 			},
 			{
@@ -264,7 +311,7 @@ tmp = function() {
 				group: "Other",
 				icon: "CROSSED_BOX",
 				action:  function () {
-					kbook.model.doBlink();
+					model.doBlink();
 				}
 			},
 			{
@@ -273,26 +320,7 @@ tmp = function() {
 				group: "Other",
 				icon: "GAME",
 				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(Core.ui.nodes["gamesAndUtils"], kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
-				}
-			},
-			{
-				name: "GotoAudioNode",
-				title: L("ACTION_MUSIC_NODE"),
-				group: "Other",
-				icon: "AUDIO",
-				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(kbook.root.getMusicNode(), kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
+					model.current.gotoNode(Core.ui.nodes["gamesAndUtils"], model);
 				}
 			},
 			{
@@ -301,12 +329,7 @@ tmp = function() {
 				group: "Other",
 				icon: "PICTURE_ALT",
 				action: function () {
-					var current = Core.ui.getCurrentNode();
-					if (current) {
-						current.gotoNode(kbook.root.getPicturesNode(), kbook.model);
-					} else {
-						Core.ui.doBlink();
-					}
+					model.current.gotoNode(kbook.root.getPicturesNode(), model); // FIXME how to find pictures node on 505, and does 300 even have one?
 				}
 			},
 			{
@@ -319,9 +342,8 @@ tmp = function() {
 					actions = [];
 					titles = [L('ACTION_DELETE_CURRENT_ITEM'), L('CANCEL')];
 					actions.push( function () {
-						var model, node, media, source;
+						var node, media, source;
 						try {
-							model = kbook.model;
 							if (model.STATE === 'PAGE') {
 								model.doDeleteBook();
 							} else if (model.STATE === 'SONG') {
@@ -332,7 +354,7 @@ tmp = function() {
 								model.addPathToDCL(media.source, media.path);
 								node.unlockPath();
 								FileSystem.deleteFile(media.source.path + media.path);
-								kbook.root.update(kbook.model);
+								kbook.root.update(model);
 							} else if (model.STATE === 'PICTURE') {
 								node = model.current;
 								media = node.media;
@@ -341,7 +363,7 @@ tmp = function() {
 								model.addPathToDCL(media.source, media.path);
 								node.unlockPath();
 								FileSystem.deleteFile(media.source.path + media.path);
-								kbook.root.update(kbook.model);
+								kbook.root.update(model);
 							} else {
 								Core.ui.doBlink();
 							}
