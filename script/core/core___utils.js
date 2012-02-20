@@ -5,6 +5,7 @@
 // History:
 //	2010-07-21 kartu - Initial version
 //	2011-04-24 kartu - Added replaceInArray
+//	2012-02-20 quisvir - Reversed callAll order in case a called function splices itself from the array (event unsub)
 
 Core.utils = {
 	/**
@@ -16,8 +17,8 @@ Core.utils = {
 	* @param funcName - name of the function to call (if provided, targets is a list of objects) 
 	*/
 	callAll: function (targets, obj, args, funcName) {
-		var i, n, f;
-		for (i = 0, n = targets.length; i < n; i++) {
+		var i, f;
+		for (i = targets.length - 1; i >= 0; i--) {
 			try {
 				f = targets[i];
 				if (funcName !== undefined) {
