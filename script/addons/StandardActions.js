@@ -11,10 +11,12 @@
 //	2011-11-26 Mark Nord - Added issue #218 TOC Action for 300/505
 //	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes, Delete Current Item, Play/Pause Audio
 //	2012-02-20 quisvir - Added custom action; code cleaning
+//	2012-02-20 quisvir - Added Action Launcher; code cleaning
 
 tmp = function() {
-	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled,
-		addBubbleActions, addOptionalActions, doBubble, doBubbleFunc, kbActions;
+	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, addBubbleActions, addOptionalActions,
+		doBubble, doBubbleFunc, actionLauncher, actionLauncherConstruct, actionLauncherDestruct, kbActions;
+		
 	NAME = "StandardActions";
 	L = Core.lang.getLocalizer(NAME);
 	log = Core.log.getLogger(NAME);
@@ -43,9 +45,8 @@ tmp = function() {
 
 	// Generic "bubbling" code, bubbles using currently focused item;
 	doBubble = function(cmd, param) {
-		var currentNode, focus;
-		currentNode = model.current;
-		if (currentNode) {
+		var focus;
+		if (model.current) {
 			focus = model.container.getWindow().focus;
 			if (focus) {
 				try {
@@ -110,7 +111,7 @@ tmp = function() {
 				group: "Other",
 				icon: "AUDIO",
 				action: function () {
-					model.currentNode.gotoNode(Core.ui.nodes["music"], model);
+					model.current.gotoNode(Core.ui.nodes.music, model);
 				}
 			},
 			{
@@ -155,11 +156,33 @@ tmp = function() {
 				group: "Other",
 				icon: "PICTURE_ALT",
 				action: function () {
-					model.currentNode.gotoNode(Core.ui.nodes["pictures"], model);
+					model.current.gotoNode(Core.ui.nodes.pictures, model);
 				}
 			});
 		}
 	};	
+	
+	// Action Launcher
+	actionLauncher = null;
+	
+	actionLauncherConstruct = function () {
+		var optionDef = {
+			name: 'tempOption',
+			title: L('ACTION_LAUNCHER'),
+			defaultValue: 'default',
+			values: kbActions[0], 
+			valueTitles: kbActions[1],
+			valueIcons: kbActions[2],
+			valueGroups: kbActions[3],
+			useIcons: true
+		};
+		Core.addonByName.PRSPSettings.createSingleSetting(this, optionDef, StandardActions);
+		this.nodes = this.nodes[0].nodes;
+	}
+	
+	actionLauncherDestruct = function () {
+		this.nodes = [];
+	}
 	
 	StandardActions = {
 		name: NAME,
@@ -170,6 +193,7 @@ tmp = function() {
 			kbActions = Core.addonByName.KeyBindings.getActionDefs();
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+			// Action Launcher
 			if (propertyName === 'tempOption') {
 				var actionName2action, parent;
 				actionName2action = kbActions[4];
@@ -181,27 +205,26 @@ tmp = function() {
 				} catch(ignore) {}
 			}
 		},
+		getAddonNode: function () {
+			if (actionLauncher === null) {
+				actionLauncher = Core.ui.createContainerNode({
+					title: L('ACTION_LAUNCHER'),
+					shortName: L('ACTION_LAUNCHER_SHORT'),
+					icon: 'FOLDER',
+					construct: actionLauncherConstruct,
+					destruct: actionLauncherDestruct
+				});
+			}
+			return actionLauncher;
+		},
 		actions: [
 			{
-				name: 'CustomAction',
-				title: L('ACTION_CUSTOM_ACTION'),
+				name: 'actionLauncher',
+				title: L('ACTION_LAUNCHER'),
 				group: 'Utils',
 				icon: 'SETTINGS',
 				action: function () {
-					var current, optionDef;
-					current = model.current;
-					optionDef = {
-						name: 'tempOption',
-						title: L('ACTION_CUSTOM_ACTION'),
-						defaultValue: 'default',
-						values: kbActions[0], 
-						valueTitles: kbActions[1],
-						valueIcons: kbActions[2],
-						valueGroups: kbActions[3],
-						useIcons: true
-					};
-					Core.addonByName.PRSPSettings.createSingleSetting(current, optionDef, this.addon);
-					current.gotoNode(current.nodes.pop(), model);
+					model.current.gotoNode(Core.ui.nodes.StandardActions, model);
 				}
 			},
 			{
@@ -313,7 +336,7 @@ tmp = function() {
 				group: "Other",
 				icon: "GAME",
 				action: function () {
-					model.current.gotoNode(Core.ui.nodes["gamesAndUtils"], model);
+					model.current.gotoNode(Core.ui.nodes.gamesAndUtils, model);
 				}
 			},
 			{
@@ -322,7 +345,7 @@ tmp = function() {
 				group: "Other",
 				icon: "COLLECTION",
 				action: function () {
-					model.currentNode.gotoNode(Core.ui.nodes["collections"], model);
+					model.current.gotoNode(Core.ui.nodes.collections, model);
 				}
 			},
 			{

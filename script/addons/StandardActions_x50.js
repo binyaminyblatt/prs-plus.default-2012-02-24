@@ -13,11 +13,12 @@
 //	2011-10-27 Mark Nord - Added doPowerSwitch = Sleepmode
 //  2011-10-30 Ben Chenoweth - Added goZoomPage
 //	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes, Delete Current Item, Play/Pause Audio
-//	2012-02-20 quisvir - Added custom action; code cleaning
+//	2012-02-20 quisvir - Added Action Launcher; code cleaning
 
 tmp = function() {
-	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, 
-		addBubbleActions, addOptionalActions, doBubble, doBubbleFunc, kbActions;
+	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, addBubbleActions, addOptionalActions,
+		doBubble, doBubbleFunc, actionLauncher, actionLauncherConstruct, actionLauncherDestruct, kbActions;
+		
 	NAME = "StandardActions";
 	L = Core.lang.getLocalizer(NAME);
 	log = Core.log.getLogger(NAME);
@@ -248,6 +249,28 @@ tmp = function() {
 		}
 	};
 	
+	// Action Launcher
+	actionLauncher = null;
+	
+	actionLauncherConstruct = function () {
+		var optionDef = {
+			name: 'tempOption',
+			title: L('ACTION_LAUNCHER'),
+			defaultValue: 'default',
+			values: kbActions[0], 
+			valueTitles: kbActions[1],
+			valueIcons: kbActions[2],
+			valueGroups: kbActions[3],
+			useIcons: true
+		};
+		Core.addonByName.PRSPSettings.createSingleSetting(this, optionDef, StandardActions);
+		this.nodes = this.nodes[0].nodes;
+	}
+	
+	actionLauncherDestruct = function () {
+		this.nodes = [];
+	}
+	
 	StandardActions = {
 		name: NAME,
 		title: L("TITLE"),
@@ -257,6 +280,7 @@ tmp = function() {
 			kbActions = Core.addonByName.KeyBindings.getActionDefs();
 		},
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
+			// Action Launcher
 			if (propertyName === 'tempOption') {
 				var actionName2action, parent;
 				actionName2action = kbActions[4];
@@ -268,28 +292,27 @@ tmp = function() {
 				} catch(ignore) {}
 			}
 		},
+		getAddonNode: function () {
+			if (actionLauncher === null) {
+				actionLauncher = Core.ui.createContainerNode({
+					title: L('ACTION_LAUNCHER'),
+					shortName: L('ACTION_LAUNCHER_SHORT'),
+					icon: 'FOLDER',
+					construct: actionLauncherConstruct,
+					destruct: actionLauncherDestruct
+				});
+			}
+			return actionLauncher;
+		},
 		// FIXME: check if more actions could be "bublized" 
 		actions: [
 			{
-				name: 'CustomAction',
-				title: L('ACTION_CUSTOM_ACTION'),
+				name: 'actionLauncher',
+				title: L('ACTION_LAUNCHER'),
 				group: 'Utils',
 				icon: 'SETTINGS',
 				action: function () {
-					var current, optionDef;
-					current = model.currentNode;
-					optionDef = {
-						name: 'tempOption',
-						title: L('ACTION_CUSTOM_ACTION'),
-						defaultValue: 'default',
-						values: kbActions[0], 
-						valueTitles: kbActions[1],
-						valueIcons: kbActions[2],
-						valueGroups: kbActions[3],
-						useIcons: true
-					};
-					Core.addonByName.PRSPSettings.createSingleSetting(current, optionDef, this.addon);
-					current.gotoNode(current.nodes.pop(), model);
+					model.currentNode.gotoNode(Core.ui.nodes.StandardActions, model);
 				}
 			},
 			{
@@ -372,7 +395,7 @@ tmp = function() {
 				group: "Other",
 				icon: "ROOT_MENU",
 				action: function () {
-					model.currentNode.gotoNode(Core.ui.nodes["more"], model);
+					model.currentNode.gotoNode(Core.ui.nodes.more, model);
 				}
 			},
 			{
@@ -381,7 +404,7 @@ tmp = function() {
 				group: "Other",
 				icon: "GAME",
 				action: function () {
-					model.currentNode.gotoNode(Core.ui.nodes["games"], model);
+					model.currentNode.gotoNode(Core.ui.nodes.games, model);
 				}
 			},
 			{
@@ -400,7 +423,7 @@ tmp = function() {
 				group: "Other",
 				icon: "COLLECTION",
 				action: function () {
-					model.currentNode.gotoNode(Core.ui.nodes["collections"], model);
+					model.currentNode.gotoNode(Core.ui.nodes.collections, model);
 				}
 			},
 			{

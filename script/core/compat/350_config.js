@@ -38,6 +38,8 @@
 //	2011-12-28 Ben Chenoweth - Initial implementation of audio
 //	2012-01-17 quisvir - Changed homelargekind to homekind, added standardMenuIcons for moved default nodes
 //	2012-02-06 quisvir - Added HIGHLIGHT
+//	2012-02-16 quisvir - Added CHECKMARK
+//	2012-02-20 quisvir - Added Action Launcher (StandardActions node)
 
 return {
 	// Menu icon indices 
@@ -133,6 +135,7 @@ return {
 		HANDWRITING_ALT: 115,
 		COMIC: 116,
 		AUDIO_ALT: 117,
+		CHECKMARK: 118,
 		
 		DEFAULT: 87,
 		
@@ -248,6 +251,7 @@ return {
 			{ name: "games", parent: "more" },
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },
+			{ name: "StandardActions", parent: "more" },
 			{ name: "AuthorList", parent: "more" },
 			{ name: "Chess", parent: "games" },
 			{ name: "Draughts", parent: "games" },

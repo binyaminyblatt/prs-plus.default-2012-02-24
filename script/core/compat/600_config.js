@@ -36,6 +36,7 @@
 //	2011-11-24 Ben Chenoweth - Added HANDWRITING_ALT
 //	2011-12-06 quisvir - Removed BH & BF from customNodes to avoid duplication in More Applications (issue #237)
 //	2011-12-28 Ben Chenoweth - Added audio in BrowseFolders
+//	2012-02-20 quisvir - Added Action Launcher (StandardActions node)
 
 return {
 	// Menu icon indices 
@@ -220,6 +221,7 @@ return {
 			{ name: "PRSPSettings", parent: "more" },
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },
+			{ name: "StandardActions", parent: "more" },
 			{ name: "AuthorList", parent: "more" },
 			{ name: "games", parent: "more" },
 			{ name: "Chess", parent: "games" },
