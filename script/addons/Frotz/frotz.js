@@ -13,7 +13,7 @@
 //	2012-02-16 Ben Chenoweth - Added UP/DOWN (scroll window) and PREVIOUS (commands) buttons
 //	2012-02-17 Ben Chenoweth - Use PREV/NEXT for UP/DOWN; handle game initialisation failure
 //	2012-02-19 Ben Chenoweth - 'Trinity' now runs
-//	2012-02-20 Ben Chenoweth - Extended compatibility list; fix for 'Trinity'
+//	2012-02-20 Ben Chenoweth - Extended compatibility list; fix for 'Trinity'; fix for listing even number of games
 
 var tmp = function () {
 	
@@ -252,10 +252,11 @@ var tmp = function () {
 				numRows = (Math.floor(items.length / 2));
 				if (items.length % 2 === 1) {
 					extraRow = true;
+					midItem = numRows + 1;
 				} else {
 					extraRow = false;
+					midItem = numRows;
 				}
-				midItem = numRows + 1;
 				for (rowNum = 0; rowNum < numRows; rowNum++) {
 					noZeroItemNum = rowNum + 1;
 					noZeroItemNum2 = midItem + rowNum + 1;
