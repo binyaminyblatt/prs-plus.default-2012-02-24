@@ -16,6 +16,7 @@
 // 		Solitaire by Ben Chenoweth
 //	2011-10-19 Ben Chenoweth - Added ALT icons
 //	2011-12-25 Mark Nord - added picture & audio to "media" -> will be supported by BrowseFolders
+//	2012-02-20 quisvir - Added Action Launcher (StandardActions node)
 
 return {
 	// Menu icon indices 
@@ -162,7 +163,8 @@ return {
 			{ name: "BookHistory", parent: "gamesAndUtils"},
 			{ name: "DictionaryCL", parent: "gamesAndUtils" },
 			{ name: "Calculator", parent: "gamesAndUtils" },
-			{ name: "Calendar", parent: "gamesAndUtils" },			
+			{ name: "Calendar", parent: "gamesAndUtils" },	
+			{ name: "StandardActions", parent: "gamesAndUtils" },		
 			{ name: "Chess", parent: "gamesAndUtils" },				
 			{ name: "Draughts", parent: "gamesAndUtils" },
 			{ name: "FiveBalls", parent: "gamesAndUtils" },				

@@ -38,6 +38,8 @@
 //	2011-12-28 Ben Chenoweth - Initial implementation of audio
 //	2012-01-17 quisvir - Changed homelargekind to homekind, added standardMenuIcons for moved default nodes
 //	2012-02-06 quisvir - Added HIGHLIGHT
+//	2012-02-16 quisvir - Added CHECKMARK
+//	2012-02-20 quisvir - Added Action Launcher (StandardActions node)
 
 return {
 	// Menu icon indices 
@@ -106,32 +108,33 @@ return {
 		CALC: 114,
 		KEYBOARD_ALT: 116,
 		CHESS: 117,
-		CARDS: 118,
-		SUDOKU: 119,
-		MAHJONG: 120,
-		FIVEROW: 121,
-		FIVEBALLS: 122,
-		DRAUGHTS: 123,
-		BOMB: 125,
+		CHECKMARK: 118,
+		CARDS: 119,
+		SUDOKU: 120,
+		MAHJONG: 121,
+		FIVEROW: 122,
+		FIVEBALLS: 123,
+		DRAUGHTS: 124,
+		BOMB: 126,
 		
-		FONT: 126,
-		APPLICATIONS: 127,
-		EXECUTABLE: 128,
-		PREVIOUS_SONG: 129,
-		NEXT_SONG: 130,
-		PREVIOUS: 131,
-		NEXT: 132,
-		ARCHIVE: 133,
-		BRIGHT_CONT: 134,
-		BRIGHTNESS: 135,
-		CONTRAST: 136,
+		FONT: 127,
+		APPLICATIONS: 128,
+		EXECUTABLE: 129,
+		PREVIOUS_SONG: 130,
+		NEXT_SONG: 131,
+		PREVIOUS: 132,
+		NEXT: 133,
+		ARCHIVE: 134,
+		BRIGHT_CONT: 135,
+		BRIGHTNESS: 136,
+		CONTRAST: 137,
 		
-		BOOK_ALT: 137,
-		PICTURE_ALT: 138,
-		SEARCH_ALT: 139,
-		HANDWRITING_ALT: 140,
-		COMIC: 141,
-		AUDIO_ALT: 142,
+		BOOK_ALT: 138,
+		PICTURE_ALT: 139,
+		SEARCH_ALT: 140,
+		HANDWRITING_ALT: 141,
+		COMIC: 142,
+		AUDIO_ALT: 143,
 		
 		DEFAULT: 112,
 		
@@ -248,6 +251,7 @@ return {
 			{ name: "games", parent: "more" },
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },
+			{ name: "StandardActions", parent: "more" },
 			{ name: "AuthorList", parent: "more" },
 			{ name: "Chess", parent: "games" },
 			{ name: "Draughts", parent: "games" },
