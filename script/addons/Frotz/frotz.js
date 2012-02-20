@@ -562,14 +562,14 @@ var tmp = function () {
 		
 		result = getFileContent(FROTZOUTPUT, "222");
 		if (result !== "222") {
-			// output files for debugging
+			/*/ output files for debugging
 			if (FileSystem.getFileInfo("/Data/frotz0.out")) {
 				cmd = "cp "+FROTZOUTPUT+" /Data/frotz1.out";
 				shellExec(cmd);
 			} else {
 				cmd = "cp "+FROTZOUTPUT+" /Data/frotz0.out";
 				shellExec(cmd);
-			}
+			}*/
 			
 			// output
 			if (tempOutput === "") {

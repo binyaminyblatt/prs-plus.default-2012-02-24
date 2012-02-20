@@ -7,6 +7,7 @@
  * ALL: Added audio support to BrowseFolders
  * ALL: Added CLI App (not enabled by default)
  * ALL: Added actions: No Action, Goto various nodes, Delete Current Item, Play/Pause Audio
+ * ALL: Frotz App
  * 300/505/600: Added Available Space Info to PRS+ About
  * 600/x50: Added Author List addon
  * 600/x50: Added Auto Standby/Shutdown Time options
