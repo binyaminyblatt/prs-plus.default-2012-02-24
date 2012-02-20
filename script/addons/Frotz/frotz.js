@@ -13,6 +13,7 @@
 //	2012-02-16 Ben Chenoweth - Added UP/DOWN (scroll window) and PREVIOUS (commands) buttons
 //	2012-02-17 Ben Chenoweth - Use PREV/NEXT for UP/DOWN; handle game initialisation failure
 //	2012-02-19 Ben Chenoweth - 'Trinity' now runs
+//	2012-02-20 Ben Chenoweth - Extended compatibility list; fix for 'Trinity'
 
 var tmp = function () {
 	
@@ -50,7 +51,7 @@ var tmp = function () {
 	var FROTZOUTPUT = tempPath + "frotz.out";
 	// FROTZ options: -w: screen width, -h: number of lines,
 	// 				  -R: execute runtime code (cm = compression max, lt0 = line-type display off)
-	var FROTZOPTIONS = " -w 58 -h 40 -R lt0 "; // note there needs to be spaces at start and end of this string
+	var FROTZOPTIONS = " -w 56 -h 40 -R lt0 "; // note there needs to be spaces at start and end of this string
 	var GAMETITLE = "";
 	var workingDir;
 	var tempOutput = "";
@@ -74,6 +75,7 @@ var tmp = function () {
 	var saveTemp;
 	var saveUser;
 	var quitGame;
+	var firstRun;
 		
 	var twoDigits = function (i) {
 		if (i<10) {return "0"+i}
@@ -234,7 +236,7 @@ var tmp = function () {
 	}
 	
 	target.loadGameList = function () {
-		var items, filesMissingError, itemNum, noZeroItemNum; //, titles, actions, menu;
+		var items, filesMissingError, itemNum, noZeroItemNum, noZeroItemNum2, numRows, rowNum, extraRow, midItem, addSpaces;
 		items = listFiles(datPath);
 		if (items.length == 0) {
 			filesMissingError = "Error:\nThere are no files in the game directory.\nPlease connect your reader to a PC and copy the game files into the Frotz folder located in the PRS+ GamesSave folder."
@@ -243,23 +245,42 @@ var tmp = function () {
 			target.currentText.setValue(currentLine);
 			target.setVariable("current_line",currentLine);
 		} else {
-			/*titles = []; //TODO?: Fix popup menu
-			actions = [];
-			for (itemNum = 0; itemNum < items.length; itemNum++) {
-				titles.push(items[items.length - itemNum - 1]); // load popup in reverse order
-				actions.push( function () {
-					kbook.autoRunRoot.sandbox.initialiseGame();
-				});
-				if (itemNum === '9') break; // popup can only handle 10 entries
-			}
-			menu = createSimpleMenu(titles, actions);
-			showMenu(menu);*/
 			titles.length = 0;	
 			tempOutput = "Enter the number of the game you want to run:";
-			for (itemNum = 0; itemNum < items.length; itemNum++) {
-				titles.push(items[itemNum]);
-				noZeroItemNum = itemNum + 1;
-				tempOutput = tempOutput + "\n" + noZeroItemNum + ": " + items[itemNum];
+			if (items.length > 14) {
+				// use two columns
+				numRows = (Math.floor(items.length / 2));
+				if (items.length % 2 === 1) {
+					extraRow = true;
+				} else {
+					extraRow = false;
+				}
+				midItem = numRows + 1;
+				for (rowNum = 0; rowNum < numRows; rowNum++) {
+					noZeroItemNum = rowNum + 1;
+					noZeroItemNum2 = midItem + rowNum + 1;
+					tempOutput = tempOutput + "\n" + noZeroItemNum + ": " + items[rowNum];
+					for (addSpaces = 0; addSpaces < 28 - items[rowNum].length; addSpaces++) {
+						tempOutput = tempOutput + " ";
+					}
+					if (rowNum < 9) tempOutput = tempOutput + " "; // extra space for first 9 rows
+					tempOutput = tempOutput + noZeroItemNum2 + ": " + items[midItem + rowNum];
+				}
+				// handle odd number of entries
+				if (extraRow) {
+					tempOutput = tempOutput + "\n" + midItem + ": " + items[midItem - 1];
+				}
+				// now push all titles in order
+				for (itemNum = 0; itemNum < items.length; itemNum++) {
+					titles.push(items[itemNum]);
+				}
+			} else {
+				// use one column
+				for (itemNum = 0; itemNum < items.length; itemNum++) {
+					titles.push(items[itemNum]);
+					noZeroItemNum = itemNum + 1;
+					tempOutput = tempOutput + "\n" + noZeroItemNum + ": " + items[itemNum];
+				}
 			}
 			tempOutput = tempOutput + "\n";
 			this.setOutput(tempOutput);
@@ -290,9 +311,21 @@ var tmp = function () {
 			
 			// modify if needed for specific games
 			switch(lowerGameTitle) {
+				case "amfv":
+					startGame = "\n";
+					break;
+				case "borderzone":
+					startGame = "1\n"; // to start Chapter 1
+					break;
 				case "hhgg":
 				case "hitchhik":
 					quitGame = "quit\nY\nY\n";
+					break;
+				case "phobos":
+					startGame = "\n";
+					break;
+				case "plunderer":
+					startGame = "\n";
 					break;
 				case "trinity":
 					FROTZOPTIONS = " -w 62 -h 40 -R lt0 "; // game won't play if screen width less than 62!
@@ -483,7 +516,7 @@ var tmp = function () {
 					deleteFile(FROTZOUTPUT);
 					
 					// set up new input file (requires additional RETURN after currentLine for some games, eg. hhgg)
-					setFileContent(FROTZINPUT, startGame+restoreTemp+currentLine+"\n"+saveTemp+"Y\n"+quitGame);
+					setFileContent(FROTZINPUT, startGame+restoreTemp+currentLine+"\n\n"+saveTemp+"Y\n"+quitGame);
 					
 					// add currentLine to output
 					tempOutput = tempOutput + currentLine;
@@ -523,26 +556,37 @@ var tmp = function () {
 	}
 	
 	target.getResponse = function () {
-		var result;
+		var result, lowerGameTitle, charPos;
 		//target = this.target;
 		//target.timer = null;
 		
 		result = getFileContent(FROTZOUTPUT, "222");
 		if (result !== "222") {
-			/*/ output files for debugging
+			// output files for debugging
 			if (FileSystem.getFileInfo("/Data/frotz0.out")) {
 				cmd = "cp "+FROTZOUTPUT+" /Data/frotz1.out";
 				shellExec(cmd);
 			} else {
 				cmd = "cp "+FROTZOUTPUT+" /Data/frotz0.out";
 				shellExec(cmd);
-			}*/
+			}
 			
 			// output
 			if (tempOutput === "") {
-				// trim save/quit lines at end of output
-				result = result.substring(0, result.indexOf(">"));
-				tempOutput = result + ">";
+				// first run
+				lowerGameTitle = GAMETITLE.toLowerCase();
+				lowerGameTitle = lowerGameTitle.substring(0, lowerGameTitle.lastIndexOf(".")); //strip extension
+				if (lowerGameTitle === "borderzone") {				
+					// trim save/quit lines at end of output
+					charPos = result.indexOf(">")+1; // need to include first '>'
+					charPos = result.indexOf(">", charPos);
+					result = result.substring(0, charPos);
+					tempOutput = result + ">";
+				} else {
+					// trim save/quit lines at end of output
+					result = result.substring(0, result.indexOf(">"));
+					tempOutput = result + ">";
+				}
 			} else {
 				// trim initial/restore lines at start of output
 				result = result.substring(result.indexOf(">")+1);
@@ -558,6 +602,10 @@ var tmp = function () {
 				
 				// trim save/quit lines at end of output
 				result = result.substring(0, result.indexOf(">"));
+				
+				// extra check for special cases
+				result = this.extraCheck(result);
+				
 				tempOutput = tempOutput + "\n"+result + ">";
 			}
 		} else {
@@ -566,7 +614,59 @@ var tmp = function () {
 		}
 		this.setOutput(tempOutput);
 	}
-		
+	
+	target.extraCheck = function (previousresult) {
+		var lowerGameTitle, currentLine, result, cmd, getNewResult;
+		lowerGameTitle = GAMETITLE.toLowerCase();
+		lowerGameTitle = lowerGameTitle.substring(0, lowerGameTitle.lastIndexOf(".")); //strip extension
+		currentLine = target.getVariable("current_line");
+		getNewResult = false;
+		if (lowerGameTitle === "trinity") {
+			if (previousresult.indexOf("T    R    I    N    I    T    Y")>0) {
+				// set up new input file
+				setFileContent(FROTZINPUT, startGame+restoreTemp+currentLine+"\n\n"+saveTemp+"Y\n"+quitGame); // extra return needed
+				getNewResult = true;
+			}
+		}
+		if (lowerGameTitle === "phobos") {
+			if (previousresult.indexOf("Scratch 'n' sniff spot")>0) {
+				// set up new input file
+				setFileContent(FROTZINPUT, startGame+restoreTemp+currentLine+"\n\n"+saveTemp+"Y\n"+quitGame); // extra return needed
+				getNewResult = true;
+			}
+		}
+		if (lowerGameTitle === "borderzone") {
+			// need to get output again and reprocess it
+			result = getFileContent(FROTZOUTPUT, "222");
+			if (result !== "222") {
+				// trim initial/restore lines at start of output
+				result = result.substring(result.indexOf(">")+1);
+				result = result.substring(result.indexOf(">")+1);
+				result = result.substring(result.indexOf(">")+1);
+			
+				// trim save/quit lines at end of output
+				result = result.substring(0, result.indexOf(">"));
+				return result;
+			}
+		}
+		if (getNewResult) {
+			cmd = "cd " + workingDir + ";" + FROTZ + FROTZOPTIONS + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
+			shellExec(cmd);
+			result = getFileContent(FROTZOUTPUT, "222");
+			if (result !== "222") {
+				// trim initial/restore lines at start of output
+				result = result.substring(result.indexOf(">")+1);
+				result = result.substring(result.indexOf(">")+1);
+				
+				// trim save/quit lines at end of output
+				result = result.substring(0, result.indexOf(">"));
+				return result;
+			}
+		} else {
+			return previousresult;
+		}
+	}
+	
 	target.doQuit = function () {
 		/*var PSLOG, result, psStrings, PID;
 		PSLOG = tempPath + "/ps.log";
