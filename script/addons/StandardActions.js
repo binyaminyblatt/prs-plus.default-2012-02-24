@@ -85,7 +85,7 @@ tmp = function() {
 	};
 	
 	addOptionalActions = function(actions) {
-		if (Core.config.compat.hasVolumeButtons) {
+		if (Core.config.model === "505") {
 			actions.push({
 				name: "NextSong",
 				title: L("ACTION_NEXT_SONG"),
@@ -110,7 +110,7 @@ tmp = function() {
 				group: "Other",
 				icon: "AUDIO",
 				action: function () {
-					model.current.gotoNode(kbook.root.getMusicNode(), model); // FIXME how to find audio node on 505?
+					model.currentNode.gotoNode(Core.ui.nodes["music"], model);
 				}
 			},
 			{
@@ -148,21 +148,14 @@ tmp = function() {
 						log.error("Error in StandardActions trying to pause/play audio", e);
 					}
 				}
-			});
-		}
-		// FIXME: implicit "is touchscreen device"
-		if (Core.config.compat.hasJoypadButtons) {
-			actions.push({
-				name: "GotoLink",
-				title: L("ACTION_GOTO_LINK"),
-				group: "Book",
-				icon: "NEXT_PAGE",
+			},
+			{
+				name: "GotoPicturesNode",
+				title: L("ACTION_PICTURES_NODE"),
+				group: "Other",
+				icon: "PICTURE_ALT",
 				action: function () {
-					if (isBookEnabled()) {
-						book.doCenter();
-					} else {
-						model.doBlink();
-					}
+					model.currentNode.gotoNode(Core.ui.nodes["pictures"], model);
 				}
 			});
 		}
@@ -191,7 +184,7 @@ tmp = function() {
 		actions: [
 			{
 				name: 'CustomAction',
-				title: L('CUSTOM_ACTION'),
+				title: L('ACTION_CUSTOM_ACTION'),
 				group: 'Utils',
 				icon: 'SETTINGS',
 				action: function () {
@@ -199,7 +192,7 @@ tmp = function() {
 					current = model.current;
 					optionDef = {
 						name: 'tempOption',
-						title: L('CUSTOM_ACTION'),
+						title: L('ACTION_CUSTOM_ACTION'),
 						defaultValue: 'default',
 						values: kbActions[0], 
 						valueTitles: kbActions[1],
@@ -324,12 +317,12 @@ tmp = function() {
 				}
 			},
 			{
-				name: "GotoPicturesNode",
-				title: L("ACTION_PICTURES_NODE"),
+				name: "GotoCollectionsNode",
+				title: L("ACTION_COLLECTIONS_NODE"),
 				group: "Other",
-				icon: "PICTURE_ALT",
+				icon: "COLLECTION",
 				action: function () {
-					model.current.gotoNode(kbook.root.getPicturesNode(), model); // FIXME how to find pictures node on 505, and does 300 even have one?
+					model.currentNode.gotoNode(Core.ui.nodes["collections"], model);
 				}
 			},
 			{
@@ -377,9 +370,23 @@ tmp = function() {
 					menu = Core.popup.createSimpleMenu(titles, actions);
 					Core.popup.showMenu(menu);
 				}
+			},
+			{
+				name: "GotoLink",
+				title: L("ACTION_GOTO_LINK"),
+				group: "Book",
+				icon: "NEXT_PAGE",
+				action: function () {
+					if (isBookEnabled()) {
+						book.doCenter();
+					} else {
+						model.doBlink();
+					}
+				}
 			}
 		]
 	};
+	
 	// Optional actions depending on the model  
 	try {
 		addBubbleActions(StandardActions.actions);

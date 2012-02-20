@@ -24,13 +24,7 @@ tmp = function() {
 
 	// Shortcuts
 	model = kbook.model;
-	
-	// Fixme implicit model sniffing
-	if (model.container.sandbox.PAGE_GROUP.sandbox.PAGE_SUBGROUP) {
-		book = model.container.sandbox.PAGE_GROUP.sandbox.PAGE_SUBGROUP.sandbox.PAGE;
-	} else {
-		book = model.container.sandbox.PAGE_GROUP.sandbox.PAGE;
-	}
+	book = model.container.sandbox.PAGE_GROUP.findContent('PAGE');
 	
 	isBookEnabled = function() {
 		return book.isEnabled();
@@ -278,7 +272,7 @@ tmp = function() {
 		actions: [
 			{
 				name: 'CustomAction',
-				title: L('CUSTOM_ACTION'),
+				title: L('ACTION_CUSTOM_ACTION'),
 				group: 'Utils',
 				icon: 'SETTINGS',
 				action: function () {
@@ -286,7 +280,7 @@ tmp = function() {
 					current = model.currentNode;
 					optionDef = {
 						name: 'tempOption',
-						title: L('CUSTOM_ACTION'),
+						title: L('ACTION_CUSTOM_ACTION'),
 						defaultValue: 'default',
 						values: kbActions[0], 
 						valueTitles: kbActions[1],
@@ -406,7 +400,7 @@ tmp = function() {
 				group: "Other",
 				icon: "COLLECTION",
 				action: function () {
-					model.currentNode.gotoNode(kbook.root.getCollectionsNode(), model);
+					model.currentNode.gotoNode(Core.ui.nodes["collections"], model);
 				}
 			},
 			{
