@@ -7,7 +7,9 @@
 //	2012-01-21 Mark Nord - first preview of MarginCut for 505/300
 //	2012-01-29 Mark Nord - reset marginCut at appropriate places;  show helptext;
 //	2012-02-18 quisvir - Add parent items as separate bookmarks in multi-level ToC (FR)
+//	2012-02-20 Mark Nord - Fixed missing AutoPageTurn-Toggle-Action; Thanks Matt
 //	ToDo: check for landscape; add to Book-Menu; possible enhancements: 4-quadrants view, ...
+
 
 tmp = function() {
 
@@ -283,7 +285,9 @@ tmp = function() {
 			icon: "CLOCK",
 			action: function () {
 				autoPageToggle();
+				}
 			},
+		{
 			name: "marginCut",
 			title: L("MARGINCUT"),
 			group: "Book",
