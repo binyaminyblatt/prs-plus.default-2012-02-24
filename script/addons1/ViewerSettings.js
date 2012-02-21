@@ -7,9 +7,11 @@
 //	2012-01-21 Mark Nord - first preview of MarginCut for 505/300
 //	2012-01-29 Mark Nord - reset marginCut at appropriate places;  show helptext;
 //	2012-02-18 quisvir - Add parent items as separate bookmarks in multi-level ToC (FR)
+//	2012-02-20 Mark Nord - Fixed missing AutoPageTurn-Toggle-Action; Thanks Matt
 //	2012-02-21 quisvir - Fixed #291 'Two taps are needed with SHOW_PARENT_ITEMS_IN_TOC enabled'
 //
 //	ToDo: check for landscape; add to Book-Menu; possible enhancements: 4-quadrants view, ...
+
 
 tmp = function() {
 
@@ -205,16 +207,13 @@ tmp = function() {
 	};
 
 	// Add parent items as separate bookmarks in multi-level ToC
-	var tocNode, prop, oldTocFunc;
-	tocNode = FskCache.tree.markReferenceNode;
-	prop = (tocNode.construct) ? 'construct' : 'enter'; // model sniffing
-	oldTocFunc = tocNode[prop];
-	tocNode[prop] = function () {
-		oldTocFunc.apply(this, arguments);
-		doCreateBookmarkNode.call(this);
-	}
+	var tocFunc, prop, oldTocFunc;
+	tocFunc = FskCache.tree.markReferenceNode;
+	prop = (tocFunc.construct) ? 'construct' : 'enter'; // model sniffing
+	oldTocFunc = tocFunc[prop];
 	
-	var doCreateBookmarkNode = function () {
+	tocFunc[prop] = function () {
+		oldTocFunc.apply(this, arguments);
 		var item, node;
 		item = this.bookmark;
 		if (item && this.bookmarks.length && ViewerSettings.options.parentItemsInToc === 'true') {
@@ -286,7 +285,9 @@ tmp = function() {
 			icon: "CLOCK",
 			action: function () {
 				autoPageToggle();
-			},
+			}
+		},
+		{
 			name: "marginCut",
 			title: L("MARGINCUT"),
 			group: "Book",
