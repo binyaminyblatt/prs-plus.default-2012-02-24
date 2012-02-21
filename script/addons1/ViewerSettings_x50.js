@@ -33,6 +33,7 @@
 //	2012-02-05 quisvir - Allow custom view settings to overrule existing presets
 //	2012-02-06 quisvir - Added option to prevent screen flashing when closing overlays
 //	2012-02-18 quisvir - Add parent items as separate bookmarks in multi-level ToC (FR)
+//	2012-02-21 quisvir - Fixed #291 'Two taps are needed with SHOW_PARENT_ITEMS_IN_TOC enabled'
 
 tmp = function() {
 
@@ -473,7 +474,7 @@ tmp = function() {
 	var doCreateBookmarkNode = function (periodical) {
 		var item, prototype, node;
 		item = this.bookmark;
-		if (item && opt.parentItemsInToc === 'true') {
+		if (item && this.bookmarks.length && opt.parentItemsInToc === 'true') {
 			prototype = (periodical) ? FskCache.tree.bookmarkNode2 : FskCache.tree.bookmarkNode;
 			node = prototype.nodeFromBookmark(item);
 			node.cache = this.cache;
@@ -482,7 +483,7 @@ tmp = function() {
 			node.selected = item.selected;
 			node.title = node.title.replace(new RegExp('([\\1-\\31]+)', 'g'), ' ');
 			node.name = node.title = Fskin.trimString(node.title);
-			// node.comment = 'Page ' + this.bookmark._page; // Protected
+			node._mycomment = L('PAGE') + ' ' + this.bookmark._page;
 			node.onEnter = 'onEnterPageOption';
 			this.nodes.unshift(node);
 		}
