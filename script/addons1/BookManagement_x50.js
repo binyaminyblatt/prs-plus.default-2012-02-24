@@ -843,7 +843,6 @@ tmp = function() {
 		name: 'BookManagement_x50',
 		title: L('TITLE'),
 		icon: 'BOOKS',
-		hiddenOptions: 2,
 		onPreInit: function () {
 			createPageOptionSettings();
 		},
@@ -1179,16 +1178,16 @@ tmp = function() {
 					'false': L('VALUE_FALSE')
 				}	
 			},
+		],
+		hiddenOptions: [
 			{
 				name: 'CurrentCollection',
 				defaultValue: '',
-				hidden: 'true',
 			},
 			{
 				name: 'SelectedCollection',
 				defaultValue: '',
-				hidden: 'true',
-			},
+			}
 		],
 		onSettingsChanged: function (propertyName, oldValue, newValue, object) {
 			numCur = 0;

@@ -23,6 +23,7 @@
 //	2011-12-17 quisvir - Minor change to show numerical settings correctly
 //	2012-02-11 quisvir - Let options keep showing unchecked using 'noCheck' property
 //	2012-02-20 quisvir - Fixed incorrect settings count in case of hidden settings; minor changes
+//	2012-02-21 quisvir - Moved hidden settings to separate group
 
 // dummy function, to avoid introducing global vars
 tmp = function() {
@@ -227,9 +228,6 @@ tmp = function() {
 
 			doCreateAddonSettings(node, optionDef.optionDefs, addon, false);
 		} else {
-			// Do not create settings node if hidden property is defined
-			if (optionDef.hasOwnProperty("hidden")) return;
-
 			// If target is defined, use it, else create "options"
 			var options;
 			if (optionDef.hasOwnProperty("target")) {
@@ -304,9 +302,6 @@ tmp = function() {
 							if (thisSettingsNode._settingsCount) {
 								// Group comment is undefined
 								thisSettingsNode._settingsCount += optionDefs.length;
-								if (addon.hiddenOptions) {
-									thisSettingsNode._settingsCount -= addon.hiddenOptions;
-								}
 								thisSettingsNode._mycomment = Core.lang.LX("SETTINGS", thisSettingsNode._settingsCount);
 							}
 							break;
@@ -337,9 +332,6 @@ tmp = function() {
 						thisSettingsNode._mycomment = comment;
 					} else {
 						thisSettingsNode._settingsCount = optionDefs.length;
-						if (addon.hiddenOptions) {
-							thisSettingsNode._settingsCount -= addon.hiddenOptions;
-						}
 						thisSettingsNode._mycomment = Core.lang.LX("SETTINGS", thisSettingsNode._settingsCount);
 					}
 					prspSettingsNode.nodes.push(thisSettingsNode);
@@ -361,45 +353,22 @@ tmp = function() {
 	Core.settings.saveOptions = function(addon) {
 		try {
 			FileSystem.ensureDirectory(Core.config.settingsPath);
-			var od,od2,  name, options, optionDefs, optionDefsToSave, gotSomethingToSave, i, defValue, target,
-				stream, globalStr,  ii, str, j, m;
+			var od, od2, name, options, optionDefsToSave, gotSomethingToSave,
+				stream, globalStr, ii, str, j, m;
 
 			// Find out which options need to be saved (do not save devault values)
 			options = addon.options;
-			optionDefs = addon.optionDefs;
 			optionDefsToSave = []; // option defs
-			gotSomethingToSave = false;
-			for (i = 0; i < optionDefs.length; i++) {
-				od = optionDefs[i];
 
-				// Add group suboptions
-				if (od.hasOwnProperty("groupTitle")) {
-					optionDefs = optionDefs.concat(od.optionDefs);
-					continue;
-				}
-
-				name = od.name;
-				defValue = od.defaultValue;
-				target = od.hasOwnProperty("target") ? od.target : false;
-
-				if (target) {
-					if (options.hasOwnProperty(target) && options[target].hasOwnProperty(name) && options[target][name] !== defValue) {
-						if (!optionDefsToSave.hasOwnProperty(target)) {
-							optionDefsToSave[target] = {
-								isGroup: true,
-								target: target,
-								optionDefs: []
-							};
-						}
-						gotSomethingToSave = true;
-						optionDefsToSave[target].optionDefs.push(od);
-					}
-				} else if (options.hasOwnProperty(name) && options[name] !== defValue) {
+			if (saveOptions2(addon.optionDefs, options, optionDefsToSave)) {
+				gotSomethingToSave = true;
+			}
+			if (addon.hiddenOptions) {
+				if (saveOptions2(addon.hiddenOptions, options, optionDefsToSave)) {
 					gotSomethingToSave = true;
-					optionDefsToSave.push(od);
 				}
 			}
-
+			
 			// If there is anything to save - save, if not, delete settings file
 			var settingsFile = Core.config.settingsPath + addon.name + ".config";
 			if (gotSomethingToSave) {
@@ -439,7 +408,41 @@ tmp = function() {
 			log.error("saving options for addon: " + addon.name);
 		}
 	};
+	
+	var saveOptions2 = function (optionDefs, options, optionDefsToSave) {
+		var i, od, name, defValue, target, gotSomethingToSave;
+		for (i = 0; i < optionDefs.length; i++) {
+			od = optionDefs[i];
 
+			// Add group suboptions
+			if (od.hasOwnProperty("groupTitle")) {
+				optionDefs = optionDefs.concat(od.optionDefs);
+				continue;
+			}
+
+			name = od.name;
+			defValue = od.defaultValue;
+			target = od.hasOwnProperty("target") ? od.target : false;
+
+			if (target) {
+				if (options.hasOwnProperty(target) && options[target].hasOwnProperty(name) && options[target][name] !== defValue) {
+					if (!optionDefsToSave.hasOwnProperty(target)) {
+						optionDefsToSave[target] = {
+							isGroup: true,
+							target: target,
+							optionDefs: []
+						};
+					}
+					gotSomethingToSave = true;
+					optionDefsToSave[target].optionDefs.push(od);
+				}
+			} else if (options.hasOwnProperty(name) && options[name] !== defValue) {
+				gotSomethingToSave = true;
+				optionDefsToSave.push(od);
+			}
+		}
+		return gotSomethingToSave;
+	}
 
 	// Loads addon's options, using default option values, if settings file or value is not present.
 	//
@@ -457,35 +460,42 @@ tmp = function() {
 				if (!options) {
 					options = {};
 				}
-
-				optionDefs = addon.optionDefs;
-				for (i = 0; i < optionDefs.length; i++) {
-					od = optionDefs[i];
-					if (od.hasOwnProperty("groupTitle")) {
-						optionDefs = optionDefs.concat(od.optionDefs);
-					} else {
-						if (od.hasOwnProperty("target")) {
-							if (!options.hasOwnProperty(od.target)) {
-								options[od.target] = {};
-							}
-
-							if (!options[od.target].hasOwnProperty(od.name)) {
-								options[od.target][od.name] = od.defaultValue;
-							}
-						} else {
-							if (!options.hasOwnProperty(od.name)) {
-								options[od.name] = od.defaultValue;
-							}
-						}
-					}
+				
+				loadOptions2(addon.optionDefs, options);
+				if (addon.hiddenOptions) {
+					loadOptions2(addon.hiddenOptions, options);
 				}
-
+				
 				addon.options = options;
 			}
 		} catch (e) {
 			log.error("Loading settings of " + addon.name);
 		}
 	};
+	
+	var loadOptions2 = function (optionDefs, options) {
+		var i, od;
+		for (i = 0; i < optionDefs.length; i++) {
+			od = optionDefs[i];
+			if (od.hasOwnProperty("groupTitle")) {
+				optionDefs = optionDefs.concat(od.optionDefs);
+			} else {
+				if (od.hasOwnProperty("target")) {
+					if (!options.hasOwnProperty(od.target)) {
+						options[od.target] = {};
+					}
+
+					if (!options[od.target].hasOwnProperty(od.name)) {
+						options[od.target][od.name] = od.defaultValue;
+					}
+				} else {
+					if (!options.hasOwnProperty(od.name)) {
+						options[od.name] = od.defaultValue;
+					}
+				}
+			}
+		}
+	}
 	
 	Core.addAddon({
 		name: "PRSPSettings",
