@@ -17,7 +17,7 @@
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, addBubbleActions, addOptionalActions,
-		doBubble, doBubbleFunc, actionLauncher, actionLauncherConstruct, actionLauncherDestruct, kbActions;
+		doBubble, doBubbleFunc, actionLauncher, actionLauncherConstruct, kbActions;
 		
 	NAME = "StandardActions";
 	L = Core.lang.getLocalizer(NAME);
@@ -253,7 +253,8 @@ tmp = function() {
 	actionLauncher = null;
 	
 	actionLauncherConstruct = function () {
-		var optionDef = {
+		var optionDef, parent;
+		optionDef = {
 			name: 'tempOption',
 			title: L('ACTION_LAUNCHER'),
 			defaultValue: 'default',
@@ -263,12 +264,10 @@ tmp = function() {
 			valueGroups: kbActions[3],
 			useIcons: true
 		};
-		Core.addonByName.PRSPSettings.createSingleSetting(this, optionDef, StandardActions);
-		this.nodes = this.nodes[0].nodes;
-	}
-	
-	actionLauncherDestruct = function () {
-		this.nodes = [];
+		parent = this.parent = model.currentNode;
+		if (!parent.nodes) parent.nodes = [];
+		Core.addonByName.PRSPSettings.createSingleSetting(parent, optionDef, StandardActions);
+		this.nodes = parent.nodes.pop().nodes;
 	}
 	
 	StandardActions = {
@@ -298,8 +297,7 @@ tmp = function() {
 					title: L('ACTION_LAUNCHER'),
 					shortName: L('ACTION_LAUNCHER_SHORT'),
 					icon: 'FOLDER',
-					construct: actionLauncherConstruct,
-					destruct: actionLauncherDestruct
+					construct: actionLauncherConstruct
 				});
 			}
 			return actionLauncher;

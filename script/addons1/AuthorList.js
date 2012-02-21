@@ -13,7 +13,7 @@
 
 tmp = function() {
 
-	var L, LX, log, authorsNode, authors, authorsNodeConstruct, authorsNodeDestruct, authorConstruct, authorDestruct;
+	var L, LX, log, authorsNode, authors, authorsNodeConstruct, authorsNodeDestruct, authorConstruct;
 	
 	L = Core.lang.getLocalizer('AuthorList');
 	LX = Core.lang.LX;
@@ -59,7 +59,6 @@ tmp = function() {
 					parent: authorsNode,
 					comment: LX('BOOKS', books),
 					construct: authorConstruct,
-					destruct: authorDestruct,
 					icon: 'COLLECTION'
 				})
 				node.authorIndex = i;
@@ -80,10 +79,6 @@ tmp = function() {
 			this.nodes.push(Core.media.createMediaNode(authors[this.authorIndex][i], this));
 		}
 		this.comment = LX('BOOKS', this.nodes.length);
-	};
-	
-	authorDestruct = function () {
-		this.nodes = null;
 	};
 	
 	var AuthorList = {
