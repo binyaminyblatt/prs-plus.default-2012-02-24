@@ -177,7 +177,7 @@ tmp = function() {
 			valueGroups: kbActions[3],
 			useIcons: true
 		};
-		parent = this.parent = model.currentNode;
+		parent = this.parent = model.current;
 		if (!parent.nodes) parent.nodes = [];
 		Core.addonByName.PRSPSettings.createSingleSetting(parent, optionDef, StandardActions);
 		this.nodes = parent.nodes.pop().nodes;
