@@ -373,7 +373,6 @@ tmp = function() {
 		name: "StandbyImage",
 		title: L("TITLE"),
 		icon: "STANDBY",
-		hiddenOptions: 1,
 		optionDefs: [
 			{
 			groupTitle: L('STANDBY_IMAGE'),
@@ -534,11 +533,12 @@ tmp = function() {
 					"60": LX("MINUTES", 60),
 					"120": LX("MINUTES", 120),
 				}
-			},
+			}
+		],
+		hiddenOptions: [
 			{
 				name: 'orgOrientation',
 				defaultValue: '',
-				hidden: 'true',
 			}
 		],
 		onPreInit: function () {
