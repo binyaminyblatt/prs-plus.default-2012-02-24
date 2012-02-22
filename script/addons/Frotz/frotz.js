@@ -15,6 +15,7 @@
 //	2012-02-19 Ben Chenoweth - 'Trinity' now runs
 //	2012-02-20 Ben Chenoweth - Extended compatibility list; fix for 'Trinity'; fix for listing even number of games
 //	2012-02-22 Ben Chenoweth - Workaround for 'Bureaucracy' (requires externally created initial gamesave file)
+//	2012-02-22 Ben Chenoweth - Workaround for 'Zork1' (disable the 'loud' room so that save/restore work)
 
 var tmp = function () {
 	
@@ -353,6 +354,9 @@ var tmp = function () {
 				case "trinity":
 					FROTZOPTIONS = " -w 62 -h 40 -R lt0 "; // game won't play if screen width less than 62!
 					startGame = "\n";
+					break;
+				case "zork1":
+					saveTemp = "echo\nsave\ntemp.sav\n"; // disables the 'loud' room to make save/restore work
 					break;
 				default:
 			}
