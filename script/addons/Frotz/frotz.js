@@ -14,6 +14,7 @@
 //	2012-02-17 Ben Chenoweth - Use PREV/NEXT for UP/DOWN; handle game initialisation failure
 //	2012-02-19 Ben Chenoweth - 'Trinity' now runs
 //	2012-02-20 Ben Chenoweth - Extended compatibility list; fix for 'Trinity'; fix for listing even number of games
+//	2012-02-22 Ben Chenoweth - Workaround for 'Bureaucracy' (requires externally created initial gamesave file)
 
 var tmp = function () {
 	
@@ -75,7 +76,7 @@ var tmp = function () {
 	var saveTemp;
 	var saveUser;
 	var quitGame;
-	var firstRun;
+	var initialInput;
 		
 	var twoDigits = function (i) {
 		if (i<10) {return "0"+i}
@@ -309,11 +310,32 @@ var tmp = function () {
 			saveUser = "save\n";
 			restoreUser = "restore\n";
 			quitGame = "quit\nY\n";
+			initialInput = "";
 			
 			// modify if needed for specific games
 			switch(lowerGameTitle) {
 				case "amfv":
 					startGame = "\n";
+					break;
+				case "bureau":
+					workingDir = datPath + GAMETITLE.substring(0, GAMETITLE.indexOf(".")) + "/";
+					FileSystem.ensureDirectory(workingDir);
+
+					result = getFileContent(workingDir + "userinput.sav", "222");
+					if (result === "222") {
+						tempOutput = tempOutput + "\nTo play Bureaucracy you will first need to play the game on another computer since the start of this game is unfortunately not compatible with the reader.  Once you have answered the initial questions, save your game, call it 'userinput.sav' and then copy it into the game's save folder on your reader.  You will then be able to continue playing from there...\n\nFor now, please choose another game from the list...\n";
+						this.setOutput(tempOutput);
+						
+						chooseGame = true;
+					
+						// change keyboard to show numbers (and move selection to "1")
+						custSel = 7; // "1" when symbols showing
+						symbols = true;
+						this.refreshKeys();
+						return;
+					} else {
+						initialInput = restoreUser+"userinput.sav\n"+saveTemp+quitGame;
+					}
 					break;
 				case "borderzone":
 					startGame = "1\n"; // to start Chapter 1
@@ -335,12 +357,16 @@ var tmp = function () {
 				default:
 			}
 			
+			if (initialInput === "") {
+				initialInput = startGame+saveTemp+quitGame;
+			}
+			
 			try {
 				// delete old output file if it exists
 				deleteFile(FROTZOUTPUT);
 				
 				// create input file (deletes file if it already exists)
-				setFileContent(FROTZINPUT, startGame+saveTemp+quitGame);
+				setFileContent(FROTZINPUT, initialInput);
 				
 				// create working directory (where savegames go) if it doesn't already exist
 				workingDir = datPath + GAMETITLE.substring(0, GAMETITLE.indexOf(".")) + "/";
@@ -473,7 +499,7 @@ var tmp = function () {
 					deleteFile(FROTZOUTPUT);
 					
 					// create input file (deletes file if it already exists)
-					setFileContent(FROTZINPUT, startGame+saveTemp+quitGame);
+					setFileContent(FROTZINPUT, initialInput);
 					
 					// delete old temp save
 					deleteFile(workingDir + "temp.sav");
@@ -557,7 +583,7 @@ var tmp = function () {
 	}
 	
 	target.getResponse = function () {
-		var result, lowerGameTitle, charPos;
+		var result, lowerGameTitle, charPos, charPos2;
 		//target = this.target;
 		//target.timer = null;
 		
@@ -583,7 +609,13 @@ var tmp = function () {
 					charPos = result.indexOf(">", charPos);
 					result = result.substring(0, charPos);
 					tempOutput = result + ">";
-				} else {
+				} if (lowerGameTitle === "bureau") {				
+					// trim save/quit lines at end of output
+					charPos = result.indexOf("[RESTORE completed.]")+21;
+					charPos2 = result.indexOf(">", charPos);
+					result = result.substring(charPos, charPos2);
+					tempOutput = result + ">";
+				}else {
 					// trim save/quit lines at end of output
 					result = result.substring(0, result.indexOf(">"));
 					tempOutput = result + ">";
@@ -617,7 +649,7 @@ var tmp = function () {
 	}
 	
 	target.extraCheck = function (previousresult) {
-		var lowerGameTitle, currentLine, result, cmd, getNewResult;
+		var lowerGameTitle, currentLine, result, cmd, getNewResult, charPos, charPos;
 		lowerGameTitle = GAMETITLE.toLowerCase();
 		lowerGameTitle = lowerGameTitle.substring(0, lowerGameTitle.lastIndexOf(".")); //strip extension
 		currentLine = target.getVariable("current_line");
@@ -627,6 +659,24 @@ var tmp = function () {
 				// set up new input file
 				setFileContent(FROTZINPUT, startGame+restoreTemp+currentLine+"\n\n"+saveTemp+"Y\n"+quitGame); // extra return needed
 				getNewResult = true;
+			} else if (previousresult.indexOf("purpose of the calligraphy")>0) {
+				// need to get output again and reprocess it
+				result = getFileContent(FROTZOUTPUT, "222");
+				if (result !== "222") {
+					// trim initial/restore lines at start of output
+					result = result.substring(result.indexOf(">")+1);
+					result = result.substring(result.indexOf(">")+1);
+
+					// skip three ">" (part of the contents of the book in the cottage)
+					charPos = result.indexOf(">")+1;
+					charPos = result.indexOf(">", charPos); // marks location of middle ">"
+					charPos2 = result.indexOf(">", charPos + 1);
+					
+					// remove second book entry and trim save/quit lines at end of output
+					result = result.substring(0, charPos) + result.substring(charPos2, result.indexOf(">", charPos2 + 1));
+					result = result.replace("few incantations", "two incantations");
+					return result;
+				}
 			}
 		}
 		if (lowerGameTitle === "phobos") {
@@ -647,6 +697,17 @@ var tmp = function () {
 			
 				// trim save/quit lines at end of output
 				result = result.substring(0, result.indexOf(">"));
+				return result;
+			}
+		}
+		if (lowerGameTitle === "bureau") {
+			// need to get output again and reprocess it
+			result = getFileContent(FROTZOUTPUT, "222");
+			if (result !== "222") {
+				// trim initial/restore lines at start of output
+				charPos = result.indexOf("[RESTORE completed.]");
+				charPos = result.indexOf(">", charPos)+1;
+				result = result.substring(charPos, result.indexOf(">", charPos));
 				return result;
 			}
 		}
