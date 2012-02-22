@@ -252,6 +252,7 @@ return {
 			{ name: "games", parent: "more" },
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },
+			//{ name: "Cli", parent: "more" },
 			{ name: "StandardActions", parent: "more" },
 			{ name: "AuthorList", parent: "more" },
 			{ name: "Chess", parent: "games" },

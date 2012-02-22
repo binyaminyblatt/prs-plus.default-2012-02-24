@@ -221,6 +221,7 @@ return {
 			{ name: "PRSPSettings", parent: "more" },
 			{ name: "Calculator", parent: "more" },
 			{ name: "Calendar", parent: "more" },
+			//{ name: "Cli", parent: "more" },
 			{ name: "StandardActions", parent: "more" },
 			{ name: "AuthorList", parent: "more" },
 			{ name: "games", parent: "more" },
