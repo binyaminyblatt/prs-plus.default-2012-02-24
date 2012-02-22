@@ -165,6 +165,7 @@ return {
 			{ name: "DictionaryCL", parent: "gamesAndUtils" },
 			{ name: "Calculator", parent: "gamesAndUtils" },				
 			{ name: "Calendar", parent: "gamesAndUtils" },
+			//{ name: "Cli", parent: "gamesAndUtils" },
 			{ name: "StandardActions", parent: "gamesAndUtils" },
 			{ name: "Chess", parent: "gamesAndUtils" },
 			{ name: "Draughts", parent: "gamesAndUtils" },
