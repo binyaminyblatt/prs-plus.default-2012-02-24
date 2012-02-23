@@ -14,6 +14,7 @@
 //  2011-10-30 Ben Chenoweth - Added goZoomPage
 //	2012-02-06 Ben Chenoweth - Added No Action, Goto various nodes, Delete Current Item, Play/Pause Audio
 //	2012-02-20 quisvir - Added Action Launcher; code cleaning
+//	2012-02-23 Ben Chenoweth - Added Toggle Notes Toolbar
 
 tmp = function() {
 	var L, log, NAME, StandardActions, model, book, doHistory, isBookEnabled, addBubbleActions, addOptionalActions,
@@ -558,6 +559,15 @@ tmp = function() {
 					} else {
 						model.doBlink();
 					}
+				}
+			},
+			{
+				name: "ToggleNotesToolbar",
+				title: L("ACTION_TOGGLE_NOTES_TOOLBAR"),
+				group: "Book",
+				icon: "NOTES",
+				action: function() {
+					pageOptionToolbarOverlayModel.onOptionToolbar();
 				}
 			},
 			{
