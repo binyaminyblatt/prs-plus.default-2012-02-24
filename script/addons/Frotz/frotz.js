@@ -15,7 +15,7 @@
 //	2012-02-19 Ben Chenoweth - 'Trinity' now runs
 //	2012-02-20 Ben Chenoweth - Extended compatibility list; fix for 'Trinity'; fix for listing even number of games
 //	2012-02-22 Ben Chenoweth - Workaround for 'Bureaucracy' (requires externally created initial gamesave file)
-//	2012-02-22 Ben Chenoweth - Workaround for 'Zork1' (disable the 'loud' room so that save/restore work)
+//	2012-02-22 Ben Chenoweth - Workaround for 'Zork1' (disable the 'loud' room so that save/restore work); use switches
 
 var tmp = function () {
 	
@@ -78,6 +78,7 @@ var tmp = function () {
 	var saveUser;
 	var quitGame;
 	var initialInput;
+	var loudRoomDisabled = false;
 		
 	var twoDigits = function (i) {
 		if (i<10) {return "0"+i}
@@ -355,9 +356,6 @@ var tmp = function () {
 					FROTZOPTIONS = " -w 62 -h 40 -R lt0 "; // game won't play if screen width less than 62!
 					startGame = "\n";
 					break;
-				case "zork1":
-					saveTemp = "echo\nsave\ntemp.sav\n"; // disables the 'loud' room to make save/restore work
-					break;
 				default:
 			}
 			
@@ -515,6 +513,7 @@ var tmp = function () {
 					
 					// clear textbox
 					tempOutput = "";
+					loudRoomDisabled = false; // just in case current game is zork1
 					
 					this.getResponse();
 				} else {
@@ -607,22 +606,26 @@ var tmp = function () {
 				// first run
 				lowerGameTitle = GAMETITLE.toLowerCase();
 				lowerGameTitle = lowerGameTitle.substring(0, lowerGameTitle.lastIndexOf(".")); //strip extension
-				if (lowerGameTitle === "borderzone") {				
-					// trim save/quit lines at end of output
-					charPos = result.indexOf(">")+1; // need to include first '>'
-					charPos = result.indexOf(">", charPos);
-					result = result.substring(0, charPos);
-					tempOutput = result + ">";
-				} if (lowerGameTitle === "bureau") {				
-					// trim save/quit lines at end of output
-					charPos = result.indexOf("[RESTORE completed.]")+21;
-					charPos2 = result.indexOf(">", charPos);
-					result = result.substring(charPos, charPos2);
-					tempOutput = result + ">";
-				}else {
-					// trim save/quit lines at end of output
-					result = result.substring(0, result.indexOf(">"));
-					tempOutput = result + ">";
+				
+				switch(lowerGameTitle) {
+					case "borderzone":
+						// trim save/quit lines at end of output
+						charPos = result.indexOf(">")+1; // need to include first '>'
+						charPos = result.indexOf(">", charPos);
+						result = result.substring(0, charPos);
+						tempOutput = result + ">";
+						break;
+					case "bureau":
+						// trim save/quit lines at end of output
+						charPos = result.indexOf("[RESTORE completed.]")+21;
+						charPos2 = result.indexOf(">", charPos);
+						result = result.substring(charPos, charPos2);
+						tempOutput = result + ">";
+						break;
+					default:
+						// trim save/quit lines at end of output
+						result = result.substring(0, result.indexOf(">"));
+						tempOutput = result + ">";
 				}
 			} else {
 				// trim initial/restore lines at start of output
@@ -658,62 +661,75 @@ var tmp = function () {
 		lowerGameTitle = lowerGameTitle.substring(0, lowerGameTitle.lastIndexOf(".")); //strip extension
 		currentLine = target.getVariable("current_line");
 		getNewResult = false;
-		if (lowerGameTitle === "trinity") {
-			if (previousresult.indexOf("T    R    I    N    I    T    Y")>0) {
-				// set up new input file
-				setFileContent(FROTZINPUT, startGame+restoreTemp+currentLine+"\n\n"+saveTemp+"Y\n"+quitGame); // extra return needed
-				getNewResult = true;
-			} else if (previousresult.indexOf("purpose of the calligraphy")>0) {
+		switch(lowerGameTitle) {
+			case "trinity":
+				if (previousresult.indexOf("T    R    I    N    I    T    Y")>0) {
+					// set up new input file
+					setFileContent(FROTZINPUT, startGame+restoreTemp+currentLine+"\n\n"+saveTemp+"Y\n"+quitGame); // extra return needed
+					getNewResult = true;
+				} else if (previousresult.indexOf("purpose of the calligraphy")>0) {
+					// need to get output again and reprocess it
+					result = getFileContent(FROTZOUTPUT, "222");
+					if (result !== "222") {
+						// trim initial/restore lines at start of output
+						result = result.substring(result.indexOf(">")+1);
+						result = result.substring(result.indexOf(">")+1);
+
+						// skip three ">" (part of the contents of the book in the cottage)
+						charPos = result.indexOf(">")+1;
+						charPos = result.indexOf(">", charPos); // marks location of middle ">"
+						charPos2 = result.indexOf(">", charPos + 1);
+						
+						// remove second book entry and trim save/quit lines at end of output
+						result = result.substring(0, charPos) + result.substring(charPos2, result.indexOf(">", charPos2 + 1));
+						result = result.replace("few incantations", "two incantations");
+						return result;
+					}
+				}
+				break;
+			case "phobos":
+				if (previousresult.indexOf("Scratch 'n' sniff spot")>0) {
+					// set up new input file
+					setFileContent(FROTZINPUT, startGame+restoreTemp+currentLine+"\n\n"+saveTemp+"Y\n"+quitGame); // extra return needed
+					getNewResult = true;
+				}
+				break;
+			case "borderzone":
 				// need to get output again and reprocess it
 				result = getFileContent(FROTZOUTPUT, "222");
 				if (result !== "222") {
 					// trim initial/restore lines at start of output
 					result = result.substring(result.indexOf(">")+1);
 					result = result.substring(result.indexOf(">")+1);
-
-					// skip three ">" (part of the contents of the book in the cottage)
-					charPos = result.indexOf(">")+1;
-					charPos = result.indexOf(">", charPos); // marks location of middle ">"
-					charPos2 = result.indexOf(">", charPos + 1);
-					
-					// remove second book entry and trim save/quit lines at end of output
-					result = result.substring(0, charPos) + result.substring(charPos2, result.indexOf(">", charPos2 + 1));
-					result = result.replace("few incantations", "two incantations");
+					result = result.substring(result.indexOf(">")+1);
+				
+					// trim save/quit lines at end of output
+					result = result.substring(0, result.indexOf(">"));
 					return result;
 				}
-			}
-		}
-		if (lowerGameTitle === "phobos") {
-			if (previousresult.indexOf("Scratch 'n' sniff spot")>0) {
-				// set up new input file
-				setFileContent(FROTZINPUT, startGame+restoreTemp+currentLine+"\n\n"+saveTemp+"Y\n"+quitGame); // extra return needed
-				getNewResult = true;
-			}
-		}
-		if (lowerGameTitle === "borderzone") {
-			// need to get output again and reprocess it
-			result = getFileContent(FROTZOUTPUT, "222");
-			if (result !== "222") {
-				// trim initial/restore lines at start of output
-				result = result.substring(result.indexOf(">")+1);
-				result = result.substring(result.indexOf(">")+1);
-				result = result.substring(result.indexOf(">")+1);
-			
-				// trim save/quit lines at end of output
-				result = result.substring(0, result.indexOf(">"));
-				return result;
-			}
-		}
-		if (lowerGameTitle === "bureau") {
-			// need to get output again and reprocess it
-			result = getFileContent(FROTZOUTPUT, "222");
-			if (result !== "222") {
-				// trim initial/restore lines at start of output
-				charPos = result.indexOf("[RESTORE completed.]");
-				charPos = result.indexOf(">", charPos)+1;
-				result = result.substring(charPos, result.indexOf(">", charPos));
-				return result;
-			}
+				break;
+			case "bureau":
+				// need to get output again and reprocess it
+				result = getFileContent(FROTZOUTPUT, "222");
+				if (result !== "222") {
+					// trim initial/restore lines at start of output
+					charPos = result.indexOf("[RESTORE completed.]");
+					charPos = result.indexOf(">", charPos)+1;
+					result = result.substring(charPos, result.indexOf(">", charPos));
+					return result;
+				}
+				break;
+			case "zork1":
+				if ((!loudRoomDisabled) && ((previousresult.indexOf("Round Room")>0) || (previousresult.indexOf("Deep Canyon")>0))) {
+					// player is adjacent to the 'loud' room, so start adding 'echo' to the input
+					saveTemp = "echo\nsave\ntemp.sav\n"; // disables the 'loud' room to make save/restore work
+				} else if ((!loudRoomDisabled) && (previousresult.indexOf("Loud Room")>0)) {
+					// 'loud' room now disabled, so no need to start adding 'echo' to the input
+					saveTemp = "save\ntemp.sav\n";
+					previousresult = previousresult + ">echo\nThe acoustics of the room change subtly.\n\n";
+					loudRoomDisabled = true;
+				}
+			default:
 		}
 		if (getNewResult) {
 			cmd = "cd " + workingDir + ";" + FROTZ + FROTZOPTIONS + datPath + GAMETITLE + " < " + FROTZINPUT + " > " + FROTZOUTPUT;
